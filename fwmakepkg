@@ -30,8 +30,10 @@ Fcd() {
 Fmkdir() {
 	local i
 	for i in "$@"; do
-		Fmessage "Creating directory: $i"
-		mkdir -p "$Fdestdir/$i" || return 1
+		if [ ! -d "$Fdestdir/$i" ]; then
+			Fmessage "Creating directory: $i"
+			mkdir -p "$Fdestdir/$i" || return 1
+		fi
 	done
 }
 
@@ -56,7 +58,7 @@ Fmv() {
 Finstallrel() {
 	if [ "$#" -eq 3 ]; then
 		Fmessage "Installing file(s): $2"
-		if [ "`ls -l $2 | wc -l`" -gt 1 -a ! -d "$Fdestdir/$3" ]; then
+		if [ "`ls -l $2 | wc -l`" -gt 1 ]; then
 			Fmkdir "$3" || return 1
 		fi
 		if [ -d "$Fdestdir/$3" -a ! "`ls -l $2 | wc -l`" -gt 1 ]; then
@@ -69,9 +71,7 @@ Finstallrel() {
 	else
 		local i
 		for i in "${@:2:$#-2}"; do
-			if [ ! -d "$Fdestdir/${@:$#}" ]; then
-				Fmkdir "${@:$#}" || return 1
-			fi
+			Fmkdir "${@:$#}" || return 1
 			Finstallrel $1 "$i" "${@:$#}/`basename $i`" || return 1
 		done
 	fi
@@ -85,9 +85,7 @@ Finstall() {
 	else
 		local i
 		for i in "${@:2:$#-2}"; do
-			if [ ! -d "$Fdestdir/${@:$#}" ]; then
-				Fmkdir "${@:$#}" || return 1
-			fi
+			Fmkdir "${@:$#}" || return 1
 			Finstallrel "$1" "$Fsrcdir/$i" "${@:$#}/`basename $i`" || return 1
 		done
 	fi
@@ -109,8 +107,19 @@ Ffilerel() {
 	Finstallrel 0644 "$@" || return 1
 }
 
+Fdoc() {
+	Fmkdir "/usr/share/doc/$pkgname-$pkgver" || return 1
+	Ffile "$@" "/usr/share/doc/$pkgname-$pkgver/" || return 1
+}
+
+Fdocrel() {
+	Fmkdir "/usr/share/doc/$pkgname-$pkgver" || return 1
+	Ffilerel "$@" /usr/share/doc/$pkgname-$pkgver || return 1
+}
+
 Fln() {
 	Fmessage "Creating symlink(s): $1"
+	Fmkdir "`dirname $2`" || return 1
 	ln -sf $1 "$Fdestdir"/$2 || return 1
 }
 
@@ -197,3 +206,4 @@ build() {
 # v0.6 Wed, 09 Feb 2005 00:16:44 +0100
 # v0.7 Mon, 14 Feb 2005 14:17:30 +0000
 # v0.8 Mon, 21 Feb 2005 19:54:10 +0100
+# v0.9 Sat, 26 Mar 2005 12:16:26 +0100
