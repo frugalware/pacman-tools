@@ -30,6 +30,11 @@ check all executable files in dir directry with ldd and make depend array
 
 if file is a tgz package, it will be extracted, making depend array
 
+=item B<-n packagename>
+
+when the script cant determine the name of the package you're checking,
+you can give it manually with this(ie. when you use the -d option).
+
 =back
 
 =head1 COPYRIGHT
@@ -43,18 +48,20 @@ use strict;
 use Getopt::Std;
 
 $Getopt::Std::STANDARD_HELP_VERSION = 1;
-our $VERSION = "1.1";
+our $VERSION = "1.3";
 
 sub HELP_MESSAGE(){
     print <<END
 chkdep - checks dependencies for packages of Frugalware Linux
 usage: chkdep -d directory
        chkdep -p samepackage.fpm
+       chkdep -n packagename(use with -d if necessary)
 
 It works correctly only if all the libraries have been 
 installed from fpm packages with pacman!
 END
 }
+
 
 sub extractfpm{ #pkgfile
     my $pkg = shift;
@@ -62,31 +69,41 @@ sub extractfpm{ #pkgfile
     my $name = "/tmp/" . pop @dir;
     die $! unless mkdir $name;
     `tar xzf $pkg -C $name`;
+    #my ($pkgname) = $name =~ /.*\/(.*)-.*-.*.fpm$/;
     return $name;
 }
 
 sub ldddir{ #dir
     my $dir = shift;
-    my $comm = 'find ' . $dir .' -perm -u+x ! -type d -print -exec ldd {} \;';
+    my $comm = 'find ' . $dir .' -perm -u+x ! -type d ! -type l -print -exec ldd {} \;';
     return `$comm`;
 }
 
 
 my %opts;
-getopts('d:p:f:', \%opts);
+getopts('d:p:f:n:', \%opts);
 
 HELP_MESSAGE && die "Wrong option!" unless %opts;
 
 my $dir = extractfpm $opts{p} if $opts{p};
 $dir = $opts{d} if $opts{d};
+my $pkgname;
+$pkgname = $opts{n} or 
+    ($pkgname) = `grep pkgname $dir/.PKGINFO 2>/dev/null` =~ /pkgname = (.*)$/;
+if (not defined $pkgname){ 
+    print "Could not determine packagname!\n"; $pkgname = '';
+} else {
+    print "Package: $pkgname\n";
+}
 
 my @ldd = ldddir $dir;
 
 `rm -rf $dir` if $opts{p};
 
-my %pkgs = ();
+my %pkgs = (); #dependecies
 my %libs = ();
-my $i = 0;
+my %depsdep =(); # the dependencies' dependencies 
+
 for my $line (@ldd){
     if ($line =~ /.* => (.+) \(.*\)/){
         my $lib = $1;
@@ -95,18 +112,26 @@ for my $line (@ldd){
 	    `pacman -Qo $lib` =~ /owned by (.*?)\s(.*)\Z/;
 	    my $pkg = $1;
 	    if ($pkg eq '' or !defined $pkg) {
-		print "WARNING: No package found containing $lib\n"; }
+		print "WARNING: No package found containing $lib\n"; 
+	    }
 	    
-	    # handle provides directive!
-	    $pkg = 'x' if ($pkg eq 'xorg');
-
-	    $pkgs{$pkg} = '1';
+	    if ($pkg ne $pkgname) {
+		my ($pkgdeps) = `pacman -Qi $pkg` =~ /Depends.*?: (.*?)Removes/s;
+		foreach my $dd (split ' ', $pkgdeps){
+		    $depsdep{$dd} = '1';
+		}
+	    
+		# handle provides directive!
+		$pkg = 'x' if ($pkg eq 'xorg');
+		
+		$pkgs{$pkg} = '1' if ($pkg ne $pkgname);
+	    }
 	}
     }
 }
 my $deps = 'depends=(';
 foreach my $key (keys %pkgs){
-    $deps .= "\'$key\' ";
+    $deps .= "\'$key\' " if (not defined $depsdep{$key});
 }
 chop $deps if %pkgs;
 $deps = $deps . ')';
