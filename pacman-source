@@ -1,0 +1,74 @@
+#!/bin/bash
+
+# (c) 2004 Vajna Miklos <mamajom@axelero.hu>
+# pacman-source for pacman
+# distributed under GPL License
+
+# version 0.7
+
+usage()
+{
+	echo -e "Usage: $0 [-v] <pkgname>.\n       -v   verbose mode"
+}
+
+strnopkg="Package \"$1\" was not found."
+
+if [ "$1" == "-v" ]; then
+	verbose=1
+	shift
+fi
+
+if [ -z "$1" ]; then
+	usage
+	exit 1
+fi
+
+if ! pacman -Si $1 >/dev/null 2>&1; then
+	echo $strnopkg
+	exit 1
+fi
+
+confs=`cat /etc/pacman.conf |grep ^Include|sed 's/.* = \(.*\)/\1/'`
+dump="wget --passive-ftp -O - -q"
+wget="wget --passive-ftp -c -m --retr-symlinks"
+
+echo -n "searching for mirrors... "
+for i in $confs
+do
+	servers="$servers `cat $i|grep ^Server|sed -n 's/.* = \(.*\)/\1/;1 p'`"
+done
+servers=`echo $servers |sed "s/^ //"`
+echo "done."
+
+echo -n "locating package on the server... "
+for i in $servers
+do
+	if $dump $i/../Packages.lst|grep -q /$1; then
+		dir="$i"
+		lst="$i/../Packages.lst"
+		break;
+	fi
+done
+echo "done."
+
+cat=`$dump $lst |grep /$1 |sed -n 's|\(.*\)/.*|\1|;1 p'`
+
+mkdir $1 || exit 1
+cd $1 || exit 1
+if [ "$verbose" == 1 ]; then
+	echo "downloding $1 source..."
+	$wget $dir/../source/$cat/$1/
+else
+	echo -n "downloding $1 source... "
+	$wget $dir/../source/$cat/$1/ &>/dev/null
+	echo "done."
+fi
+junk=`echo $dir|sed 's|^ftp://\(.*\)/frugalware|\1|'`/source/$cat/$1/
+
+mv $junk* ./
+rm -rf `echo $junk|cut -d/ -f1`
+
+for i in `find * -type d`
+do
+	( cd $i && [ -e .listing ] && rm .listing )
+done

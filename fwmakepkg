@@ -1,0 +1,199 @@
+#!/bin/bash
+
+# Copyright (C) 2005, NAGY Bence <nagybence@tipogral.hu>
+# This file can be distributed under the terms of the
+# GNU General Public License version 2.
+
+Fsrcdir="$startdir/src"
+Fdestdir="$startdir/pkg"
+Fprefix="/usr"
+
+Fmessage() {
+        if [ "$USE_COLOR" = "Y" -o "$USE_COLOR" = "y" ]; then
+		echo -e "\033[1;36m==>\033[1;0m \033[1;1m$1\033[1;0m" >&2
+	else
+		echo "==> $1" >&2
+	fi
+}
+
+Fcd() {
+	if [ "$Fsrcdir" = `pwd` ]; then
+		if [ "$#" -eq 1 ]; then
+			Fmessage "Going to the source directory..."
+			cd "$Fsrcdir/$1" || return 1
+		elif [ "$#" -eq 0 ]; then
+			Fcd "$pkgname-$pkgver" || return 1
+		fi
+	fi
+}
+
+Fmkdir() {
+	local i
+	for i in "$@"; do
+		Fmessage "Creating directory: $i"
+		mkdir -p "$Fdestdir/$i" || return 1
+	done
+}
+
+Frm() {
+	local i
+	for i in "$@"; do
+		Fmessage "Deleting file(s): $i"
+		rm -rf "$Fdestdir/$i" || return 1
+	done
+}
+
+Fcp() {
+	Fmessage "Copying file(s): $1"
+	cp "$Fdestdir/"$1 "$Fdestdir"/$2 || return 1
+}
+
+Fmv() {
+	Fmessage "Moving file(s): $1"
+	mv "$Fdestdir/"$1 "$Fdestdir"/$2 || return 1
+}
+
+Finstallrel() {
+	if [ "$#" -eq 3 ]; then
+		Fmessage "Installing file(s): $2"
+		if [ "`ls -l $2 | wc -l`" -gt 1 -a ! -d "$Fdestdir/$3" ]; then
+			Fmkdir "$3" || return 1
+		fi
+		if [ -d "$Fdestdir/$3" -a ! "`ls -l $2 | wc -l`" -gt 1 ]; then
+			install -D -m "$1" $2 "$Fdestdir/$3/`basename $2`" || return 1
+		else
+			install -D -m "$1" $2 "$Fdestdir/$3" || return 1
+		fi
+	elif [ "$#" -eq 2 ]; then
+		Finstallrel "$1" "`basename $2`" "$2" || return 1
+	else
+		local i
+		for i in "${@:2:$#-2}"; do
+			if [ ! -d "$Fdestdir/${@:$#}" ]; then
+				Fmkdir "${@:$#}" || return 1
+			fi
+			Finstallrel $1 "$i" "${@:$#}/`basename $i`" || return 1
+		done
+	fi
+}
+
+Finstall() {
+	if [ "$#" -eq 3 ]; then
+		Finstallrel "$1" "$Fsrcdir/$2" "$3" || return 1
+	elif [ "$#" -eq 2 ]; then
+		Finstallrel "$1" "$Fsrcdir/`basename $2`" "$2" || return 1
+	else
+		local i
+		for i in "${@:2:$#-2}"; do
+			if [ ! -d "$Fdestdir/${@:$#}" ]; then
+				Fmkdir "${@:$#}" || return 1
+			fi
+			Finstallrel "$1" "$Fsrcdir/$i" "${@:$#}/`basename $i`" || return 1
+		done
+	fi
+}
+
+Fexe() {
+	Finstall 0755 "$@" || return 1
+}
+
+Fexerel() {
+	Finstallrel 0755 "$@" || return 1
+}
+
+Ffile() {
+	Finstall 0644 "$@" || return 1
+}
+
+Ffilerel() {
+	Finstallrel 0644 "$@" || return 1
+}
+
+Fln() {
+	Fmessage "Creating symlink(s): $1"
+	ln -sf $1 "$Fdestdir"/$2 || return 1
+}
+
+Fsed() {
+	for i in ${@:3:$#}; do
+		Fmessage "Using sed with file: $i"
+	        sed -i -e "s|$1|$2|g" "$i" || return 1
+	done
+}
+
+Fpatch() {
+	Fcd || return 1
+	Fmessage "Using patch: $1"
+	if [ -n "`echo $1 | grep \.patch0$`" ]; then 
+    		patch -Np0 --no-backup-if-mismatch -i "$Fsrcdir/$1" || return 1
+	else
+    		patch -Np1 --no-backup-if-mismatch -i "$Fsrcdir/$1" || return 1
+	fi
+}
+
+Fpatchall() {
+	for i in ${source[@]}; do
+	    if [ -n "`echo "$i" | grep \.patch[0-9]*$`" -o -n "`echo "$i" | grep \.diff$`" ]; then 
+		    Fpatch `strip_url "$i"` || return 1
+	    fi
+	done
+}
+
+Fmake() {
+	Fcd || return 1
+	Fmessage "Configuring..."
+	if [ -x configure ]; then
+		./configure --prefix="$Fprefix" "$@" || return 1
+	elif [ -f Makefile.PL ]; then
+    		perl Makefile.PL --prefix="$Fprefix" "$@" || return 1
+	elif [ -f extconf.rb ]; then
+    		ruby extconf.rb --prefix="$Fprefix" "$@" || return 1
+	elif [ -f configure.rb ]; then
+    		./configure.rb --prefix="$Fprefix" "$@" || return 1
+	fi
+	Fmessage "Compiling..."
+	if [ -f GNUmakefile -o -f makefile -o -f Makefile ]; then
+		make || return 1
+	fi
+}
+
+Fmakeinstall() {
+	if [ -f GNUmakefile -o -f makefile -o -f Makefile ]; then
+		Fmessage "Installing to the package directory..."
+		if [ -n "`grep DESTDIR Makefile`" ]; then
+			make DESTDIR="$Fdestdir" "$@" install || return 1
+		else
+			make prefix="$Fdestdir"/"$Fprefix" "$@" install || return 1
+		fi
+	fi
+}
+
+Fbuild() {
+	Fpatchall || return 1
+	Fmake "$@" || return 1
+	Fmakeinstall || return 1
+}
+
+Frcd() {
+	if [ "$#" -eq 1 ]; then
+		Fmessage "Creating rc.d environment: $1"
+		Fexe /etc/rc.d/rc.$1 || return 1
+		Ffile ../messages/* /etc/rc.d/rc.messages/ || return 1
+	else
+		Frcd "$pkgname" || return 1
+	fi
+}
+
+build() {
+	Fbuild || return 1
+}
+
+# v0.1 Wed, 19 Jan 2005 11:43:53 +0100
+# v0.2 Thu, 20 Jan 2005 10:47:02 +0100
+# v0.2.5 Thu, 20 Jan 2005 11:55:11 +0100
+# v0.3 Thu, 20 Jan 2005 14:28:39 +0100
+# v0.4 Wed, 02 Feb 2005 00:16:03 +0100
+# v0.5 Thu, 03 Feb 2005 16:13:55 +0100
+# v0.6 Wed, 09 Feb 2005 00:16:44 +0100
+# v0.7 Mon, 14 Feb 2005 14:17:30 +0000
+# v0.8 Mon, 21 Feb 2005 19:54:10 +0100
