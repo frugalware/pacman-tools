@@ -34,3 +34,8 @@ install:
 	$(INSTALL) movepkg $(DESTDIR)$(bindir)
 	$(INSTALL) pacman-source $(DESTDIR)$(bindir)
 	$(INSTALL) etcconfig.py $(DESTDIR)$(sbindir)/etcconfig
+
+dist:
+	darcs changes >_darcs/current/Changelog
+	darcs dist -d pacman-tools-$(VERSION)
+	rm _darcs/current/Changelog
