@@ -16,6 +16,8 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 #
 
+VERSION = 0.3.1
+
 INSTALL = /usr/bin/install -c
 DESTDIR =
 bindir = /usr/bin
