@@ -34,7 +34,7 @@ install:
 	$(INSTALL) -d $(DESTDIR)$(man1dir)
 	$(INSTALL) checkworld $(DESTDIR)$(bindir)/checkworld
 	$(INSTALL) chkdep.pl $(DESTDIR)$(bindir)/chkdep
-	$(INSTALL) chkdep.1 $(DESTDIR)$(man1dir)
+	$(INSTALL) -m644 chkdep.1 $(DESTDIR)$(man1dir)
 	$(INSTALL) fwmakepkg $(DESTDIR)$(libdir)
 	$(INSTALL) movepkg $(DESTDIR)$(bindir)
 	$(INSTALL) pacman-source $(DESTDIR)$(bindir)
