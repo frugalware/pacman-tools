@@ -2,7 +2,7 @@
 
 =head1 NAME
 
-chkdep - checks dependencies for packages of Frugalware Linux
+chkdep - checks dependencies of packages for Frugalware Linux
 
 =head1 SYNOPSIS
 
@@ -67,7 +67,7 @@ getopts('vid:p:f:n:', \%opts);
 
 sub HELP_MESSAGE(){
     print <<END
-chkdep - checks dependencies for packages of Frugalware Linux
+chkdep - checks dependencies of packages for Frugalware Linux
 usage: chkdep [-vi] [-n packagename] -d dir | -p file
          -d directory
          -p samepackage.fpm
