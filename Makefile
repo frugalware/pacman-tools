@@ -23,6 +23,7 @@ DESTDIR =
 bindir = /usr/bin
 sbindir = /usr/sbin
 libdir = /usr/lib/frugalware
+man1dir = /usr/share/man/man1
 
 compile:
 
@@ -30,8 +31,10 @@ install:
 	$(INSTALL) -d $(DESTDIR)$(bindir)
 	$(INSTALL) -d $(DESTDIR)$(sbindir)
 	$(INSTALL) -d $(DESTDIR)$(libdir)
+	$(INSTALL) -d $(DESTDIR)$(man1dir)
 	$(INSTALL) checkworld $(DESTDIR)$(bindir)/checkworld
 	$(INSTALL) chkdep.pl $(DESTDIR)$(bindir)/chkdep
+	$(INSTALL) chkdep.1 $(DESTDIR)$(man1dir)
 	$(INSTALL) fwmakepkg $(DESTDIR)$(libdir)
 	$(INSTALL) movepkg $(DESTDIR)$(bindir)
 	$(INSTALL) pacman-source $(DESTDIR)$(bindir)
