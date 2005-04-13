@@ -60,7 +60,7 @@ use strict;
 use Getopt::Std;
 
 $Getopt::Std::STANDARD_HELP_VERSION = 1;
-our $VERSION = "1.5";
+our $VERSION = "1.6";
 
 my %opts;
 getopts('vid:p:f:n:', \%opts);
