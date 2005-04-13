@@ -117,9 +117,10 @@ if ($opts{v}){
 
 my @ldd = ldddir $dir;
 
-my $comm = "rm -rf $dir";
-$comm .= ' 2>/dev/null' unless $opts{v};
-qx/$comm/;
+if ($opts{p}){
+    my $comm ="rm -rf $dir" . (($opts{v}) ? '' : ' 2>/dev/null');
+    qx/$comm/;
+}
 
 my %pkgs; #dependecies
 my %libs;
