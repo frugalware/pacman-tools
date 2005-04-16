@@ -22,7 +22,7 @@ Fcd() {
 			Fmessage "Going to the source directory..."
 			cd "$Fsrcdir/$1" || return 1
 		elif [ "$#" -eq 0 ]; then
-			Fcd "$pkgname-$pkgver" || return 1
+			Fcd "$pkgname-$pkgver$pkgextraver" || return 1
 		fi
 	fi
 }
