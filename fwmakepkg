@@ -124,6 +124,7 @@ Fln() {
 }
 
 Fsed() {
+	Fcd || return 1
 	for i in ${@:3:$#}; do
 		Fmessage "Using sed with file: $i"
 	        sed -i -e "s|$1|$2|g" "$i" || return 1
