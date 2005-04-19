@@ -32,6 +32,9 @@ function check_category()
 		do
 			if [ -d $j ]; then
 				cd $j
+unset pkgname pkgver pkgrel pkgdesc url license groups provides md5sums force
+unset replaces depends conflicts backup source install build makedepends
+unset up2date realname extrapkgver m8r
 					m8r=`grep '^# Maintainer:' FrugalBuild |sed 's/.*: \(.*\) <.*/\1/'`
 					. FrugalBuild
 					countpkg=$(($countpkg+1))
