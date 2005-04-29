@@ -132,13 +132,17 @@ find sub{
 	my ($pkgver) = $buildscript =~ /^pkgver=(\S*)/m;
 	my ($group) = $buildscript =~ /^groups=\('(.*?)'/m;
 	$group = '?' unless $group;
+	my $info = "Checking for $group/$pkgname-$pkgver... ";
+	print $info if $opts{v};
 	my $up2date = timeout $time, 'source ./FrugalBuild; echo -n $up2date';
 	if (!$up2date) {	
-	    print "Checking for $group/$pkgname... Timeouted! $m8r\n";
+	    print $info unless $opts{v};
+	    print "Timeouted! $m8r\n";
 	} elsif ($pkgver ne $up2date){
-	    print "Checking for $group/$pkgname... $pkgver != ".substr($up2date, 0, 12)." $m8r\n";
+	    print $info unless $opts{v};
+	    print "$pkgver != ".substr($up2date, 0, 12)." $m8r\n";
 	} else {
-	    print "Checking for $group/$pkgname-$pkgver... Passed\n" if $opts{v};
+	    print "Passed\n" if $opts{v};
 	}
     }
 }, @dirs;
