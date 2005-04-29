@@ -1,0 +1,138 @@
+#!/usr/bin/perl -w
+
+=head1 NAME
+    
+chkwolrd - Compares FrugalBuild's up2date and pkgver informations
+   
+=head1 SYNOPSIS
+    
+chkdep [-vh] [-t num] directory1...
+    
+=head1 DESCRIPTION
+
+Scans the given directories for FrugalBuild scripts, and compares up2date with pkgver.
+This way, you will always known, how fresh and crispy the packages you're maintaining.
+
+=head1 OPTIONS
+
+=over 4
+
+=item B<-t num>
+
+num is a value in seconds. After num, the checking continues with the next package, 
+shuting down child processes.
+Default is 30.
+
+=item B<-v>
+
+Be verbose
+
+=item B<-h>
+
+A little help
+
+=head1 AUTHORS
+    
+Zsolt Szalai <xbit@frugalware.org>
+
+Daniel Peder, Daniel.Peder@Infoset.COM - code from IO::FILE::String
+    
+=head1 COPYRIGHT
+    
+chkwolrd may be copied and modified under the terms of the GNU General Public
+License v2.
+    
+=cut
+
+use strict;
+use Getopt::Std;
+use File::Find;
+use IO::File;
+
+use Data::Dumper;
+
+sub contents {
+    my $sfh = IO::File->new( "< $_" );
+    local $/ = undef;
+    my $cont = $sfh->getline;
+    $sfh->close;
+    return $cont;
+}
+
+sub getpids{
+    my @pids = @_;
+    my @allpids;
+    for my $pid (@pids){
+        my @childs = qx/pgrep -P $pid/;
+        chomp @childs;
+        push @allpids, $pid, getpids(@childs);
+    }
+    @allpids;
+}
+
+sub timeout{ #time, command
+    my ($time, $comm) = @_;
+    my $output;
+    my $pid;
+
+    eval{                                                                           
+	local $SIG{ALRM} = sub {die "alarm\n" };
+	alarm $time;                                                             
+	$pid = open(COMM, "$comm |");
+	$output = scalar <COMM>;
+	close COMM;                                                                 
+    };                                                                              
+    if ($@) {                                                                       
+	do{                                 
+	    my @chldpids = getpids($pid);
+	    for my $chldpid (@chldpids) {
+		kill TERM => $chldpid;
+	    }          
+	    return undef;
+	}if $@ eq "alarm\n";                                                        
+	die $@ unless $@ && $@ eq "alarm\n";                                        
+    }                    
+    return $output;
+}
+
+$Getopt::Std::STANDARD_HELP_VERSION = 1;
+our $VERSION = "0.1";
+
+my %opts;
+getopts('vht:', \%opts);
+
+sub HELP_MESSAGE(){
+    print <<END
+chkworld - Compares FrugalBuild's up2date and pkgver informations
+usage: chkworld [-vth] directory ...
+         -t num
+         -v be verbose
+	 -h this help
+       
+END
+} #' couse of emacs  
+
+HELP_MESSAGE && exit if $opts{h};
+
+my @dirs;
+if (@ARGV) { @dirs = @ARGV; } else  {@dirs = ('.',);}  # // cant handler arrays :-/
+my $time = $opts{t} || 30;
+
+find sub{
+    if (/^FrugalBuild\z/) {
+	my $buildscript = contents $_;
+	my ($m8r) = $buildscript =~ /^# Maintainer: (.*?)$/m;
+	my ($pkgname) = $buildscript =~ /^pkgname=(.*?)$/m;
+	my ($pkgver) = $buildscript =~ /^pkgver=(.*?)$/m;
+	my ($group) = $buildscript =~ /^groups=\('(.*?)'/m;
+	$group = '?' unless $group;
+	my $up2date = timeout $time, 'source ./FrugalBuild; echo -n $up2date';
+	if (!$up2date) {	
+	    print "$pkgname-$pkgver, $m8r is timeouted!\n";
+	} elsif ($pkgver ne $up2date){
+	    print "Checking for $group/$pkgname... $pkgver != $up2date, $m8r\n";
+	} else {
+	    print "Checking for $group/$pkgname... Passed\n" if $opts{v};
+	}
+    }
+}, @dirs;
