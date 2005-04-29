@@ -6,7 +6,7 @@ chkwolrd - Compares FrugalBuild's up2date and pkgver informations
    
 =head1 SYNOPSIS
     
-chkdep [-vh] [-t num] directory1...
+chkdep [-vhe] [-t num] directory1...
     
 =head1 DESCRIPTION
 
@@ -22,6 +22,10 @@ This way, you will always known, how fresh and crispy the packages you're mainta
 num is a value in seconds. After num, the checking continues with the next package, 
 shuting down child processes.
 Default is 30.
+
+=item B<-e>
+
+Enables standard error output. By default STDERR is redirected to /dev/null
 
 =item B<-v>
 
@@ -75,10 +79,10 @@ sub timeout{ #time, command
     my $output;
     my $pid;
 
-    eval{                                                                           
+    eval{                                                     
 	local $SIG{ALRM} = sub {die "alarm\n" };
-	alarm $time;                                                             
-	$pid = open(COMM, "$comm |");
+	alarm $time;            
+	$pid = open(COMM, "$comm|");
 	$output = scalar <COMM>;
 	close COMM;                                                                 
     };                                                                              
@@ -99,13 +103,14 @@ $Getopt::Std::STANDARD_HELP_VERSION = 1;
 our $VERSION = "0.1";
 
 my %opts;
-getopts('vht:', \%opts);
+getopts('vhet:', \%opts);
 
 sub HELP_MESSAGE(){
     print <<END
 chkworld - Compares FrugalBuild's up2date and pkgver informations
 usage: chkworld [-vth] directory ...
          -t num
+         -e enable standard error output
          -v be verbose
 	 -h this help
        
@@ -117,13 +122,14 @@ HELP_MESSAGE && exit if $opts{h};
 my @dirs;
 if (@ARGV) { @dirs = @ARGV; } else  {@dirs = ('.',);}  # // cant handler arrays :-/
 my $time = $opts{t} || 30;
+open STDERR, "/dev/null" unless $opts{e};
 
 find sub{
     if (/^FrugalBuild\z/) {
 	my $buildscript = contents $_;
 	my ($m8r) = $buildscript =~ /^# Maintainer: (.*?)$/m;
-	my ($pkgname) = $buildscript =~ /^pkgname=(.*?)$/m;
-	my ($pkgver) = $buildscript =~ /^pkgver=(.*?)$/m;
+	my ($pkgname) = $buildscript =~ /^pkgname=(\S*)/m;
+	my ($pkgver) = $buildscript =~ /^pkgver=(\S*)/m;
 	my ($group) = $buildscript =~ /^groups=\('(.*?)'/m;
 	$group = '?' unless $group;
 	my $up2date = timeout $time, 'source ./FrugalBuild; echo -n $up2date';
@@ -132,7 +138,7 @@ find sub{
 	} elsif ($pkgver ne $up2date){
 	    print "Checking for $group/$pkgname... $pkgver != ".substr($up2date, 0, 12)." $m8r\n";
 	} else {
-	    print "Checking for $group/$pkgname... Passed\n" if $opts{v};
+	    print "Checking for $group/$pkgname-$pkgver... Passed\n" if $opts{v};
 	}
     }
 }, @dirs;
