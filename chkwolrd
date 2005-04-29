@@ -128,9 +128,9 @@ find sub{
 	$group = '?' unless $group;
 	my $up2date = timeout $time, 'source ./FrugalBuild; echo -n $up2date';
 	if (!$up2date) {	
-	    print "$pkgname-$pkgver, $m8r is timeouted!\n";
+	    print "Checking for $group/$pkgname... Timeouted! $m8r\n";
 	} elsif ($pkgver ne $up2date){
-	    print "Checking for $group/$pkgname... $pkgver != $up2date, $m8r\n";
+	    print "Checking for $group/$pkgname... $pkgver != ".substr($up2date, 0, 12)." $m8r\n";
 	} else {
 	    print "Checking for $group/$pkgname... Passed\n" if $opts{v};
 	}
