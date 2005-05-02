@@ -1,0 +1,148 @@
+#!/bin/bash
+
+# (c) 2005 Vajna Miklos <vmiklos@frugalware.org>
+# repoman for Frugalware
+# distributed under GPL License
+
+function usage()
+{
+	cat <<EOF
+Usage: `basename $0` [global options] [command] [command options]
+
+Commands:
+cl|changelog [repository/]category/package  Generate a Changelog file
+del|delete file                             Delete a file from FST.
+up|upload source destination                Upload a file to FST.
+
+Global options:
+-v|--verbose  Give verbose output.
+-h|--help     Show this help screen.
+EOF
+}
+
+msg()
+{
+	echo -e "\033[1;32m==>\033[1;0m \033[1;1m$1\033[1;0m" >&2
+}
+
+delete()
+{
+	# strip leading / and any ..
+	file=`echo $1|sed 's|^/||;s|\.\./||g'`
+	msg "Deleting file: $file"
+	if [ "$verbose" == 0 ]; then
+		ssh $lopts $host "sudo -u $sudouser rm $path_to_repo/$file"
+	else
+		ssh $lopts $host "sudo -u $sudouser rm -v $path_to_repo/$file"
+	fi
+	
+}
+
+upload()
+{
+	if [ "$#" -le 1 ]; then
+		echo "Too few parameters!"
+		usage
+		exit 1
+	fi
+	# strip leading / and any ..
+	dest=`echo $2 |sed 's|^/||;s|\.\./||g'`
+	src=$1
+	name=`basename $src`
+	msg "Requesting a temporarily file"
+	tmp=`ssh $lopts darcs.frugalware.org mktemp 2>/dev/null`
+	msg "Uploading file: $src (to $tmp)"
+	scp $src $cpopts$host:$tmp
+	msg "Copying to $dest"
+	ssh $lopts $host "sudo -u vmiklos cp $tmp $path_to_repo/$dest/$name && rm $tmp"
+}
+
+changelog()
+{
+	msg "Generating Changelog for $1"
+	if echo $1 |grep -q '^[^/]\+/[^/]\+/[^/]\+$'; then
+		repo=`echo $1 |sed 's|\([^/]\+\)/[^/]\+/[^/]\+|\1|'`
+		group=`echo $1 |sed 's|[^/]\+/\([^/]\+\)/[^/]\+|\1|'`
+		pkgname=`echo $1 |sed 's|[^/]\+/[^/]\+/\([^/]\+\)|\1|'`
+	elif echo $1 |grep -q '^[^/]\+/[^/]\+$'; then
+		repo="frugalware"
+		group=`echo $1 |sed 's|\([^/]\+\)/[^/]\+|\1|'`
+		pkgname=`echo $1 |sed 's|[^/]\+/\([^/]\+\)|\1|'`
+	else
+		echo "Bad syntax!"
+		usage
+		exit 1
+	fi
+
+	if [ "$repo" == "frugalware" ]; then
+		dir="source"
+	elif [ "$repo" == "extra" ]; then
+		dir="extra/source"
+	else
+		echo "No such repo!"
+		exit 1
+	fi
+	if [ "$verbose" == 0 ]; then
+		ssh $host "cd $path_to_repo/$dir/$group/$pkgname && darcs changes FrugalBuild >Changelog"
+	else
+		ssh $host "cd $path_to_repo/$dir/$group/$pkgname && sudo -u $sudouser darcs changes FrugalBuild >Changelog; cat Changelog"
+	fi
+}
+
+# initializating constants
+host=darcs.frugalware.org
+sudouser=vmiklos
+path_to_repo=/home/ftp/pub/frugalware/frugalware-current
+
+# initializating variables
+version='0.2.0'
+verbose=0
+
+# checking for darcs
+which darcs >/dev/null 2>&1
+if [ $? != 0 ]; then
+	echo "ERROR: Can't find darcs. You can install it with pacman -S darcs."
+	exit 1
+fi
+
+#pharsing parameters
+
+if ! [ -z "$REPOMAN_LOGIN" ]; then
+	lopts="-l $REPOMAN_LOGIN"
+	cpopts="$REPOMAN_LOGIN@"
+fi
+
+if [ $# -le 0 ]; then
+	usage
+	exit 0
+fi
+
+while [ "$1" != "" ]; do
+	case $1 in
+		-h|--help)
+			usage
+			exit 0
+		;;
+		-v|--verbose)
+			 verbose=1
+		;;
+		-*)
+			echo "Wrong parameter!"
+			usage
+			exit 1
+		;;
+		cl|changelog)
+			shift 1
+			changelog $*
+		;;
+		del|delete)
+			shift 1
+			delete $*
+		;;
+		up|upload)
+			shift 1
+			upload $*
+		;;
+	esac
+	shift 1
+done

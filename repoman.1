@@ -1,0 +1,44 @@
+.TH "REPOMAN" "1" "May 2005" "Frugalware 0.3" "pacman-tools"
+.SH NAME
+repoman \- Frugalware's program to maintain packages via darcs and ssh
+.SH SYNOPSIS
+\fBrepoman\fR [\fIglobal options\fR] [\fIcommand\fR] [\fIcommand options\fR]
+.SH DESCRIPTION
+.BR repoman
+is meant for Frugalware developers to upload or delete source
+tarballs, fpm packages and generate changelogs.
+.br
+Note: \fBrepoman\fR only runs \fIinside\fR a darcs repository.
+.SH COMMANDS
+.TP
+.BI cl|changelog " [repository/]category/package"
+Generate a Changelog file from darcs patch comments.
+.TP
+.BI del|delete " file"
+Delete a file from FST.
+
+Example: repoman del extra/frugalware/k3b-i18n-0.11-1.fpm
+.TP
+.BI up|upload " source destination"
+Upload a file to FST.
+
+Example: repoman up cabextract-1.1-1.fpm frugalware/cabextract-1.1-1.fpm
+.SH OPTIONS
+.TP
+.B -h|--help
+Show the help screen.
+.TP
+.B -v|--verbose
+Give verbose output.
+.SH ENVIRONMENT
+\fBrepoman\fR utilizes the following environment variable:
+.PP
+.Vb 2
+REPOMAN_LOGIN                Use different login name than the current.
+.SH AUTHORS
+Miklos Vajna <vmiklos@frugalware.org>
+.SH "REPORTING BUGS"
+Please report bugs to the frugalware-users@frugalware.org mailing list.
+.SH "SEE ALSO"
+.BR darcs (1),
+.BR pacman (8)
