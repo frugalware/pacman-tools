@@ -1,4 +1,4 @@
-#!/usr/bin/perl -w
+#!/usr/bin/perl
 
 =head1 NAME
     
@@ -49,6 +49,8 @@ License v2.
 =cut
 
 use strict;
+use warnings;
+no warnings qw( uninitialized );
 use Getopt::Std;
 use File::Find;
 use IO::File;
@@ -86,15 +88,15 @@ sub timeout{ #time, command
 	$output = scalar <COMM>;
 	close COMM;                                                                 
     };                                                                              
-    if ($@) {                                                                       
+    if ($@) {                
 	do{                                 
 	    my @chldpids = getpids($pid);
 	    for my $chldpid (@chldpids) {
 		kill TERM => $chldpid;
 	    }          
-	    return undef;
-	}if $@ eq "alarm\n";                                                        
-	die $@ unless $@ && $@ eq "alarm\n";                                        
+	    return 'TIMEOUTED';
+	} if $@ eq "alarm\n";                         
+#	die $@ unless $@ && $@ eq "alarm\n";                                        
     }                    
     return $output;
 }
@@ -123,11 +125,13 @@ my @dirs;
 if (@ARGV) { @dirs = @ARGV; } else  {@dirs = ('.',);}  # // cant handler arrays :-/
 my $time = $opts{t} || 30;
 open STDERR, "/dev/null" unless $opts{e};
+my $count;
 
 find sub{
     if (/^FrugalBuild\z/) {
+	$count++;
 	my $buildscript = contents $_;
-	my ($m8r) = $buildscript =~ /^# Maintainer: (.*?)$/m;
+	my ($m8r) = $buildscript =~ /^# Maintainer: (.*?) </m;
 	my ($pkgname) = $buildscript =~ /^pkgname=(\S*)/m;
 	my ($pkgver) = $buildscript =~ /^pkgver=(\S*)/m;
 	my ($group) = $buildscript =~ /^groups=\('(.*?)'/m;
@@ -135,14 +139,17 @@ find sub{
 	my $info = "Checking for $group/$pkgname-$pkgver... ";
 	print $info if $opts{v};
 	my $up2date = timeout $time, 'source ./FrugalBuild; echo -n $up2date';
-	if (!$up2date) {	
+	if ($up2date eq 'TIMEOUTED') {	
 	    print $info unless $opts{v};
 	    print "Timeouted! $m8r\n";
 	} elsif ($pkgver ne $up2date){
 	    print $info unless $opts{v};
-	    print "$pkgver != ".substr($up2date, 0, 12)." $m8r\n";
+	    print ($up2date ? ("!= " . substr($up2date, 0, 12)) : "There were no output!");
+	    print " $m8r\n";
 	} else {
 	    print "Passed\n" if $opts{v};
 	}
     }
 }, @dirs;
+
+print "\nTotal packages checked: $count\n";
