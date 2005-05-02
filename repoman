@@ -54,7 +54,7 @@ upload()
 	msg "Uploading file: $src (to $tmp)"
 	scp $src $cpopts$host:$tmp
 	msg "Copying to $dest"
-	ssh $lopts $host "sudo -u vmiklos cp $tmp $path_to_repo/$dest/$name && rm $tmp"
+	ssh $lopts $host "chmod 644 $tmp; sudo -u vmiklos cp $tmp $path_to_repo/$dest/$name && rm $tmp"
 }
 
 changelog()
