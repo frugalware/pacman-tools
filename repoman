@@ -111,9 +111,9 @@ changelog()
 		exit 1
 	fi
 	if [ "$verbose" == 0 ]; then
-		ssh $host "cd $path_to_repo/$dir/$group/$pkgname && sudo -u $sudouser genchangelog"
+		ssh $lopts $host "cd $path_to_repo/$dir/$group/$pkgname && sudo -u $sudouser genchangelog"
 	else
-		ssh $host "cd $path_to_repo/$dir/$group/$pkgname && sudo -u $sudouser darcs changes FrugalBuild >Changelog; cat Changelog"
+		ssh $lopts $host "cd $path_to_repo/$dir/$group/$pkgname && sudo -u $sudouser darcs changes FrugalBuild >Changelog; cat Changelog"
 	fi
 }
 
