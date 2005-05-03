@@ -57,6 +57,34 @@ upload()
 	ssh $lopts $host "chmod 644 $tmp; sudo -u vmiklos cp $tmp $path_to_repo/$dest/$name && rm $tmp"
 }
 
+list()
+{
+	msg "Fetching contents of directory: $1"
+	if echo $1 |grep -q '^[^/]\+/[^/]\+/[^/]\+$'; then
+		repo=`echo $1 |sed 's|\([^/]\+\)/[^/]\+/[^/]\+|\1|'`
+		group=`echo $1 |sed 's|[^/]\+/\([^/]\+\)/[^/]\+|\1|'`
+		pkgname=`echo $1 |sed 's|[^/]\+/[^/]\+/\([^/]\+\)|\1|'`
+	elif echo $1 |grep -q '^[^/]\+/[^/]\+$'; then
+		repo="frugalware"
+		group=`echo $1 |sed 's|\([^/]\+\)/[^/]\+|\1|'`
+		pkgname=`echo $1 |sed 's|[^/]\+/\([^/]\+\)|\1|'`
+	else
+		echo "Bad syntax!"
+		usage
+		exit 1
+	fi
+
+	if [ "$repo" == "frugalware" ]; then
+		dir="source"
+	elif [ "$repo" == "extra" ]; then
+		dir="extra/source"
+	else
+		echo "No such repo!"
+		exit 1
+	fi
+		ssh $lopts $host "cd $path_to_repo/$dir/$group/$pkgname && ls"
+}
+
 changelog()
 {
 	msg "Generating Changelog for $1"
@@ -138,6 +166,10 @@ while [ "$1" != "" ]; do
 		del|delete)
 			shift 1
 			delete $*
+		;;
+		ls|list)
+			shift 1
+			list $*
 		;;
 		up|upload)
 			shift 1
