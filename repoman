@@ -83,7 +83,7 @@ changelog()
 		exit 1
 	fi
 	if [ "$verbose" == 0 ]; then
-		ssh $host "cd $path_to_repo/$dir/$group/$pkgname && darcs changes FrugalBuild >Changelog"
+		ssh $host "cd $path_to_repo/$dir/$group/$pkgname && sudo darcs changes FrugalBuild >Changelog"
 	else
 		ssh $host "cd $path_to_repo/$dir/$group/$pkgname && sudo -u $sudouser darcs changes FrugalBuild >Changelog; cat Changelog"
 	fi
