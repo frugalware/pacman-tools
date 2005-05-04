@@ -90,11 +90,10 @@ changelog()
 		echo "No such repo!"
 		exit 1
 	fi
-	if [ "$verbose" == 0 ]; then
-		ssh $lopts $host "cd $path_to_repo/$dir/$group/$pkgname && sudo -u $sudouser genchangelog"
-	else
-		ssh $lopts $host "cd $path_to_repo/$dir/$group/$pkgname && sudo -u $sudouser darcs changes FrugalBuild >Changelog; cat Changelog"
+	if [ "$verbose" == 1 ]; then
+		catcmd="cat Changelog"
 	fi
+	ssh $lopts $host "cd $path_to_repo/$dir/../frugalware;if tar -tzf $repo-current.fdb |grep -q ^$pkgname-[^-]*-[^-]*/; then updatesync upd $repo-current.fdb ../source/$group/$pkgname/FrugalBuild; fi ;cd $path_to_repo/$dir/$group/$pkgname && sudo -u $sudouser genchangelog; $catcmd"
 }
 
 # initializating constants
