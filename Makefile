@@ -16,7 +16,7 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 #
 
-VERSION = 0.3.6
+VERSION = 0.4.0
 
 INSTALL = /usr/bin/install -c
 DESTDIR =
@@ -35,6 +35,9 @@ install:
 	$(INSTALL) checkworld $(DESTDIR)$(bindir)/checkworld
 	$(INSTALL) chkdep.pl $(DESTDIR)$(bindir)/chkdep
 	$(INSTALL) -m644 chkdep.1 $(DESTDIR)$(man1dir)
+	$(INSTALL) genchangelog $(DESTDIR)$(bindir)
+	$(INSTALL) repoman $(DESTDIR)$(bindir)
+	$(INSTALL) -m644 repoman.1 $(DESTDIR)$(man1dir)
 	$(INSTALL) fwmakepkg $(DESTDIR)$(libdir)
 	$(INSTALL) movepkg $(DESTDIR)$(bindir)
 	$(INSTALL) pacman-source $(DESTDIR)$(bindir)
