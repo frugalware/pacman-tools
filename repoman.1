@@ -9,6 +9,71 @@ is meant for Frugalware developers to upload or delete source
 tarballs, fpm packages and generate changelogs.
 .br
 Note: \fBrepoman\fR only runs \fIinside\fR a darcs repository.
+.SH USAGE
+A typical package update should be done as follows:
+.TP
+0) Get/update the repo, make changes, build the package:
+
+.BR Note:
+You're recommended to you a mirror sever and the --partial option!
+
+Example for the first time:
+
+darcs get --partial http://ftp5.frugalware.org/packages/frugalware/pub/frugalware/frugalware-current/
+
+cd frugalware-current
+
+echo "yourname <email@addr.ess>" >_darcs/prefs/author
+
+echo 'username@darcs.frugalware.org:/home/ftp/pub/frugalware/frugalware-current' >_darcs/prefs/defaultrepo
+
+echo 'push apply-as vmiklos' >> _darcs/prefs/defaults
+
+If you already got the repo a simple 'darcs pull' should be enough.
+
+Now time to edit the FrugalBuild, make changes, darcs record, build the new package, etc.
+
+.TP
+1) Delete the old source packages(s).
+
+If you do only a rebuild, then, of couse, skip this step. For example:
+
+repoman del source/base/readline/readline-5.0.tar.gz
+
+.TP
+2) Delete the old fpm package.
+
+For example:
+
+repoman del extra/frugalware/k3b-i18n-0.11-1.fpm
+
+.TP
+3) Push the FrugalBuild/.install/etc patch.
+
+Here you only have to do a simple 'darcs push'.
+
+.TP
+4) Upload the source package(s).
+
+For example:
+
+repoman up zsh-4.2.5.tar.bz2 /source/apps/zsh/
+repoman up zsh-doc-4.2.5.tar.bz2 /source/apps/zsh/
+
+.TP
+5) Upload the fpm package:
+
+For example:
+
+repoman up sendmail-8.13.4-1.fpm extra/frugalware/
+
+.TP
+6) Generate a Changelog and update the .fdb database:
+
+For example:
+
+repoman cl base/perl
+
 .SH COMMANDS
 .TP
 .BI cl|changelog " [repository/]category/package"
