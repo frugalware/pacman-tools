@@ -131,6 +131,13 @@ Fsed() {
 	done
 }
 
+Fdeststrip() {
+	local i
+	for i in "$@"; do
+		Fsed "$Fdestdir" "" $Fdestdir/$1
+	done
+}
+
 Fpatch() {
 	Fcd || return 1
 	Fmessage "Using patch: $1"
@@ -149,18 +156,23 @@ Fpatchall() {
 	done
 }
 
-Fmake() {
+Fconf() {
 	Fcd || return 1
 	Fmessage "Configuring..."
 	if [ -x configure ]; then
 		./configure --prefix="$Fprefix" "$@" || return 1
 	elif [ -f Makefile.PL ]; then
     		perl Makefile.PL --prefix="$Fprefix" "$@" || return 1
+		Fsed `perl -e 'printf "%vd", $^V'` "current" Makefile
 	elif [ -f extconf.rb ]; then
     		ruby extconf.rb --prefix="$Fprefix" "$@" || return 1
 	elif [ -f configure.rb ]; then
     		./configure.rb --prefix="$Fprefix" "$@" || return 1
 	fi
+}
+
+Fmake() {
+	Fconf "$@" || return 1
 	Fmessage "Compiling..."
 	if [ -f GNUmakefile -o -f makefile -o -f Makefile ]; then
 		make || return 1
@@ -211,3 +223,4 @@ build() {
 # v0.7 Mon, 14 Feb 2005 14:17:30 +0000
 # v0.8 Mon, 21 Feb 2005 19:54:10 +0100
 # v0.9 Sat, 26 Mar 2005 12:16:26 +0100
+# v0.9.1 Thu, 05 May 2005 21:06:25 +0100
