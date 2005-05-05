@@ -12,6 +12,7 @@ Usage: `basename $0` [global options] [command] [command options]
 Commands:
 cl|changelog [repository/]category/package  Generate a Changelog file
 del|delete file                             Delete a file from FST.
+ls|list directory                           List a directory in FST.
 up|upload source destination                Upload a file to FST.
 
 Global options:
