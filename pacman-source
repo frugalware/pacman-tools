@@ -32,26 +32,11 @@ confs=`cat /etc/pacman.conf |grep ^Include|sed 's/.* = \(.*\)/\1/'`
 dump="wget --passive-ftp -O - -q"
 wget="wget --passive-ftp -c -m --retr-symlinks"
 
-echo -n "searching for mirrors... "
-for i in $confs
-do
-	servers="$servers `cat $i|grep ^Server|sed -n 's/.* = \(.*\)/\1/;1 p'`"
-done
-servers=`echo $servers |sed "s/^ //"`
+echo -n "searching for a mirror... "
+repo=`pacman -Si $1|grep ^Repo|sed -n 's/.* \([^ ]*\)/\1/;1 p'`
+dir=`grep ^Server /etc/pacman.d/$repo|sed -n 's/.* = \(.*\)/\1/;1 p'`
+cat=`pacman -Si $1 |grep ^G |sed 's/.* : \([^ ]*\) .*/\1/; s/-extra$//'`
 echo "done."
-
-echo -n "locating package on the server... "
-for i in $servers
-do
-	if $dump $i/../Packages.lst|grep -q /$1; then
-		dir="$i"
-		lst="$i/../Packages.lst"
-		break;
-	fi
-done
-echo "done."
-
-cat=`$dump $lst |grep /$1 |sed -n 's|\(.*\)/.*|\1|;1 p'`
 
 mkdir $1 || exit 1
 cd $1 || exit 1
