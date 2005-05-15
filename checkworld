@@ -38,6 +38,7 @@ unset up2date realname extrapkgver m8r
 					m8r=`grep '^# Maintainer:' FrugalBuild |sed 's/.*: \(.*\) <.*/\1/'`
 					. FrugalBuild
 					countpkg=$(($countpkg+1))
+					echo "$up2date"|grep -q " " && up2date=`eval "$up2date"`
 					if [ "$pkgver" != "$up2date" ]; then
 						echo -n "Checking for $i/$j... "
 						echo "$pkgver < $up2date, $m8r"
