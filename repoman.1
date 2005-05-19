@@ -93,6 +93,9 @@ Example: repoman ls source/base/db/ -l
 Upload a file to FST.
 
 Example: repoman up cabextract-1.1-1.fpm frugalware/cabextract-1.1-1.fpm
+.TP
+.BI upd|update " [repo]"
+Update a repo in /var/fst. If the option repo parameter omitted, the repoman will update the frugalware-current repo. If the frugalware-current repo not yet exists, then repoman will download it (it may take some time!).
 .SH OPTIONS
 .TP
 .B -h|--help

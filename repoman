@@ -97,10 +97,39 @@ changelog()
 	ssh $lopts $host "cd $path_to_repo/$dir/../frugalware && sudo -u $sudouser updatesync upd $repo-current.fdb ../source/$group/$pkgname/FrugalBuild && cd $path_to_repo/$dir/$group/$pkgname && sudo -u $sudouser genchangelog; $catcmd"
 }
 
+die()
+{
+	echo -e "$*"
+	exit 1
+}
+
+update()
+{
+	if [ -z "$1" ]; then
+		repo=$reponame
+	else
+		repo=$1
+	fi
+	# search for a mirror
+	[ -e /etc/pacman.d/frugalware-current ] || \
+		die "Can't find any mirror!\nMaybe try a 'pacman -S pacman'";
+	server=`grep ^Server /etc/pacman.d/frugalware-current |sed -n 's/.*= \(.*\)/\1/;1 p'`/..
+	# server="http://darcs.frugalware.org/repos/frugalware-current"
+	if [ -d $fst_root/$repo ]; then
+		cd $fst_root/$repo &&
+		darcs pull
+	else
+		mkdir $fst_root &&
+		cd $fst_root && darcs  get --partial $server
+	fi
+}
+
 # initializating constants
 host=darcs.frugalware.org
 sudouser=vmiklos
-path_to_repo=/home/ftp/pub/frugalware/frugalware-current
+reponame=frugalware-current
+path_to_repo=/home/ftp/pub/frugalware/$reponame
+fst_root=/var/fst/
 
 # initializating variables
 version='0.2.0'
@@ -155,6 +184,10 @@ while [ "$1" != "" ]; do
 		up|upload)
 			shift 1
 			upload $*
+		;;
+		upd|update)
+			shift 1
+			update $*
 		;;
 	esac
 	shift 1
