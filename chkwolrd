@@ -102,7 +102,7 @@ sub timeout{ #time, command
 }
 
 $Getopt::Std::STANDARD_HELP_VERSION = 1;
-our $VERSION = "0.1";
+our $VERSION = "0.2";
 
 my %opts;
 getopts('vhet:', \%opts);
@@ -117,7 +117,7 @@ usage: chkworld [-vth] directory ...
 	 -h this help
        
 END
-} #' couse of emacs  
+} #'
 
 HELP_MESSAGE && exit if $opts{h};
 
@@ -134,11 +134,14 @@ find sub{
 	my ($m8r) = $buildscript =~ /^# Maintainer: (.*?) </m;
 	my ($pkgname) = $buildscript =~ /^pkgname=(\S*)/m;
 	my ($pkgver) = $buildscript =~ /^pkgver=(\S*)/m;
-	my ($group) = $buildscript =~ /^groups=\('(.*?)'/m;
+	my ($group) = $buildscript =~ /^groups=\('?(.*?)('|\s|\))/m;
 	$group = '?' unless $group;
 	my $info = "Checking for $group/$pkgname-$pkgver... ";
 	print $info if $opts{v};
-	my $up2date = timeout $time, 'source ./FrugalBuild; echo -n $up2date';
+
+	my $up2date = timeout $time, 'source ./FrugalBuild; eval $up2date';
+	chomp $up2date unless $up2date eq 'TIMEOUTED';
+
 	if ($up2date eq 'TIMEOUTED') {	
 	    print $info unless $opts{v};
 	    print "Timeouted! $m8r\n";
