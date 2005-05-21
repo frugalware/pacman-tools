@@ -124,6 +124,12 @@ update()
 	fi
 }
 
+search()
+{
+	[ -z "$*" ] || grepcmd="|grep $*"
+	eval "find $fst_root/$reponame/{source,extra/source} -name FrugalBuild |xargs grep ^nobuild= |sed 's|$fst_root/$reponame/\(.*\)/source/\(.*\)/FrugalBuild:.*|\1/\2|' $grepcmd"
+}
+
 # initializating constants
 host=darcs.frugalware.org
 sudouser=vmiklos
@@ -188,6 +194,10 @@ while [ "$1" != "" ]; do
 		upd|update)
 			shift 1
 			update $*
+		;;
+		s|search)
+			shift 1
+			search $*
 		;;
 	esac
 	shift 1
