@@ -63,7 +63,7 @@ repoman up zsh-doc-4.2.5.tar.bz2 /source/apps/zsh/
 .TP
 5) Upload the fpm package:
 
-For example:
+For example (see the 'up' command description for more details!):
 
 repoman up sendmail-8.13.4-1.fpm extra/frugalware/
 
@@ -90,9 +90,11 @@ List the contents of a remote directory.
 Example: repoman ls source/base/db/ -l
 .TP
 .BI up|upload " source destination"
-Upload a file to FST.
+Upload a file to FST. destination is [extra/]frugalware-<arch>. If the package
+is in the extra repo, the extra/ prefix is required. <arch> currently can be
+i686 or x86_64.
 
-Example: repoman up cabextract-1.1-1.fpm frugalware/cabextract-1.1-1.fpm
+Example: repoman up cabextract-1.1-1.fpm frugalware-i686/cabextract-1.1-1.fpm
 .TP
 .BI upd|update " [repo]"
 Update a repo in /var/fst. If the option repo parameter omitted, the repoman
