@@ -24,6 +24,7 @@ bindir = /usr/bin
 sbindir = /usr/sbin
 libdir = /usr/lib/frugalware
 man1dir = /usr/share/man/man1
+sysconfdir = /etc
 
 compile:
 
@@ -32,12 +33,14 @@ install:
 	$(INSTALL) -d $(DESTDIR)$(sbindir)
 	$(INSTALL) -d $(DESTDIR)$(libdir)
 	$(INSTALL) -d $(DESTDIR)$(man1dir)
+	$(INSTALL) -d $(DESTDIR)$(sysconfdir)
 	$(INSTALL) checkworld $(DESTDIR)$(bindir)/checkworld
 	$(INSTALL) chkdep.pl $(DESTDIR)$(bindir)/chkdep
 	$(INSTALL) -m644 chkdep.1 $(DESTDIR)$(man1dir)
 	$(INSTALL) genchangelog $(DESTDIR)$(bindir)
 	$(INSTALL) repoman $(DESTDIR)$(bindir)
 	$(INSTALL) -m644 repoman.1 $(DESTDIR)$(man1dir)
+	$(INSTALL) -m644 repoman.conf $(DESTDIR)$(sysconfdir)
 	$(INSTALL) fwmakepkg $(DESTDIR)$(libdir)
 	$(INSTALL) movepkg $(DESTDIR)$(bindir)
 	$(INSTALL) pacman-source $(DESTDIR)$(bindir)

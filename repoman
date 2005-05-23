@@ -130,16 +130,11 @@ search()
 	eval "find $fst_root/$reponame/{source,extra/source} -name FrugalBuild |xargs grep ^nobuild= |sed 's|$fst_root/$reponame/\(.*\)/source/\(.*\)/FrugalBuild:.*|\1/\2|' $grepcmd"
 }
 
-# initializating constants
-host=darcs.frugalware.org
-sudouser=vmiklos
-reponame=frugalware-current
-path_to_repo=/home/ftp/pub/frugalware/$reponame
-fst_root=/var/fst/
+[ -e /etc/repoman.conf ] && . /etc/repoman.conf || \
+	die "Can't find /etc/repoman.conf!"
 
 # initializating variables
 version='0.2.0'
-verbose=0
 
 # checking for darcs
 which darcs >/dev/null 2>&1
