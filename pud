@@ -1,0 +1,46 @@
+#!/usr/bin/perl
+
+use strict;
+use warnings;
+use LWP::Simple;
+use Getopt::Std;
+
+$Getopt::Std::STANDARD_HELP_VERSION = 1;
+our $VERSION = "0.1";
+
+sub HELP_MESSAGE(){
+    print <<END
+pud - up2date helper for Frugalware Linux
+usage: pud -s URL -e PERL_REGEXP [-h]
+ The _source_ of URL will be downloaded and the REGEXP's first group
+ will be printed, so don't forget to make one!
+ The page is treated as a multiline string.
+ Only the first match will be shown!
+ 'http://' prefix is mandatory.
+ 'ftp://' is not supported yet.
+ Always use ' or " opening and closing the regexp.
+ All these above could change(maybe not in a compatible way), 
+ please note that!
+ Ex:
+  pud -s http://frugalware.org -e "&nbsp;frugalware-(.*?)<.*fwclose"
+  should give you the current stable release of Frugalware Linux.
+
+END
+#'
+}
+
+my %opts;
+getopts('s:e:h', \%opts);
+
+HELP_MESSAGE && exit if $opts{h};
+
+my $source = $opts{s} || do {HELP_MESSAGE; die 'No source!';};
+my $regexp = $opts{e} || do {HELP_MESSAGE; die 'No regexp!';};
+
+$regexp = qr/$regexp/;
+
+if (get($source) =~ /$regexp/m){
+    print "$1\n" if $1;
+}
+
+
