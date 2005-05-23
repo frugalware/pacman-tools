@@ -97,6 +97,14 @@ List the contents of a remote directory.
 
 Example: repoman ls source/base/db/ -l
 .TP
+.BI m|merge " package"
+Build a package from source and install it. Necessary dependencies will be
+installed with pacman -S. After compilation, the working directory will be
+delted, and 1) if you build as a user, the package will be placed in the
+current directory, 2) if you build as root, it'll be paced at
+/var/cache/pacman/pkg.
+
+.TP
 .BI up|upload " source destination"
 Upload a file to FST. destination is [extra/]frugalware-<arch>. If the package
 is in the extra repo, the extra/ prefix is required. <arch> currently can be

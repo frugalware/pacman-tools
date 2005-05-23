@@ -130,6 +130,18 @@ search()
 	eval "find $fst_root/$reponame/{source,extra/source} -name FrugalBuild |xargs grep ^nobuild= |sed 's|$fst_root/$reponame/\(.*\)/source/\(.*\)/FrugalBuild:.*|\1/\2|' $grepcmd"
 }
 
+merge()
+{
+	dir=`find $fst_root -type d -name "$1"|sed -n '$ p'`
+	if [ "`id -u`" = "0" ]; then
+		destdir=/var/cache/pacman/pkg
+	else
+		destdir=`pwd`
+	fi
+	cd $dir
+	makepkg -i -c -s -w $destdir
+}
+
 [ -e /etc/repoman.conf ] && . /etc/repoman.conf || \
 	die "Can't find /etc/repoman.conf!"
 
@@ -181,6 +193,10 @@ while [ "$1" != "" ]; do
 			shift 1
 			list $*
 			exit 0
+		;;
+		m|merge)
+			shift 1
+			merge $*
 		;;
 		up|upload)
 			shift 1
