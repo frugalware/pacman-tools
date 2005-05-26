@@ -8,13 +8,20 @@
 
 usage()
 {
-	echo -e "Usage: $0 [-v] <pkgname>.\n       -v   verbose mode"
+	echo -e "Usage: $0 [-v] [-q] <pkgname>.
+	-v   verbose mode
+	-q   quick mode: do not download source tarballs, only buildscripts"
 }
 
 strnopkg="Package \"$1\" was not found."
 
 if [ "$1" == "-v" ]; then
 	verbose=1
+	shift
+fi
+
+if [ "$1" == "-q" ]; then
+	quickdl="_darcs/current/"
 	shift
 fi
 
@@ -43,13 +50,13 @@ mkdir $1 || exit 1
 cd $1 || exit 1
 if [ "$verbose" == 1 ]; then
 	echo "downloding $1 source..."
-	$wget $dir/../source/$cat/$1/
+	$wget $dir/../$quickdl/source/$cat/$1/
 else
 	echo -n "downloding $1 source... "
-	$wget $dir/../source/$cat/$1/ &>/dev/null
+	$wget $dir/../$quickdl/source/$cat/$1/ &>/dev/null
 	echo "done."
 fi
-junk=`echo $dir|sed "s|^ftp://\(.*\)/frugalware-$arch|\1|"`/source/$cat/$1/
+junk=`echo $dir|sed "s|^ftp://\(.*\)/frugalware-$arch|\1|"`/$quickdl/source/$cat/$1/
 
 mv $junk* ./
 rm -rf `echo $junk|cut -d/ -f1`
