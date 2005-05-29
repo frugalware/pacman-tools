@@ -179,6 +179,7 @@ sub getoldfpm{
     return 0;
 }
 
+# Delete
 if ($sourcefile){
 #### look for && repoman del old source
     unless($opts{q}) {
@@ -187,10 +188,7 @@ if ($sourcefile){
 	    apply "repoman del $repo/source/$group/$pkgname/$olds";
 	}
     }
-    apply "repoman up $sourcefile $repo/source/$group/$pkgname/";
-
 }
-
 if ($pkgfile){
 #### look for && repoman del old source
     unless($opts{q}) {
@@ -199,8 +197,15 @@ if ($pkgfile){
 	    apply "repoman del $repo/$repodir/$oldf";
 	}
     }
-    apply "repoman up $pkgfile $repo/$repodir/";
 }
+
+# darcs push?
+
+apply "darcs push --match 'name $pkgname'";
+
+# up and rest
+apply "repoman up $sourcefile $repo/source/$group/$pkgname/" if $sourcefile;
+apply "repoman up $pkgfile $repo/$repodir/" if $pkgfile;
 
 $repo.='/' if $repo;
 apply "repoman cl $repo$group/$pkgname";
