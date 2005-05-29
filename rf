@@ -8,6 +8,23 @@ rf - RepomanFrontend
 
 =head1 DESCRIPTION
 
+rf will try to repoman del, repoman up and repoman cl the package from the program started.
+So run it from the packages darcs directory, and do a darcs push too.
+
+If you specify -s, first it will look for the old source file on the server(this may fail sometimes), 
+and do a repoman del
+Than repoman up the given new source file.
+
+As before, with -f, the old fpm tried to be ereased from the server, and upload the new package.
+
+After that do a repoman cl.
+
+Before any action, you will be asked if it is ok, that can be overriden with option -k.
+
+For now, the default repository is the main frugalware, version is current.
+So if you would like to upgrade ex. mysql, you dont have to use -r option.
+For a package in extra/, an -e option is enough. 
+
 Only the -s and -f have to be given in many cases,
 every other data will be guessed!
 
@@ -71,6 +88,15 @@ Answer yes to all questions.
 =item B<-q>
 
 Does not look for files in the server -> repoman del will not applied.
+
+=head1 AUTHOR
+
+Zsolt Szalai <xbit@frugalware.org>
+
+=head1 COPYRIGHT
+
+rf may be copied and modified under the terms of the GNU General Public 
+License v2
 
 =cut
 

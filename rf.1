@@ -134,6 +134,23 @@
 rf \- RepomanFrontend
 .SH "DESCRIPTION"
 .IX Header "DESCRIPTION"
+rf will try to repoman del, repoman up and repoman cl the package from the program started.
+So run it from the packages darcs directory, and do a darcs push too.
+.PP
+If you specify \-s, first it will look for the old source file on the server(this may fail sometimes), 
+and do a repoman del
+Than repoman up the given new source file.
+.PP
+As before, with \-f, the old fpm tried to be ereased from the server, and upload the new package.
+.PP
+After that do a repoman cl.
+.PP
+Before any action, you will be asked if it is ok, that can be overriden with option \-k.
+.PP
+For now, the default repository is the main frugalware, version is current.
+So if you would like to upgrade ex. mysql, you dont have to use \-r option.
+For a package in extra/, an \-e option is enough. 
+.PP
 Only the \-s and \-f have to be given in many cases,
 every other data will be guessed!
 .SH "OPTIONS"
@@ -181,3 +198,10 @@ Answer yes to all questions.
 .IP "\fB\-q\fR" 4
 .IX Item "-q"
 Does not look for files in the server \-> repoman del will not applied.
+.SH "AUTHOR"
+.IX Header "AUTHOR"
+Zsolt Szalai <xbit@frugalware.org>
+.SH "COPYRIGHT"
+.IX Header "COPYRIGHT"
+rf may be copied and modified under the terms of the \s-1GNU\s0 General Public 
+License v2
