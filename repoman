@@ -99,7 +99,7 @@ changelog()
 
 die()
 {
-	echo -e "$*"
+	echo -e "$0: $*"
 	exit 1
 }
 
@@ -133,17 +133,13 @@ search()
 merge()
 {
 	dir=`find $fst_root -type d -name "$1"|sed -n '$ p'`
-	if [ "`id -u`" = "0" ]; then
-		destdir=/var/cache/pacman/pkg
-	else
-		destdir=`pwd`
-	fi
 	cd $dir
-	makepkg -i -c -s -w $destdir
+	makepkg $makepkg_opts
 }
 
 [ -e /etc/repoman.conf ] && . /etc/repoman.conf || \
 	die "Can't find /etc/repoman.conf!"
+[ -e ~/.repoman.conf ] && . ~/.repoman.conf
 
 # initializating variables
 version='0.2.0'
