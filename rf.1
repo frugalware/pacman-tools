@@ -135,7 +135,7 @@ rf \- RepomanFrontend
 .SH "DESCRIPTION"
 .IX Header "DESCRIPTION"
 rf will try to repoman del, repoman up and repoman cl the package from the program started.
-So run it from the packages darcs directory, and do a darcs push too.
+So run it from the package's darcs directory, and do a darcs push too.
 .PP
 If you specify \-s, first it will look for the old source file on the server(this may fail sometimes), 
 and do a repoman del
@@ -147,11 +147,11 @@ After that do a repoman cl.
 .PP
 Before any action, you will be asked if it is ok, that can be overriden with option \-k.
 .PP
-For now, the default repository is the main frugalware, version is current.
-So if you would like to upgrade ex. mysql, you dont have to use \-r option.
+The default repository is the main frugalware, version is current.
+So if you would like to upgrade eg. mysql, you dont have to use \-r option.
 For a package in extra/, an \-e option is enough. 
 .PP
-Only the \-s and \-f have to be given in many cases,
+Only the \-s and \-f options have to be given in many cases,
 every other data will be guessed!
 .SH "OPTIONS"
 .IX Header "OPTIONS"
@@ -163,7 +163,7 @@ Help
 repository gets extra.
 .IP "\fB\-r\fR" 4
 .IX Item "-r"
-Specify the repository ex. extra
+Specify the repository eg. extra
 if not given, default will be used.
 .IP "\fB\-a\fR" 4
 .IX Item "-a"
@@ -173,10 +173,10 @@ Architecture, default is i686
 The directory of the repo, where the fpms are. default is frugalware\-$arch
 .IP "\fB\-p\fR" 4
 .IX Item "-p"
-Serverprefix, ex. ftp://ftp.frugalware.org/pub/frugalware/frugalware\-current/ also this is the default
+Serverprefix, eg. ftp://ftp.frugalware.org/pub/frugalware/frugalware\-current/ also this is the default
 .IP "\fB\-g\fR" 4
 .IX Item "-g"
-Group of the package, meaning the physical group, ex. the /extra/devel/adevelpkg has devel group
+Group of the package, meaning the physical group, eg. the /extra/devel/adevelpkg has devel group
 .IP "\fB\-n\fR" 4
 .IX Item "-n"
 Name of the package

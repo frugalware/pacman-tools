@@ -9,7 +9,7 @@ rf - RepomanFrontend
 =head1 DESCRIPTION
 
 rf will try to repoman del, repoman up and repoman cl the package from the program started.
-So run it from the packages darcs directory, and do a darcs push too.
+So run it from the package's darcs directory, and do a darcs push too.
 
 If you specify -s, first it will look for the old source file on the server(this may fail sometimes), 
 and do a repoman del
@@ -21,11 +21,11 @@ After that do a repoman cl.
 
 Before any action, you will be asked if it is ok, that can be overriden with option -k.
 
-For now, the default repository is the main frugalware, version is current.
-So if you would like to upgrade ex. mysql, you dont have to use -r option.
+The default repository is the main frugalware, version is current.
+So if you would like to upgrade eg. mysql, you dont have to use -r option.
 For a package in extra/, an -e option is enough. 
 
-Only the -s and -f have to be given in many cases,
+Only the -s and -f options have to be given in many cases,
 every other data will be guessed!
 
 =head1 OPTIONS
@@ -42,7 +42,7 @@ repository gets extra.
 
 =item B<-r>
 
-Specify the repository ex. extra
+Specify the repository eg. extra
 if not given, default will be used.
 
 =item B<-a>
@@ -55,11 +55,11 @@ The directory of the repo, where the fpms are. default is frugalware-$arch
 
 =item B<-p>
 
-Serverprefix, ex. ftp://ftp.frugalware.org/pub/frugalware/frugalware-current/ also this is the default
+Serverprefix, eg. ftp://ftp.frugalware.org/pub/frugalware/frugalware-current/ also this is the default
 
 =item B<-g>
 
-Group of the package, meaning the physical group, ex. the /extra/devel/adevelpkg has devel group
+Group of the package, meaning the physical group, eg. the /extra/devel/adevelpkg has devel group
 
 =item B<-n>
 
@@ -119,7 +119,7 @@ END
 
 # run from the packages darcs dir!
 # -h help; -e extrarepo!overrides -r; -r repo; -a arch/; -R repodir; -p serverprefix; 
-#-g group*!physical category;  -n pkgname*; -s sourcefile* -f fpm* -v version!ex. current -d del the files
+#-g group*!physical category;  -n pkgname*; -s sourcefile* -f fpm* -v version!eg. current -d del the files
 # -k noask -q dont look for old files on server
 # / elsre nem csinlom meg; * kiszedheti mashonnan is eros konnyites
 my %opts;
