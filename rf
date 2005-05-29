@@ -1,0 +1,186 @@
+#!/usr/bin/perl -w
+
+print "THIS PROGRAM IS UNDER TESTING AND NOT CONSIDERED STABLE! USE WITH CARE!\n";
+
+=head1 NAME
+
+rf - RepomanFrontend
+
+=head1 DESCRIPTION
+
+Only the -s and -f have to be given in many cases,
+every other data will be guessed!
+
+=head1 OPTIONS
+
+=over 4
+
+=item B<-h>
+
+Help
+
+=item B<-e>
+
+repository gets extra.
+
+=item B<-r>
+
+Specify the repository ex. extra
+if not given, default will be used.
+
+=item B<-a>
+
+Architecture, default is i686
+
+=item B<-R>
+
+The directory of the repo, where the fpms are. default is frugalware-$arch
+
+=item B<-p>
+
+Serverprefix, ex. ftp://ftp.frugalware.org/pub/frugalware/frugalware-current/ also this is the default
+
+=item B<-g>
+
+Group of the package, meaning the physical group, ex. the /extra/devel/adevelpkg has devel group
+
+=item B<-n>
+
+Name of the package
+
+=item B<-s>
+
+New sourcefile
+
+=item B<-f>
+
+New packagefile
+
+=item B<-v>
+
+Version of the distribution, default is current.
+
+=item B<-d> 
+
+Delete the files given in -s and -f
+
+=item B<-k>
+
+Answer yes to all questions.
+
+=item B<-q>
+
+Does not look for files in the server -> repoman del will not applied.
+
+=cut
+
+use strict;
+no warnings qw(uninitialized);
+
+use LWP::Simple;
+use Cwd;
+use Getopt::Std;
+
+$Getopt::Std::STANDARD_HELP_VERSION = 1;
+our $VERSION = "0.1";
+
+sub HELP_MESSAGE(){
+    print <<END
+
+END
+}
+
+
+# run from the packages darcs dir!
+# -h help; -e extrarepo!overrides -r; -r repo; -a arch/; -R repodir; -p serverprefix; 
+#-g group*!physical category;  -n pkgname*; -s sourcefile* -f fpm* -v version!ex. current -d del the files
+# -k noask -q dont look for old files on server
+# / elsre nem csinlom meg; * kiszedheti mashonnan is eros konnyites
+my %opts;
+getopts('her:a:R:p:g:n:s:f:v:dq', \%opts);
+
+HELP_MESSAGE && die if  !%opts || $opts{h};
+
+my ($distrib,$version,$repo,$arch, $repodir, $serverprefix, $group, $pkgname, $sourcefile, $pkgfile, $noask) =
+    ('frugalware',$opts{v},undef,$opts{a}, $opts{R}, $opts{p}, $opts{g}, $opts{n}, $opts{s}, $opts{f}, $opts{k});
+
+sub ask{
+    my $str = shift;
+    return 1 if $noask;
+    print "$str\nIs is ok? ";
+    return 1 if readline(STDIN) =~ /^y|^yes/i;
+    return 0;
+}
+
+sub apply{
+    my $comm = shift;
+    system $comm if ask $comm;
+}
+
+$repo = '' || $opts{r};
+$repo = 'extra' if $opts{e};
+
+$version = 'current' unless $version; #no need :)
+$arch = 'i686' unless $arch;
+$repodir = "$distrib-$arch" unless $repodir;
+$serverprefix = "ftp://ftp.$distrib.org/pub/$distrib/$distrib-$version/";  # no need :)
+
+unless ( ($group) = getcwd =~ m!.*/(.*?)/[^/]*\Z! ){
+    $group = $opts{g};
+}
+HELP_MESSAGE && die 'No physical group given!' unless $group;
+
+unless (($pkgname) = $pkgfile =~ /^(.*)-.*?-.*?-.*?fpm\Z/){
+    $pkgname = $opts{n};
+}
+HELP_MESSAGE && die 'Can not determine pkgname!' unless $pkgname;        
+
+
+sub getoldsource{
+    my ($url,$sourcefile)= @_;
+    my ($sn) = $sourcefile =~ /(.*)-/;
+    if (get($url) =~ /(\Q$sn\E.*?)\s/) {
+	return $1;
+    }
+    return 0;
+}
+
+sub getoldfpm{
+    my ($url,$pkgname)= @_;
+    if (get($url) =~ /(\Q$pkgname\E.*?)\s/) {
+	return $1;
+    }
+    return 0;
+}
+
+if ($sourcefile){
+#### look for && repoman del old source
+    unless($opts{q}) {
+	print "Trying to get old source file from server\n";
+	if( my $olds = getoldsource("$serverprefix/$repo/source/$group/$pkgname/",$sourcefile) ){ 
+	    apply "repoman del $repo/source/$group/$pkgname/$olds";
+	}
+    }
+    apply "repoman up $sourcefile $repo/source/$group/$pkgname/";
+
+}
+
+if ($pkgfile){
+#### look for && repoman del old source
+    unless($opts{q}) {
+	print "Trying to get old package file from server\n";
+	if( my $oldf = getoldfpm("$serverprefix/$repo/$repodir/",$pkgname) ){ 
+	    apply "repoman del $repo/$repodir/$oldf";
+	}
+    }
+    apply "repoman up $pkgfile $repo/$repodir/";
+}
+
+$repo.='/' if $repo;
+apply "repoman cl $repo$group/$pkgname";
+
+if ($opts{d}){ #delete source & fpm
+    unlink $sourcefile if $sourcefile;
+    unlink $pkgfile if $pkgfile;
+}
+
