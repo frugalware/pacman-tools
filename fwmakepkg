@@ -41,7 +41,7 @@ Frm() {
 	local i
 	for i in "$@"; do
 		Fmessage "Deleting file(s): $i"
-		rm -rf "$Fdestdir/$i" || return 1
+		rm -rf "$Fdestdir"/$i || return 1
 	done
 }
 
