@@ -98,11 +98,12 @@ List the contents of a remote directory.
 Example: repoman ls source/base/db/ -l
 .TP
 .BI m|merge " package"
-Build a package from source and install it. Necessary dependencies will be
-installed with pacman -S. After compilation, the working directory will be
-delted, and 1) if you build as a user, the package will be placed in the
-current directory, 2) if you build as root, it'll be paced at
-/var/cache/pacman/pkg.
+Build a package from source and install it. You can configure the build
+options in the makepkg_opts directive of /etc/repoman.conf.
+
+By default repoman will install the missing dependencies with pacman, clean up
+the leftover work files, install the package, and write the resulting package
+to the current working directory.
 
 .TP
 .BI up|upload " source destination"
