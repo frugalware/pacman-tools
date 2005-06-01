@@ -220,6 +220,11 @@ build() {
 	Fbuild || return 1
 }
 
+Facu() {
+	cat /usr/share/automake/config.sub >config.sub
+	cat /usr/share/automake/config.guess >config.guess
+}
+
 # v0.1 Wed, 19 Jan 2005 11:43:53 +0100
 # v0.2 Thu, 20 Jan 2005 10:47:02 +0100
 # v0.2.5 Thu, 20 Jan 2005 11:55:11 +0100
