@@ -195,6 +195,9 @@ Fmakeinstall() {
 	if [ -e $Fdestdir/usr/info/dir ]; then
 		Frm /usr/info/dir
 	fi
+	if [ -e $Fdestdir/usr/share/info/dir ]; then
+		Frm /usr/share/info/dir
+	fi
 }
 
 Fbuild() {
