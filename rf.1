@@ -129,7 +129,7 @@
 .\" ========================================================================
 .\"
 .IX Title "RF 1"
-.TH RF 1 "2005-05-29" "perl v5.8.6" "User Contributed Perl Documentation"
+.TH RF 1 "2005-06-01" "perl v5.8.6" "User Contributed Perl Documentation"
 .SH "NAME"
 rf \- RepomanFrontend
 .SH "DESCRIPTION"
@@ -139,17 +139,20 @@ So run it from the package's darcs directory, and do a darcs push too.
 .PP
 If you specify \-s, first it will look for the old source file on the server(this may fail sometimes), 
 and do a repoman del
-Than repoman up the given new source file.
+Also do the same, with the old package file.
 .PP
-As before, with \-f, the old fpm tried to be ereased from the server, and upload the new package.
+Next is pushing the darcs patch.
+.PP
+Than repoman up the given new source file, and upload the new package.
 .PP
 After that do a repoman cl.
 .PP
+You are free to pass multiple filenames to \-f option, but if you do so, you need to put them between ''.
 Before any action, you will be asked if it is ok, that can be overriden with option \-k.
+Also you can choose to give a proper command, if something goes wrong.
 .PP
 The default repository is the main frugalware, version is current.
 So if you would like to upgrade eg. mysql, you dont have to use \-r option.
-For a package in extra/, an \-e option is enough. 
 .PP
 Only the \-s and \-f options have to be given in many cases,
 every other data will be guessed!
@@ -158,9 +161,6 @@ every other data will be guessed!
 .IP "\fB\-h\fR" 4
 .IX Item "-h"
 Help
-.IP "\fB\-e\fR" 4
-.IX Item "-e"
-repository gets extra.
 .IP "\fB\-r\fR" 4
 .IX Item "-r"
 Specify the repository eg. extra
@@ -198,9 +198,13 @@ Answer yes to all questions.
 .IP "\fB\-q\fR" 4
 .IX Item "-q"
 Does not look for files in the server \-> repoman del will not applied.
+.SH "BUGS"
+.IX Header "BUGS"
+Report bugs, patches, comments, patches and funny quotes in your signature to
+<frugalware\-devel@frugalware.org>
 .SH "AUTHOR"
 .IX Header "AUTHOR"
-Zsolt Szalai <xbit@frugalware.org>
+Zsolt Szalai
 .SH "COPYRIGHT"
 .IX Header "COPYRIGHT"
 rf may be copied and modified under the terms of the \s-1GNU\s0 General Public 

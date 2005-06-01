@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-print "THIS PROGRAM IS UNDER TESTING AND NOT CONSIDERED STABLE! USE WITH CARE!\n";
+print "THIS PROGRAM IS UNDER TESTING! USE WITH CARE!\n";
 
 =head1 NAME
 
@@ -13,17 +13,20 @@ So run it from the package's darcs directory, and do a darcs push too.
 
 If you specify -s, first it will look for the old source file on the server(this may fail sometimes), 
 and do a repoman del
-Than repoman up the given new source file.
+Also do the same, with the old package file.
 
-As before, with -f, the old fpm tried to be ereased from the server, and upload the new package.
+Next is pushing the darcs patch.
+
+Than repoman up the given new source file, and upload the new package.
 
 After that do a repoman cl.
 
+You are free to pass multiple filenames to -f option, but if you do so, you need to put them between ''.
 Before any action, you will be asked if it is ok, that can be overriden with option -k.
+Also you can choose to give a proper command, if something goes wrong.
 
 The default repository is the main frugalware, version is current.
 So if you would like to upgrade eg. mysql, you dont have to use -r option.
-For a package in extra/, an -e option is enough. 
 
 Only the -s and -f options have to be given in many cases,
 every other data will be guessed!
@@ -36,8 +39,8 @@ every other data will be guessed!
 
 Help
 
+=for comment
 =item B<-e>
-
 repository gets extra.
 
 =item B<-r>
@@ -89,9 +92,14 @@ Answer yes to all questions.
 
 Does not look for files in the server -> repoman del will not applied.
 
+=head1 BUGS
+
+Report bugs, patches, comments, patches and funny quotes in your signature to
+<frugalware-devel@frugalware.org>
+
 =head1 AUTHOR
 
-Zsolt Szalai <xbit@frugalware.org>
+Zsolt Szalai
 
 =head1 COPYRIGHT
 
@@ -106,13 +114,15 @@ no warnings qw(uninitialized);
 use LWP::Simple;
 use Cwd;
 use Getopt::Std;
+use Term::ReadLine;
+eval {require Term::ReadLine::Gnu}; die 'Please install perl-term-readline-gnu!' if $@;
 
 $Getopt::Std::STANDARD_HELP_VERSION = 1;
-our $VERSION = "0.1";
+our $VERSION = "0.2";
 
 sub HELP_MESSAGE(){
     print <<END
-
+	rf- s 'source1 source2 ...' -f packagefile
 END
 }
 
@@ -127,24 +137,45 @@ getopts('her:a:R:p:g:n:s:f:v:dq', \%opts);
 
 HELP_MESSAGE && die if  !%opts || $opts{h};
 
-my ($distrib,$version,$repo,$arch, $repodir, $serverprefix, $group, $pkgname, $sourcefile, $pkgfile, $noask) =
-    ('frugalware',$opts{v},undef,$opts{a}, $opts{R}, $opts{p}, $opts{g}, $opts{n}, $opts{s}, $opts{f}, $opts{k});
+my ($distrib,$version,$repo,$arch, $repodir, $serverprefix, $group, $pkgname, $pkgfile, $noask) =
+    ('frugalware',$opts{v},undef,$opts{a}, $opts{R}, $opts{p}, $opts{g}, $opts{n}, $opts{f}, $opts{k});
+my @sourcefiles = split ' ', $opts{s};
+
+sub msystem{
+    system @_;
+    warn 'Failed to execute!' if $? == -1;
+}
+
+sub getcommand{
+    my $str = shift;
+    my $term = new Term::ReadLine 'getcommand';
+    return $term->readline('>',$str)
+}
 
 sub ask{
     my $str = shift;
     return 1 if $noask;
-    print "$str\nIs is ok? ";
-    return 1 if readline(STDIN) =~ /^y|^yes/i;
-    return 0;
+    print "$str ";
+    return readline(STDIN);
 }
 
 sub apply{
     my $comm = shift;
-    system $comm if ask $comm;
+  APP:
+    if ((my $an = ask "$comm\n Is this ok? [Yg?]") =~ /^y|^yes|^$/i){
+	msystem $comm;
+    } elsif ($an =~ /^g/i){
+	msystem getcommand($comm);
+    } elsif ($an =~ /^\?/){
+	print "y: applay command\ng: give a new command\n\n";
+	undef $an;
+	goto APP;
+    }
+    print "\n";
 }
 
 $repo = '' || $opts{r};
-$repo = 'extra' if $opts{e};
+$repo = 'extra' if getcwd =~ m!/extra/!;
 
 $version = 'current' unless $version; #no need :)
 $arch = 'i686' unless $arch;
@@ -161,7 +192,6 @@ unless (($pkgname) = $pkgfile =~ /^(.*)-.*?-.*?-.*?fpm\Z/){
 }
 HELP_MESSAGE && die 'Can not determine pkgname!' unless $pkgname;        
 
-
 sub getoldsource{
     my ($url,$sourcefile)= @_;
     my ($sn) = $sourcefile =~ /(.*)-/;
@@ -173,19 +203,20 @@ sub getoldsource{
 
 sub getoldfpm{
     my ($url,$pkgname)= @_;
-    if (get($url) =~ /(\Q$pkgname\E.*?)\s/) {
+    if (get($url) =~ /(\Q$pkgname-\E.*?)\s/) {
 	return $1;
     }
     return 0;
 }
 
 # Delete
-if ($sourcefile){
-#### look for && repoman del old source
-    unless($opts{q}) {
-	print "Trying to get old source file from server\n";
-	if( my $olds = getoldsource("$serverprefix/$repo/source/$group/$pkgname/",$sourcefile) ){ 
-	    apply "repoman del $repo/source/$group/$pkgname/$olds";
+if (@sourcefiles){
+    for my $sourcefile (@sourcefiles){
+	unless($opts{q}) {
+	    print "Trying to get old source file from server\n";
+	    if( my $olds = getoldsource("$serverprefix/$repo/source/$group/$pkgname/",$sourcefile) ){ 
+		apply "repoman del $repo/source/$group/$pkgname/$olds";
+	    }
 	}
     }
 }
@@ -204,14 +235,18 @@ if ($pkgfile){
 apply "darcs push --match 'name $pkgname'";
 
 # up and rest
-apply "repoman up $sourcefile $repo/source/$group/$pkgname/" if $sourcefile;
+for my $sourcefile (@sourcefiles){
+    apply "repoman up $sourcefile $repo/source/$group/$pkgname/" if $sourcefile;
+}
 apply "repoman up $pkgfile $repo/$repodir/" if $pkgfile;
 
 $repo.='/' if $repo;
 apply "repoman cl $repo$group/$pkgname";
 
 if ($opts{d}){ #delete source & fpm
-    unlink $sourcefile if $sourcefile;
+    for my $sourcefile (@sourcefiles){
+	unlink $sourcefile if $sourcefile;
+    }
     unlink $pkgfile if $pkgfile;
 }
 
