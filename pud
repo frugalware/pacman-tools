@@ -8,7 +8,7 @@ use LWP::UserAgent;
 use Getopt::Std;
 
 $Getopt::Std::STANDARD_HELP_VERSION = 1;
-our $VERSION = "0.2";
+our $VERSION = "0.3";
 
 sub HELP_MESSAGE(){
     print '
@@ -19,7 +19,9 @@ usage: pud -s URL -e PERL_REGEXP [-h] [-f format] [-t timeout]
  will be printed(up to nine), so do not forget to make one!
  with -f you can format the output as printf does.
  The default timeout is 600s.
- The page is treated as a multiline string.
+ The page is treated as a single line string, but
+ regexp detects multiple lines, so . matches \n and ^,$ match start
+ and end of any line.
  "http://" or "ftp://" prefix is mandatory.
  Always use \' or " opening and closing the regexp and format
  All these above could change(maybe not in a compatible way), 
@@ -57,9 +59,9 @@ sub get_source{
 
 do {HELP_MESSAGE; die 'Unknown protocol!';} unless $source =~ m!^(?:ht|f)tp://!;
 
-$regexp = qr/$regexp/;
+$regexp = qr/$regexp/sm;
 
-if (get_source($source) =~ /$regexp/m){
+if (get_source($source) =~ $regexp){
     if ($format){
 	printf $format, $1,$2,$3,$4,$5,$6,$7,$8,$9;
     } else {
