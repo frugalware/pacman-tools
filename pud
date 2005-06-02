@@ -6,16 +6,19 @@ no warnings qw(uninitialized);
 use LWP;
 use LWP::UserAgent;
 use Getopt::Std;
+use HTML::Parser;
 
 $Getopt::Std::STANDARD_HELP_VERSION = 1;
-our $VERSION = "0.3";
+our $VERSION = "0.4";
 
 sub HELP_MESSAGE(){
     print '
 pud - up2date helper for Frugalware Linux
-usage: pud -s URL -e PERL_REGEXP [-h] [-f format] [-t timeout]
+usage: pud -s|p URL -e PERL_REGEXP [-h] [-f format] [-t timeout]
 
- The _source_ of URL will be downloaded and the REGEXPs groups
+ Using the -s option, you will get the source of the give URL,
+ with -p text will be parsed from the source.
+ Than the result will be matched with -e regexp and the groups
  will be printed(up to nine), so do not forget to make one!
  with -f you can format the output as printf does.
  The default timeout is 600s.
@@ -29,17 +32,18 @@ usage: pud -s URL -e PERL_REGEXP [-h] [-f format] [-t timeout]
  Ex:
   pud -s http://frugalware.org -e "&nbsp;frugalware-(.*?)<.*fwclose"
    should give you the current stable release of Frugalware Linux.
-  pud -s ftp://frugalware.org/ -e \'(d*):(\d*) inc\' -f "%d-%d"
+  pud -p http://frugalware.org/ -e \'(\d+):(\d+) inc\' -f "%d-%d"
    should give a time
 
 ';
 }
 
 my %opts;
-getopts('s:e:ht:f:', \%opts);
+getopts('s:p:e:ht:f:', \%opts);
 
 HELP_MESSAGE() && exit if $opts{h};
-my $source = $opts{s} || do {HELP_MESSAGE; die 'No source!';};
+do {HELP_MESSAGE; die '-p or -s ?';} if $opts{p} && $opts{s};
+my $source = $opts{s} || $opts{p} || do {HELP_MESSAGE; die 'No source!';};
 my $regexp = $opts{e} || do {HELP_MESSAGE; die 'No regexp!';};
 my $timeout = $opts{t} || 600;      ## default time is 600s
 my $format = $opts{f};
@@ -50,7 +54,12 @@ sub get_source{
     $ua->timeout($timeout);
     my $response = $ua->get($source);
     if ($response->is_success) {
-	return $response->content;
+	return $response->content if $opts{s};
+	my $parsed;
+	HTML::Parser->new(api_version => 3,
+			  text_h =>[sub {$parsed .= shift}, 'dtext'],
+			  )->parse( $response->content ) || die $!;
+	return $parsed;
     }
     else {
 	die $response->status_line;
@@ -68,5 +77,3 @@ if (get_source($source) =~ $regexp){
 	print "$1$2$3$4$5$6$7$8$9\n";
     }
 }
-
-
