@@ -1,5 +1,55 @@
 #!/usr/bin/perl
 
+=head1 NAME
+
+pud - up2date helper
+
+=head1 DESCRIPTION
+    
+    pud will match the given perl regular expression to the 
+    contents of the given url,then print out the regexp's groups.
+    
+=head1 OPTIONS
+    
+=over 4
+
+=item B<-s URL>
+  
+    Match the regexp to the source of the given URL.
+    
+=item B<-p URL>
+    
+    Match the regexp to the parsed html.
+    
+=item B<-e REGEXP>
+    
+    The perl regular expression, with groups.
+    Always use ' or " to enclose!
+    
+=item B<-t seconds>
+    
+    Timeout of the url's query. After the given seconds, the script 
+    returns.
+    The default timeout is 600.
+
+=item B<-f format>
+    
+    A printf format string, for formating the output
+
+=head1 BUILDING THE REGEXP
+
+    The page is treated as a single line string, but
+    regexp detects multiple lines(m//sm), so . matches \n, but ^,$ 
+    match start and end of any line.
+
+=head1 EXAPLES
+
+pud -s http://frugalware.org -e "&nbsp;frugalware-(.*?)<.*fwclose"
+
+pud -p http://frugalware.org/ -e '(\d+):(\d+) inc' -f "%d-%d"
+
+=cut
+
 use strict;
 use warnings;
 no warnings qw(uninitialized);
@@ -9,31 +59,12 @@ use Getopt::Std;
 use HTML::Parser;
 
 $Getopt::Std::STANDARD_HELP_VERSION = 1;
-our $VERSION = "0.4";
+our $VERSION = "0.5";
 
 sub HELP_MESSAGE(){
     print '
 pud - up2date helper for Frugalware Linux
 usage: pud -s|p URL -e PERL_REGEXP [-h] [-f format] [-t timeout]
-
- Using the -s option, you will get the source of the give URL,
- with -p text will be parsed from the source.
- Than the result will be matched with -e regexp and the groups
- will be printed(up to nine), so do not forget to make one!
- with -f you can format the output as printf does.
- The default timeout is 600s.
- The page is treated as a single line string, but
- regexp detects multiple lines, so . matches \n and ^,$ match start
- and end of any line.
- "http://" or "ftp://" prefix is mandatory.
- Always use \' or " opening and closing the regexp and format
- All these above could change(maybe not in a compatible way), 
- please note that!
- Ex:
-  pud -s http://frugalware.org -e "&nbsp;frugalware-(.*?)<.*fwclose"
-   should give you the current stable release of Frugalware Linux.
-  pud -p http://frugalware.org/ -e \'(\d+):(\d+) inc\' -f "%d-%d"
-   should give a time
 
 ';
 }
