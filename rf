@@ -156,7 +156,7 @@ END
 # -k noask -q dont look for old files on server
 # / elsre nem csinlom meg; * kiszedheti mashonnan is eros konnyites
 my %opts;
-getopts('her:a:R:p:g:n:s:f:v:dqo', \%opts);
+getopts('her:a:R:p:g:n:s:f:v:dqok', \%opts);
 
 HELP_MESSAGE && die if  !%opts || $opts{h};
 
