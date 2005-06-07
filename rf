@@ -181,8 +181,7 @@ sub ask{
     print "$str ";
     my $key;
     ReadMode(4);
-    while (not defined ($key = ReadKey(-1))) {
-    }
+    $key = ReadKey;
     ReadMode(0);
     print "$key\n";
     return $key;
