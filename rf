@@ -180,7 +180,7 @@ sub ask{
     print "$str ";
     my $key;
     ReadMode(4);
-    $key = ReadKey;
+    $key = ReadKey();
     ReadMode(0);
     print "$key\n";
     return $key;
