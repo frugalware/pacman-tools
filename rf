@@ -176,7 +176,7 @@ sub getcommand{
 
 sub ask{
     my $str = shift;
-    return 1 if $noask;
+    return 'y' if $noask;
     print "$str ";
     my $key;
     ReadMode(4);
