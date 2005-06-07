@@ -8,10 +8,9 @@ print "THIS PROGRAM IS UNDER TESTING! USE WITH CARE!\n";
     
 =head1 DESCRIPTION
 
-    rf will try to repoman del, repoman up and repoman cl
-    the package from the program started.
-    So run it from the package's darcs directory, 
-    and do a darcs push too.
+    rf will try to repoman del, darcs push, repoman up and repoman cl
+    the package you specify.
+    So run it from the package's darcs directory!
     
     If you specify -s, first it will look for the old source
     file on the server(this may fail sometimes), and do a repoman del
