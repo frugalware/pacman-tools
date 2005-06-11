@@ -312,6 +312,13 @@ Funpack_makeself() {
 	esac
 }
 
+Fautoconfize() {
+	aclocal || return 1
+	autoheader || return 1
+	autoconf || return 1
+	automake -a -c -f || return 1
+}
+
 # v0.1 Wed, 19 Jan 2005 11:43:53 +0100
 # v0.2 Thu, 20 Jan 2005 10:47:02 +0100
 # v0.2.5 Thu, 20 Jan 2005 11:55:11 +0100
