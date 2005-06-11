@@ -1,6 +1,8 @@
 #!/bin/bash
 
 # Copyright (C) 2005, NAGY Bence <nagybence@tipogral.hu>
+# Copyright (C) 2005, Miklos Vajna <vmiklos@frugalware.org>
+# Copyright (C) 1999-2005 Gentoo Foundation
 # This file can be distributed under the terms of the
 # GNU General Public License version 2.
 
@@ -223,6 +225,91 @@ build() {
 Facu() {
 	cat /usr/share/automake/config.sub >config.sub
 	cat /usr/share/automake/config.guess >config.guess
+}
+
+# Unpack those pesky makeself generated files ...
+# They're shell scripts with the binary package tagged onto
+# the end of the archive.  Loki utilized the format as does
+# many other game companies.
+#
+# Usage: Funpack_makeself [file to unpack] [offset] [tail|dd]
+# - If the file is not specified then unpack will utilize ${A}.
+# - If the offset is not specified then we will attempt to extract
+#   the proper offset from the script itself.
+Funpack_makeself() {
+	local src="$1"
+	local skip="$2"
+	local exe="$3"
+
+	local shrtsrc="$(basename "${src}")"
+	Fmessage "Unpacking ${shrtsrc}"
+	local dir="$(basename "${src}" .sh)"
+	mkdir $dir
+	if [ -z "${skip}" ]
+	then
+		local ver="`grep -a '#.*Makeself' ${src} | awk '{print $NF}'`"
+		local skip=0
+		exe=tail
+		case ${ver} in
+			1.5.*)	# tested 1.5.{3,4,5} ... guessing 1.5.x series is same
+				skip=$(grep -a ^skip= "${src}" | cut -d= -f2)
+				;;
+			2.0|2.0.1)
+				skip=$(grep -a ^$'\t'tail "${src}" | awk '{print $2}' | cut -b2-)
+				;;
+			2.1.1)
+				skip=$(grep -a ^offset= "${src}" | awk '{print $2}' | cut -b2-)
+				let skip="skip + 1"
+				;;
+			2.1.2)
+				skip=$(grep -a ^offset= "${src}" | awk '{print $3}' | head -n 1)
+				let skip="skip + 1"
+				;;
+			2.1.3)
+				skip=`grep -a ^offset= "${src}" | awk '{print $3}'`
+				let skip="skip + 1"
+				;;
+			2.1.4)
+				skip=$(grep -a offset=.*head.*wc "${src}" | awk '{print $3}' | head -n 1)
+				skip=$(head -n ${skip} "${src}" | wc -c)
+				exe="dd"
+				;;
+			*)
+				plain "I'm sorry, but I was unable to support the Makeself file."
+				plain "Version '${ver}' not supported"
+				return 1
+				;;
+		esac
+	fi
+	case ${exe} in
+		tail)	exe="tail -n +${skip} '${src}'";;
+		dd)		exe="dd ibs=${skip} skip=1 obs=1024 conv=sync if='${src}'";;
+		*)		error "makeself cant handle exe '${exe}'"
+				return 1
+	esac
+
+	# lets grab the first few bytes of the file to figure out what kind of archive it is
+	local tmpfile="$(mktemp)"
+	eval ${exe} 2>/dev/null | head -c 512 > "${tmpfile}"
+	local filetype="$(file -b "${tmpfile}")"
+	case ${filetype} in
+		*tar\ archive)
+			eval ${exe} | tar --no-same-owner -xf - -C $dir
+			;;
+		bzip2*)
+			eval ${exe} | bzip2 -dc | tar --no-same-owner -xf - -C $dir
+			;;
+		gzip*)
+			eval ${exe} | tar --no-same-owner -xzf - -C $dir
+			;;
+		compress*)
+			eval ${exe} | gunzip | tar --no-same-owner -xf - -C $dir
+			;;
+		*)
+			error "Unknown filetype \"${filetype}\" ?"
+			return 1
+			;;
+	esac
 }
 
 # v0.1 Wed, 19 Jan 2005 11:43:53 +0100
