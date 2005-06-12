@@ -95,7 +95,7 @@ sub timeout{ #time, command
 		kill TERM => $chldpid;
 	    }          
 	    return 'TIMEOUTED';
-	} if $@ eq "alarm\n";                         
+	} if $@ eq "alarm\n";
 #	die $@ unless $@ && $@ eq "alarm\n";                                        
     }                    
     return $output;
@@ -132,7 +132,7 @@ find sub{
 	$count++;
 	my $buildscript = contents $_;
 	my ($m8r) = $buildscript =~ /^# Maintainer: (.*?) </m;
-	my ($pkgname) = $buildscript =~ /^pkgname=(\S*)/m;
+	my ($pkgname) = qx'source ./FrugalBuild; echo -n $pkgname';
 	my ($pkgver) = $buildscript =~ /^pkgver=(\S*)/m;
 	my ($group) = $buildscript =~ /^groups=\('?(.*?)('|\s|\))/m;
 	$group = '?' unless $group;
