@@ -18,13 +18,18 @@ Fmessage() {
 	fi
 }
 
+Fdie() {
+	error "Build Failed.  Aborting..."
+	exit 2
+}
+
 Fcd() {
 	if [ "$Fsrcdir" = `pwd` ]; then
 		if [ "$#" -eq 1 ]; then
 			Fmessage "Going to the source directory..."
-			cd "$Fsrcdir/$1" || return 1
+			cd "$Fsrcdir/$1" || Fdie
 		elif [ "$#" -eq 0 ]; then
-			Fcd "$pkgname-$pkgver$pkgextraver" || return 1
+			Fcd "$pkgname-$pkgver$pkgextraver" || Fdie
 		fi
 	fi
 }
@@ -34,7 +39,7 @@ Fmkdir() {
 	for i in "$@"; do
 		if [ ! -d "$Fdestdir/$i" ]; then
 			Fmessage "Creating directory: $i"
-			mkdir -p "$Fdestdir/$i" || return 1
+			mkdir -p "$Fdestdir/$i" || Fdie
 		fi
 	done
 }
@@ -43,93 +48,93 @@ Frm() {
 	local i
 	for i in "$@"; do
 		Fmessage "Deleting file(s): $i"
-		rm -rf "$Fdestdir"/$i || return 1
+		rm -rf "$Fdestdir"/$i || Fdie
 	done
 }
 
 Fcp() {
 	Fmessage "Copying file(s): $1"
-	cp "$Fdestdir/"$1 "$Fdestdir"/$2 || return 1
+	cp "$Fdestdir/"$1 "$Fdestdir"/$2 || Fdie
 }
 
 Fmv() {
 	Fmessage "Moving file(s): $1"
-	mv "$Fdestdir/"$1 "$Fdestdir"/$2 || return 1
+	mv "$Fdestdir/"$1 "$Fdestdir"/$2 || Fdie
 }
 
 Finstallrel() {
 	if [ "$#" -eq 3 ]; then
 		Fmessage "Installing file(s): $2"
 		if [ "`ls -l $2 | wc -l`" -gt 1 ]; then
-			Fmkdir "$3" || return 1
+			Fmkdir "$3" || Fdie
 		fi
 		if [ -d "$Fdestdir/$3" -a ! "`ls -l $2 | wc -l`" -gt 1 ]; then
-			install -D -m "$1" $2 "$Fdestdir/$3/`basename $2`" || return 1
+			install -D -m "$1" $2 "$Fdestdir/$3/`basename $2`" || Fdie
 		else
-			install -D -m "$1" $2 "$Fdestdir/$3" || return 1
+			install -D -m "$1" $2 "$Fdestdir/$3" || Fdie
 		fi
 	elif [ "$#" -eq 2 ]; then
-		Finstallrel "$1" "`basename $2`" "$2" || return 1
+		Finstallrel "$1" "`basename $2`" "$2" || Fdie
 	else
 		local i
 		for i in "${@:2:$#-2}"; do
-			Fmkdir "${@:$#}" || return 1
-			Finstallrel $1 "$i" "${@:$#}/`basename $i`" || return 1
+			Fmkdir "${@:$#}" || Fdie
+			Finstallrel $1 "$i" "${@:$#}/`basename $i`" || Fdie
 		done
 	fi
 }
 
 Finstall() {
 	if [ "$#" -eq 3 ]; then
-		Finstallrel "$1" "$Fsrcdir/$2" "$3" || return 1
+		Finstallrel "$1" "$Fsrcdir/$2" "$3" || Fdie
 	elif [ "$#" -eq 2 ]; then
-		Finstallrel "$1" "$Fsrcdir/`basename $2`" "$2" || return 1
+		Finstallrel "$1" "$Fsrcdir/`basename $2`" "$2" || Fdie
 	else
 		local i
 		for i in "${@:2:$#-2}"; do
-			Fmkdir "${@:$#}" || return 1
-			Finstallrel "$1" "$Fsrcdir/$i" "${@:$#}/`basename $i`" || return 1
+			Fmkdir "${@:$#}" || Fdie
+			Finstallrel "$1" "$Fsrcdir/$i" "${@:$#}/`basename $i`" || Fdie
 		done
 	fi
 }
 
 Fexe() {
-	Finstall 0755 "$@" || return 1
+	Finstall 0755 "$@" || Fdie
 }
 
 Fexerel() {
-	Finstallrel 0755 "$@" || return 1
+	Finstallrel 0755 "$@" || Fdie
 }
 
 Ffile() {
-	Finstall 0644 "$@" || return 1
+	Finstall 0644 "$@" || Fdie
 }
 
 Ffilerel() {
-	Finstallrel 0644 "$@" || return 1
+	Finstallrel 0644 "$@" || Fdie
 }
 
 Fdoc() {
-	Fmkdir "/usr/share/doc/$pkgname-$pkgver" || return 1
-	Ffile "$@" "/usr/share/doc/$pkgname-$pkgver/" || return 1
+	Fmkdir "/usr/share/doc/$pkgname-$pkgver" || Fdie
+	Ffile "$@" "/usr/share/doc/$pkgname-$pkgver/" || Fdie
 }
 
 Fdocrel() {
-	Fmkdir "/usr/share/doc/$pkgname-$pkgver" || return 1
-	Ffilerel "$@" /usr/share/doc/$pkgname-$pkgver || return 1
+	Fmkdir "/usr/share/doc/$pkgname-$pkgver" || Fdie
+	Ffilerel "$@" /usr/share/doc/$pkgname-$pkgver || Fdie
 }
 
 Fln() {
 	Fmessage "Creating symlink(s): $1"
-	Fmkdir "`dirname $2`" || return 1
-	ln -sf $1 "$Fdestdir"/$2 || return 1
+	Fmkdir "`dirname $2`" || Fdie
+	ln -sf $1 "$Fdestdir"/$2 || Fdie
 }
 
 Fsed() {
-	Fcd || return 1
+	Fcd || Fdie
 	for i in ${@:3:$#}; do
 		Fmessage "Using sed with file: $i"
-	        sed -i -e "s|$1|$2|g" "$i" || return 1
+	        sed -i -e "s|$1|$2|g" "$i" || Fdie
 	done
 }
 
@@ -141,45 +146,45 @@ Fdeststrip() {
 }
 
 Fpatch() {
-	Fcd || return 1
+	Fcd || Fdie
 	Fmessage "Using patch: $1"
 	if [ -n "`echo $1 | grep \.patch0$`" ]; then 
-    		patch -Np0 --no-backup-if-mismatch -i "$Fsrcdir/$1" || return 1
+    		patch -Np0 --no-backup-if-mismatch -i "$Fsrcdir/$1" || Fdie
 	else
-    		patch -Np1 --no-backup-if-mismatch -i "$Fsrcdir/$1" || return 1
+    		patch -Np1 --no-backup-if-mismatch -i "$Fsrcdir/$1" || Fdie
 	fi
 }
 
 Fpatchall() {
 	for i in ${source[@]}; do
 	    if [ -n "`echo "$i" | grep \.patch[0-9]*$`" -o -n "`echo "$i" | grep \.diff$`" ]; then 
-		    Fpatch `strip_url "$i"` || return 1
+		    Fpatch `strip_url "$i"` || Fdie
 	    fi
 	done
 }
 
 Fconf() {
-	Fcd || return 1
+	Fcd || Fdie
 	Fmessage "Configuring..."
 	if [ -x configure ]; then
-		./configure --prefix="$Fprefix" "$@" || return 1
+		./configure --prefix="$Fprefix" "$@" || Fdie
 	elif [ -f Makefile.PL ]; then
-    		perl Makefile.PL --prefix="$Fprefix" "$@" || return 1
+    		perl Makefile.PL --prefix="$Fprefix" "$@" || Fdie
 		Fsed `perl -e 'printf "%vd", $^V'` "current" Makefile
 	elif [ -f extconf.rb ]; then
-    		ruby extconf.rb --prefix="$Fprefix" "$@" || return 1
+    		ruby extconf.rb --prefix="$Fprefix" "$@" || Fdie
 	elif [ -f configure.rb ]; then
-    		./configure.rb --prefix="$Fprefix" "$@" || return 1
+    		./configure.rb --prefix="$Fprefix" "$@" || Fdie
 	fi
 }
 
 Fmake() {
-	Fconf "$@" || return 1
+	Fconf "$@" || Fdie
 	Fmessage "Compiling..."
 	if [ -f GNUmakefile -o -f makefile -o -f Makefile ]; then
-		make || return 1
+		make || Fdie
 	elif [ -f setup.py ]; then
-		python setup.py build "$@" || return 1
+		python setup.py build "$@" || Fdie
 	fi
 }
 
@@ -187,12 +192,12 @@ Fmakeinstall() {
 	Fmessage "Installing to the package directory..."
 	if [ -f GNUmakefile -o -f makefile -o -f Makefile ]; then
 		if [ -n "`grep DESTDIR Makefile`" ]; then
-			make DESTDIR="$Fdestdir" "$@" install || return 1
+			make DESTDIR="$Fdestdir" "$@" install || Fdie
 		else
-			make prefix="$Fdestdir"/"$Fprefix" "$@" install || return 1
+			make prefix="$Fdestdir"/"$Fprefix" "$@" install || Fdie
 		fi
 	elif [ -f setup.py ]; then
-		python setup.py install --prefix="$Fprefix" --root "$Fdestdir" "$@" || return 1
+		python setup.py install --prefix="$Fprefix" --root "$Fdestdir" "$@" || Fdie
 	fi
 	if [ -e $Fdestdir/usr/info/dir ]; then
 		Frm /usr/info/dir
@@ -203,23 +208,23 @@ Fmakeinstall() {
 }
 
 Fbuild() {
-	Fpatchall || return 1
-	Fmake "$@" || return 1
-	Fmakeinstall || return 1
+	Fpatchall || Fdie
+	Fmake "$@" || Fdie
+	Fmakeinstall || Fdie
 }
 
 Frcd() {
 	if [ "$#" -eq 1 ]; then
 		Fmessage "Creating rc.d environment: $1"
-		Fexe /etc/rc.d/rc.$1 || return 1
-		Ffile ../messages/* /etc/rc.d/rc.messages/ || return 1
+		Fexe /etc/rc.d/rc.$1 || Fdie
+		Ffile ../messages/* /etc/rc.d/rc.messages/ || Fdie
 	else
-		Frcd "$pkgname" || return 1
+		Frcd "$pkgname" || Fdie
 	fi
 }
 
 build() {
-	Fbuild || return 1
+	Fbuild || Fdie
 }
 
 Facu() {
@@ -277,7 +282,7 @@ Funpack_makeself() {
 			*)
 				plain "I'm sorry, but I was unable to support the Makeself file."
 				plain "Version '${ver}' not supported"
-				return 1
+				Fdie
 				;;
 		esac
 	fi
@@ -285,7 +290,7 @@ Funpack_makeself() {
 		tail)	exe="tail -n +${skip} '${src}'";;
 		dd)		exe="dd ibs=${skip} skip=1 obs=1024 conv=sync if='${src}'";;
 		*)		error "makeself cant handle exe '${exe}'"
-				return 1
+				Fdie
 	esac
 
 	# lets grab the first few bytes of the file to figure out what kind of archive it is
@@ -307,16 +312,16 @@ Funpack_makeself() {
 			;;
 		*)
 			error "Unknown filetype \"${filetype}\" ?"
-			return 1
+			Fdie
 			;;
 	esac
 }
 
 Fautoconfize() {
-	aclocal || return 1
-	autoheader || return 1
-	autoconf || return 1
-	automake -a -c -f || return 1
+	aclocal || Fdie
+	autoheader || Fdie
+	autoconf || Fdie
+	automake -a -c -f || Fdie
 }
 
 # v0.1 Wed, 19 Jan 2005 11:43:53 +0100
@@ -331,3 +336,4 @@ Fautoconfize() {
 # v0.9 Sat, 26 Mar 2005 12:16:26 +0100
 # v0.9.1 Thu, 05 May 2005 21:06:25 +0100
 # v0.9.2 Tue, 10 May 2005 10:24:36 +0100
+# v0.9.3 Mon, 13 Jun 2005 20:07:25 +0100
