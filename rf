@@ -230,7 +230,7 @@ sub getoldsource{
 
 sub getoldfpm{
     my ($url,$pkgname)= @_;
-    if (get($url) =~ /(\Q$pkgname-\E.*?)\s/) {
+    if (get($url) =~ /(\Q$pkgname\E-[^-]*?-[^-]*?-[^-]*?fpm)\s/) {
 	return $1;
     }
     return 0;
