@@ -29,7 +29,7 @@ Fcd() {
 			Fmessage "Going to the source directory..."
 			cd "$Fsrcdir/$1" || Fdie
 		elif [ "$#" -eq 0 ]; then
-			Fcd "$pkgname-$pkgver$pkgextraver" || Fdie
+			Fcd "$pkgname-$pkgver$pkgextraver"
 		fi
 	fi
 }
@@ -66,7 +66,7 @@ Finstallrel() {
 	if [ "$#" -eq 3 ]; then
 		Fmessage "Installing file(s): $2"
 		if [ "`ls -l $2 | wc -l`" -gt 1 ]; then
-			Fmkdir "$3" || Fdie
+			Fmkdir "$3"
 		fi
 		if [ -d "$Fdestdir/$3" -a ! "`ls -l $2 | wc -l`" -gt 1 ]; then
 			install -D -m "$1" $2 "$Fdestdir/$3/`basename $2`" || Fdie
@@ -74,64 +74,64 @@ Finstallrel() {
 			install -D -m "$1" $2 "$Fdestdir/$3" || Fdie
 		fi
 	elif [ "$#" -eq 2 ]; then
-		Finstallrel "$1" "`basename $2`" "$2" || Fdie
+		Finstallrel "$1" "`basename $2`" "$2"
 	else
 		local i
 		for i in "${@:2:$#-2}"; do
-			Fmkdir "${@:$#}" || Fdie
-			Finstallrel $1 "$i" "${@:$#}/`basename $i`" || Fdie
+			Fmkdir "${@:$#}"
+			Finstallrel $1 "$i" "${@:$#}/`basename $i`"
 		done
 	fi
 }
 
 Finstall() {
 	if [ "$#" -eq 3 ]; then
-		Finstallrel "$1" "$Fsrcdir/$2" "$3" || Fdie
+		Finstallrel "$1" "$Fsrcdir/$2" "$3"
 	elif [ "$#" -eq 2 ]; then
-		Finstallrel "$1" "$Fsrcdir/`basename $2`" "$2" || Fdie
+		Finstallrel "$1" "$Fsrcdir/`basename $2`" "$2"
 	else
 		local i
 		for i in "${@:2:$#-2}"; do
-			Fmkdir "${@:$#}" || Fdie
-			Finstallrel "$1" "$Fsrcdir/$i" "${@:$#}/`basename $i`" || Fdie
+			Fmkdir "${@:$#}"
+			Finstallrel "$1" "$Fsrcdir/$i" "${@:$#}/`basename $i`"
 		done
 	fi
 }
 
 Fexe() {
-	Finstall 0755 "$@" || Fdie
+	Finstall 0755 "$@"
 }
 
 Fexerel() {
-	Finstallrel 0755 "$@" || Fdie
+	Finstallrel 0755 "$@"
 }
 
 Ffile() {
-	Finstall 0644 "$@" || Fdie
+	Finstall 0644 "$@"
 }
 
 Ffilerel() {
-	Finstallrel 0644 "$@" || Fdie
+	Finstallrel 0644 "$@"
 }
 
 Fdoc() {
-	Fmkdir "/usr/share/doc/$pkgname-$pkgver" || Fdie
-	Ffile "$@" "/usr/share/doc/$pkgname-$pkgver/" || Fdie
+	Fmkdir "/usr/share/doc/$pkgname-$pkgver"
+	Ffile "$@" "/usr/share/doc/$pkgname-$pkgver/"
 }
 
 Fdocrel() {
-	Fmkdir "/usr/share/doc/$pkgname-$pkgver" || Fdie
-	Ffilerel "$@" /usr/share/doc/$pkgname-$pkgver || Fdie
+	Fmkdir "/usr/share/doc/$pkgname-$pkgver"
+	Ffilerel "$@" /usr/share/doc/$pkgname-$pkgver
 }
 
 Fln() {
 	Fmessage "Creating symlink(s): $1"
-	Fmkdir "`dirname $2`" || Fdie
+	Fmkdir "`dirname $2`"
 	ln -sf $1 "$Fdestdir"/$2 || Fdie
 }
 
 Fsed() {
-	Fcd || Fdie
+	Fcd
 	for i in ${@:3:$#}; do
 		Fmessage "Using sed with file: $i"
 	        sed -i -e "s|$1|$2|g" "$i" || Fdie
@@ -146,7 +146,7 @@ Fdeststrip() {
 }
 
 Fpatch() {
-	Fcd || Fdie
+	Fcd
 	Fmessage "Using patch: $1"
 	if [ -n "`echo $1 | grep \.patch0$`" ]; then 
     		patch -Np0 --no-backup-if-mismatch -i "$Fsrcdir/$1" || Fdie
@@ -158,13 +158,13 @@ Fpatch() {
 Fpatchall() {
 	for i in ${source[@]}; do
 	    if [ -n "`echo "$i" | grep \.patch[0-9]*$`" -o -n "`echo "$i" | grep \.diff$`" ]; then 
-		    Fpatch `strip_url "$i"` || Fdie
+		    Fpatch `strip_url "$i"`
 	    fi
 	done
 }
 
 Fconf() {
-	Fcd || Fdie
+	Fcd
 	Fmessage "Configuring..."
 	if [ -x configure ]; then
 		./configure --prefix="$Fprefix" "$@" || Fdie
@@ -179,7 +179,7 @@ Fconf() {
 }
 
 Fmake() {
-	Fconf "$@" || Fdie
+	Fconf "$@"
 	Fmessage "Compiling..."
 	if [ -f GNUmakefile -o -f makefile -o -f Makefile ]; then
 		make || Fdie
@@ -208,23 +208,23 @@ Fmakeinstall() {
 }
 
 Fbuild() {
-	Fpatchall || Fdie
-	Fmake "$@" || Fdie
-	Fmakeinstall || Fdie
+	Fpatchall
+	Fmake "$@"
+	Fmakeinstall
 }
 
 Frcd() {
 	if [ "$#" -eq 1 ]; then
 		Fmessage "Creating rc.d environment: $1"
-		Fexe /etc/rc.d/rc.$1 || Fdie
-		Ffile ../messages/* /etc/rc.d/rc.messages/ || Fdie
+		Fexe /etc/rc.d/rc.$1
+		Ffile ../messages/* /etc/rc.d/rc.messages/
 	else
-		Frcd "$pkgname" || Fdie
+		Frcd "$pkgname"
 	fi
 }
 
 build() {
-	Fbuild || Fdie
+	Fbuild
 }
 
 Facu() {
