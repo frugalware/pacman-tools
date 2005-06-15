@@ -9,6 +9,7 @@
 Fsrcdir="$startdir/src"
 Fdestdir="$startdir/pkg"
 Fprefix="/usr"
+Fsysconfdir="/etc"
 
 Fmessage() {
         if [ "$USE_COLOR" = "Y" -o "$USE_COLOR" = "y" ]; then
@@ -167,9 +168,9 @@ Fconf() {
 	Fcd
 	Fmessage "Configuring..."
 	if [ -x configure ]; then
-		./configure --prefix="$Fprefix" "$@" || Fdie
+		./configure --prefix="$Fprefix" --sysconfdir="$Fsysconfdir" "$@" || Fdie
 	elif [ -f Makefile.PL ]; then
-    		perl Makefile.PL --prefix="$Fprefix" "$@" || Fdie
+    		perl Makefile.PL "$@" || Fdie
 		Fsed `perl -e 'printf "%vd", $^V'` "current" Makefile
 	elif [ -f extconf.rb ]; then
     		ruby extconf.rb --prefix="$Fprefix" "$@" || Fdie
@@ -337,3 +338,4 @@ Fautoconfize() {
 # v0.9.1 Thu, 05 May 2005 21:06:25 +0100
 # v0.9.2 Tue, 10 May 2005 10:24:36 +0100
 # v0.9.3 Mon, 13 Jun 2005 20:07:25 +0100
+# v0.9.4 Wed, 15 Jun 2005 21:27:59 +0100
