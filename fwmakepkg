@@ -10,6 +10,7 @@ Fsrcdir="$startdir/src"
 Fdestdir="$startdir/pkg"
 Fprefix="/usr"
 Fsysconfdir="/etc"
+Flocalstatedir="/var"
 
 Fmessage() {
         if [ "$USE_COLOR" = "Y" -o "$USE_COLOR" = "y" ]; then
@@ -168,7 +169,7 @@ Fconf() {
 	Fcd
 	Fmessage "Configuring..."
 	if [ -x configure ]; then
-		./configure --prefix="$Fprefix" --sysconfdir="$Fsysconfdir" "$@" || Fdie
+		./configure --prefix="$Fprefix" --sysconfdir="$Fsysconfdir" --localstatedir="$Flocalstatedir" "$@" || Fdie
 	elif [ -f Makefile.PL ]; then
     		perl Makefile.PL "$@" || Fdie
 		Fsed `perl -e 'printf "%vd", $^V'` "current" Makefile
