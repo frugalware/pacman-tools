@@ -124,14 +124,25 @@ update()
 	fi
 }
 
+chk_updated()
+{
+	if [ ! -d $1 ]; then
+		echo "error: could not find FrugalBuild scripts in $1"
+		echo "       have you used 'repoman upd' yet?"
+		exit 1
+	fi
+}
+
 search()
 {
+	chk_updated $fst_root
 	[ -z "$*" ] || grepcmd="|grep $*"
 	eval "find $fst_root/$reponame/{source,extra/source} -name FrugalBuild |xargs grep ^nobuild= |sed 's|$fst_root/$reponame/\(.*\)/source/\(.*\)/FrugalBuild:.*|\1/\2|' $grepcmd"
 }
 
 merge()
 {
+	chk_updated $fst_root
 	dir=`find $fst_root -type d -name "$1"|sed -n '$ p'`
 	cd $dir
 	makepkg $makepkg_opts
