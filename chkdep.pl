@@ -47,7 +47,11 @@ Ignore fakeroot library if found
 
 =head1 AUTHOR
 
-Zsolt Szalai
+Zsolt Szalai <xbit@frugalware.org>
+
+=head1 BUGS
+
+Report bugs to frugalware-devel@frugalware.org
 
 =head1 COPYRIGHT
 
@@ -60,7 +64,7 @@ use strict;
 use Getopt::Std;
 
 $Getopt::Std::STANDARD_HELP_VERSION = 1;
-our $VERSION = "1.6";
+our $VERSION = "1.7";
 
 my %opts;
 getopts('vid:p:f:n:', \%opts);
@@ -113,7 +117,7 @@ if ($opts{v}){
     } else {
 	print "Package: $pkgname\n";
     }
-}
+} elsif (! $pkgname){$pkgname='';}
 
 my @ldd = ldddir $dir;
 
@@ -137,7 +141,7 @@ for my $line (@ldd){
 	    $libs{$lib} = 1;
 	    my ($pkg) = qx/pacman -Qo $lib/ =~ /owned by (.*?)\s/;
 	    print "WARNING: No package found containing $lib\n" if !$pkg && $opts{v};
-	    
+
 	    if ($pkg ne $pkgname) {
 		my ($pkgdeps) = qx/pacman -Qi $pkg/ =~ /Depends.*?: (.*?)Removes/s;
 		foreach my $dd (split(' ',$pkgdeps)){
