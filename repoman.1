@@ -106,10 +106,10 @@ the leftover work files, install the package, and write the resulting package
 to the current working directory.
 
 .TP
-.BI up|upload " source destination"
+.BI up|upload " source [destination]"
 Upload a file to FST. destination is [extra/]frugalware-<arch>. If the package
 is in the extra repo, the extra/ prefix is required. <arch> currently can be
-i686 or x86_64.
+i686 or x86_64. Rhe default value is frugalware-<arch>
 
 Example: repoman up cabextract-1.1-1.fpm frugalware-i686/cabextract-1.1-1.fpm
 .TP

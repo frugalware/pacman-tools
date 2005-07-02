@@ -41,13 +41,17 @@ delete()
 
 upload()
 {
-	if [ "$#" -le 1 ]; then
+	if [ "$#" -le 0 ]; then
 		echo "Too few parameters!"
 		usage
 		exit 1
 	fi
-	# strip leading / and any ..
-	dest=`echo $2 |sed 's|^/||;s|\.\./||g'`
+	if [ -z "$2" ]; then
+		dest="frugalware-`uname -m`"
+	else
+		# strip leading / and any ..
+		dest=`echo $2 |sed 's|^/||;s|\.\./||g'`
+	fi
 	src=$1
 	name=`basename $src`
 	msg "Requesting a temporarily file"
