@@ -119,6 +119,9 @@ update()
 		die "Can't find any mirror!\nMaybe try a 'pacman -S pacman'";
 	server=`grep ^Server /etc/pacman.d/frugalware-current |sed -n 's/.*= \(.*\)/\1/;1 p'`/..
 	# server="http://darcs.frugalware.org/repos/frugalware-current"
+	# darcs bug (?)
+	[ -d $fst_root/anonymous_repo ] && \
+		mv $fst_root/anonymous_repo $fst_root/$reponame
 	if [ -d $fst_root/$repo ]; then
 		cd $fst_root/$repo &&
 		darcs pull
