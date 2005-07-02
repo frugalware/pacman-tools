@@ -21,7 +21,6 @@ Fmessage() {
 }
 
 Fdie() {
-	error "Build Failed.  Aborting..."
 	exit 2
 }
 
