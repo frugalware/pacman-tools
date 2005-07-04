@@ -253,7 +253,7 @@ unless ($opts{q}){
 
 # darcs push?
 
-apply "darcs push --match 'name $pkgname'";
+apply "darcs push --match 'name $pkgname'" . ($noask? ' -a' : '');
 
 # up and rest
 for my $sourcefile (@sourcefiles){
