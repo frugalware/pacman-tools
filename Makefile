@@ -48,6 +48,7 @@ install:
 	$(INSTALL) movepkg $(DESTDIR)$(bindir)
 	$(INSTALL) pacman-source $(DESTDIR)$(bindir)
 	$(INSTALL) etcconfig.py $(DESTDIR)$(sbindir)/etcconfig
+	$(INSTALL) rpm2fpm $(DESTDIR)$(bindir)/rpm2fpm
 
 dist:
 	darcs changes >_darcs/current/Changelog
