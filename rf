@@ -207,7 +207,7 @@ $repo = '' || $opts{r};
 $repo = 'extra' if getcwd =~ m!/extra/!;
 
 $version = 'current' unless $version; #no need :)
-$arch = 'i686' unless $arch;
+$arch = qx/arch/ unless $arch;
 $repodir = "$distrib-$arch" unless $repodir;
 $serverprefix = "ftp://ftp.$distrib.org/pub/$distrib/$distrib-$version/";  # no need :)
 
@@ -263,7 +263,7 @@ for my $sourcefile (@sourcefiles){
 apply "repoman up $pkgfile $repo/$repodir/" if $pkgfile;
 
 $repo.='/' if $repo;
-apply "repoman cl $repo$group/$pkgname";
+apply "arch=$arch repoman cl $repo$group/$pkgname";
 
 if ($opts{d}){ #delete source & fpm        doesnt ask it, -d is not default!
     for my $sourcefile (@sourcefiles){
