@@ -16,7 +16,7 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 #
 
-VERSION = 0.5.1
+VERSION = 0.5.2
 
 INSTALL = /usr/bin/install -c
 DESTDIR =
@@ -34,7 +34,7 @@ install:
 	$(INSTALL) -d $(DESTDIR)$(libdir)
 	$(INSTALL) -d $(DESTDIR)$(man1dir)
 	$(INSTALL) -d $(DESTDIR)$(sysconfdir)
-	$(INSTALL) checkworld $(DESTDIR)$(bindir)/checkworld
+	$(INSTALL) chkworld $(DESTDIR)$(bindir)/chkworld
 	$(INSTALL) chkdep.pl $(DESTDIR)$(bindir)/chkdep
 	$(INSTALL) -m644 chkdep.1 $(DESTDIR)$(man1dir)
 	$(INSTALL) pud $(DESTDIR)$(bindir)
