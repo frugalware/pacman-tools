@@ -330,6 +330,19 @@ Fautoconfize() {
 	automake -a -c -f || Fdie
 }
 
+Finclude ()
+{
+	if [ "$Fsrcdir" = `pwd` ]; then
+		local i
+		local Fincdir=`darcs add ../ 2>&1|sed -n 's/[^/]*/../g; 4 p'`/../source/include
+		for i in "$@"
+		do
+			Fmessage "Sourcing file: $i.sh"
+			source $Fincdir/$i.sh || Fdie
+		done
+	fi
+}
+
 # v0.1 Wed, 19 Jan 2005 11:43:53 +0100
 # v0.2 Thu, 20 Jan 2005 10:47:02 +0100
 # v0.2.5 Thu, 20 Jan 2005 11:55:11 +0100
