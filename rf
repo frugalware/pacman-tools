@@ -5,37 +5,16 @@ print "THIS PROGRAM IS UNDER TESTING! USE WITH CARE!\n";
 =head1 NAME
 
     rf - RepomanFrontend
+
+rf operates with actions, namely, Record, Cleanup, Push, Upload, cL.
+If you don't specify non of these actioons, with the marked switch
+(eg. for repoman cl it is -L), -RCPUL will be used.
+it is trying to guess as many data as needed for the specified
+actions, or you can pass them with non capital swithes.
+Usually -f and -s are enough to do a whole upgrade.
     
 =head1 DESCRIPTION
 
-    rf will try to repoman del, darcs push, repoman up and repoman cl
-    the package you specify.
-    So run it from the package's darcs directory!
-    
-    If you specify -s, first it will look for the old source
-    file on the server(this may fail sometimes), and do a repoman del
-    Also do the same, with the old package file.
-    
-    Next is pushing the darcs patch.
-    
-    Than repoman up the given new source file, and upload the new
-    package.
-    
-    After that do a repoman cl.
-    
-    You are free to pass multiple filenames to -f option, but if
-    you do so, you need to put them between ''.
-    Before any action, you will be asked if it is ok, that can be
-    overriden with option -k.
-    Also you can choose to give a proper command, if something goes
-    wrong.
-    
-    The default repository is the main frugalware, version is current.
-    So if you would like to upgrade eg. mysql, you dont have to 
-    use -r option.
-    
-    Only the -s and -f options have to be given in many cases,
-    every other data will be guessed!
     
 =head1 OPTIONS
     
@@ -58,7 +37,7 @@ repository gets extra.
 
     Architecture, default is i686.
 
-=item B<-R>
+=item B<-o>
 
     The directory of the repo, where the fpms are.
     Default is frugalware-$arch.
@@ -105,6 +84,11 @@ repository gets extra.
 
 =head1 CHANGES
 
+=head2 0.4
+
+    Action driven usage
+    $arch fixes
+
 =head2 0.3
 
     Sourcefile must contain 'tar'.
@@ -131,23 +115,32 @@ repository gets extra.
 use strict;
 no warnings qw(uninitialized);
 
+use Data::Dumper;
 use LWP::Simple;
 use Cwd;
 use Getopt::Std;
 use Term::ReadLine;
+use IO::File;
 eval {require Term::ReadLine::Gnu}; die 'Please install perl-term-readline-gnu!' if $@;
 eval {require Term::ReadKey}; die 'Please install perl-term-readkey!' if $@;
 import Term::ReadKey;
 
 $Getopt::Std::STANDARD_HELP_VERSION = 1;
-our $VERSION = "0.3";
+our $VERSION = "0.4";
 
 sub HELP_MESSAGE(){
-    print <<END
+  print <<END
 	rf [-s 'source1 source2 ...'] [-f packagefile] [-d] [-q] [-k] [-n name]
 END
 }
 
+sub contents {
+    my $sfh = IO::File->new( "< $_" );
+    local $/ = undef;
+    my $cont = $sfh->getline;
+    $sfh->close;
+    return $cont;
+}
 
 # run from the packages darcs dir!
 # -h help; -e extrarepo!overrides -r; -r repo; -a arch/; -R repodir; -p serverprefix; 
@@ -155,13 +148,16 @@ END
 # -k noask -q dont look for old files on server
 # / elsre nem csinlom meg; * kiszedheti mashonnan is eros konnyites
 my %opts;
-getopts('her:a:R:p:g:n:s:f:v:dqok', \%opts);
+getopts('her:a:o:p:g:n:s:f:v:dqokt:l:RCPUL', \%opts);
 
 HELP_MESSAGE && die if  !%opts || $opts{h};
 
+$opts{R}=$opts{C}=$opts{P}=$opts{U}=$opts{L} = 1 unless $opts{R}|| $opts{C}||$opts{P}||$opts{U}||$opts{L};
+
 my ($distrib,$version,$repo,$arch, $repodir, $serverprefix, $group, $pkgname, $pkgfile, $noask) =
-    ('frugalware',$opts{v},undef,$opts{a}, $opts{R}, $opts{p}, $opts{g}, $opts{n}, $opts{f}, $opts{k});
-my @sourcefiles = split ' ', $opts{s};
+    ('frugalware',$opts{v},undef,$opts{a}, $opts{o}, $opts{p}, $opts{g}, $opts{n}, $opts{f}, $opts{k});
+my @sourcefiles = split ' ', $opts{'s'};
+my ($pkgver, $pkgrel);
 
 sub msystem{
     system @_;
@@ -207,9 +203,10 @@ $repo = '' || $opts{r};
 $repo = 'extra' if getcwd =~ m!/extra/!;
 
 $version = 'current' unless $version; #no need :)
-$arch = qx/arch/ unless $arch;
+$arch = qx/arch/ and chomp $arch unless $arch;
+
 $repodir = "$distrib-$arch" unless $repodir;
-$serverprefix = "ftp://ftp.$distrib.org/pub/$distrib/$distrib-$version/";  # no need :)
+$serverprefix = "ftp://ftp.$distrib.org/pub/$distrib/$distrib-$version/";
 
 unless ( ($group) = getcwd =~ m!.*/(.*?)/[^/]*\Z! ){
     $group = $opts{g};
@@ -219,7 +216,18 @@ HELP_MESSAGE && die 'No physical group given!' unless $group;
 unless (($pkgname) = $pkgfile =~ /^(.*)-.*?-.*?-.*?fpm\Z/){
     $pkgname = $opts{n};
 }
-HELP_MESSAGE && die 'Can not determine pkgname!' unless $pkgname;        
+($pkgname) = getcwd =~ m!/([^/]*)\Z! unless $pkgname;
+HELP_MESSAGE && die 'Can not determine pkgname!' unless $pkgname;
+
+if ($pkgname){
+    ($pkgver,$pkgrel) = $pkgfile =~ /^.*-(.*?)-(.*?)-.*?fpm\Z/
+} else {  #get them from Frugalbuild
+    my $buildscript = contents 'FrugalBuild';
+    $pkgver = $buildscript =~ /^pkgver=(\S*)/m;
+    $pkgrel = $buildscript =~ /^pkgrel=(\S*)/m;
+}
+$pkgver = $opts{t} if $opts{t};
+$pkgrel = $opts{l} if $opts{l};
 
 sub getoldsource{
     my ($url,$sourcefile)= @_;
@@ -238,32 +246,52 @@ sub getoldfpm{
     return 0;
 }
 
-# Delete
-unless ($opts{q}){
-    if (@sourcefiles){
-	for my $sourcefile (@sourcefiles){
-	    print "Trying to get old source file from server\n";
-	    if( my $olds = getoldsource("$serverprefix/$repo/source/$group/$pkgname/",$sourcefile) ){ 
-		apply "repoman del $repo/source/$group/$pkgname/$olds";}}}
-    if ($pkgfile){
-# look for && repoman del old source
-	print "Trying to get old package file from server\n";
-	if( my $oldf = getoldfpm("$serverprefix/$repo/$repodir/",$pkgname) ){ 
-	    apply "repoman del $repo/$repodir/$oldf";}}}
-
-# darcs push?
-
-apply "darcs push --match 'name $pkgname'" . ($noask? ' -a' : '');
-
-# up and rest
-for my $sourcefile (@sourcefiles){
-    apply "repoman up $sourcefile $repo/source/$group/$pkgname/" if $sourcefile;
+sub Record{
+    HELP_MESSAGE && die 'Can not determine pkgver!' unless $pkgver;
+    HELP_MESSAGE && die 'Can not determine pkgrel!' unless $pkgrel;
+    apply "darcs record --edit-long-comment -m '$pkgname-$pkgver-$pkgrel-$arch' ." . ($noask? ' -a' : '');
 }
 
-apply "repoman up $pkgfile $repo/$repodir/" if $pkgfile;
+sub Push{
+    apply "darcs push --match 'name $pkgname'" . ($noask? ' -a' : '');
+}
 
-$repo.='/' if $repo;
-apply "arch=$arch repoman cl $repo$group/$pkgname";
+sub Upload{
+    
+    for my $sourcefile (@sourcefiles){
+	apply "repoman up $sourcefile $repo/source/$group/$pkgname/" if $sourcefile;
+    }
+    apply "repoman up $pkgfile $repo/$repodir/" if $pkgfile;
+}
+
+sub cL{
+    $repo.='/' if $repo;
+    apply "arch=$arch repoman cl $repo$group/$pkgname";
+}
+
+sub Cleanup{
+  unless ($opts{'q'}){
+    print "Cleanup on server\n";
+    my $repo_=$repo . '/' if $repo;
+    if (@sourcefiles){
+      my (@indarcs) = get("$serverprefix/_darcs/current/$repo_/source/$group/$pkgname/") =~ /\s(\S+)$/msg;
+      my (@inrepo) = get("$serverprefix/$repo_/source/$group/$pkgname/") =~ /\s(\S+)$/msg;
+      for my $ir (@inrepo){
+	unless(scalar grep(/\Q$ir\E/, @indarcs)){
+	  apply "repoman del $repo/source/$group/$pkgname/$ir";}}}
+    if ($pkgfile){
+      if( my $oldf = getoldfpm("$serverprefix/$repo/$repodir/",$pkgname) ){ 
+	apply "repoman del $repo/$repodir/$oldf";}}}
+}
+
+
+exit unless (my $an = ask 'Have you checked your package? Everything is ok with it?') =~ /^y|^$/i;
+
+Record if $opts{R};
+Cleanup if $opts{C};
+Push if $opts{P};
+Upload if $opts{U};
+cL if $opts{L};
 
 if ($opts{d}){ #delete source & fpm        doesnt ask it, -d is not default!
     for my $sourcefile (@sourcefiles){
@@ -273,4 +301,16 @@ if ($opts{d}){ #delete source & fpm        doesnt ask it, -d is not default!
     print "Deleting package $pkgfile\n";
     unlink $pkgfile if $pkgfile;
 }
+
+__END__
+
+ok, here's the plans:
+
+ACTIONS:
+        -R darcs record - pkgname, ver, rel, arch
+        -C cleanup - a directory, but repo, category, pkgname enough   !sources, pkgs!
+        -P darcs push - nothing, but provide options(in case of darcs mv)
+        -U upload - repo, group, etc no prob. !sources, pkgs!
+        -L cl repo, gproup pkgname
+
 

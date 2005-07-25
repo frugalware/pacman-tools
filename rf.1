@@ -129,57 +129,20 @@
 .\" ========================================================================
 .\"
 .IX Title "RF 1"
-.TH RF 1 "2005-06-07" "perl v5.8.7" "User Contributed Perl Documentation"
+.TH RF 1 "2005-07-25" "perl v5.8.7" "User Contributed Perl Documentation"
 .SH "NAME"
 .Vb 1
 \&    rf - RepomanFrontend
 .Ve
+.PP
+rf operates with actions, namely, Record, Cleanup, Push, Upload, cL.
+If you don't specify non of these actioons, with the marked switch
+(eg. for repoman cl it is \-L), \-RCPUL will be used.
+it is trying to guess as many data as needed for the specified
+actions, or you can pass them with non capital swithes.
+Usually \-f and \-s are enough to do a whole upgrade.
 .SH "DESCRIPTION"
 .IX Header "DESCRIPTION"
-.Vb 3
-\&    rf will try to repoman del, darcs push, repoman up and repoman cl
-\&    the package you specify.
-\&    So run it from the package's darcs directory!
-.Ve
-.PP
-.Vb 3
-\&    If you specify -s, first it will look for the old source
-\&    file on the server(this may fail sometimes), and do a repoman del
-\&    Also do the same, with the old package file.
-.Ve
-.PP
-.Vb 1
-\&    Next is pushing the darcs patch.
-.Ve
-.PP
-.Vb 2
-\&    Than repoman up the given new source file, and upload the new
-\&    package.
-.Ve
-.PP
-.Vb 1
-\&    After that do a repoman cl.
-.Ve
-.PP
-.Vb 6
-\&    You are free to pass multiple filenames to -f option, but if
-\&    you do so, you need to put them between ''.
-\&    Before any action, you will be asked if it is ok, that can be
-\&    overriden with option -k.
-\&    Also you can choose to give a proper command, if something goes
-\&    wrong.
-.Ve
-.PP
-.Vb 3
-\&    The default repository is the main frugalware, version is current.
-\&    So if you would like to upgrade eg. mysql, you dont have to 
-\&    use -r option.
-.Ve
-.PP
-.Vb 2
-\&    Only the -s and -f options have to be given in many cases,
-\&    every other data will be guessed!
-.Ve
 .SH "OPTIONS"
 .IX Header "OPTIONS"
 .IP "\fB\-h\fR" 1
@@ -198,8 +161,8 @@
 .Vb 1
 \&    Architecture, default is i686.
 .Ve
-.IP "\fB\-R\fR" 1
-.IX Item "-R"
+.IP "\fB\-o\fR" 1
+.IX Item "-o"
 .Vb 2
 \&    The directory of the repo, where the fpms are.
 \&    Default is frugalware-$arch.
@@ -255,6 +218,12 @@
 .Ve
 .SH "CHANGES"
 .IX Header "CHANGES"
+.Sh "0.4"
+.IX Subsection "0.4"
+.Vb 2
+\&    Action driven usage
+\&    $arch fixes
+.Ve
 .Sh "0.3"
 .IX Subsection "0.3"
 .Vb 3
