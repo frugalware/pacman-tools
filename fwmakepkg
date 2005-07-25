@@ -2,6 +2,7 @@
 
 # Copyright (C) 2005, NAGY Bence <nagybence@tipogral.hu>
 # Copyright (C) 2005, Miklos Vajna <vmiklos@frugalware.org>
+# Parts of Fsort and Funpack_makeself are:
 # Copyright (C) 1999-2005 Gentoo Foundation
 # This file can be distributed under the terms of the
 # GNU General Public License version 2.
@@ -244,6 +245,28 @@ build() {
 Facu() {
 	cat /usr/share/automake/config.sub >config.sub
 	cat /usr/share/automake/config.guess >config.guess
+}
+
+# Returns its parameters sorted, highest version last. We're using a quadratic
+# algorithm for simplicity, so don't call it with more than a few dozen items.
+# Uses vercmp.
+Fsort() {
+	local i= items= left=0
+	items=( `cat|tr '\n' ' '` )
+	while [[ ${left} -lt ${#items[@]} ]] ; do
+		local lowest_idx=${left}
+		local idx=$(( ${lowest_idx} + 1 ))
+		while [[ ${idx} -lt ${#items[@]} ]] ; do
+			i=`vercmp "${items[${lowest_idx}]}" "${items[${idx}]}"`
+			[[ $i -gt 0 ]] && lowest_idx=${idx}
+			idx=$(( ${idx} + 1 ))
+		done
+		local tmp=${items[${lowest_idx}]}
+		items[${lowest_idx}]=${items[${left}]}
+		items[${left}]=${tmp}
+		left=$(( ${left} + 1 ))
+	done
+	echo ${items[@]}|sed 's/ /\n/g'
 }
 
 # Unpack those pesky makeself generated files ...
