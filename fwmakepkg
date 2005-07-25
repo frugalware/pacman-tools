@@ -332,12 +332,11 @@ Fautoconfize() {
 
 Finclude ()
 {
-	if [ "$Fsrcdir" = `pwd` ]; then
+	if [ "$startdir" = `pwd` ]; then
 		local i
-		local Fincdir=`darcs add ../ 2>&1|sed -n 's/[^/]*/../g; 4 p'`/../source/include
+		local Fincdir=`darcs add . 2>&1|sed -n 's/[^/]*/../g; 4 p'`/source/include
 		for i in "$@"
 		do
-			Fmessage "Sourcing file: $i.sh"
 			source $Fincdir/$i.sh || Fdie
 		done
 	fi
