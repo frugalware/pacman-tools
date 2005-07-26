@@ -6,7 +6,7 @@ chkdep - checks dependencies of packages for Frugalware Linux
 
 =head1 SYNOPSIS
 
-chkdep [-vi] [-n packagename] -d dir | -p file
+chkdep [-vif] [-n packagename] -d dir | -p file
 
 =head1 DESCRIPTION
 
@@ -35,6 +35,14 @@ If file is a tgz package, it will be extracted, making depend array
 When the script cant determine the name of the package you're checking,
 you can give it manually with this(ie. when you use the -d option).
 
+=item B<-f>
+
+Outputs the full dependency list
+
+=item B<-e>
+
+Tells the groups of the full dependency list
+
 =item B<-v>
 
 Be verbose
@@ -62,12 +70,15 @@ License v2.
 
 use strict;
 use Getopt::Std;
-
+use Data::Dumper;
 $Getopt::Std::STANDARD_HELP_VERSION = 1;
-our $VERSION = "1.7";
+our $VERSION = "1.8";
+
+my %alias = ( 'xorg' => 'x' );
+my %reversalias = map { $alias{$_} => $_ } keys %alias;
 
 my %opts;
-getopts('vid:p:f:n:', \%opts);
+getopts('vid:p:fn:e', \%opts);
 
 sub HELP_MESSAGE(){
     print <<END
@@ -76,6 +87,8 @@ usage: chkdep [-vi] [-n packagename] -d dir | -p file
          -d directory
          -p samepackage.fpm
          -n packagename(use with -d if necessary)
+         -f full list
+         -e add groups to output
 	 -i ignore fakeroot
          -v be verbose
        
@@ -86,14 +99,14 @@ END
 
 
 sub extractfpm{ #pkgfile
-    my $pkg = shift;
-    my @dir = split /\//, $pkg;
-    my $name = "/tmp/" . pop @dir;
-    die $! unless mkdir $name;
-    my $comm = "tar xzf $pkg -C $name";
-    $comm .= ' 2>/dev/null' unless $opts{v};
-    qx/$comm/;
-    return $name;
+  my $pkg = shift;
+  my @dir = split /\//, $pkg;
+  my $name = "/tmp/" . pop @dir;
+  die $! unless mkdir $name;
+  my $comm = "tar xzf $pkg -C $name";
+  $comm .= ' 2>/dev/null' unless $opts{v};
+  qx/$comm/;
+  return $name;
 }
 
 sub ldddir{ #dir
@@ -101,7 +114,7 @@ sub ldddir{ #dir
     my $comm = 'find ' . $dir .' -perm -u+x ! -type d ! -type l -exec ldd {} \;';
     $comm .= ' 2>/dev/null' unless $opts{v};
     return qx/$comm/;
-}
+  }
 
 
 HELP_MESSAGE && die "Wrong option!" unless %opts;
@@ -110,20 +123,20 @@ my $dir = extractfpm $opts{p} if $opts{p};
 $dir = $opts{d} if $opts{d};
 my $pkgname;
 $pkgname = $opts{n} or 
-    ($pkgname) = qx"grep pkgname $dir/.PKGINFO 2>/dev/null" =~ /pkgname = (.*)$/;
+  ($pkgname) = qx"grep pkgname $dir/.PKGINFO 2>/dev/null" =~ /pkgname = (.*)$/;
 if ($opts{v}){
-    if (! $pkgname){ 
-	print "Could not determine packagname!\n"; $pkgname = '';
-    } else {
-	print "Package: $pkgname\n";
-    }
+  if (! $pkgname){ 
+    print "Could not determine packagname!\n"; $pkgname = '';
+  } else {
+    print "Package: $pkgname\n";
+  }
 } elsif (! $pkgname){$pkgname='';}
 
 my @ldd = ldddir $dir;
 
 if ($opts{p}){
-    my $comm ="rm -rf $dir" . (($opts{v}) ? '' : ' 2>/dev/null');
-    qx/$comm/;
+  my $comm ="rm -rf $dir" . (($opts{v}) ? '' : ' 2>/dev/null');
+  qx/$comm/;
 }
 
 my %pkgs; #dependecies
@@ -131,34 +144,40 @@ my %libs;
 my %depsdep; # the dependencies' dependencies 
 
 for my $line (@ldd){
-    if ($line =~ /.* => (.+) \(.*\)/){
-        my $lib = $1;
-	if ($lib =~ /fakeroot/){
-	    print "fakeroot found in dependencies\n" if $opts{v};
-	    next if $opts{i};
-	}
-	if (! $libs{$lib}) {
-	    $libs{$lib} = 1;
-	    my ($pkg) = qx/pacman -Qo $lib/ =~ /owned by (.*?)\s/;
-	    print "WARNING: No package found containing $lib\n" if !$pkg && $opts{v};
-
-	    if ($pkg ne $pkgname) {
-		my ($pkgdeps) = qx/pacman -Qi $pkg/ =~ /Depends.*?: (.*?)Removes/s;
-		foreach my $dd (split(' ',$pkgdeps)){
-		    $depsdep{$dd} = 1;
-		}
-	    
-		# handle provides directive!
-		$pkg = 'x' if ($pkg eq 'xorg');
-		
-		$pkgs{$pkg} = 1;
-	    }
-	}
+  if ($line =~ /.* => (.+) \(.*\)/){
+    my $lib = $1;
+    if ($lib =~ /fakeroot/){
+      print "fakeroot found in dependencies\n" if $opts{v};
+      next if $opts{i};
     }
+    if (! $libs{$lib}) {
+      $libs{$lib} = 1;
+      my ($pkg) = qx/pacman -Qo $lib/ =~ /owned by (.*?)\s/;
+      print "WARNING: No package found containing $lib\n" if !$pkg && $opts{v};
+      
+      if ($pkg ne $pkgname) {
+	unless ($opts{f}){
+	  my ($pkgdeps) = qx/pacman -Qi $pkg/ =~ /Depends.*?: (.*?)Removes/s;
+	  foreach my $dd (split(' ',$pkgdeps)){
+	    $depsdep{$dd} = 1;
+	  }
+	}
+	# handle provides directive!
+	$pkg = $alias{$pkg} if $alias{$pkg};
+	
+	$pkgs{$pkg} = 1;
+      }
+    }
+  }
 }
 my $deps = 'depends=(';
 foreach my $key (keys %pkgs){
-    $deps .= "\'$key\' " unless $depsdep{$key};
+  $deps .= "\'$key\' " unless $depsdep{$key};
+  if ($opts{e}){
+    my $comm = "pacman -Qi " . ($reversalias{$key} || $key);
+    my ($group) = qx/$comm/ =~ /Groups.*?: (.*?)$/sm;
+    printf "%-20s%s\n", "$key is in", $group;
+  }
 }
 chop $deps if %pkgs;
 $deps = $deps . ')';
