@@ -130,7 +130,7 @@ our $VERSION = "0.4";
 
 sub HELP_MESSAGE(){
   print <<END
-	rf [-s 'source1 source2 ...'] [-f packagefile] [-d] [-q] [-k] [-n name]
+	rf [-RCPUL] [-s 'source1 source2 ...'] [-f packagefile] [-d] [-q] [-k] [-n name]
 END
 }
 
@@ -150,7 +150,7 @@ sub contents {
 my %opts;
 getopts('her:a:o:p:g:n:s:f:v:dqokt:l:RCPUL', \%opts);
 
-HELP_MESSAGE && die if  !%opts || $opts{h};
+HELP_MESSAGE && die if $opts{h};
 
 $opts{R}=$opts{C}=$opts{P}=$opts{U}=$opts{L} = 1 unless $opts{R}|| $opts{C}||$opts{P}||$opts{U}||$opts{L};
 
@@ -247,32 +247,37 @@ sub getoldfpm{
 }
 
 sub Record{
-    HELP_MESSAGE && die 'Can not determine pkgver!' unless $pkgver;
-    HELP_MESSAGE && die 'Can not determine pkgrel!' unless $pkgrel;
-    apply "darcs record --edit-long-comment -m '$pkgname-$pkgver-$pkgrel-$arch' ." . ($noask? ' -a' : '');
+  print "Recording your improvements\n";
+  HELP_MESSAGE && die 'Can not determine pkgver!' unless $pkgver;
+  HELP_MESSAGE && die 'Can not determine pkgrel!' unless $pkgrel;
+  apply "darcs record --edit-long-comment -m '$pkgname-$pkgver-$pkgrel-$arch' ." . ($noask? ' -a' : '');
 }
 
 sub Push{
-    apply "darcs push --match 'name $pkgname'" . ($noask? ' -a' : '');
+  print "Pushing the patch\n";
+  apply "darcs push --match 'name $pkgname'" . ($noask? ' -a' : '');
 }
 
 sub Upload{
-    
-    for my $sourcefile (@sourcefiles){
-	apply "repoman up $sourcefile $repo/source/$group/$pkgname/" if $sourcefile;
-    }
-    apply "repoman up $pkgfile $repo/$repodir/" if $pkgfile;
+  print "Uploading source and binary package\n";
+  print "Nothing to do, that's fine!\n\n" unless @sourcefiles && $pkgfile;
+  for my $sourcefile (@sourcefiles){
+    apply "repoman up $sourcefile $repo/source/$group/$pkgname/" if $sourcefile;
+  }
+  apply "repoman up $pkgfile $repo/$repodir/" if $pkgfile;
 }
 
 sub cL{
-    $repo.='/' if $repo;
-    apply "arch=$arch repoman cl $repo$group/$pkgname";
+  print "Generating ChangeLog\n";
+  $repo.='/' if $repo;
+  apply "arch=$arch repoman cl $repo$group/$pkgname";
 }
 
 sub Cleanup{
   unless ($opts{'q'}){
     print "Cleanup on server\n";
     my $repo_=$repo . '/' if $repo;
+    print "Nothing to do, that's fine!\n\n" unless @sourcefiles && $pkgfile;
     if (@sourcefiles){
       my (@indarcs) = get("$serverprefix/_darcs/current/$repo_/source/$group/$pkgname/") =~ /\s(\S+)$/msg;
       my (@inrepo) = get("$serverprefix/$repo_/source/$group/$pkgname/") =~ /\s(\S+)$/msg;
@@ -284,8 +289,12 @@ sub Cleanup{
 	apply "repoman del $repo/$repodir/$oldf";}}}
 }
 
+print "What have you been hacking today?\n";
+unless ((my $what = qx"darcs what -s .") =~ /\QNo changes!\E/){ 
+  print $what;
+  exit unless (my $an = ask 'Have you checked your package? Everything is ok with it?') =~ /^y|^$/i;
+} else {print "Nothing!\n"}
 
-exit unless (my $an = ask 'Have you checked your package? Everything is ok with it?') =~ /^y|^$/i;
 
 Record if $opts{R};
 Cleanup if $opts{C};
