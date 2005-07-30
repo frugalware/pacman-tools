@@ -5,41 +5,41 @@
 pud - up2date helper
 
 =head1 DESCRIPTION
-    
+
     pud will match the given perl regular expression to the 
-    contents of the given url,then print out the regexp's groups.
-    
+    contents of the given URL, then print out the regexp's groups.
+
 =head1 OPTIONS
-    
+
 =over 4
 
 =item B<-s URL>
-  
+
     Match the regexp to the source of the given URL.
-    
+
 =item B<-p URL>
-    
+
     Match the regexp to the parsed html.
-    
+
 =item B<-e REGEXP>
-    
+
     The perl regular expression, with groups.
     Always use ' or " to enclose!
-    
+
 =item B<-t seconds>
-    
-    Timeout of the url's query. After the given seconds, the script 
+
+    Timeout of the URL's query. After the given seconds, the script 
     returns.
     The default timeout is 600.
 
 =item B<-f format>
-    
-    A printf format string, for formating the output
+
+    A printf format string, for formatting the output.
 
 =head1 BUILDING THE REGEXP
 
     The page is treated as a single line string, but
-    regexp detects multiple lines(m//sm), so . matches \n, but ^,$ 
+    regexp detects multiple lines (m//sm), so . matches \n, but ^,$ 
     match start and end of any line.
 
 =head1 EXAPLES
@@ -47,6 +47,19 @@ pud - up2date helper
 pud -s http://frugalware.org -e "&nbsp;frugalware-(.*?)<.*fwclose"
 
 pud -p http://frugalware.org/ -e '(\d+):(\d+) inc' -f "%d-%d"
+
+=head1 AUTHOR
+
+Written by Zsolt Szalai.
+
+=head1 BUGS
+
+Report bugs to <frugalware-devel@frugalware.org>.
+
+=head1 COPYRIGHT
+
+pud may be copied and modified under the terms of the GNU General Public
+License v2.
 
 =cut
 

@@ -129,14 +129,14 @@
 .\" ========================================================================
 .\"
 .IX Title "PUD 1"
-.TH PUD 1 "2005-06-04" "perl v5.8.7" "User Contributed Perl Documentation"
+.TH PUD 1 "2005-07-28" "perl v5.8.7" "User Contributed Perl Documentation"
 .SH "NAME"
 pud \- up2date helper
 .SH "DESCRIPTION"
 .IX Header "DESCRIPTION"
 .Vb 2
 \&    pud will match the given perl regular expression to the 
-\&    contents of the given url,then print out the regexp's groups.
+\&    contents of the given URL, then print out the regexp's groups.
 .Ve
 .SH "OPTIONS"
 .IX Header "OPTIONS"
@@ -159,20 +159,20 @@ pud \- up2date helper
 .IP "\fB\-t seconds\fR" 4
 .IX Item "-t seconds"
 .Vb 3
-\&    Timeout of the url's query. After the given seconds, the script 
+\&    Timeout of the URL's query. After the given seconds, the script 
 \&    returns.
 \&    The default timeout is 600.
 .Ve
 .IP "\fB\-f format\fR" 4
 .IX Item "-f format"
 .Vb 1
-\&    A printf format string, for formating the output
+\&    A printf format string, for formatting the output.
 .Ve
 .SH "BUILDING THE REGEXP"
 .IX Header "BUILDING THE REGEXP"
 .Vb 3
 \&    The page is treated as a single line string, but
-\&    regexp detects multiple lines(m//sm), so . matches \en, but ^,$ 
+\&    regexp detects multiple lines (m//sm), so . matches \en, but ^,$ 
 \&    match start and end of any line.
 .Ve
 .SH "EXAPLES"
@@ -180,3 +180,13 @@ pud \- up2date helper
 pud \-s http://frugalware.org \-e \*(L"&nbsp;frugalware\-(.*?)<.*fwclose\*(R"
 .Sp
 pud \-p http://frugalware.org/ \-e '(\ed+):(\ed+) inc' \-f \*(L"%d\-%d\*(R"
+.SH "AUTHOR"
+.IX Header "AUTHOR"
+Written by Zsolt Szalai.
+.SH "BUGS"
+.IX Header "BUGS"
+Report bugs to <frugalware\-devel@frugalware.org>.
+.SH "COPYRIGHT"
+.IX Header "COPYRIGHT"
+pud may be copied and modified under the terms of the \s-1GNU\s0 General Public
+License v2.
