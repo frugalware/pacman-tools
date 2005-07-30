@@ -15,7 +15,7 @@ def checkroot():
 	uid=os.geteuid()	
 	if uid == 0:
 		print
-		print"-- EtcUpdater --"   
+		print"-- EtcUpdater --"
 		print
 	else:
 		print"Sorry, you must be root to run this script."
@@ -27,7 +27,7 @@ def checkedit():
 		if(act==1): 
 		 	print "- $%s is not accessible!" % i
 		else:
-			print "- $%s is accessibble!" % i
+			print "- $%s is accessible!" % i
 			a_editors.append('$'+i)
 	
         for i in os.walk('/usr/bin'):
@@ -75,7 +75,7 @@ choices=['y','n','d','e','i']
 m=len(paclist)
 x=0
 if len(paclist)==0:
-	print('--> There are no new config files available for updateing!')
+	print('--> There are no new config files available for updating!')
 else:	
 	print('-->[(y=update) (n=delete .pacnew) (d=diff old) (e=edit) (i=ignore)]<--')
 while x<m:
