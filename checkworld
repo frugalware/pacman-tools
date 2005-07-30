@@ -19,8 +19,8 @@ Options:
 -v	be verbose
 -h	this help
 
-if you defines categories, it doesn't check all categories
-this should be run from the 'source' directory of FST
+If you defines categories, it doesn't check all categories
+this should be run from the 'source' directory of FST.
 EOF
 }
 
