@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# Copyright (C) 2005, NAGY Bence <nagybence@tipogral.hu>
-# Copyright (C) 2005, Miklos Vajna <vmiklos@frugalware.org>
+# Copyright (C) 2005 Bence Nagy <nagybence@tipogral.hu>
+# Copyright (C) 2005 Miklos Vajna <vmiklos@frugalware.org>
 # Parts of Fsort and Funpack_makeself are:
 # Copyright (C) 1999-2005 Gentoo Foundation
 # This file can be distributed under the terms of the
@@ -15,7 +15,7 @@ Flocalstatedir="/var"
 Fconfopts="--prefix=$Fprefix"
 
 Fmessage() {
-        if [ "$USE_COLOR" = "Y" -o "$USE_COLOR" = "y" ]; then
+	if [ "$USE_COLOR" = "Y" -o "$USE_COLOR" = "y" ]; then
 		echo -e "\033[1;36m==>\033[1;0m \033[1;1m$1\033[1;0m" >&2
 	else
 		echo "==> $1" >&2
@@ -137,7 +137,7 @@ Fsed() {
 	Fcd
 	for i in ${@:3:$#}; do
 		Fmessage "Using sed with file: $i"
-	        sed -i -e "s|$1|$2|g" "$i" || Fdie
+		sed -i -e "s|$1|$2|g" "$i" || Fdie
 	done
 }
 
@@ -160,17 +160,17 @@ Fpatch() {
 		i=$1
 	fi
 	if [ -n "`echo $i | grep \.patch0$`" ]; then
-    		patch -Np0 --no-backup-if-mismatch -i "$Fsrcdir/$i" || Fdie
+		patch -Np0 --no-backup-if-mismatch -i "$Fsrcdir/$i" || Fdie
 	else
-    		patch -Np1 --no-backup-if-mismatch -i "$Fsrcdir/$i" || Fdie
+		patch -Np1 --no-backup-if-mismatch -i "$Fsrcdir/$i" || Fdie
 	fi
 }
 
 Fpatchall() {
 	for i in ${source[@]}; do
-	    if [ -n "`echo "$i" | grep \.patch[0-9]*$`" -o -n "`echo "$i" | grep \.diff$`" -o -n "`echo "$i" | grep '\.\(patch[0-9]*\|diff\)\.\(gz\|bz2\)$'`" ]; then
-		    Fpatch `strip_url "$i"`
-	    fi
+		if [ -n "`echo "$i" | grep \.patch[0-9]*$`" -o -n "`echo "$i" | grep \.diff$`" -o -n "`echo "$i" | grep '\.\(patch[0-9]*\|diff\)\.\(gz\|bz2\)$'`" ]; then
+			Fpatch `strip_url "$i"`
+		fi
 	done
 }
 
@@ -184,12 +184,12 @@ Fconf() {
 			Fconfopts="$Fconfopts --localstatedir=$Flocalstatedir"
 		./configure $Fconfopts "$@" || Fdie
 	elif [ -f Makefile.PL ]; then
-    		perl Makefile.PL "$@" || Fdie
+		perl Makefile.PL "$@" || Fdie
 		Fsed `perl -e 'printf "%vd", $^V'` "current" Makefile
 	elif [ -f extconf.rb ]; then
-    		ruby extconf.rb --prefix="$Fprefix" "$@" || Fdie
+		ruby extconf.rb --prefix="$Fprefix" "$@" || Fdie
 	elif [ -f configure.rb ]; then
-    		./configure.rb --prefix="$Fprefix" "$@" || Fdie
+		./configure.rb --prefix="$Fprefix" "$@" || Fdie
 	fi
 }
 
@@ -271,7 +271,7 @@ Fsort() {
 
 # Unpack those pesky makeself generated files ...
 # They're shell scripts with the binary package tagged onto
-# the end of the archive.  Loki utilized the format as does
+# the end of the archive. Loki utilized the format as does
 # many other game companies.
 #
 # Usage: Funpack_makeself [file to unpack] [offset] [tail|dd]
@@ -293,7 +293,7 @@ Funpack_makeself() {
 		local skip=0
 		exe=tail
 		case ${ver} in
-			1.5.*)	# tested 1.5.{3,4,5} ... guessing 1.5.x series is same
+			1.5.*)	# Tested 1.5.{3,4,5} ... guessing 1.5.x series is same.
 				skip=$(grep -a ^skip= "${src}" | cut -d= -f2)
 				;;
 			2.0|2.0.1)
@@ -318,7 +318,7 @@ Funpack_makeself() {
 				;;
 			*)
 				plain "I'm sorry, but I was unable to support the Makeself file."
-				plain "Version '${ver}' not supported"
+				plain "Version '${ver}' is not supported."
 				Fdie
 				;;
 		esac
@@ -326,11 +326,11 @@ Funpack_makeself() {
 	case ${exe} in
 		tail)	exe="tail -n +${skip} '${src}'";;
 		dd)		exe="dd ibs=${skip} skip=1 obs=1024 conv=sync if='${src}'";;
-		*)		error "makeself cant handle exe '${exe}'"
+		*)		error "makeself can't handle exe '${exe}'"
 				Fdie
 	esac
 
-	# lets grab the first few bytes of the file to figure out what kind of archive it is
+	# Let's grab the first few bytes of the file to figure out what kind of archive it is.
 	local tmpfile="$(mktemp)"
 	eval ${exe} 2>/dev/null | head -c 512 > "${tmpfile}"
 	local filetype="$(file -b "${tmpfile}")"
@@ -348,7 +348,7 @@ Funpack_makeself() {
 			eval ${exe} | gunzip | tar --no-same-owner -xf - -C $dir
 			;;
 		*)
-			error "Unknown filetype \"${filetype}\" ?"
+			error "Unknown file type \"${filetype}\"?"
 			Fdie
 			;;
 	esac
