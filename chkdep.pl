@@ -6,7 +6,7 @@ chkdep - checks dependencies of packages for Frugalware Linux
 
 =head1 SYNOPSIS
 
-chkdep [-vif] [-n packagename] -d dir | -p file
+chkdep [-vif] [-n package_name] -d dir | -p file
 
 =head1 DESCRIPTION
 
@@ -24,42 +24,42 @@ listing files in the command argument is deprecated.
 
 =item B<-d dir>
 
-Check all executable files in dir directry with ldd and make depend array
+Check all executable files in dir directory with ldd and make depends array.
 
 =item B<-p file>
 
-If file is a tgz package, it will be extracted, making depend array
+If file is a tgz package, it will be extracted, making depends array.
 
-=item B<-n packagename>
+=item B<-n package_name>
 
-When the script cant determine the name of the package you're checking,
-you can give it manually with this(ie. when you use the -d option).
+When the script can't determine the name of the package you're checking,
+you can give it manually with this (ie. when you use the -d option).
 
 =item B<-f>
 
-Outputs the full dependency list
+Outputs the full dependency list.
 
 =item B<-e>
 
-Tells the groups of the full dependency list
+Tells the groups of the full dependency list.
 
 =item B<-v>
 
-Be verbose
+Be verbose.
 
 =item B<-i>
 
-Ignore fakeroot library if found
+Ignore fakeroot library if found.
 
 =back
 
 =head1 AUTHOR
 
-Zsolt Szalai <xbit@frugalware.org>
+Written by Zsolt Szalai.
 
 =head1 BUGS
 
-Report bugs to frugalware-devel@frugalware.org
+Report bugs to <frugalware-devel@frugalware.org>.
 
 =head1 COPYRIGHT
 
@@ -83,10 +83,10 @@ getopts('vid:p:fn:e', \%opts);
 sub HELP_MESSAGE(){
     print <<END
 chkdep - checks dependencies of packages for Frugalware Linux
-usage: chkdep [-vi] [-n packagename] -d dir | -p file
+usage: chkdep [-vi] [-n package_name] -d dir | -p file
          -d directory
-         -p samepackage.fpm
-         -n packagename(use with -d if necessary)
+         -p same_package.fpm
+         -n package_name (use with -d if necessary)
          -f full list
          -e add groups to output
 	 -i ignore fakeroot
@@ -126,7 +126,7 @@ $pkgname = $opts{n} or
   ($pkgname) = qx"grep pkgname $dir/.PKGINFO 2>/dev/null" =~ /pkgname = (.*)$/;
 if ($opts{v}){
   if (! $pkgname){ 
-    print "Could not determine packagname!\n"; $pkgname = '';
+    print "Could not determine packag name!\n"; $pkgname = '';
   } else {
     print "Package: $pkgname\n";
   }

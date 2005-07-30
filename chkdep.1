@@ -129,12 +129,12 @@
 .\" ========================================================================
 .\"
 .IX Title "CHKDEP 1"
-.TH CHKDEP 1 "2005-07-26" "perl v5.8.7" "User Contributed Perl Documentation"
+.TH CHKDEP 1 "2005-07-30" "perl v5.8.7" "User Contributed Perl Documentation"
 .SH "NAME"
 chkdep \- checks dependencies of packages for Frugalware Linux
 .SH "SYNOPSIS"
 .IX Header "SYNOPSIS"
-chkdep [\-vif] [\-n packagename] \-d dir | \-p file
+chkdep [\-vif] [\-n package_name] \-d dir | \-p file
 .SH "DESCRIPTION"
 .IX Header "DESCRIPTION"
 Outputs a dependency array for a FrugalBuild scripts, containing the
@@ -147,32 +147,32 @@ listing files in the command argument is deprecated.
 .IX Header "OPTIONS"
 .IP "\fB\-d dir\fR" 4
 .IX Item "-d dir"
-Check all executable files in dir directry with ldd and make depend array
+Check all executable files in dir directory with ldd and make depends array.
 .IP "\fB\-p file\fR" 4
 .IX Item "-p file"
-If file is a tgz package, it will be extracted, making depend array
-.IP "\fB\-n packagename\fR" 4
-.IX Item "-n packagename"
-When the script cant determine the name of the package you're checking,
-you can give it manually with this(ie. when you use the \-d option).
+If file is a tgz package, it will be extracted, making depends array.
+.IP "\fB\-n package_name\fR" 4
+.IX Item "-n package_name"
+When the script can't determine the name of the package you're checking,
+you can give it manually with this (ie. when you use the \-d option).
 .IP "\fB\-f\fR" 4
 .IX Item "-f"
-Outputs the full dependency list
+Outputs the full dependency list.
 .IP "\fB\-e\fR" 4
 .IX Item "-e"
-Tells the groups of the full dependency list
+Tells the groups of the full dependency list.
 .IP "\fB\-v\fR" 4
 .IX Item "-v"
-Be verbose
+Be verbose.
 .IP "\fB\-i\fR" 4
 .IX Item "-i"
-Ignore fakeroot library if found
+Ignore fakeroot library if found.
 .SH "AUTHOR"
 .IX Header "AUTHOR"
-Zsolt Szalai <xbit@frugalware.org>
+Written by Zsolt Szalai.
 .SH "BUGS"
 .IX Header "BUGS"
-Report bugs to frugalware\-devel@frugalware.org
+Report bugs to <frugalware\-devel@frugalware.org>.
 .SH "COPYRIGHT"
 .IX Header "COPYRIGHT"
 chkdep may be copied and modified under the terms of the \s-1GNU\s0 General Public
