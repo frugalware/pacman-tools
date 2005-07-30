@@ -22,4 +22,3 @@ elif [ `ls *.fpm|wc|tr -s ' '|cut -d ' ' -f 3` == 1 ]; then
 else
 	echo "More than one package in this directory!"
 fi
-

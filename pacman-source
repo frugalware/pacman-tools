@@ -39,7 +39,7 @@ confs=`cat /etc/pacman.conf |grep ^Include|sed 's/.* = \(.*\)/\1/'`
 dump="wget --passive-ftp -O - -q"
 wget="wget --passive-ftp -c -m --retr-symlinks"
 
-echo -n "searching for a mirror... "
+echo -n "Searching for a mirror... "
 repo=`pacman -Si $1|grep ^Repo|sed -n 's/.* \([^ ]*\)/\1/;1 p'`
 dir=`grep ^Server /etc/pacman.d/$repo|sed -n 's/.* = \(.*\)/\1/;1 p'`
 arch=`grep ^Server /etc/pacman.d/$repo |sed -n 's/.*-\(.*\)/\1/;1 p'`
@@ -49,10 +49,10 @@ echo "done."
 mkdir $1 || exit 1
 cd $1 || exit 1
 if [ "$verbose" == 1 ]; then
-	echo "downloding $1 source..."
+	echo "Downloading $1 source..."
 	$wget $dir/../$quickdl/source/$cat/$1/
 else
-	echo -n "downloding $1 source... "
+	echo -n "Downloading $1 source... "
 	$wget $dir/../$quickdl/source/$cat/$1/ &>/dev/null
 	echo "done."
 fi
