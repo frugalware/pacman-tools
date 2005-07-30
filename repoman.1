@@ -1,4 +1,4 @@
-.TH "REPOMAN" "1" "May 2005" "Frugalware 0.3" "pacman-tools"
+.TH "REPOMAN" "1" "July 2005" "Frugalware 0.3" "pacman-tools"
 .SH NAME
 repoman \- Frugalware's program to maintain packages via darcs and ssh
 .SH SYNOPSIS
@@ -12,10 +12,10 @@ Note: \fBrepoman\fR only runs \fIinside\fR a darcs repository.
 .SH USAGE
 A typical package update should be done as follows:
 .TP
-0) Get/update the repo, make changes, build the package:
+1) Get the repo and set defaults.
 
 .BR Note:
-You're recommended to you a mirror sever and the --partial option!
+We are recommended to you a mirror server and the --partial option!
 
 Example for the first time:
 
@@ -23,60 +23,90 @@ darcs get --partial http://ftp5.frugalware.org/packages/frugalware/pub/frugalwar
 
 cd frugalware-current
 
-echo "yourname <email@addr.ess>" >_darcs/prefs/author
+echo "yourname <email@addr.ess>" > _darcs/prefs/author
 
-echo 'username@darcs.frugalware.org:/home/ftp/pub/frugalware/frugalware-current' >_darcs/prefs/defaultrepo
+echo 'username@darcs.frugalware.org:/home/ftp/pub/frugalware/frugalware-current' > _darcs/prefs/defaultrepo
 
 echo 'push apply-as vmiklos' >> _darcs/prefs/defaults
 
-Note: here do not substituate my nick (vmiklos) with you nick!
+Note: Here do not substituate my nick (vmiklos) with you nick!
+
+.TP
+2) Update the repo.
 
 If you already got the repo a simple 'darcs pull' should be enough.
 
-Now time to edit the FrugalBuild, make changes, darcs record, build the new package, etc.
+.TP
+3) Make changes and build the package.
 
-When recording the patch (if this is a package upgrade), it's name must be pkgname-pkgver-pkgrel-arch (when answering to 'What is the patch name?').
+Now time to edit the FrugalBuild and make changes.
+
+If you would like to add new file(s) to the source, run this:
+
+darcs add xorg.install
+
+To remove file(s) from the source, run this:
+
+darcs remove 00-at-3.1.8r11-makefile.patch
+
+Or if you would like to rename a file in the source, run this:
+
+darcs mv 01-xorg-8.6.2-vmware-amd64.patch 02-xorg-6.8.2-vmware-amd64.patch
+
+Then build the packages with 'makepkg -c'.
+
+.TP
+4) Recording the changes.
+
+Simply run 'darcs record'.
+
+When recording the patch (if this is a package upgrade), its name must be $pkgname-$pkgver-$pkgrel-$arch (when answering to 'What is the patch name?').
 
 For example:
 
 xorg-6.8.2-2-i686
 
 .TP
-1) Delete the old source packages(s).
+5) Delete the old source package(s).
 
-If you do only a rebuild, then, of couse, skip this step. For example:
+If you only do a rebuild, then, of course, skip this step. For example:
 
 repoman del source/base/readline/readline-5.0.tar.gz
 
 .TP
-2) Delete the old fpm package.
-
-For example:
-
-repoman del extra/frugalware/k3b-i18n-0.11-1.fpm
-
-.TP
-3) Push the FrugalBuild/.install/etc patch.
+6) Push the FrugalBuild/.install/etc patch.
 
 Here you only have to do a simple 'darcs push'.
 
+This command uploads the changes you made local to the server.
+
 .TP
-4) Upload the source package(s).
+7) Upload the new source package(s).
+
+If you only do a rebuild, then, of course, skip this step.
 
 For example:
 
 repoman up zsh-4.2.5.tar.bz2 /source/apps/zsh/
+
 repoman up zsh-doc-4.2.5.tar.bz2 /source/apps/zsh/
 
 .TP
-5) Upload the fpm package:
+8) Upload the new fpm package:
 
 For example (see the 'up' command description for more details!):
 
-repoman up sendmail-8.13.4-1.fpm extra/frugalware/
+repoman up sendmail-8.13.4-2-i686.fpm extra/frugalware-i686/
 
 .TP
-6) Generate a Changelog and update the .fdb database:
+9) Delete the old fpm package.
+
+For example:
+
+repoman del frugalware-i686/xorg-6.8.2-4-i686.fpm
+
+.TP
+10) Generate a Changelog and update the .fdb database:
 
 For example:
 
@@ -88,9 +118,9 @@ repoman cl base/perl
 Generate a Changelog file from darcs patch comments.
 .TP
 .BI del|delete " file"
-Delete a file from FST.
+Delete a file from the Frugalware Source Tree (FST).
 
-Example: repoman del extra/frugalware/k3b-i18n-0.11-1.fpm
+Example: repoman del frugalware-i686/xorg-6.8.2-4-i686.fpm
 .TP
 .BI ls|list " directory [options]"
 List the contents of a remote directory.
@@ -107,11 +137,11 @@ to the current working directory.
 
 .TP
 .BI up|upload " source [destination]"
-Upload a file to FST. destination is [extra/]frugalware-<arch>. If the package
+Upload a file to FST. Destination is [extra/]frugalware-<arch>. If the package
 is in the extra repo, the extra/ prefix is required. <arch> currently can be
-i686 or x86_64. Rhe default value is frugalware-<arch>
+i686 or x86_64. The default value is frugalware-<arch>.
 
-Example: repoman up cabextract-1.1-1.fpm frugalware-i686/cabextract-1.1-1.fpm
+Example: repoman up sendmail-8.13.4-2-i686.fpm extra/frugalware-i686/
 .TP
 .BI upd|update " [repo]"
 Update a repo in /var/fst. If the option repo parameter omitted, the repoman
@@ -121,7 +151,7 @@ yet exists, then repoman will download it (it may take some time!).
 .TP
 .BI s|search " [regexp]"
 Search in those FrugalBuilds which are only available in source form. If the
-optional regexp parameter omitted, it'll list all source-only packages.
+optional regexp parameter omitted, it will list all source-only packages.
 
 .SH OPTIONS
 .TP
@@ -139,9 +169,9 @@ REPOMAN_LOGIN                Use different login name than the current.
 arch                         Update different architecture of the .fdb
                              than repoman is running on.
 .SH AUTHORS
-Miklos Vajna <vmiklos@frugalware.org>
+Written by Miklos Vajna and Laszlo Dvornik.
 .SH "REPORTING BUGS"
-Please report bugs to the frugalware-users@frugalware.org mailing list.
+Please report bugs to the <frugalware-users@frugalware.org> mailing list.
 .SH "SEE ALSO"
 .BR darcs (1),
 .BR pacman (8)

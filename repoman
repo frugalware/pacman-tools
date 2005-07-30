@@ -10,7 +10,7 @@ function usage()
 Usage: `basename $0` [global options] [command] [command options]
 
 Commands:
-cl|changelog [repository/]category/package  Generate a Changelog file
+cl|changelog [repository/]category/package  Generate a Changelog file.
 del|delete file                             Delete a file from FST.
 ls|list directory                           List a directory in FST.
 up|upload source destination                Upload a file to FST.
@@ -28,7 +28,7 @@ msg()
 
 delete()
 {
-	# strip leading / and any ..
+	# Strip leading / and any ..
 	file=`echo $1|sed 's|^/||;s|\.\./||g'`
 	msg "Deleting file: $file"
 	if [ "$verbose" == 0 ]; then
@@ -49,7 +49,7 @@ upload()
 	if [ -z "$2" ]; then
 		dest="frugalware-`uname -m`"
 	else
-		# strip leading / and any ..
+		# Strip leading / and any ..
 		dest=`echo $2 |sed 's|^/||;s|\.\./||g'`
 	fi
 	src=$1
@@ -114,7 +114,7 @@ update()
 	else
 		repo=$1
 	fi
-	# search for a mirror
+	# Search for a mirror.
 	[ -e /etc/pacman.d/frugalware-current ] || \
 		die "Can't find any mirror!\nMaybe try a 'pacman -S pacman'";
 	server=`grep ^Server /etc/pacman.d/frugalware-current |sed -n 's/.*= \(.*\)/\1/;1 p'`/..
@@ -124,7 +124,7 @@ update()
 		darcs pull
 	else
 		mkdir $fst_root &&
-		cd $fst_root && darcs  get --partial $server
+		cd $fst_root && darcs get --partial $server
 		# darcs bug (?)
 		[ -d $fst_root/anonymous_repo ] && \
 			mv $fst_root/anonymous_repo $fst_root/$reponame
@@ -134,7 +134,7 @@ update()
 chk_updated()
 {
 	if [ ! -d $1 ]; then
-		echo "error: could not find FrugalBuild scripts in $1"
+		echo "ERROR: Could not find FrugalBuild scripts in $1"
 		echo "       have you used 'repoman upd' yet?"
 		exit 1
 	fi
@@ -159,17 +159,17 @@ merge()
 	die "Can't find /etc/repoman.conf!"
 [ -e ~/.repoman.conf ] && . ~/.repoman.conf
 
-# initializating variables
+# Initializating variables.
 version='0.2.0'
 
-# checking for darcs
+# Checking for darcs.
 which darcs >/dev/null 2>&1
 if [ $? != 0 ]; then
 	echo "ERROR: Can't find darcs. You can install it with pacman -S darcs."
 	exit 1
 fi
 
-#pharsing parameters
+# Pharsing parameters.
 
 if ! [ -z "$REPOMAN_LOGIN" ]; then
 	lopts="-l $REPOMAN_LOGIN"
