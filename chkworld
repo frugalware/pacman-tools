@@ -2,7 +2,7 @@
 
 =head1 NAME
     
-chkwolrd - Compares FrugalBuild's up2date and pkgver informations
+chkworld - Compares FrugalBuild's up2date and pkgver informations
    
 =head1 SYNOPSIS
     
@@ -20,30 +20,30 @@ This way, you will always known, how fresh and crispy the packages you're mainta
 =item B<-t num>
 
 num is a value in seconds. After num, the checking continues with the next package, 
-shuting down child processes.
+shutting down child processes.
 Default is 30.
 
 =item B<-e>
 
-Enables standard error output. By default STDERR is redirected to /dev/null
+Enables standard error output. By default STDERR is redirected to /dev/null.
 
 =item B<-v>
 
-Be verbose
+Be verbose.
 
 =item B<-h>
 
-A little help
+A little help.
 
 =head1 AUTHORS
     
-Zsolt Szalai <xbit@frugalware.org>
+Written by Zsolt Szalai.
 
 Daniel Peder, Daniel.Peder@Infoset.COM - code from IO::FILE::String
     
 =head1 COPYRIGHT
     
-chkwolrd may be copied and modified under the terms of the GNU General Public
+chkworld may be copied and modified under the terms of the GNU General Public
 License v2.
     
 =cut
