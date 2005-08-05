@@ -164,7 +164,7 @@ find sub{
 	    print " $m8r\n";
 	} else {
 	    $passed++;
-	    print "Passed\n" if $opts{v};
+	    print "Passed\n" if $opts{v} && !$opts{c};
             print "\033[1;32mPassed\033[1;0m\n" if $opts{v} && $opts{c};
 	}
     }
