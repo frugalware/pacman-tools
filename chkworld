@@ -6,7 +6,7 @@ chkworld - Compares FrugalBuild's up2date and pkgver informations
    
 =head1 SYNOPSIS
     
-chkdep [-vhe] [-t num] directory1...
+chkdep [-vche] [-t num] directory1...
     
 =head1 DESCRIPTION
 
@@ -30,6 +30,10 @@ Enables standard error output. By default STDERR is redirected to /dev/null.
 =item B<-v>
 
 Be verbose.
+
+=item B<-c>
+
+Colorized output.
 
 =item B<-h>
 
@@ -105,15 +109,16 @@ $Getopt::Std::STANDARD_HELP_VERSION = 1;
 our $VERSION = "0.3";
 
 my %opts;
-getopts('vhet:', \%opts);
+getopts('vchet:', \%opts);
 
 sub HELP_MESSAGE(){
     print <<END
 chkworld - Compares FrugalBuild's up2date and pkgver informations
-usage: chkworld [-vth] directory ...
+usage: chkworld [-vcth] directory ...
          -t num
          -e enable standard error output
          -v be verbose
+         -c colorized output
 	 -h this help
        
 END
@@ -126,6 +131,10 @@ if (@ARGV) { @dirs = @ARGV; } else  {@dirs = ('.',);}  # // cant handler arrays 
 my $time = $opts{t} || 30;
 open STDERR, "/dev/null" unless $opts{e};
 my $count;
+my $needupdate = 0;
+my $maybebroken = 0;
+my $timeouted = 0;
+my $passed = 0;
 
 find sub{
     if (/^FrugalBuild\z/) {
@@ -143,16 +152,26 @@ find sub{
 	chomp $up2date unless $up2date eq 'TIMEOUTED';
 
 	if ($up2date eq 'TIMEOUTED') {	
+	    $timeouted++;
 	    print $info unless $opts{v};
-	    print "Timeouted! $m8r\n";
+	    print "Timeouted! $m8r\n" if !$opts{c};
+            print "\033[1;33mTimeouted!\033[1;0m $m8r\n" if $opts{c};
 	} elsif ($pkgver ne $up2date){
 	    print $info unless $opts{v};
-	    print ($up2date ? ("!= " . substr($up2date, 0, 12)) : "There were no output!");
+	    print ($up2date ? ("!= " . substr($up2date, 0, 12)) : "There were no output!") if !$opts{c};
+	    print ($up2date ? ("!= \033[1;31m" . substr($up2date, 0, 12)."\033[1;0m" )  : "\033[1;33mThere were no output!\033[1;0m") if $opts{c};
+            ($up2date ? ($needupdate++) : ($maybebroken++));
 	    print " $m8r\n";
 	} else {
+	    $passed++;
 	    print "Passed\n" if $opts{v};
+            print "\033[1;32mPassed\033[1;0m\n" if $opts{v} && $opts{c};
 	}
     }
 }, @dirs;
 
 print "\nTotal packages checked: $count\n";
+print "Passed                : $passed\n";
+print "Need to update        : $needupdate\n";
+print "Timeouted             : $timeouted\n";
+print "Maybe broken up2date  : $maybebroken\n";
