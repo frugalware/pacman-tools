@@ -6,6 +6,8 @@
 #
 # Converting rpm archives to a Frugalware fpm archive.
 
+export USE_COLOR="y"
+
 if [ -f /usr/lib/frugalware/fwmakepkg ] ; then
 	. /usr/lib/frugalware/fwmakepkg
 else
