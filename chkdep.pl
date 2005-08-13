@@ -100,10 +100,16 @@ END
 
 sub extractfpm{ #pkgfile
   my $pkg = shift;
+  my $comm;
   my @dir = split /\//, $pkg;
   my $name = "/tmp/" . pop @dir;
   die $! unless mkdir $name;
-  my $comm = "tar xzf $pkg -C $name";
+  my $gziporbzip = `/usr/bin/file $name | grep gzip`;
+  if ($gziporbzip) {
+  $comm = "tar xzf $pkg -C $name";
+  } else {
+  $comm = "tar xjf $pkg -C $name";
+  }
   $comm .= ' 2>/dev/null' unless $opts{v};
   qx/$comm/;
   return $name;
