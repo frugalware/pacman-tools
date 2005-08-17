@@ -24,20 +24,6 @@ BUILDDIR=$(mktemp -d)
 INSTALL=0
 REMOVE=0
 
-# Get dependencies of the given rpm archive.
-get_depends()
-{
-	for i in $(find . -mindepth 2 -type f) ; do
-		if [ -x ${i} ] ; then
-			for lib in $(ldd ${i}) ; do
-				if [ -f ${lib} ] ; then
-					pacman -Qo ${lib} | cut -d " " -f 5
-				fi
-			done
-		fi
-	done | sort -u
-}
-
 # Usage informations.
 usage()
 {
@@ -61,7 +47,7 @@ while (( $# > 1 )) ; do
 done
 
 # Get the absolute path of the given rpm archive.
-RPMPKG=$(python -c "import os.path; print os.path.abspath(\"$1\")")
+RPMPKG=$(cd `dirname $1`;echo `pwd`/`basename $1`)
 
 # Create directory structure from the rpm archive.
 Fmessage "Creating directories... "
@@ -106,20 +92,16 @@ pkgdesc = ${PKGDESC}
 url = ${URL}
 license = ${LICENSE}
 builddate = ${BUILDDATE}
-package = ${PACKAGER}
+packager = ${PACKAGER}
 size = ${SIZE}
 arch = ${ARCH}
 group = ${GROUP}" > ${BUILDDIR}/.PKGINFO
 
 # Get the dependencies and write they to the .PKGINFO file.
 Fmessage "Query dependencies... "
-depend=($(get_depends))
-for i in ${depend[*]} ; do
-	if [[ ${i} == xorg ]] ; then
-		echo "depend = x" >> ${BUILDDIR}/.PKGINFO
-	else
-		echo "depend = ${i}" >> ${BUILDDIR}/.PKGINFO
-	fi
+eval "`chkdep -d .`"
+for i in ${depends[*]} ; do
+	echo "depend = ${i}" >> ${BUILDDIR}/.PKGINFO
 done
 
 # Extracting existing install scripts and write them to .INSTALL.
@@ -146,9 +128,9 @@ FPMPKG=${CURDIR}/${PKGNAME}-${PKGVER}-${ARCH}.fpm
 Fmessage "Creating fpm archive $(basename ${FPMPKG})... "
 cd ${BUILDDIR}
 if [ -f ${BUILDDIR}/.INSTALL ]; then
-	tar -czvf ${FPMPKG} .PKGINFO .FILELIST .INSTALL * 2> /dev/null > /dev/null
+	tar -czjf ${FPMPKG} .PKGINFO .FILELIST .INSTALL * 2> /dev/null > /dev/null
 else
-	tar -czvf ${FPMPKG} .PKGINFO .FILELIST * 2> /dev/null > /dev/null
+	tar -czjf ${FPMPKG} .PKGINFO .FILELIST * 2> /dev/null > /dev/null
 fi
 
 cd ${CURDIR}
