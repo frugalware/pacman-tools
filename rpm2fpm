@@ -128,9 +128,9 @@ FPMPKG=${CURDIR}/${PKGNAME}-${PKGVER}-${ARCH}.fpm
 Fmessage "Creating fpm archive $(basename ${FPMPKG})... "
 cd ${BUILDDIR}
 if [ -f ${BUILDDIR}/.INSTALL ]; then
-	tar -czjf ${FPMPKG} .PKGINFO .FILELIST .INSTALL * 2> /dev/null > /dev/null
+	tar -cvjf ${FPMPKG} .PKGINFO .FILELIST .INSTALL * 2> /dev/null > /dev/null
 else
-	tar -czjf ${FPMPKG} .PKGINFO .FILELIST * 2> /dev/null > /dev/null
+	tar -cvjf ${FPMPKG} .PKGINFO .FILELIST * 2> /dev/null > /dev/null
 fi
 
 cd ${CURDIR}
