@@ -15,17 +15,25 @@ A typical package update should be done as follows:
 1) Get the repo and set defaults.
 
 .BR Note:
-We are recommended to you a mirror server and the --partial option!
+We recommend you to use a mirror server and the --partial option!
 
 Example for the first time:
 
 darcs get --partial http://ftp5.frugalware.org/packages/frugalware/pub/frugalware/frugalware-current/
+
+Example for the pacman-tools repo:
+
+darcs get --partial http://darcs.frugalware.org/repos/pacman-tools
 
 cd frugalware-current
 
 echo "yourname <email@addr.ess>" > _darcs/prefs/author
 
 echo 'username@darcs.frugalware.org:/home/ftp/pub/frugalware/frugalware-current' > _darcs/prefs/defaultrepo
+
+Or, for the pacman-tools repo:
+
+echo 'username@darcs.frugalware.org:/home/ftp/pub/other/pacman-tools/darcs' > _darcs/prefs/defaultrepo
 
 echo 'push apply-as vmiklos' >> _darcs/prefs/defaults
 
@@ -53,7 +61,9 @@ Or if you would like to rename a file in the source, run this:
 
 darcs mv 01-xorg-8.6.2-vmware-amd64.patch 02-xorg-6.8.2-vmware-amd64.patch
 
-Then build the packages with 'makepkg -c'.
+Then build the packages with 'makepkg -c', or better:
+
+su -c 'makepkg -Ra'
 
 .TP
 4) Recording the changes.
@@ -65,6 +75,8 @@ When recording the patch (if this is a package upgrade), its name must be $pkgna
 For example:
 
 xorg-6.8.2-2-i686
+
+This is the same as the full package name without trailing .fpm.
 
 .TP
 5) Delete the old source package(s).
@@ -78,7 +90,7 @@ repoman del source/base/readline/readline-5.0.tar.gz
 
 Here you only have to do a simple 'darcs push'.
 
-This command uploads the changes you made local to the server.
+This command uploads the changes you made locally to the server.
 
 .TP
 7) Upload the new source package(s).
@@ -166,6 +178,7 @@ Give verbose output.
 .Vb 2
 REPOMAN_LOGIN                Use different login name than the current.
 .Vb 2
+
 arch                         Update different architecture of the .fdb
                              than repoman is running on.
 .SH AUTHORS
