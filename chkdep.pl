@@ -104,7 +104,7 @@ sub extractfpm{ #pkgfile
   my @dir = split /\//, $pkg;
   my $name = "/tmp/" . pop @dir;
   die $! unless mkdir $name;
-  my $gziporbzip = `/usr/bin/file $name | grep gzip`;
+  my $gziporbzip = `/usr/bin/file $pkg | grep gzip >2 /dev/null`;
   if ($gziporbzip) {
   $comm = "tar xzf $pkg -C $name";
   } else {
