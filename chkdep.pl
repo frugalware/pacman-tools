@@ -72,7 +72,7 @@ use strict;
 use Getopt::Std;
 use Data::Dumper;
 $Getopt::Std::STANDARD_HELP_VERSION = 1;
-our $VERSION = "1.8";
+our $VERSION = "1.9";
 
 my %alias = ( 'xorg' => 'x' );
 my %reversalias = map { $alias{$_} => $_ } keys %alias;
@@ -100,16 +100,16 @@ END
 
 sub extractfpm{ #pkgfile
   my $pkg = shift;
-  my $comm;
   my @dir = split /\//, $pkg;
-  my $name = "/tmp/" . pop @dir;
+  my $name = "/tmp/" . (pop @dir) . '.' . $$;
   die $! unless mkdir $name;
-  my $gziporbzip = `/usr/bin/file $pkg | grep gzip >2 /dev/null`;
-  if ($gziporbzip) {
-  $comm = "tar xzf $pkg -C $name";
-  } else {
-  $comm = "tar xjf $pkg -C $name";
-  }
+#  my $gziporbzip = `/usr/bin/file $pkg | grep gzip >2 /dev/null`;
+#  if ($gziporbzip) {
+#  $comm = "tar xzf $pkg -C $name";
+#  } else {
+#  $comm = "tar xjf $pkg -C $name";
+#  }
+  my $comm = "tar x".(qx "/usr/bin/file $pkg" =~ /bzip2/ ? 'j' : 'z')."f $pkg -C $name";
   $comm .= ' 2>/dev/null' unless $opts{v};
   qx/$comm/;
   return $name;
@@ -121,7 +121,6 @@ sub ldddir{ #dir
     $comm .= ' 2>/dev/null' unless $opts{v};
     return qx/$comm/;
   }
-
 
 HELP_MESSAGE && die "Wrong option!" unless %opts;
 
@@ -150,28 +149,32 @@ my %libs;
 my %depsdep; # the dependencies' dependencies 
 
 for my $line (@ldd){
-  if ($line =~ /.* => (.+) \(.*\)/){
-    my $lib = $1;
+  if ($line =~ /(.*) => (.+) \(.*\)/){
+    my ($linked, $lib) = ($1,$2);
     if ($lib =~ /fakeroot/){
       print "fakeroot found in dependencies\n" if $opts{v};
       next if $opts{i};
     }
-    if (! $libs{$lib}) {
-      $libs{$lib} = 1;
-      my ($pkg) = qx/pacman -Qo $lib/ =~ /owned by (.*?)\s/;
-      print "WARNING: No package found containing $lib\n" if !$pkg && $opts{v};
-      
-      if ($pkg ne $pkgname) {
-	unless ($opts{f}){
-	  my ($pkgdeps) = qx/pacman -Qi $pkg/ =~ /Depends.*?: (.*?)Removes/s;
-	  foreach my $dd (split(' ',$pkgdeps)){
-	    $depsdep{$dd} = 1;
-	  }
-	}
-	# handle provides directive!
-	$pkg = $alias{$pkg} if $alias{$pkg};
+    if ($lib =~ /not found/) {
+      print "WARNING: $linked not found by ldd\n";
+    } else {
+      if (! $libs{$lib}) {
+	$libs{$lib} = 1;
+	my ($pkg) = qx/pacman -Qo $lib/ =~ /owned by (.*?)\s/;
+	print "WARNING: No package found containing $lib\n" if !$pkg && $opts{v};
 	
-	$pkgs{$pkg} = 1;
+	if ($pkg ne $pkgname) {
+	  unless ($opts{f}){
+	    my ($pkgdeps) = qx/pacman -Qi $pkg/ =~ /Depends.*?: (.*?)Removes/s;
+	    foreach my $dd (split(' ',$pkgdeps)){
+	      $depsdep{$dd} = 1;
+	    }
+	  }
+	  # handle provides directive!
+	  $pkg = $alias{$pkg} if $alias{$pkg};
+	  
+	  $pkgs{$pkg} = 1;
+	}
       }
     }
   }
