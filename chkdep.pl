@@ -142,13 +142,13 @@ my %libs;
 my %depsdep; # the dependencies' dependencies 
 
 for my $line (@ldd){
-  if ($line =~ /(.*) => (.+) \(.*\)/){
+  if ($line =~ /(.*) => (.+) (?:\(.*\))?/){
     my ($linked, $lib) = ($1,$2);
     if ($lib =~ /fakeroot/){
       print "fakeroot found in dependencies\n" if $opts{v};
       next if $opts{i};
     }
-    if ($lib =~ /not found/) {
+    if ($lib =~ /not/) {
       print "WARNING: $linked not found by ldd\n";
     } else {
       if (! $libs{$lib}) {
