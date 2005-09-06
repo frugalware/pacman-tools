@@ -103,14 +103,7 @@ sub extractfpm{ #pkgfile
   my @dir = split /\//, $pkg;
   my $name = "/tmp/" . (pop @dir) . '.' . $$;
   die $! unless mkdir $name;
-#  my $gziporbzip = `/usr/bin/file $pkg | grep gzip >2 /dev/null`;
-#  if ($gziporbzip) {
-#  $comm = "tar xzf $pkg -C $name";
-#  } else {
-#  $comm = "tar xjf $pkg -C $name";
-#  }
-  my $comm = "tar x".(qx "/usr/bin/file $pkg" =~ /bzip2/ ? 'j' : 'z')."f $pkg -C $name";
-  $comm .= ' 2>/dev/null' unless $opts{v};
+  my $comm = "tar x".(qx "/usr/bin/file $pkg" =~ /bzip2/ ? 'j' : 'z')."f $pkg -C $name" . (($opts{v}) ? '' : ' 2>/dev/null');
   qx/$comm/;
   return $name;
 }
