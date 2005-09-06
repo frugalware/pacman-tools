@@ -255,7 +255,9 @@ sub Record{
 
 sub Push{
   print "Pushing the patch\n";
-  apply "darcs push --match 'name $pkgname'" . ($noask? ' -a' : '');
+  my $modpkgname = $pkgname;
+  $modpkgname =~ s/\+/\\\+/g;
+  apply "darcs push --match 'name $modpkgname'" . ($noask? ' -a' : '');
 }
 
 sub Upload{
@@ -321,5 +323,3 @@ ACTIONS:
         -P darcs push - nothing, but provide options(in case of darcs mv)
         -U upload - repo, group, etc no prob. !sources, pkgs!
         -L cl repo, gproup pkgname
-
-
