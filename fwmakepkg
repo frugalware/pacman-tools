@@ -206,7 +206,7 @@ Fmake() {
 Fmakeinstall() {
 	Fmessage "Installing to the package directory..."
 	if [ -f GNUmakefile -o -f makefile -o -f Makefile ]; then
-		if [ -n "`grep DESTDIR Makefile`" ]; then
+		if grep -q DESTDIR GNUmakefile makefile Makefile 2>/dev/null; then
 			make DESTDIR="$Fdestdir" "$@" install || Fdie
 		else
 			make prefix="$Fdestdir"/"$Fprefix" "$@" install || Fdie
