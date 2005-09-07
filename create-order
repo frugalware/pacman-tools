@@ -1,0 +1,52 @@
+#!/bin/bash
+# Copyright 2005 by CSÉCSY László <boobaa@ajrg.hu>
+# This program is free software, released under the GPL v2 or any
+# later version. Idea from James Henstridge's work:
+# http://mail.gnome.org/archives/gnome-hackers/2001-May/msg00120.html
+
+function foo() {
+#	echo $1 | sed 's/+/_plus_/g;s/>=[0-9\.]\+//'
+	echo $1 | sed 's/>=[0-9\.]\+//;y/+-/PM/'
+}
+
+OUT=order
+cat >$OUT <<EOH
+#!/usr/bin/make -f
+# -*- makefile -*-
+
+# Copyright 2005 by CSÉCSY László <boobaa@ajrg.hu>
+# This program is free software, released under the GPL v2 or any
+# later version. Based on James Henstridge's work:
+# http://mail.gnome.org/archives/gnome-hackers/2001-May/msg00120.html
+#
+# Usage: order <package1> (<package2>...)
+#
+# Has minor bugs; version number depends are stripped,
+# - is M, + is P
+#
+# List deps for all packages.  When each rule is processed,
+# it prints its target.
+EOH
+IN=$(find . -name FrugalBuild | grep -v '_darcs')
+for kulso in $IN
+do
+	echo "Working on $kulso"
+	source $kulso
+	echo -n "$(foo $pkgname):" >>$OUT
+	for i in "${depends[@]}"
+	do
+		echo -n " $(foo $i)" >>$OUT
+	done
+#	for i in "${makedepends[@]}"
+#	do
+#		echo -n " $(foo $i)" >>$OUT
+#	done
+	echo >>$OUT
+done
+cat >>$OUT <<EOF
+
+# the rule that actually prints stuff
+%: ; @echo "\$@"
+task-%: ; @:
+EOF
+chmod +x $OUT

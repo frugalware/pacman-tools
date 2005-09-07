@@ -1,0 +1,682 @@
+#!/usr/bin/make -f
+# -*- makefile -*-
+
+# Copyright 2005 by CSÉCSY László <boobaa@ajrg.hu>
+# This program is free software, released under the GPL v2 or any
+# later version. Based on James Henstridge's work:
+# http://mail.gnome.org/archives/gnome-hackers/2001-May/msg00120.html
+#
+# Usage: order <package1> (<package2>...)
+#
+# Has minor bugs; version number depends are stripped,
+# - is M, + is P
+#
+# List deps for all packages.  When each rule is processed,
+# it prints its target.
+a2ps: glibc urwMfonts psutils
+acct: glibc
+acpi: glibc
+alien: perl
+ash: glibc
+aspell: libstdcPP ncurses
+at: glibc
+bashMcompletion: bash
+bc: glibc
+bpe: ncurses
+cabextract: glibc
+cdrtools: glibc
+chkrootkit: glibc
+clamav: gmp bzip2 curl
+docbookMxml: libxml2
+docbookMxsl: libxml2 libxslt
+dosemu: glibc
+dtach: glibc
+dvdPrwMtools: glibc
+dvdrtools: glibc
+enscript: glibc
+foomaticMfilters: perl libxml2 cups
+foomaticMfiltersMppds: perl libxml2 foomaticMfilters
+gamin: glib2
+gfxboot: glibc perl
+gimpMprint: cups readline
+gnupg: zlib bzip2 texinfo libusb readline
+gpgMagent: libgcrypt pth zlib
+groff: perl gccMlib libstdcPP
+hd2u: popt
+hddtemp: glibc
+j2re: libstdcPP
+jed: slang gpm
+joe: glibc ncurses gpm
+lmsensors: glibc
+localepurge: bash
+lsof: glibc
+lua: glibc
+lvm2: deviceMmapper
+manMpages:
+mc: e2fsprogs slang glib2 popt
+memtest86P:
+most: slang glibc
+mysql: openssl libstdcPP zlib ncurses perlMdbi perlMmysql
+nano: ncurses
+openjade: libstdcPP opensp sgmlMcommon
+opensp: glibc sgmlMcommon
+parted: e2fsprogs readline
+pinentry: libcap ncurses
+postgresql: openssl zlib readline
+psutils: glibc
+quotaMtools: e2fsprogs
+raidtools: popt
+reiser4progs: e2fsprogs readline libaal=1.0.5
+rpm: bzip2 gccMlib sqlite3 libstdcPP popt neon
+rzip: bzip2
+sablotron: glibc expat
+screen: ncurses
+sgmlMcommon:
+shfs: glibc kernel=2.6.13M1
+snapscreenshot: gcc
+sudo: glibc
+sysfsutils: glibc
+texinfo: ncurses netMtools
+ttmkfdir: freetype2 libstdcPP
+uml_utilities: glibc ncurses readline
+unrar: libstdcPP
+urwMfonts: fontconfigM7
+zisofsMtools: zlib glibc
+zsh: termcap ncurses
+cvs2cl: perl cvs
+pwgen: glibc
+metapixel: libpng libjpeg
+acpid: glibc
+adjtimex: glibc
+apmd: glibc
+bash: glibc readline
+bootsplash: freetype2 chkconfig libmng lcms
+bzip2: glibc bash
+chkconfig: glibc popt
+coreutils: bash glibc
+cpio: bash
+cups: openssl libtiff libjpeg libpng
+db: libstdcPP
+dcron: sysklogd psmisc
+debianutils: glibc
+dialog: ncurses
+diffutils: glibc bash
+dosfstools: glibc bash
+e2fsprogs: glibc
+ed: glibc
+eject: glibc
+fbset: glibc
+fdutils: bash glibc
+file: glibc zlib
+findutils: glibc bash
+flex: glibc bash
+frugalware:
+gawk: glibc
+gdbm: glibc
+genpower: glibc bash
+gettext: glibc
+glibc:
+gpm: ncurses
+grep: pcre
+grub: reiser4progs ncurses texinfo debianutils
+gzip: glibc bash
+hdparm: glibc
+hotplug:
+isapnptools: glibc
+jfsutils: e2fsprogs
+kbd: sed bash glibc bootsplash
+kernel: moduleMinitMtools
+less: ncurses bash file
+lha: glibc
+linux32: glibc
+logrotate: popt nail
+man: groff less gzip gawk coreutils bash
+mdadm: glibc
+moduleMinitMtools: zlib
+ncurses: glibc
+netMtools: glibc debianutils
+pacman: zlib bzip2
+patch: ed
+pciutils: glibc
+pcmciaMcs: glibc
+perl: gdbm db
+procps: ncurses
+psmisc: glibc ncurses
+readline: ncurses
+reiserfsprogs: e2fsprogs
+sed: glibc
+setserial: glibc
+shadow: glibc
+sharutils: gettext
+slocate: utilMlinux frugalware
+smartmontools: bash
+sysklogd: logrotate netkitMbase
+sysvinit: shadow utilMlinux coreutils glibc gawk
+tar: bash
+tcsh: ncurses
+time: glibc
+tree: glibc
+udev: glibc hotplug
+unarj: glibc
+unzip: glibc
+updated: glibc
+usbutils: libusb
+utilMlinux: bash ncurses zlib e2fsprogs texinfo
+vim: ncurses
+which: glibc
+xfsprogs: e2fsprogs
+xfsprogsMacl: xfsprogsMattr
+xfsprogsMattr: glibc
+xfsprogsMdmapi: xfsprogs
+xfsprogsMxfsdump: xfsprogsMdmapi xfsprogsMattr ncurses
+zip: glibc
+zlib: glibc
+zoo: glibc
+autoconf: gawk m4 diffutils bash
+automake: perl bash
+binutils: bash
+bison: glibc
+bkMclient: zlib
+ccache: glibc
+chicken: pcre
+cmucl: glibc
+cvs: zlib
+darcs: gmp curl readline mta
+diffstat: glibc
+expect: glibc tcl
+fakeroot: glibc
+gcc: glibc binutils libstdcPP gccMlib
+gccMgfortran: gcc gmp
+gdb: readline
+ghc: gmp glibc ncurses
+guile: readline
+indent: glibc
+j2sdk: j2re
+jam: glibc
+kernelMheaders:
+kernelMsource: make gcc kernelMheaders
+libtool: bash
+m4: glibc bash
+make: glibc bash
+mono: glibc glib2 icu zlib
+nasm: glibc
+ncursesMruby: ruby ncurses
+pacmanMtools: bash perl pacman wget python
+pccts:
+perlMdbi: glibc perl
+perlMhtmlMparser: perlMhtmlMtagset
+perlMhtmlMtagset: perl
+perlMlibwww: perlMuri perlMhtmlMparser
+perlMmp3Minfo: glibc perl
+perlMmysql: mysql perl
+perlMtermMreadkey: perl
+perlMuri: perl
+perlMxml: perl expat
+php: openssl libjpeg freetype2 libpng gdbm libxslt curl libxml2
+pyrex: python
+python: glibc db bzip2 gdbm openssl
+pythonMtools: python
+ruby: gdbm db openssl zlib readline termcap
+sbcl: glibc
+scons: python
+strace: glibc
+tcl: bash
+unixodbc: readline
+tetexMkpathsea: glibc
+gccMgcj: gcc gccMlib
+sbclMbin: glibc
+atk: glib2
+bugMbuddy: gnomeMdesktop gnomeMmenus scrollkeeper desktopMfileMutils
+controlMcenter: gnomeMdesktop gnomeMmenus metacity libxklavier nautilus gstMplugins desktopMfileMutils
+dbus: expat
+desktopMfileMutils: glib2 popt
+eel: gail gnomeMmenus gnomeMdesktop
+eog: libexif libgnomeui scrollkeeper desktopMfileMutils
+esd: audiofile alsaMlib
+evolution: gal evolutionMdataMserver gtkhtml gnomeMpilotMconduits gstMplugins gnomeMspell scrollkeeper
+evolutionMdataMserver: nss libsoup libgnomeui openldap
+evolutionMwebcal: evolutionMdataMserver
+fileMroller: nautilus scrollkeeper desktopMfileMutils
+gail: libgnomecanvas
+gal: libgnomeprintui libgnomeui
+gcalctool: libgnomeui scrollkeeper
+gconf: orbit2 gtkP2 libxml2 openldap
+gconfMeditor: libgnomeui scrollkeeper
+gdkMpixbuf: libtiff libjpeg gtkP libpng
+gdm: libgnomeui librsvg scrollkeeper gksu
+gedit: aspell gtksourceview eel libgnomeprintui scrollkeeper desktopMfileMutils
+ggv: libgnomeui espgs scrollkeeper desktopMfileMutils
+gksu: libgksu gconf libgksuui gnomeMkeyring
+glibmm: libsigcPP2 glib2
+gnomeMapplets: gail gnomeMpanel libgtop libxklavier libwnck gstMplugins gucharmap
+gnomeMbackgrounds: controlMcenter
+gnomeMcommon: scrollkeeper
+gnomeMdesktop: libgnomeui startupMnotification scrollkeeper
+gnomeMdocMutils: libxslt scrollkeeper
+gnomeMgames: guile libgnomeui librsvg scrollkeeper desktopMfileMutils
+gnomeMiconMtheme: hicolorMiconMtheme
+gnomeMkeyring: gtkP2
+gnomeMmedia: gstMplugins gail dbus nautilusMcdMburner scrollkeeper
+gnomeMmenus: gnomeMvfs
+gnomeMmimeMdata: sharedMmimeMinfo
+gnomeMnetstatus: gnomeMpanel scrollkeeper
+gnomeMnettool: libglade gconf netMtools iputils whois traceroute bsdMfinger
+gnomeMpanel: gnomeMdesktop gnomeMmenus libwnck evolutionMdataMserver scrollkeeper
+gnomeMpilot: pilotMlink gnomeMpanel scrollkeeper
+gnomeMpilotMconduits: gnomeMpilot
+gnomeMpython: pygtk pyorbit libgnomeui
+gnomeMpythonMextras: gnomeMpython gnomeMpanel libgtkhtml gtksourceview firefox gtkspell totem libgtop
+gnomeMsession: libgnomeui xscreensaver
+gnomeMspell: aspell libgnomeui
+gnomeMsystemMmonitor: libgnomeui libgtop libwnck scrollkeeper
+gnomeMterminal: libgnomeui startupMnotification vte scrollkeeper
+gnomeMthemes: gtkP2Mengines
+gnomeMutils: libgnomeprintui gnomeMpanel e2fsprogs scrollkeeper desktopMfileMutils hal
+gnomeMvfs: gconf libbonobo bzip2 cdparanoia heimdal samba hal gnomeMmimeMdata gamin pmount
+gnomeMvolumeMmanager: gnomeMmedia gthumb totem
+gnome2MuserMdocs: scrollkeeper
+gnomebaker: libgnomeui gtkP2 libglade cdrtools mpg321 vorbisMtools sox dvdPrwMtools
+gstMplugins: python gconf gstreamer gtkP2 alsaMlib audiofile cdparanoia libdvdread libdvdnav esd faac faad2 flac gnomeMvfs lame libdv libmng libmad libid3tag libmikmod mjpegtools libmusicbrainz libraw1394 sdl libsndfile libvorbis libtheora a52dec aalib libavc1394
+gstreamer: libgnomeui
+gthumb: libgnomeui libgnomeprintui libgphoto2 scrollkeeper desktopMfileMutils
+gtkP: glib x
+gtkP2: libtiff atk pango libjpeg libpng
+gtkP2Mengines: gtkP2
+gtkP2MenginesMclearlooks: gtkP2
+gtkMdoc: openjade pkgconfig perl libxslt libxml2 docbookMxsl docbookMxml
+gtkMsharp: mono gtkP2 libxslt libgnomeui libgnomeprintui libgda libgnomedb librsvg gtkhtml vte
+gtkam: libgnomeui libgphoto2 gimp libexifMgtk
+gtkhtml: gail libgnomeui libgnomeprintui libsoup gnomeMiconMtheme
+gtkmm: glibmm gtkP2
+gtksourceview: libgnomeprint gtkP2
+gucharmap: libgnomeui scrollkeeper
+hal: dbus glib2 libcap python libusb popt pciutils
+intltool: perl popt expat perlMxml
+libbonobo: orbit2 libxml2 perl
+libbonoboui: libgnomecanvas libgnome
+libcroco: glib2 libxml2
+libexifMgtk: gtkP2 libexif
+libgda: glib2 libxslt readline popt scrollkeeper
+libgksu: glib2
+libgksuui: gtkP2
+libglade: gtkP2 libxml2 python
+libgnome: esd gnomeMvfs gtkP2MenginesMclearlooks
+libgnomecanvas: libglade libart_lgpl
+libgnomecups: glib2 cups
+libgnomedb: libgnomeui libgnomeprint libgda gtksourceview
+libgnomeprint: pango libxml2 libgnomecups fontconfig popt libart_lgpl
+libgnomeprintui: libgnomeprint libgnomecanvas gnomeMiconMtheme
+libgnomeui: libbonoboui gnomeMkeyring
+libgsf: gnomeMvfs
+libgtkhtml: gail gnomeMvfs
+libgtop: glib2 popt texinfo
+libidl: glib2
+librsvg: libxml2 fontconfig openssl bzip2 glib2 popt libart_lgpl libgsf libcroco libgnomeprintui
+libsoup: glib2 gnutls libxml2 libgcrypt
+libwnck: gtkP2 startupMnotification
+libxklavier: x libxml2
+metacity: startupMnotification gconf metacityMthemesMclearlooks
+metacityMthemesMclearlooks:
+nautilus: eel librsvg libexif eject desktopMfileMutils
+nautilusMcdMburner: nautilus cdrtools
+orbit2: libidl glib2 popt openssl gnomeMcommon
+pango: x glib2 cairo
+pmount: sysfsutils hal
+pygtk: python libglade pycairo
+pyorbit: python orbit2
+scrollkeeper: docbookMxml libxslt
+startupMnotification: x
+totem: xineMlib nautilusMcdMburner scrollkeeper desktopMfileMutils
+vino: libgnomeui gnutls
+vte: gtkP2
+yelp: libgnomeui libxslt firefox=1.0.6
+zenity: libgnomecanvas scrollkeeper
+evince: libgnomeui libgnomeprintui poppler espgs scrollkeeper desktopMfileMutils nautilus t1lib dbus tetexMkpathsea
+arts: audiofile qt libmad libvorbis glib2 alsaMlib
+k3b: flac libsamplerate hal libmusicbrainz taglib ffmpeg kdelibs cdrtools cdparanoia normalize sox dvdPrwMtools
+kbiff: qt x gamin fontconfig expat kdelibs libart_lgpl
+kdeaccessibility: kdebase=3.4.2
+kdeaddons: kdemultimedia=3.4.2
+kdeadmin: kdebase=3.4.2
+kdeartwork: kdebase=3.4.2
+kdebase: kdelibs=3.4.2 libraw1394 lmsensors
+kdebindings: kdebase=3.4.2 pyqt sip
+kdeedu: kdebase=3.4.2
+kdegames: kdebase=3.4.2
+kdegraphics: kdebase=3.4.2 imlib glut saneMbackends libgphoto2
+kdelibs: arts=1.4.2 hicolorMiconMtheme libxslt pcre lesstif libart_lgpl gamin openldap cups bzip2
+kdemultimedia: kdebase=3.4.2 cdparanoia lame flac libmusicbrainz taglib trm xineMlib libsamplerate libxml2 esd
+kdenetwork: kdebase=3.4.2
+kdepim: kdebase=3.4.2
+kdesdk: kdebase=3.4.2
+kdetoys: kdebase=3.4.2
+kdeutils: kdebase=3.4.2
+kdevelop: kdebase=3.4.2
+kdewebdev: kdelibs=3.4.2
+krusader: kdebindings
+ksensors: kdebase
+libkexif: kdelibs libexif qt
+libkipi: kdelibs qt
+pyqt: qt
+qt: x libpng libjpeg
+smb4k: qt kdelibs kdebase
+a52dec: glibc
+aalib: glibc gpm ncurses
+beecrypt: glibc
+cgilib: glibc
+deviceMmapper: glibc
+expat: glibc
+fontconfig: expat freetype2
+freetype1: glibc
+freetype2: zlib
+fribidi: glibc
+gccMlib: glibc
+gd: fontconfig libjpeg libpng freetype2
+glib: glibc
+glib2: glibc
+glut: glibc
+gmp: glibc texinfo
+gnutls: libtasn1 opencdk libgcrypt lzo
+heimdal: db openssl e2fsprogs texinfo termcap
+icu: libstdcPP bash
+lcms: libjpeg zlib libtiff
+libaal: glibc
+libart_lgpl: glibc
+libassuan:
+libavc1394: libraw1394
+libcap: glibc
+libcdio: ncurses popt
+libdc1394: libraw1394
+libdvb: libstdcPP
+libdvdcss: glibc
+libdvdnav: glibc libdvdread libdvdcss
+libdvdread: libdvdcss
+libevent: glibc
+libexif: glibc
+libgc: gccMlib
+libgcrypt: libgpgMerror texinfo
+libgpgMerror: glibc
+libgphoto2: glibc libusb libexif libjpeg
+libieee1284: glibc python
+libjpeg: glibc
+libksba: glibc
+libmad: glibc
+libmikmod: glibc texinfo
+libmng: lcms
+libogg: glibc
+libpcap: glibc
+libpng: zlib glibc
+libraw1394: glibc
+libsigcPP12: libstdcPP
+libsigcPP2: libstdcPP
+libsndfile: alsaMlib
+libstdcPP: gccMlib
+libtar: zlib
+libtasn1: glibc texinfo
+libtheora: libogg
+libtiff: glibc
+libuninameslist:
+libusb: libstdcPP
+libvorbis: glibc libogg
+libxml2: zlib
+libxslt: libgcrypt libxml2
+lzo: glibc
+nss: glibc
+openal: glibc
+opencdk: libgcrypt zlib
+openssl: glibc
+pcre: libstdcPP
+pilotMlink: readline ncurses libpng libusb
+pkgconfig: glibc
+popt: glibc gettext
+pth: glibc
+slang: glibc
+sqlite3: readline
+taglib: libstdcPP zlib
+termcap: glibc
+libarchive:
+stlport: libstdcPP
+libsvg: libxml2
+alsaMlib: glibc
+alsaMoss: alsaMlib
+alsaMutils: alsaMlib dialog pciutils
+audiofile: glibc
+aumix: glibc ncurses gpm
+bashburn: bash cdrtools cdrdao mpg321 lame vorbisMtools flac eject
+cdparanoia: glibc
+cdrdao: libmad lame libstdcPP libao libvorbis
+codecs: glibc
+faac: glibc faad2
+faad2: libstdcPP
+ffmpeg: a52dec freetype2 lame faac libvorbis libdc1394 xvidcore libtheora
+flac: glibc libogg
+gphoto2: glibc libgphoto2 libexif libjpeg ncurses popt readline aalib
+id3lib: libstdcPP zlib
+lame: glibc ncurses
+libao: alsaMlib
+libid3tag: zlib
+libmusicbrainz: expat
+libsamplerate: glibc libsndfile
+lsdvd: glibc libdvdread
+mpg321: libao libid3tag libmad
+mpgtx: libstdcPP
+normalize: libmad glibc
+saneMbackends: libieee1284 libgphoto2
+sox: libvorbis lame libmad bash
+streamdvd: libdvdread
+trm: libmusicbrainz id3lib libvorbis
+uade: alsaMlib
+vcdimager: libcdio libxml2
+vorbisMtools: libvorbis libao libogg
+xvidcore: glibc
+mpd: libmikmod flac libao audiofile libvorbis faad2 libid3tag libmad
+apache: gdbm db openssl expat
+biffPcomsat: glibc portmap
+bind: openssl
+bitchx: glibc openssl ncurses
+bridgeMutils: glibc
+bsdMfinger: glibc portmap
+centericq: libjpeg ncurses openssl curl libstdcPP
+courierMauthlib: expect openldap mysql postgresql gdbm procps
+courierMimap: courierMauthlib
+ctorrent: openssl
+curl: openssl=0.9.8 zlib
+cvsup: zlib
+cyrusMsasl: heimdal gdbm mysql
+dhcp: glibc
+dhcpcd: glibc
+elinks: expat bzip2 openssl=0.9.8 gpm zlib lua
+ethtool: glibc
+fetchmail: openssl
+icmpinfo: glibc
+inetd: glibc
+iproute2: glibc
+iptables: glibc
+iptraf: glibc
+iputils: glibc netkitMbase
+irssi: openssl glib2 ncurses
+keychain: openssh bash grep
+lftp: libgcrypt gnutls expat gccMlib zlib readline
+lynx: ncurses
+minicom:
+mrtg: glibc gd
+mtrMnc: termcap ncurses
+mutt: ncurses openssl
+nail: heimdal
+ncftp: ncurses
+neon: heimdal expat zlib
+netkitMbase: glibc portmap
+netkitMbootparamd: glibc portmap
+netkitMftp: glibc portmap readline
+netkitMntalk: glibc portmap ncurses
+netkitMrouted: glibc portmap
+netkitMrsh: glibc portmap
+netkitMrusers: glibc portmap
+netkitMrwall: glibc portmap
+netkitMrwho: glibc portmap
+netkitMtelnet: glibc portmap ncurses
+netkitMtimed: glibc portmap
+netselect:
+netwrite: glibc portmap
+nfsMutils: portmap nfsidmap libevent
+nfsidmap: glibc openssl openldap
+nmap: pcre openssl
+openldap: db openssl libtool cyrusMsasl
+openntpd: openssl
+openssh: openssl=0.9.8 zlib
+pidentd: glibc openssl
+pine: ncurses openssl
+popa3d: openssl
+portmap: glibc
+postfix: db pcre cyrusMsasl mysql
+ppp: glibc
+procmail: glibc
+proftpd: glibc openssl ncurses
+raggle: ncursesMruby
+rdate: glibc
+rpMpppoe: ppp
+rrdtool: glibc gd cgilib
+rsync: popt
+samba: heimdal xfsprogsMattr openldap readline popt
+scponly: openssh binutils
+tcp_wrappers: bash glibc
+tcpdump: openssl libpcap
+tftpMhpa: termcap readline
+traceroute: glibc
+vtun: openssl zlib lzo
+wget: openssl=0.9.8 texinfo
+whois: glibc
+wireless_tools: pcmciaMcs
+wnews: ncurses
+wvdial: wvstreams
+wvstreams: libvorbis gamin openssl
+aterm: x
+bbkeys: blackbox perl
+blackbox: x
+corefonts: x cabextract ttmkfdir
+enlightenment: fnlib esd imlib2
+eterm: freetype1 libast
+fvwm: x gtkP imlib termcap readline
+hicolorMiconMtheme:
+icewm: x imlib libpng libjpeg libungif zlib libtiff
+idesk: imlib2 startupMnotification
+numlockx: x
+obconf: openbox gtkP2 libglade
+openbox: fontconfig libxml2 glib2 startupMnotification
+ratpoison: glibc readline ncurses x
+sharedMmimeMinfo: libxml2 glib2
+windowmaker: x libtiff zlib libjpeg libungif libpng
+wmi: x
+xMcursorsMindustrial: x
+xorg: ncurses fontconfig libstdcPP libpng
+xscreensaver: freetype2 libglade gtkP2 libxml2 expat
+ivman: libxml2 hal pmount
+amsn: libtiff libjpeg imlib tk
+blender: sdl freetype2 gettext libjpeg libpng
+bmp: gtkP2 libvorbis esd alsaMlib expat id3lib libglade
+d4x: gtkP2 esd openssl
+dvdauthor: imagemagick libdvdread
+e16keyedit: enlightenment
+e16menuedit: enlightenment
+e16menuedit2: enlightenment libglade
+emacs: xaw3d libtiff libjpeg libungif ncurses zlib libpng
+espgs: x gimpMprint glib foomaticMfilters
+firefox: gtkP2 libidl desktopMfileMutils
+fontforge: libuninameslist x
+frugalpkg: pacman pygtk sharedMmimeMinfo
+frugalrledit: chkconfig pygtk
+gaim: gtkP2 libao audiofile gtkspell gnutls startupMnotification
+gaimMpluginMencryption: gaim nss
+gaimMpluginMextendedprefs: gaim
+gftp: gtkP2 openssl readline
+gimp: librsvg libmng libexifM3 alsaMlib libgtkhtml desktopMfileMutils gimpMprint lcms
+gkrellm: gtkP2 libgcrypt gnutls
+gqview: gtkP2
+gvim: gpm gtkP2
+imagemagick: freetype2 x libxml2 bzip2 lcms libtool gccMlib
+inkscape: libgc gtkmm libxslt gtkspell gnomeMvfs desktopMfileMutils
+mjpegtools: libjpeg libpng sdl alsaMlib libdv
+mplayer: esd lame libtheora libdv cdparanoia termcap libmad libungif xvidcore aalib lzo sdl ffmpeg libjpeg
+mtr: glibc glib termcap x gtkP ncurses
+netpbm: perl libjpeg libpng libtiff
+openoffice.org: db perl gtkP2 gnomeMvfs libxml2 libart_lgpl startupMnotification fontconfig libpng imagemagick flex bison zip unzip expat cups desktopMfileMutils
+rdesktop: x openssl
+thunderbird: gtkP2 libidl
+torsmo: glibc sed grep x
+tvtime: freetype2 x libpng libxml2
+valknut: qt dclib
+wine: x
+winki: gnomeMpython libdvb lsdvd mplayer pygtk python vcdimager
+xchat: gtkP2 openssl
+xineMui: xineMlib curl
+xmms: gtkP libvorbis esd alsaMlib libmikmod
+xpdf: zlib freetype2 lesstif t1lib
+dbh: glibc
+gtkMxfceMengine: gtkP2
+libxfce4mcs: libxfce4util
+libxfce4util: glib2
+libxfcegui4: gtkP2 libxfce4util hicolorMiconMtheme dbh startupMnotification
+xfcalendar: dbh libxfce4mcs libxfcegui4 startupMnotification
+xfceMmcsMmanager: libxfcegui4 libxfce4mcs startupMnotification
+xfceMmcsMplugins: xfceMmcsMmanager
+xfceMutils: libxfcegui4 startupMnotification dbh libxfce4mcs
+xfce4Mappfinder: libxfcegui4 startupMnotification
+xfce4Martwork: xfdesktop
+xfce4MbatteryMplugin: xfce4Mpanel
+xfce4MclipmanMplugin: xfce4Mpanel
+xfce4McpugraphMplugin: xfce4Mpanel
+xfce4MdatetimeMplugin: xfce4Mpanel
+xfce4MdiskperfMplugin: xfce4Mpanel
+xfce4MfsguardMplugin: xfce4Mpanel
+xfce4MiconMtheme:
+xfce4Miconbox: libxfce4mcs libxfcegui4 startupMnotification
+xfce4MminicmdMplugin: xfce4Mpanel libxfce4util
+xfce4Mmixer: libxml2 libxfcegui4 startupMnotification libxfce4mcs
+xfce4MnetloadMplugin: xfce4Mpanel
+xfce4MnotesMplugin: xfce4Mpanel
+xfce4Mpanel: libxml2 libxfcegui4 startupMnotification libxfce4mcs
+xfce4Msession: libxfcegui4 startupMnotification libxfce4mcs
+xfce4MshowdesktopMplugin: xfce4Mpanel
+xfce4MsystemloadMplugin: xfce4Mpanel
+xfce4Msystray: libxfcegui4 startupMnotification xfce4Mpanel
+xfce4MtaskbarMplugin: xfce4Mpanel
+xfce4Mtoys: libxfcegui4 startupMnotification xfce4Mpanel
+xfce4MtriggerMlauncher: xfce4Mpanel
+xfce4MwavelanMplugin: xfce4Mpanel
+xfce4MweatherMplugin: xfce4Mpanel
+xfce4MwindowlistMplugin: xfce4Mpanel
+xfce4MxkbMplugin: xfce4Mpanel
+xfce4MxmmsMplugin: xfce4Mpanel songplayer
+xfdesktop: libxml2 libxfcegui4 startupMnotification libxfce4mcs
+xffm: dbh libxfce4mcs libxfcegui4
+xfprint: libxfce4mcs libxfcegui4 startupMnotification cups a2ps
+xfwm4: libxfcegui4 startupMnotification libxfce4mcs
+xfwm4Mthemes: xfwm4
+dclib: bzip2 openssl libstdcPP libxml2
+flashplugin: zlib x
+fnlib: imlib libjpeg libtiff libpng libungif zlib x
+ftgl: freetype2
+gtkspell: gtkP2 aspell
+imlib: gtkP libungif
+imlib2: libjpeg libtiff libpng libungif bzip2 x libtool
+lesstif: x
+libast: x imlib2 pcre freetype2
+libdv: popt gtkP
+libungif: x
+mplayerplugMin: mplayer nss
+sdl: x esd alsaMlib aalib
+sdlimage: sdl libjpeg
+sip: qt
+t1lib: x
+tk: tcl x
+xaw3d: x
+xineMlib: imagemagick libmng aalib sdl flac libtheora arts gnomeMvfs gcc
+poppler: gtkP2 libstdcPP cairo
+glitz: x
+cairo: x glitz
+libsvgMcairo: libsvg cairo libjpeg
+pycairo: gtkP2 libsvgMcairo pygtk
+
+# the rule that actually prints stuff
+%: ; @echo "$@"
+task-%: ; @:
