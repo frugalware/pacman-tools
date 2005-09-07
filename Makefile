@@ -41,6 +41,7 @@ install:
 	$(INSTALL) rf $(DESTDIR)$(bindir)
 	$(INSTALL) -m644 rf.1 $(DESTDIR)$(man1dir)
 	$(INSTALL) genchangelog $(DESTDIR)$(bindir)
+	$(INSTALL) -m644 genchangelog.conf $(DESTDIR)$(sysconfdir)
 	$(INSTALL) repoman $(DESTDIR)$(bindir)
 	$(INSTALL) -m644 repoman.1 $(DESTDIR)$(man1dir)
 	$(INSTALL) -m644 repoman.conf $(DESTDIR)$(sysconfdir)

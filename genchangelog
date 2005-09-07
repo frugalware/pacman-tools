@@ -1,3 +1,24 @@
 #!/bin/bash
 
+. /etc/genchangelog.conf
+
+echo -n "running darcs changes... "
 darcs changes FrugalBuild > Changelog
+echo "done."
+
+echo -n "updating mysql database... "
+[ -z "$arch" ] && arch=`arch`
+repo=`pwd|sed 's|.*/\(.*\)/.*/.*/.*|\1|'`
+if [ "$repo" != "extra" ]; then
+	repo="frugalware"
+fi
+pkgname=`pwd|sed 's|.*/\(.*\)|\1|'`
+
+if [ "$repo" == "frugalware" ]; then
+	cd ../../../frugalware-$arch
+	../tools/fdb2db -b ../source/ -r frugalware -e $fwver -f frugalware-$fwver.fdb -a $arch -h $dbhost -u $dbuser -d $dbname -t $dbtable -c $pkgname
+else
+	cd ../../../frugalware-$arch
+	../../tools/fdb2db -b ../source/ -r extra -e $fwver -f extra-$fwver.fdb -a $arch -h $dbhost -u $dbuser -d $dbname -t $dbtable -c $pkgname
+fi
+echo "done."
