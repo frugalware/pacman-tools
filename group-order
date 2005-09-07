@@ -1,0 +1,20 @@
+#!/bin/sh
+
+# Copyright 2005 by CSÉCSY László <boobaa@ajrg.hu>
+# This program is free software, released under the GPL v2 or any
+# later version. Ideas from VMiklos, krix, xbit
+#
+# must be run as root
+# takes one argument: the group to be examined
+
+OWNTMPDIR=`mktemp -d /tmp/order.XXXXXX` || exit 1
+GRPPKGS=`pacman -r $OWNTMPDIR -Syg $1  | grep -v '#\|::'`
+GRPDEPS=`echo -n | pacman -r $OWNTMPDIR -Sy $GRPPKGS | grep -- '-[0-9\.]\+' | sed 's/^Targets: //;s/\(-[0-9]\+\) \([a-z]\)/\1\n\2/g;s/^ \+\(.*\)/\1/' | sed 's/-[^-]\+-[^-]\+$//'`
+for i in $GRPDEPS
+do
+	if echo "$GRPPKGS " | grep -q " $i "
+	then
+		echo $i
+	fi
+done
+rm -rf $OWNTMPDIR
