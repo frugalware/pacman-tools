@@ -98,7 +98,7 @@ changelog()
 	if [ "$verbose" == 1 ]; then
 		catcmd="cat Changelog"
 	fi
-	ssh $lopts $host "cd $path_to_repo/$dir/../frugalware-${arch:-`arch`} && arch=${arch:-`arch`} sudo -u $sudouser updatesync upd $repo-current.fdb ../source/$group/$pkgname/FrugalBuild && cd $path_to_repo/$dir/$group/$pkgname && sudo -u $sudouser genchangelog; $catcmd"
+	ssh $lopts $host "cd $path_to_repo/$dir/../frugalware-${arch:-`arch`} && arch=${arch:-`arch`} sudo -u $sudouser updatesync upd $repo-current.fdb ../source/$group/$pkgname/FrugalBuild && cd $path_to_repo/$dir/$group/$pkgname && arch=${arch:-`arch`} sudo -u $sudouser genchangelog; $catcmd"
 }
 
 die()
