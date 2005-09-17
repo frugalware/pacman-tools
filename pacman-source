@@ -46,7 +46,12 @@ arch=`grep ^Server /etc/pacman.d/$repo |sed -n 's/.*-\(.*\)/\1/;1 p'`
 cat=`pacman -Si $1 |grep ^G |sed 's/.* : \([^ ]*\) .*/\1/; s/-extra$//'`
 echo "done."
 
-mkdir $1 || exit 1
+mkdir $1 2>/dev/null || \
+	{
+		echo "Could not create directory: $1"
+		echo "Have you downloaded the package yet?"
+		exit 1
+	}
 cd $1 || exit 1
 if [ "$verbose" == 1 ]; then
 	echo "Downloading $1 source..."
