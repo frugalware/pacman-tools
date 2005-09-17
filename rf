@@ -148,7 +148,7 @@ sub contents {
 # -k noask -q dont look for old files on server
 # / elsre nem csinlom meg; * kiszedheti mashonnan is eros konnyites
 my %opts;
-getopts('her:a:o:p:g:n:s:f:v:dqokt:l:RCPUL', \%opts);
+getopts('her:a:o:p:g:n:s:f:v:dqokt:l:WRCPUL', \%opts);
 
 HELP_MESSAGE && die if $opts{h};
 
@@ -291,13 +291,15 @@ sub Cleanup{
 	apply "repoman del $repo/$repodir/$oldf";}}}
 }
 
-print "What have you been hacking today?\n";
-unless ((my $what = qx"darcs what -s .") =~ /\QNo changes!\E/){ 
-  print $what;
-  exit unless (my $an = ask 'Have you checked your package? Everything is ok with it?') =~ /^y|^$/i;
-} else {print "Nothing!\n"}
+sub Warning {
+    print "What have you been hacking today?\n";
+    unless ((my $what = qx"darcs what -s .") =~ /\QNo changes!\E/){ 
+	print $what;
+	exit unless (my $an = ask 'Have you checked your package? Everything is ok with it?') =~ /^y|^$/i;
+    } else {print "Nothing!\n"}
+}
 
-
+Warning if $opts{W};
 Record if $opts{R};
 Cleanup if $opts{C};
 Push if $opts{P};
