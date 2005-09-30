@@ -185,14 +185,14 @@ sub ask{
 sub apply{
     my $comm = shift;
   APP:
-    if ((my $an = ask "$comm\n Is this ok? [ygq?]") =~ /^y|^$/i){
+    if ((my $an = ask "$comm\n Is this ok? [yagq?]") =~ /^y|^a|^$/i){
 	msystem $comm;
     } elsif ($an =~ /^g/i){
 	msystem getcommand($comm);
     } elsif ($an =~ /^q/i){
 	exit;
     } elsif ($an =~ /^\?/){
-	print "y: applay command\ng: give a new command\nq: quit\n\n";
+	print "y or a: applay command\ng: give a new command\nq: quit\n\n";
 	undef $an;
 	goto APP;
     }
