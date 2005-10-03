@@ -7,6 +7,7 @@
 # This file can be distributed under the terms of the
 # GNU General Public License version 2.
 
+[ -z "$startdir" ] && startdir=`pwd`
 Fsrcdir="$startdir/src"
 Fdestdir="$startdir/pkg"
 Fprefix="/usr"
@@ -365,11 +366,17 @@ Finclude ()
 {
 	if [ "$startdir" = `pwd` ]; then
 		local i
-		local Fincdir=`darcs add . 2>&1|sed -n 's/[^/]*/../g; 4 p'`/source/include
-		for i in "$@"
-		do
-			source $Fincdir/$i.sh || Fdie
-		done
+		if darcs --commands 2>&1|grep -q add; then
+			local Fincdir=`darcs add . 2>&1|sed -n 's/[^/]*/../g; 4 p'`/source/include
+		elif [ -d /var/tmp/fst/include ]; then
+			local Fincdir=/var/tmp/fst/include
+		fi
+		if [ ! -z "$Fincdir" ]; then
+			for i in "$@"
+			do
+				source $Fincdir/$i.sh || Fdie
+			done
+		fi
 	fi
 }
 
