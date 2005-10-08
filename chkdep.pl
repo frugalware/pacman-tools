@@ -69,6 +69,7 @@ License v2.
 =cut
 
 use strict;
+no warnings qw(uninitialized);
 use Getopt::Std;
 use Data::Dumper;
 $Getopt::Std::STANDARD_HELP_VERSION = 1;
