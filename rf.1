@@ -129,22 +129,54 @@
 .\" ========================================================================
 .\"
 .IX Title "RF 1"
-.TH RF 1 "2005-07-25" "perl v5.8.7" "User Contributed Perl Documentation"
+.TH RF 1 "2005-10-08" "perl v5.8.7" "User Contributed Perl Documentation"
 .SH "NAME"
 .Vb 1
 \&    rf - RepomanFrontend
 .Ve
-.PP
+.SH "DESCRIPTION"
+.IX Header "DESCRIPTION"
 rf operates with actions, namely, Record, Cleanup, Push, Upload, cL.
 If you don't specify non of these actioons, with the marked switch
 (eg. for repoman cl it is \-L), \-RCPUL will be used.
 it is trying to guess as many data as needed for the specified
 actions, or you can pass them with non capital swithes.
 Usually \-f and \-s are enough to do a whole upgrade.
-.SH "DESCRIPTION"
-.IX Header "DESCRIPTION"
+Run it from the packages darcs directory.
 .SH "OPTIONS"
 .IX Header "OPTIONS"
+.Sh "\s-1ACTIONS\s0"
+.IX Subsection "ACTIONS"
+.IP "\fB\-R\fR" 1
+.IX Item "-R"
+.Vb 1
+\&    darcs record your patch
+.Ve
+.IP "\fB\-C\fR" 1
+.IX Item "-C"
+.Vb 1
+\&    Cleanup on the server
+.Ve
+.IP "\fB\-P\fR" 1
+.IX Item "-P"
+.Vb 1
+\&    darcs push your patch
+.Ve
+.IP "\fB\-U\fR" 1
+.IX Item "-U"
+.Vb 1
+\&    Upload the given source and package files
+.Ve
+.IP "\fB\-L\fR" 1
+.IX Item "-L"
+.Vb 1
+\&    repoman cl aka generate the Changelog file
+.Ve
+.IP "\fB\-W\fR" 1
+.IX Item "-W"
+.Vb 1
+\&    A warning message before doing anything
+.Ve
 .IP "\fB\-h\fR" 1
 .IX Item "-h"
 .Vb 1
@@ -185,6 +217,16 @@ Usually \-f and \-s are enough to do a whole upgrade.
 .Vb 1
 \&    Name of the package
 .Ve
+.IP "\fB\-t\fR" 1
+.IX Item "-t"
+.Vb 1
+\&    Version if the package
+.Ve
+.IP "\fB\-l\fR" 1
+.IX Item "-l"
+.Vb 1
+\&    Release of the package
+.Ve
 .IP "\fB\-s\fR" 1
 .IX Item "-s"
 .Vb 1
@@ -218,6 +260,14 @@ Usually \-f and \-s are enough to do a whole upgrade.
 .Ve
 .SH "CHANGES"
 .IX Header "CHANGES"
+.Sh "0.5"
+.IX Subsection "0.5"
+.Vb 4
+\&    Release as stable
+\&    pkgver and pkgrel gathering bugfix
+\&    New 'a' keyselection
+\&    More options in man page
+.Ve
 .Sh "0.4"
 .IX Subsection "0.4"
 .Vb 2
@@ -241,7 +291,7 @@ Usually \-f and \-s are enough to do a whole upgrade.
 .SH "AUTHOR"
 .IX Header "AUTHOR"
 .Vb 1
-\&    Zsolt Szalai
+\&    Zsolt Szalai <xbit@frugalware.org>
 .Ve
 .SH "COPYRIGHT"
 .IX Header "COPYRIGHT"

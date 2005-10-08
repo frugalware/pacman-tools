@@ -1,10 +1,10 @@
 #!/usr/bin/perl -w
 
-print "THIS PROGRAM IS UNDER TESTING! USE WITH CARE!\n";
-
 =head1 NAME
 
     rf - RepomanFrontend
+
+=head1 DESCRIPTION
 
 rf operates with actions, namely, Record, Cleanup, Push, Upload, cL.
 If you don't specify non of these actioons, with the marked switch
@@ -12,21 +12,41 @@ If you don't specify non of these actioons, with the marked switch
 it is trying to guess as many data as needed for the specified
 actions, or you can pass them with non capital swithes.
 Usually -f and -s are enough to do a whole upgrade.
-    
-=head1 DESCRIPTION
-
+Run it from the packages darcs directory.
     
 =head1 OPTIONS
     
 =over 1
 
+=head2 ACTIONS
+
+=item B<-R>
+
+    darcs record your patch
+
+=item B<-C>
+
+    Cleanup on the server
+
+=item B<-P>
+
+    darcs push your patch
+
+=item B<-U>
+
+    Upload the given source and package files
+
+=item B<-L>
+
+    repoman cl aka generate the Changelog file
+
+=item B<-W>
+
+    A warning message before doing anything
+
 =item B<-h>
 
     Help
-
-=for comment
-=item B<-e>
-repository gets extra.
 
 =item B<-r>
 
@@ -57,6 +77,14 @@ repository gets extra.
 
     Name of the package
 
+=item B<-t>
+
+    Version if the package
+
+=item B<-l>
+
+    Release of the package
+
 =item B<-s>
 
     New sourcefile
@@ -84,6 +112,13 @@ repository gets extra.
 
 =head1 CHANGES
 
+=head2 0.5
+
+    Release as stable
+    pkgver and pkgrel gathering bugfix
+    New 'a' keyselection
+    More options in man page
+
 =head2 0.4
 
     Action driven usage
@@ -103,7 +138,7 @@ repository gets extra.
 
 =head1 AUTHOR
 
-    Zsolt Szalai
+    Zsolt Szalai <xbit@frugalware.org>
 
 =head1 COPYRIGHT
 
@@ -126,7 +161,7 @@ eval {require Term::ReadKey}; die 'Please install perl-term-readkey!' if $@;
 import Term::ReadKey;
 
 $Getopt::Std::STANDARD_HELP_VERSION = 1;
-our $VERSION = "0.4";
+our $VERSION = "0.5";
 
 sub HELP_MESSAGE(){
   print <<END
@@ -135,20 +170,16 @@ END
 }
 
 sub contents {
-    my $sfh = IO::File->new( "< $_" );
+    my $name = shift;
+    my $sfh = IO::File->new( "< $name" );
     local $/ = undef;
     my $cont = $sfh->getline;
     $sfh->close;
     return $cont;
 }
 
-# run from the packages darcs dir!
-# -h help; -e extrarepo!overrides -r; -r repo; -a arch/; -R repodir; -p serverprefix; 
-#-g group*!physical category;  -n pkgname*; -s sourcefile* -f fpm* -v version!eg. current -d del the files
-# -k noask -q dont look for old files on server
-# / elsre nem csinlom meg; * kiszedheti mashonnan is eros konnyites
 my %opts;
-getopts('her:a:o:p:g:n:s:f:v:dqokt:l:WRCPUL', \%opts);
+getopts('hr:a:o:p:g:n:s:f:v:dqkt:l:WRCPUL', \%opts);
 
 HELP_MESSAGE && die if $opts{h};
 
@@ -184,18 +215,21 @@ sub ask{
 
 sub apply{
     my $comm = shift;
-  APP:
-    if ((my $an = ask "$comm\n Is this ok? [yagq?]") =~ /^y|^a|^$/i){
+ APP:
+    if ((my $an = ask "$comm\n Is this ok? [yagq?]") =~ /^y|^$/i){
+	msystem $comm;
+    } elsif ($an =~ /^a/i){
+	$noask = 1;
 	msystem $comm;
     } elsif ($an =~ /^g/i){
 	msystem getcommand($comm);
     } elsif ($an =~ /^q/i){
 	exit;
     } elsif ($an =~ /^\?/){
-	print "y or a: applay command\ng: give a new command\nq: quit\n\n";
+	print "y applay command\na: yes to all further question\ng: give a new command\nq: quit\n\n";
 	undef $an;
 	goto APP;
-    }
+  }
     print "\n";
 }
 
@@ -219,12 +253,12 @@ unless (($pkgname) = $pkgfile =~ /^(.*)-.*?-.*?-.*?fpm\Z/){
 ($pkgname) = getcwd =~ m!/([^/]*)\Z! unless $pkgname;
 HELP_MESSAGE && die 'Can not determine pkgname!' unless $pkgname;
 
-if ($pkgname){
+if ($pkgfile){
     ($pkgver,$pkgrel) = $pkgfile =~ /^.*-(.*?)-(.*?)-.*?fpm\Z/
 } else {  #get them from Frugalbuild
     my $buildscript = contents 'FrugalBuild';
-    $pkgver = $buildscript =~ /^pkgver=(\S*)/m;
-    $pkgrel = $buildscript =~ /^pkgrel=(\S*)/m;
+    ($pkgver) = $buildscript =~ /^pkgver=(\S*)/m;
+    ($pkgrel) = $buildscript =~ /^pkgrel=(\S*)/m;
 }
 $pkgver = $opts{t} if $opts{t};
 $pkgrel = $opts{l} if $opts{l};
@@ -316,12 +350,3 @@ if ($opts{d}){ #delete source & fpm        doesnt ask it, -d is not default!
 }
 
 __END__
-
-ok, here's the plans:
-
-ACTIONS:
-        -R darcs record - pkgname, ver, rel, arch
-        -C cleanup - a directory, but repo, category, pkgname enough   !sources, pkgs!
-        -P darcs push - nothing, but provide options(in case of darcs mv)
-        -U upload - repo, group, etc no prob. !sources, pkgs!
-        -L cl repo, gproup pkgname
