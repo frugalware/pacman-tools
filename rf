@@ -284,7 +284,7 @@ sub Record{
   print "Recording your improvements\n";
   HELP_MESSAGE && die 'Can not determine pkgver!' unless $pkgver;
   HELP_MESSAGE && die 'Can not determine pkgrel!' unless $pkgrel;
-  apply "darcs record --edit-long-comment -m '$pkgname-$pkgver-$pkgrel-$arch' ." . ($noask? ' -a' : '');
+  apply "darcs record --edit-long-comment -m '$pkgname-$pkgver-$pkgrel-$arch'" . ($noask? ' -a' : ''). ' .';
 }
 
 sub Push{
