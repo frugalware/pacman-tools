@@ -7,6 +7,10 @@
 # This file can be distributed under the terms of the
 # GNU General Public License version 2.
 
+[ -e /etc/repoman.conf ] && . /etc/repoman.conf || \
+	die "Can't find /etc/repoman.conf!"
+[ -e ~/.repoman.conf ] && . ~/.repoman.conf
+
 [ -z "$startdir" ] && startdir=`pwd`
 Fsrcdir="$startdir/src"
 Fdestdir="$startdir/pkg"
