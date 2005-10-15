@@ -370,6 +370,8 @@ Finclude ()
 			local Fincdir=`darcs add . 2>&1|sed -n 's/[^/]*/../g; 4 p'`/source/include
 		elif [ -d /var/tmp/fst/include ]; then
 			local Fincdir=/var/tmp/fst/include
+		elif [ -d $fst_root/$reponame/source/include ]; then
+			local Fincdir=$fst_root/$reponame/source/include
 		fi
 		if [ ! -z "$Fincdir" ]; then
 			for i in "$@"
