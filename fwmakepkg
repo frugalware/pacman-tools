@@ -65,6 +65,11 @@ Fcp() {
 	cp "$Fdestdir/"$1 "$Fdestdir"/$2 || Fdie
 }
 
+Fcpr() {
+	Fmessage "Copying file(s) recursive: $1"
+	cp -dpR "$Fsrcdir/"$1 "$Fdestdir"/$2 || Fdie
+}
+
 Fmv() {
 	Fmessage "Moving file(s): $1"
 	mv "$Fdestdir/"$1 "$Fdestdir"/$2 || Fdie
