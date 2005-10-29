@@ -111,6 +111,26 @@ Finstall() {
 	fi
 }
 
+Fdirschmod() {
+	Fmessage "Configure chmod dirs & subdirs inside: $1"
+	find "$Fdestdir"/$1 -type d |xargs chmod $2 || Fdie
+}
+
+Ffileschmod() {
+	Fmessage "Configure chmod all files inside: $1"
+        find "$Fdestdir"/$1 -type f |xargs chmod $2 || Fdie
+}
+
+Fdirschown() {
+	Fmessage "Configure chown dirs & subdirs inside: $1"
+	find "$Fdestdir"/$1 -type d |xargs chown $2:$3 || Fdie
+}
+
+Ffileschown() {
+	Fmessage "Configure chown all files inside: $1"
+	find "$Fdestdir"/$1 -type f |xargs chown $2:$3 || Fdie
+}
+
 Fexe() {
 	Finstall 0755 "$@"
 }
