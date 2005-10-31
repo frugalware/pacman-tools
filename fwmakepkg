@@ -205,7 +205,7 @@ Fsed() {
 Fdeststrip() {
 	local i
 	for i in "$@"; do
-		Fsed "$Fdestdir" "" $Fdestdir/$1
+		Fsed "$Fdestdir" "" $Fdestdir/$i
 	done
 }
 
