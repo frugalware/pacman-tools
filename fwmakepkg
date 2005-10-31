@@ -106,6 +106,11 @@ Fmv() {
 	mv "$Fdestdir/"$1 "$Fdestdir"/$2 || Fdie
 }
 
+### Install file(s) to $Fdestdir
+ # @param mode set permission mode (as in chmod)
+ # @param file(s) to be installed (defaults to `basename $destination`)
+ # @param destination
+ ##
 Finstallrel() {
 	if [ "$#" -eq 3 ]; then
 		Fmessage "Installing file(s): $2"
@@ -128,6 +133,12 @@ Finstallrel() {
 	fi
 }
 
+### Install file(s) to $Fdestdir from $Fsrcdir
+ # @param mode set permission mode (as in chmod)
+ # @param file(s) to be installed from $Fsrcdir \
+ #        (defaults to $Fsrcdir/`basename $destination`)
+ # @param destination
+ ##
 Finstall() {
 	if [ "$#" -eq 3 ]; then
 		Finstallrel "$1" "$Fsrcdir/$2" "$3"
@@ -162,38 +173,76 @@ Ffileschown() {
 	find "$Fdestdir"/$1 -type f |xargs chown $2:$3 || Fdie
 }
 
+### Install executable file(s) to $Fdestdir from $Fsrcdir
+ # @param file(s) to be installed from $Fsrcdir \
+ #        (defaults to $Fsrcdir/`basename $destination`)
+ # @param destination
+ ##
 Fexe() {
 	Finstall 0755 "$@"
 }
 
+### Install executable file(s) to $Fdestdir
+ # @param file(s) to be installed \
+ #        (defaults to `basename $destination`)
+ # @param destination
+ ##
 Fexerel() {
 	Finstallrel 0755 "$@"
 }
 
+### Install regular file(s) to $Fdestdir from $Fsrcdir
+ # @param file(s) to be installed from $Fsrcdir \
+ #        (defaults to $Fsrcdir/`basename $destination`)
+ # @param destination
+ ##
 Ffile() {
 	Finstall 0644 "$@"
 }
 
+### Install regular file(s) to $Fdestdir
+ # @param file(s) to be installed \
+ #        (defaults to `basename $destination`)
+ # @param destination
+ ##
 Ffilerel() {
 	Finstallrel 0644 "$@"
 }
 
+### Install documentation file(s) to $Fdestdir/usr/share/doc/$pkgname-$pkgver \
+ #  from $Fsrcdir
+ # @param file(s) to be installed from $Fsrcdir \
+ #        (defaults to $Fsrcdir/`basename $destination`)
+ ##
 Fdoc() {
 	Fmkdir "/usr/share/doc/$pkgname-$pkgver"
 	Ffile "$@" "/usr/share/doc/$pkgname-$pkgver/"
 }
 
+### Install documentation file(s) to $Fdestdir/usr/share/doc/$pkgname-$pkgver
+ # @param file(s) to be installed \
+ #        (defaults to $Fsrcdir/`basename $destination`)
+ ##
 Fdocrel() {
 	Fmkdir "/usr/share/doc/$pkgname-$pkgver"
 	Ffilerel "$@" /usr/share/doc/$pkgname-$pkgver
 }
 
+### Create symlink in $Fdestdir
+ # @param source (i.e. mysql/libmysqlclient.so)
+ # @param target (i.e. /usr/lib/) ($target's dir will be created if necessary)
+ ##
 Fln() {
 	Fmessage "Creating symlink(s): $1"
 	Fmkdir "`dirname $2`"
 	ln -sf $1 "$Fdestdir"/$2 || Fdie
 }
 
+### Use sed with file(s)
+ # @param regexp 
+ # @param replacement (see man sed!)
+ # @param file(s) to edit in place
+ ##
 Fsed() {
 	Fcd
 	for i in ${@:3:$#}; do
@@ -202,6 +251,9 @@ Fsed() {
 	done
 }
 
+### Strip $Fdestdir from files in $Fdestdir
+ # @param file(s) to strip
+ ##
 Fdeststrip() {
 	local i
 	for i in "$@"; do
@@ -209,6 +261,9 @@ Fdeststrip() {
 	done
 }
 
+### Apply a patch with -p1 (use the .patch0 suffix for -p0)
+ # @param Patch to apply. A ".gz" or ".bz2" suffix will be ingored.
+ ##
 Fpatch() {
 	Fcd
 	local i
@@ -227,6 +282,10 @@ Fpatch() {
 	fi
 }
 
+### Apply patches from source(). \
+ #  Allowed suffixes are \.\(patch[0-9]*\|diff\)\(\.\(gz\|bz2\)\|\). \
+ #  URLs allowed, too.
+ ##
 Fpatchall() {
 	for i in ${source[@]}; do
 		if [ -n "`echo "$i" | grep \.patch[0-9]*$`" -o -n "`echo "$i" | grep \.diff$`" -o -n "`echo "$i" | grep '\.\(patch[0-9]*\|diff\)\.\(gz\|bz2\)$'`" ]; then
@@ -235,6 +294,16 @@ Fpatchall() {
 	done
 }
 
+### A wrapper to ./configure. It will try to run ./configure, Makefile.PL, \
+ #  extconf.rb and configure.rb, respectively. It will automatically add the \
+ #  --prefix=$Fprefix (defaults to /usr), \
+ #  --sysconfdir=$Fsysconfdir (defaults to /etc) and the \
+ #  --localstatedir=$Flocalstatedir (defaults to /var) switches. The two later \
+ #  will be added only if the configure script support it.
+ #  If you want to pre-set a switch (i.e. add a switch only on a ceratin \
+ #  arch or so) apped the $Fconfopts variable.
+ # @param switch(es) to pass to the configure script
+ ##
 Fconf() {
 	Fcd
 	Fmessage "Configuring..."
@@ -254,6 +323,9 @@ Fconf() {
 	fi
 }
 
+### A wrapper to make and "python setup.py build" after calling Fconf()
+ # @param switch(es) to pass to Fconf()
+ ##
 Fmake() {
 	Fconf "$@"
 	Fmessage "Compiling..."
