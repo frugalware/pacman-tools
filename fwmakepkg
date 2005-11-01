@@ -336,6 +336,12 @@ Fmake() {
 	fi
 }
 
+### A wrapper to make install: calls make DESTDIR=$Fdestir or \
+ #  prefix=$Fdestdir/usr install (which is necessary). \
+ #  Also handles python's setup.py. \
+ #  Removes /usr/info/dir and /usr/share/info/dir.
+ # @param param(s) passed to make/python
+ ##
 Fmakeinstall() {
 	Fmessage "Installing to the package directory..."
 	if [ -f GNUmakefile -o -f makefile -o -f Makefile ]; then
@@ -355,12 +361,18 @@ Fmakeinstall() {
 	fi
 }
 
+### A default build(): Fpatchall, Fmake, Fmakeinstall
+ # @param param(s) passed to Fmake
+ ##
 Fbuild() {
 	Fpatchall
 	Fmake "$@"
 	Fmakeinstall
 }
 
+### Create an rc.d environment
+ # @param name of the rc script, defaults to $pkgname
+ ##
 Frcd() {
 	if [ "$#" -eq 1 ]; then
 		Fmessage "Creating rc.d environment: $1"
@@ -375,14 +387,17 @@ build() {
 	Fbuild
 }
 
+### Updates config.sub and config.guess from our automake.
+ ##
 Facu() {
 	cat /usr/share/automake/config.sub >config.sub
 	cat /usr/share/automake/config.guess >config.guess
 }
 
-# Returns its parameters sorted, highest version last. We're using a quadratic
-# algorithm for simplicity, so don't call it with more than a few dozen items.
-# Uses vercmp.
+### Similar to sort, but handles versions (i.e. 1.9 vs 1.10 vs 2.0) correctly. \
+ # Uses vercmp from pacman.
+ # @param versions to be sorted
+ ##
 Fsort() {
 	local i= items= left=0
 	items=( `cat|tr '\n' ' '` )
@@ -402,15 +417,14 @@ Fsort() {
 	echo ${items[@]}|sed 's/ /\n/g'
 }
 
-# Unpack those pesky makeself generated files ...
-# They're shell scripts with the binary package tagged onto
-# the end of the archive. Loki utilized the format as does
-# many other game companies.
-#
-# Usage: Funpack_makeself [file to unpack] [offset] [tail|dd]
-# - If the file is not specified then unpack will utilize ${A}.
-# - If the offset is not specified then we will attempt to extract
-#   the proper offset from the script itself.
+### Unpack those pesky makeself generated files... \
+ # They're shell scripts with the binary package tagged onto \
+ # the end of the archive. Loki utilized the format as does \
+ # many other game companies.
+ # @param file to unpack
+ # @param offset (optional)
+ # @param tail|dd (optional)
+ ##
 Funpack_makeself() {
 	local src="$1"
 	local skip="$2"
@@ -487,6 +501,8 @@ Funpack_makeself() {
 	esac
 }
 
+### Our autogen.sh. Runs aclocal, autoheader, autoconf and finally automake.
+ ##
 Fautoconfize() {
 	aclocal || Fdie
 	autoheader || Fdie
@@ -494,6 +510,11 @@ Fautoconfize() {
 	automake -a -c -f || Fdie
 }
 
+### Include a scheme. They are in $fst_root/source/include/, and they have a \
+ # .sh suffix. After including them, you can of course overwrite the \
+ # initialized values, using only a part of the scheme.
+ # @param scheme(s) to include (_without_ the .sh suffix)
+ ##
 Finclude ()
 {
 	if [ "$startdir" = `pwd` ]; then
@@ -514,6 +535,8 @@ Finclude ()
 	fi
 }
 
+### Extracts version from a page's last tar.gz link
+ ##
 Flasttar()
 {
 	grep tar.gz$|sed -n 's/.*-\(.*\)\.t.*/\1/;$ p'
