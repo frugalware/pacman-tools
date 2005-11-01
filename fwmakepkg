@@ -88,7 +88,7 @@ Fcp() {
 	cp "$Fdestdir/"$1 "$Fdestdir"/$2 || Fdie
 }
 
-### Copy file(s) under $Fdestdir recursively
+### Copy file(s) to $Fdestdir recursively from $Fsrcdir
  # @param source name of the file(s)
  # @param dest path of the destination
  ##
@@ -153,21 +153,39 @@ Finstall() {
 	fi
 }
 
+### Changes the permissions of dirs & subdirs inside $Fdestdir
+ # @param dir where to start "find"
+ # @param permission octal mode or [+-][rwxstugo]
+ ##
 Fdirschmod() {
 	Fmessage "Configure chmod dirs & subdirs inside: $1"
 	find "$Fdestdir"/$1 -type d |xargs chmod $2 || Fdie
 }
 
+### Changes the permissions of all file(s) inside $Fdestdir
+ # @param dir to where start "find"
+ # @param permission octal mode or [+-][rwxstugo]
+ ##
 Ffileschmod() {
 	Fmessage "Configure chmod all files inside: $1"
         find "$Fdestdir"/$1 -type f |xargs chmod $2 || Fdie
 }
 
+### Change the owner and/or group of dirs and subdirs inside $Fdestdir
+ # @param dir where to start "find"
+ # @param owner (needed)
+ # @param group (needed)
+ ##
 Fdirschown() {
 	Fmessage "Configure chown dirs & subdirs inside: $1"
 	find "$Fdestdir"/$1 -type d |xargs chown $2:$3 || Fdie
 }
 
+### Change the owner and/or group of all file(s) inside $Fdestdir
+ # @param dir where to start "find"
+ # @param owner (needed)
+ # @param group (needed)
+ ##
 Ffileschown() {
 	Fmessage "Configure chown all files inside: $1"
 	find "$Fdestdir"/$1 -type f |xargs chown $2:$3 || Fdie
