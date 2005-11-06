@@ -148,7 +148,7 @@ find sub{
 	my $info = "Checking for $group/$pkgname-$pkgver... ";
 	print $info if $opts{v};
 
-	my $up2date = timeout $time, 'source /usr/lib/frugalware/fwmakepkg;source ./FrugalBuild;if ( `echo $up2date|grep -q " "` ); then eval $up2date; else echo $up2date; fi';
+	my $up2date = timeout $time, 'CHROOT=1; source /usr/lib/frugalware/fwmakepkg;source ./FrugalBuild;if ( `echo $up2date|grep -q " "` ); then eval $up2date; else echo $up2date; fi';
 	chomp $up2date unless $up2date eq 'TIMEOUTED';
 
 	if ($up2date eq 'TIMEOUTED') {	
