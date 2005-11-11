@@ -401,6 +401,26 @@ Frcd() {
 	fi
 }
 
+## Create the new rc.d environment
+# $1 = name of the rc script
+Frcd2()
+{
+	msg_dir="/lib/initscripts/messages"
+	if [ "$#" -eq 1 ] ; then
+		rc="$1"
+	else
+		rc="$pkgname"
+	fi
+
+	Fmessage "Creating new rc.d environment: $rc"
+	Fexe /etc/rc.d/rc.$rc
+	for i in $Fsrcdir/$rc-*.po ; do
+		lang="`basename $i .po`_`basename $i .po|tr [:lower:] [:upper:]`"
+		Fmkdir /$msg_dir/$lang/LC_MESSAGES
+		msgfmt -o $Fdestdir/$msg_dir/$lang/LC_MESSAGES/$rc.mo $i || Fdie
+	done
+}
+
 build() {
 	Fbuild
 }
