@@ -403,7 +403,7 @@ Frcd() {
 
 ### Create the new rc.d environment
  # @param name of the rc script, defaults to $pkgname
-  ##
+ ##
 Frcd2()
 {
 	msg_dir="/lib/initscripts/messages"
