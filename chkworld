@@ -6,7 +6,7 @@ chkworld - Compares FrugalBuild's up2date and pkgver informations
    
 =head1 SYNOPSIS
     
-chkdep [-vche] [-t num] directory1...
+chkdep [-vche] [-t num] [-d developer] directory1...
     
 =head1 DESCRIPTION
 
@@ -30,6 +30,11 @@ Enables standard error output. By default STDERR is redirected to /dev/null.
 =item B<-v>
 
 Be verbose.
+
+=item B<-d>
+
+Matches the string given with the Maintainer in FrugalBuild, 
+filtering the output with the specified developer.
 
 =item B<-c>
 
@@ -109,13 +114,14 @@ $Getopt::Std::STANDARD_HELP_VERSION = 1;
 our $VERSION = "0.3";
 
 my %opts;
-getopts('vchet:', \%opts);
+getopts('vchet:d:', \%opts);
 
 sub HELP_MESSAGE(){
     print <<END
 chkworld - Compares FrugalBuild's up2date and pkgver informations
 usage: chkworld [-vcth] directory ...
          -t num
+         -d developer
          -e enable standard error output
          -v be verbose
          -c colorized output
@@ -138,14 +144,16 @@ my $passed = 0;
 
 find sub{
     if (/^FrugalBuild\z/) {
-	$count++;
+	
 	my $buildscript = contents $_;
 	my ($m8r) = $buildscript =~ /^# Maintainer: (.*?) </m;
+	do {next unless $m8r =~ /\Q$opts{d}\E/i }if $opts{d};
 	my ($pkgname) = qx'source ./FrugalBuild; echo -n $pkgname';
 	my ($pkgver) = $buildscript =~ /^pkgver=(\S*)/m;
 	my ($group) = $buildscript =~ /^groups=\('?(.*?)('|\s|\))/m;
 	$group = '?' unless $group;
 	my $info = "Checking for $group/$pkgname-$pkgver... ";
+	$count++;
 	print $info if $opts{v};
 
 	my $up2date = timeout $time, 'CHROOT=1; source /usr/lib/frugalware/fwmakepkg;source ./FrugalBuild;if ( `echo $up2date|grep -q " "` ); then eval $up2date; else echo $up2date; fi';

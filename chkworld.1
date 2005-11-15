@@ -129,12 +129,12 @@
 .\" ========================================================================
 .\"
 .IX Title "CHKWORLD 1"
-.TH CHKWORLD 1 "2005-07-26" "perl v5.8.7" "User Contributed Perl Documentation"
+.TH CHKWORLD 1 "2005-11-15" "perl v5.8.7" "User Contributed Perl Documentation"
 .SH "NAME"
 chkworld \- Compares FrugalBuild's up2date and pkgver informations
 .SH "SYNOPSIS"
 .IX Header "SYNOPSIS"
-chkdep [\-vhe] [\-t num] directory1...
+chkdep [\-vche] [\-t num] [\-d developer] directory1...
 .SH "DESCRIPTION"
 .IX Header "DESCRIPTION"
 Scans the given directories for FrugalBuild scripts, and compares up2date with pkgver.
@@ -152,6 +152,10 @@ Enables standard error output. By default \s-1STDERR\s0 is redirected to /dev/nu
 .IP "\fB\-v\fR" 4
 .IX Item "-v"
 Be verbose.
+.IP "\fB\-d\fR" 4
+.IX Item "-d"
+Matches the string given with the Maintainer in FrugalBuild, 
+filtering the output with the specified developer.
 .IP "\fB\-c\fR" 4
 .IX Item "-c"
 Colorized output.
