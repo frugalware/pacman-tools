@@ -17,6 +17,7 @@ Fdestdir="$startdir/pkg"
 Fprefix="/usr"
 Fsysconfdir="/etc"
 Flocalstatedir="/var"
+Fmenudir="/usr/share/applications"
 Fconfopts="--prefix=$Fprefix"
 
 ### @defgroup fwmakepkg Common functions
@@ -580,6 +581,34 @@ Finclude ()
 Flasttar()
 {
 	grep tar.gz$|sed -n 's/.*-\(.*\)\.t.*/\1/;$ p'
+}
+
+### Creates a .desktop file for graphical applications
+ # example: Fdesktop vmware vmware-workstation.png "System;" \
+ # 	"application/x-vmware-vm;application/x-vmware-team;"
+ # @param name of the executable binary
+ # @param icon name from /usr/share/pixmaps
+ # @param categori(es) (optional)
+ # You can choose one or more from the followings:
+ # System;Games;AudioVideo;GNOME;KDE;Network;Development;FileTransfer;GTK;
+ # @param mimetype(s) (optional)
+ ##
+Fdesktop()
+{
+	Fmkdir $Fmenudir
+	cat > $Fdestdir$Fmenudir/$pkgname.desktop << EOF
+[Desktop Entry]
+Encoding=UTF-8
+Name=$pkgname
+Comment=$pkgdesc
+Exec=$1
+Terminal=false
+Type=Application
+StartupNotify=true
+Icon=$2
+Categories=Application;$3
+MimeType=$4
+EOF
 }
 
 ### @}
