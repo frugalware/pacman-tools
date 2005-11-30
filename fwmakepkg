@@ -247,6 +247,26 @@ Fdocrel() {
 	Ffilerel "$@" /usr/share/doc/$pkgname-$pkgver
 }
 
+### Install icon file(s) to $Fdestdir/usr/share/pixmaps \
+ #  from $Fsrcdir
+ # @param file(s) to be installed from $Fsrcdir \
+ #        (defaults to $Fsrcdir/`basename $destination`)
+ ##
+Ficon() {
+        Fmkdir "/usr/share/pixmaps"
+        Ffile "$@" "/usr/share/pixmaps/"
+}
+
+### Install icon file(s) to $Fdestdir/usr/share/pixmaps \
+ #  from $Fsrcdir
+ # @param file(s) to be installed from $Fsrcdir \
+ #        (defaults to $Fsrcdir/`basename $destination`)
+ ##
+Ficonrel() {
+        Fmkdir "/usr/share/pixmaps"
+        Ffilerel "$@" /usr/share/pixmaps
+}
+
 ### Create symlink in $Fdestdir
  # @param source (i.e. mysql/libmysqlclient.so)
  # @param target (i.e. /usr/lib/) ($target's dir will be created if necessary)
