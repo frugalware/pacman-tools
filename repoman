@@ -70,9 +70,8 @@ list()
 	ssh $lopts $host "ls $* $path_to_repo/$dir"
 }
 
-changelog()
+split_repo_group_pkgname_dir()
 {
-	msg "Generating Changelog for $1"
 	if echo $1 |grep -q '^[^/]\+/[^/]\+/[^/]\+$'; then
 		repo=`echo $1 |sed 's|\([^/]\+\)/[^/]\+/[^/]\+|\1|'`
 		group=`echo $1 |sed 's|[^/]\+/\([^/]\+\)/[^/]\+|\1|'`
@@ -86,7 +85,6 @@ changelog()
 		usage
 		exit 1
 	fi
-
 	if [ "$repo" == "frugalware" ]; then
 		dir="source"
 	elif [ "$repo" == "extra" ]; then
@@ -95,6 +93,20 @@ changelog()
 		echo "No such repo!"
 		exit 1
 	fi
+
+}
+
+clean()
+{
+	msg "Cleaning up $1"
+	split_repo_group_pkgname_dir $1
+	ssh $lopts $host "cd $path_to_repo/$dir/../frugalware-${arch:-`arch`} && arch=${arch:-`arch`} sudo -u $sudouser updatesync del $repo-current.fdb $pkgname"
+}
+
+changelog()
+{
+	msg "Generating Changelog for $1"
+	split_repo_group_pkgname_dir $1
 	if [ "$verbose" == 1 ]; then
 		catcmd="cat Changelog"
 	fi
@@ -198,6 +210,10 @@ while [ "$1" != "" ]; do
 		cl|changelog)
 			shift 1
 			changelog $*
+		;;
+		c|clean)
+			shift 1
+			clean $*
 		;;
 		del|delete)
 			shift 1
