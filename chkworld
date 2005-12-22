@@ -160,12 +160,13 @@ if ($opts{s}){
 } else { if ($opts{d}) {$m8rs{$opts{d}}++;} else { $m8rs{all}++ }}
     
 for $dev (keys %m8rs){
-  find sub{
-    if (/^FrugalBuild\z/) {
-      
+    my $noout = 1;
+    find sub{
+      if (/^FrugalBuild\z/) {
+	    
       my $buildscript = contents $_;
       my ($m8r) = $buildscript =~ /^# Maintainer: (.*?) </m;
-	do {next unless $m8r =~ /\Q$dev\E/i } if $opts{d} || $opts{s};
+      do {next unless $m8r =~ /\Q$dev\E/i } if $opts{d} || $opts{s};
       my ($pkgname) = qx'source ./FrugalBuild; echo -n $pkgname';
       my ($pkgver) = $buildscript =~ /^pkgver=(\S*)/m;
       my ($group) = $buildscript =~ /^groups=\('?(.*?)('|\s|\))/m;
@@ -178,11 +179,12 @@ for $dev (keys %m8rs){
       chomp $up2date unless $up2date eq 'TIMEOUTED';
     
       if ($up2date eq 'TIMEOUTED') {	
-	$timeouted++;
+        $timeouted++; $noout = 0;
 	print $info unless $opts{v};
 	print "Timeouted! $m8r\n" if !$opts{c};
 	print "\033[1;33mTimeouted!\033[1;0m $m8r\n" if $opts{c};
       } elsif ($pkgver ne $up2date){
+        $noout = 0;
 	print $info unless $opts{v};
 	print ($up2date ? ("!= " . substr($up2date, 0, 12)) : "There were no output!") if !$opts{c};
 	print ($up2date ? ("!= \033[1;31m" . substr($up2date, 0, 12)."\033[1;0m" )  : "\033[1;33mThere were no output!\033[1;0m") if $opts{c};
@@ -190,12 +192,12 @@ for $dev (keys %m8rs){
 	print " $m8r\n";
       } else {
 	$passed++;
-	print "Passed\n" if $opts{v} && !$opts{c};
+	print "Passed $m8r\n" if $opts{v} && !$opts{c};
 	print "\033[1;32mPassed\033[1;0m\n" if $opts{v} && $opts{c};
       }
     }
   }, @dirs;
-  print "\n";
+    print "\n" unless $noout;
 }
 
 print "\nTotal packages checked: $count\n";
