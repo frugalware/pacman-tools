@@ -129,12 +129,12 @@
 .\" ========================================================================
 .\"
 .IX Title "CHKWORLD 1"
-.TH CHKWORLD 1 "2005-11-15" "perl v5.8.7" "User Contributed Perl Documentation"
+.TH CHKWORLD 1 "2005-12-22" "perl v5.8.7" "User Contributed Perl Documentation"
 .SH "NAME"
 chkworld \- Compares FrugalBuild's up2date and pkgver informations
 .SH "SYNOPSIS"
 .IX Header "SYNOPSIS"
-chkdep [\-vche] [\-t num] [\-d developer] directory1...
+chkdep [\-vches] [\-t num] [\-d developer] directory1...
 .SH "DESCRIPTION"
 .IX Header "DESCRIPTION"
 Scans the given directories for FrugalBuild scripts, and compares up2date with pkgver.
@@ -156,6 +156,9 @@ Be verbose.
 .IX Item "-d"
 Matches the string given with the Maintainer in FrugalBuild, 
 filtering the output with the specified developer.
+.IP "\fB\-s\fR" 4
+.IX Item "-s"
+Output sorted by developers
 .IP "\fB\-c\fR" 4
 .IX Item "-c"
 Colorized output.

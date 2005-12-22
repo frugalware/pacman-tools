@@ -6,7 +6,7 @@ chkworld - Compares FrugalBuild's up2date and pkgver informations
    
 =head1 SYNOPSIS
     
-chkdep [-vche] [-t num] [-d developer] directory1...
+chkdep [-vches] [-t num] [-d developer] directory1...
     
 =head1 DESCRIPTION
 
@@ -35,6 +35,10 @@ Be verbose.
 
 Matches the string given with the Maintainer in FrugalBuild, 
 filtering the output with the specified developer.
+
+=item B<-s>
+
+Output sorted by developers
 
 =item B<-c>
 
@@ -105,16 +109,16 @@ sub timeout{ #time, command
 	    }          
 	    return 'TIMEOUTED';
 	} if $@ eq "alarm\n";
-#	die $@ unless $@ && $@ eq "alarm\n";                                        
+	#	die $@ unless $@ && $@ eq "alarm\n";                                        
     }                    
     return $output;
 }
 
 $Getopt::Std::STANDARD_HELP_VERSION = 1;
-our $VERSION = "0.3";
+our $VERSION = "0.4";
 
 my %opts;
-getopts('vchet:d:', \%opts);
+getopts('svchet:d:', \%opts);
 
 sub HELP_MESSAGE(){
     print <<END
@@ -122,16 +126,17 @@ chkworld - Compares FrugalBuild's up2date and pkgver informations
 usage: chkworld [-vcth] directory ...
          -t num
          -d developer
+         -s sort by developers
          -e enable standard error output
          -v be verbose
          -c colorized output
 	 -h this help
        
 END
-} #'
-
+}#'
+    
 HELP_MESSAGE && exit if $opts{h};
-
+    
 my @dirs;
 if (@ARGV) { @dirs = @ARGV; } else  {@dirs = ('.',);}  # // cant handler arrays :-/
 my $time = $opts{t} || 30;
@@ -141,42 +146,57 @@ my $needupdate = 0;
 my $maybebroken = 0;
 my $timeouted = 0;
 my $passed = 0;
+my %m8rs;
+my $dev = $opts{d};
 
-find sub{
+if ($opts{s}){
+  find sub{
     if (/^FrugalBuild\z/) {
-	
-	my $buildscript = contents $_;
-	my ($m8r) = $buildscript =~ /^# Maintainer: (.*?) </m;
-	do {next unless $m8r =~ /\Q$opts{d}\E/i }if $opts{d};
-	my ($pkgname) = qx'source ./FrugalBuild; echo -n $pkgname';
-	my ($pkgver) = $buildscript =~ /^pkgver=(\S*)/m;
-	my ($group) = $buildscript =~ /^groups=\('?(.*?)('|\s|\))/m;
-	$group = '?' unless $group;
-	my $info = "Checking for $group/$pkgname-$pkgver... ";
-	$count++;
-	print $info if $opts{v};
-
-	my $up2date = timeout $time, 'CHROOT=1; source /usr/lib/frugalware/fwmakepkg;source ./FrugalBuild;if ( `echo $up2date|grep -q " "` ); then eval $up2date; else echo $up2date; fi';
-	chomp $up2date unless $up2date eq 'TIMEOUTED';
-
-	if ($up2date eq 'TIMEOUTED') {	
-	    $timeouted++;
-	    print $info unless $opts{v};
-	    print "Timeouted! $m8r\n" if !$opts{c};
-            print "\033[1;33mTimeouted!\033[1;0m $m8r\n" if $opts{c};
-	} elsif ($pkgver ne $up2date){
-	    print $info unless $opts{v};
-	    print ($up2date ? ("!= " . substr($up2date, 0, 12)) : "There were no output!") if !$opts{c};
-	    print ($up2date ? ("!= \033[1;31m" . substr($up2date, 0, 12)."\033[1;0m" )  : "\033[1;33mThere were no output!\033[1;0m") if $opts{c};
-            ($up2date ? ($needupdate++) : ($maybebroken++));
-	    print " $m8r\n";
-	} else {
-	    $passed++;
-	    print "Passed\n" if $opts{v} && !$opts{c};
-            print "\033[1;32mPassed\033[1;0m\n" if $opts{v} && $opts{c};
-	}
+      my $buildscript = contents $_;
+      my ($m8r) = $buildscript =~ /^# Maintainer: (.*?) </m;
+	$m8rs{$m8r}++;
     }
-}, @dirs;
+  }, @dirs;
+} else { if ($opts{d}) {$m8rs{$opts{d}}++;} else { $m8rs{all}++ }}
+    
+for $dev (keys %m8rs){
+  find sub{
+    if (/^FrugalBuild\z/) {
+      
+      my $buildscript = contents $_;
+      my ($m8r) = $buildscript =~ /^# Maintainer: (.*?) </m;
+	do {next unless $m8r =~ /\Q$dev\E/i } if $opts{d} || $opts{s};
+      my ($pkgname) = qx'source ./FrugalBuild; echo -n $pkgname';
+      my ($pkgver) = $buildscript =~ /^pkgver=(\S*)/m;
+      my ($group) = $buildscript =~ /^groups=\('?(.*?)('|\s|\))/m;
+      $group = '?' unless $group;
+      my $info = "Checking for $group/$pkgname-$pkgver... ";
+      $count++;
+      print $info if $opts{v};
+    
+      my $up2date = timeout $time, 'CHROOT=1; source /usr/lib/frugalware/fwmakepkg;source ./FrugalBuild;if ( `echo $up2date|grep -q " "` ); then eval $up2date; else echo $up2date; fi';
+      chomp $up2date unless $up2date eq 'TIMEOUTED';
+    
+      if ($up2date eq 'TIMEOUTED') {	
+	$timeouted++;
+	print $info unless $opts{v};
+	print "Timeouted! $m8r\n" if !$opts{c};
+	print "\033[1;33mTimeouted!\033[1;0m $m8r\n" if $opts{c};
+      } elsif ($pkgver ne $up2date){
+	print $info unless $opts{v};
+	print ($up2date ? ("!= " . substr($up2date, 0, 12)) : "There were no output!") if !$opts{c};
+	print ($up2date ? ("!= \033[1;31m" . substr($up2date, 0, 12)."\033[1;0m" )  : "\033[1;33mThere were no output!\033[1;0m") if $opts{c};
+	($up2date ? ($needupdate++) : ($maybebroken++));
+	print " $m8r\n";
+      } else {
+	$passed++;
+	print "Passed\n" if $opts{v} && !$opts{c};
+	print "\033[1;32mPassed\033[1;0m\n" if $opts{v} && $opts{c};
+      }
+    }
+  }, @dirs;
+  print "\n";
+}
 
 print "\nTotal packages checked: $count\n";
 print "Passed                : $passed\n";
