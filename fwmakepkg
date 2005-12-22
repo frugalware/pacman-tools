@@ -632,6 +632,29 @@ MimeType=$4
 EOF
 }
 
+### Moves a file pattern to a subpackage
+ # example: Fsplit libmysql /usr/lib
+ # @param name of the subpackage
+ # @param pattern of the files to move
+ ##
+Fsplit()
+{
+	local subpkg=$1
+	shift 1
+	local i
+	local dir
+	local path
+	for i in $@
+	do
+		# split the / suffix if used
+		path=`echo $i|sed 's|/$||'`
+
+		dir=`echo $path|sed 's|/[^/]*$||'`
+		mkdir -p $startdir/pkg.$subpkg/$dir/
+		mv $Fdestdir/$path $startdir/pkg.$subpkg/$dir/
+	done
+}
+
 ### @}
 
 # v0.1 Wed, 19 Jan 2005 11:43:53 +0100
