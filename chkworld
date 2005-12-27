@@ -213,9 +213,9 @@ for $dev (keys %m8rs){
 	print $opts{m} ? htmlinfo($info) : $info unless $opts{v};
 	print ($up2date ? ("!= " . substr($up2date, 0, 12)) : "There were no output!") if !$opts{c} && !$opts{m};
 	print ($up2date ? ("!= \033[1;31m" . substr($up2date, 0, 12)."\033[1;0m" )  : "\033[1;33mThere were no output!\033[1;0m") if $opts{c} && !$opts{m};
-	print (htmlres(0, $up2date ? ("!= " . substr($up2date, 0, 12)) : "There were no output!")) if $opts{m};
+	print (htmlres(0, $up2date ? ("!= " . substr($up2date, 0, 12)) . " $m8r": "There were no output! $m8r")) if $opts{m};
 	($up2date ? ($needupdate++) : ($maybebroken++));
-	print " $m8r\n";
+	print " $m8r\n" unless $opts{m};
       } else {
 	$passed++;
 	print "Passed $m8r\n" if $opts{v} && !$opts{c} && !$opts{m};
