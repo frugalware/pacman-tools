@@ -114,11 +114,27 @@ sub timeout{ #time, command
     return $output;
 }
 
+sub htmlinfo{ #info
+	my ($info) = @_;
+
+	return "\t\t\t<tr>\n\t\t\t\t<td>\n\t\t\t\t\t$info\n\t\t\t\t</td>\n";
+}
+
+sub htmlres{ #status, res
+	my ($status, $res) = @_;
+
+	if($status) {
+		return "\t\t\t\t<td>\n\t\t\t\t\t<font color=\"green\">$res</font>\n\t\t\t\t</td>\n\t\t\t</tr>\n";
+	} else {
+		return "\t\t\t\t<td>\n\t\t\t\t\t<font color=\"red\">$res</font>\n\t\t\t\t</td>\n\t\t\t</tr>\n";
+	}
+}
+
 $Getopt::Std::STANDARD_HELP_VERSION = 1;
 our $VERSION = "0.4";
 
 my %opts;
-getopts('svchet:d:', \%opts);
+getopts('svcmhet:d:', \%opts);
 
 sub HELP_MESSAGE(){
     print <<END
@@ -126,6 +142,7 @@ chkworld - Compares FrugalBuild's up2date and pkgver informations
 usage: chkworld [-vcth] directory ...
          -t num
          -d developer
+         -m htmlized output
          -s sort by developers
          -e enable standard error output
          -v be verbose
@@ -148,6 +165,12 @@ my $timeouted = 0;
 my $passed = 0;
 my %m8rs;
 my $dev = $opts{d};
+
+if($opts{m}){
+	print "<html>\n\t<head>\n\t\t<title>\n\t\t\tChkworld status\n\t\t</title>\n\t</head>\n\t<body>\n";
+	print "\t\t<i>Last updated: " . localtime() . "</i>\n";
+	print "\t\t<table>\n";
+}
 
 if ($opts{s}){
   find sub{
@@ -173,35 +196,56 @@ for $dev (keys %m8rs){
       $group = '?' unless $group;
       my $info = "Checking for $group/$pkgname-$pkgver... ";
       $count++;
-      print $info if $opts{v};
+      print $info if $opts{v} && !$opts{m};
+      print $opts{m} ? htmlinfo($info) : $info if $opts{v} && $opts{m};
     
       my $up2date = timeout $time, 'CHROOT=1; source /usr/lib/frugalware/fwmakepkg;source ./FrugalBuild;if ( `echo $up2date|grep -q " "` ); then eval $up2date; else echo $up2date; fi';
       chomp $up2date unless $up2date eq 'TIMEOUTED';
     
       if ($up2date eq 'TIMEOUTED') {	
         $timeouted++; $noout = 0;
-	print $info unless $opts{v};
-	print "Timeouted! $m8r\n" if !$opts{c};
-	print "\033[1;33mTimeouted!\033[1;0m $m8r\n" if $opts{c};
+	print $opts{m} ? htmlinfo($info) : $info unless $opts{v};
+	print "Timeouted! $m8r\n" if !$opts{c} && !$opts{m};
+	print "\033[1;33mTimeouted!\033[1;0m $m8r\n" if $opts{c} && !$opts{m};
+	print htmlres(0, "Timeouted! $m8r") if $opts{m};
       } elsif ($pkgver ne $up2date){
         $noout = 0;
-	print $info unless $opts{v};
-	print ($up2date ? ("!= " . substr($up2date, 0, 12)) : "There were no output!") if !$opts{c};
-	print ($up2date ? ("!= \033[1;31m" . substr($up2date, 0, 12)."\033[1;0m" )  : "\033[1;33mThere were no output!\033[1;0m") if $opts{c};
+	print $opts{m} ? htmlinfo($info) : $info unless $opts{v};
+	print ($up2date ? ("!= " . substr($up2date, 0, 12)) : "There were no output!") if !$opts{c} && !$opts{m};
+	print ($up2date ? ("!= \033[1;31m" . substr($up2date, 0, 12)."\033[1;0m" )  : "\033[1;33mThere were no output!\033[1;0m") if $opts{c} && !$opts{m};
+	print (htmlres(0, $up2date ? ("!= " . substr($up2date, 0, 12)) : "There were no output!")) if $opts{m};
 	($up2date ? ($needupdate++) : ($maybebroken++));
 	print " $m8r\n";
       } else {
 	$passed++;
-	print "Passed $m8r\n" if $opts{v} && !$opts{c};
-	print "\033[1;32mPassed\033[1;0m\n" if $opts{v} && $opts{c};
+	print "Passed $m8r\n" if $opts{v} && !$opts{c} && !$opts{m};
+	print "\033[1;32mPassed\033[1;0m\n" if $opts{v} && $opts{c} && !$opts{m};
+	print htmlres(1, "Passed $m8r") if $opts{v} && $opts{m};
       }
     }
   }, @dirs;
     print "\n" unless $noout;
 }
 
-print "\nTotal packages checked: $count\n";
-print "Passed                : $passed\n";
-print "Need to update        : $needupdate\n";
-print "Timeouted             : $timeouted\n";
-print "Maybe broken up2date  : $maybebroken\n";
+if($opts{m}){
+	print "\t\t</table>\n";
+	print "\t\t<table>\n";
+	print "\t\t\t<tr>\n\t\t\t\t<td>\n\t\t\t\t\tTotal packages checked:\n\t\t\t\t</td>\n";
+	print "\t\t\t\t<td>\n\t\t\t\t\t$count\n\t\t\t\t</td>\n\t\t\t</tr>\n";
+	print "\t\t\t<tr>\n\t\t\t\t<td>\n\t\t\t\t\tPassed\n\t\t\t\t</td>\n";
+	print "\t\t\t\t<td>\n\t\t\t\t\t$passed\n\t\t\t\t</td>\n\t\t\t</tr>\n";
+	print "\t\t\t<tr>\n\t\t\t\t<td>\n\t\t\t\t\tNeed to update:\n\t\t\t\t</td>\n";
+	print "\t\t\t\t<td>\n\t\t\t\t\t$needupdate\n\t\t\t\t</td>\n\t\t\t</tr>\n";
+	print "\t\t\t<tr>\n\t\t\t\t<td>\n\t\t\t\t\tTimeouted:\n\t\t\t\t</td>\n";
+	print "\t\t\t\t<td>\n\t\t\t\t\t$timeouted\n\t\t\t\t</td>\n\t\t\t</tr>\n";
+	print "\t\t\t<tr>\n\t\t\t\t<td>\n\t\t\t\t\tMaybe broken up2date:\n\t\t\t\t</td>\n";
+	print "\t\t\t\t<td>\n\t\t\t\t\t$maybebroken\n\t\t\t\t</td>\n\t\t\t</tr>\n";
+	print "\t\t</table>\n";
+	print "\t</body>\n</html>\n";
+} else {
+	print "\nTotal packages checked: $count\n";
+	print "Passed                : $passed\n";
+	print "Need to update        : $needupdate\n";
+	print "Timeouted             : $timeouted\n";
+	print "Maybe broken up2date  : $maybebroken\n";
+}
