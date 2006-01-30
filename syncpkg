@@ -43,8 +43,6 @@ in_array()
 	return 1
 }
 
-blogfile="`pwd`/$blogfile"
-mlogfile="`pwd`/$mlogfile"
 pkglist=`mktemp`
 
 if [ ! -d ~/darcs ]; then
