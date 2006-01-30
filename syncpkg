@@ -59,7 +59,7 @@ else
 fi
 
 cd tools
-./checkpkgs -n|grep "\[O\] `uname -m`"|sed 's/\(.*\)-[^- ]*-[^- ]* .*/\1/' >$pkglist
+python checkpkgs -n|grep "\[O\] `uname -m`"|sed 's/\(.*\)-[^- ]*-[^- ]* .*/\1/' >$pkglist
 
 cd ..
 log "number of pkgs to build: `wc -l $pkglist|sed 's/\(.*\) .*/\1/'`"
