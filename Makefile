@@ -36,7 +36,7 @@ install:
 	$(INSTALL) -d $(DESTDIR)$(sysconfdir)
 	$(INSTALL) -d $(DESTDIR)/home/syncpkgd
 	$(INSTALL) -d $(DESTDIR)/etc/rc.d
-	$(INSTALL) -d $(DESTIDR)/lib/initscripts/messages/hu_HU/LC_MESSAGES/
+	$(INSTALL) -d $(DESTDIR)/lib/initscripts/messages/hu_HU/LC_MESSAGES/
 	chown syncpkgd:daemon $(DESTDIR)/home/syncpkgd
 	$(INSTALL) -d $(DESTDIR)/var/log/syncpkg
 	chown syncpkgd:daemon $(DESTDIR)/var/log/syncpkg
