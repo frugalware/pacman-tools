@@ -34,6 +34,8 @@ install:
 	$(INSTALL) -d $(DESTDIR)$(libdir)
 	$(INSTALL) -d $(DESTDIR)$(man1dir)
 	$(INSTALL) -d $(DESTDIR)$(sysconfdir)
+	$(INSTALL) -d $(DESTDIR)/var/log/syncpkg
+	chown syncpkgd:daemon $(DESTDIR)/var/log/syncpkg
 	$(INSTALL) chkworld $(DESTDIR)$(bindir)/chkworld
 	$(INSTALL) chkdep.pl $(DESTDIR)$(bindir)/chkdep
 	$(INSTALL) -m644 chkdep.1 $(DESTDIR)$(man1dir)
@@ -45,6 +47,8 @@ install:
 	$(INSTALL) repoman $(DESTDIR)$(bindir)
 	$(INSTALL) -m644 repoman.1 $(DESTDIR)$(man1dir)
 	$(INSTALL) -m644 repoman.conf $(DESTDIR)$(sysconfdir)
+	$(INSTALL) syncpkg $(DESTDIR)$(bindir)
+	$(INSTALL) -m644 syncpkg.conf $(DESTDIR)$(sysconfdir)
 	$(INSTALL) fwmakepkg $(DESTDIR)$(libdir)
 	$(INSTALL) movepkg $(DESTDIR)$(bindir)
 	$(INSTALL) pacman-source $(DESTDIR)$(bindir)

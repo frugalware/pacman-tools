@@ -1,0 +1,78 @@
+#!/bin/bash
+# 
+#   syncpkg
+#  
+#   Copyright (c) 2005-2006 by Miklos Vajna <vmiklos@frugalware.org>
+#  
+#   This program is free software; you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published by
+#   the Free Software Foundation; either version 2 of the License, or
+#   (at your option) any later version.
+# 
+#   This program is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#   GNU General Public License for more details.
+#  
+#   You should have received a copy of the GNU General Public License
+#   along with this program; if not, write to the Free Software
+#   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, 
+#   USA.
+#
+
+if [ -e /etc/syncpkg.conf ]; then
+	. /etc/syncpkg.conf
+fi
+
+log()
+{
+	date >>$blogfile
+	echo "$@" >>$blogfile
+}
+
+in_array()
+{
+	local i
+
+	needle=$1
+	shift 1
+	for i in $*
+	do
+		[ "$i" == "$needle" ] && return 0
+	done
+	return 1
+}
+
+blogfile="`pwd`/$blogfile"
+mlogfile="`pwd`/$mlogfile"
+pkglist=`mktemp`
+darcs pull -a >>$blogfile 2>&1
+./checkpkgs -n|grep "\[O\] `uname -m`"|sed 's/\(.*\)-[^- ]*-[^- ]* .*/\1/' >$pkglist
+
+cd ..
+log "number of pkgs to build: `wc -l $pkglist|sed 's/\(.*\) .*/\1/'`"
+
+i=0
+for pkg in `cat $pkglist`
+do
+	if in_array $pkg ${ignore[@]}; then
+		continue
+	fi
+
+	CWD=`pwd`
+	# 4 will find pkgs from extra, but not under _darcs
+	cd `find . -type d -maxdepth 4 -name $pkg 2>/dev/null`
+	rm -f *fpm
+	log "making package: $pkg"
+	sudo makepkg -RLu >>$mlogfile 2>&1
+	log "finished making package $pkg with exit code $?"
+	rf -k -f *fpm >>$mlogfile 2>&1
+	cd $CWD
+	i=$(($i+1))
+
+	if [ "$i" -ge "$maxpkgs" ]; then
+		break
+	fi
+done
+rm $pkglist
+log "build finished, pkgs built: $i"
