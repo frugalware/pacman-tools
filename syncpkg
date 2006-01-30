@@ -51,7 +51,7 @@ fi
 cd ~/darcs
 
 if [ ! -d frugalware-current ]; then
-	darcs get --partial syncpkg@darcs.frugalware.org:/home/ftp/pub/frugalware/frugalware-current >>$blogfile 2>&1
+	darcs get --partial syncpkgd@darcs.frugalware.org:/home/ftp/pub/frugalware/frugalware-current >>$blogfile 2>&1
 	cd frugalware-current
 else
 	cd frugalware-current
