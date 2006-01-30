@@ -35,6 +35,8 @@ install:
 	$(INSTALL) -d $(DESTDIR)$(man1dir)
 	$(INSTALL) -d $(DESTDIR)$(sysconfdir)
 	$(INSTALL) -d $(DESTDIR)/home/syncpkgd
+	$(INSTALL) -d $(DESTDIR)/etc/rc.d
+	$(INSTALL) -d $(DESTIDR)/lib/initscripts/messages/hu_HU/LC_MESSAGES/
 	chown syncpkgd:daemon $(DESTDIR)/home/syncpkgd
 	$(INSTALL) -d $(DESTDIR)/var/log/syncpkg
 	chown syncpkgd:daemon $(DESTDIR)/var/log/syncpkg
@@ -52,6 +54,8 @@ install:
 	$(INSTALL) syncpkg $(DESTDIR)$(bindir)
 	$(INSTALL) -m644 syncpkg.conf $(DESTDIR)$(sysconfdir)
 	$(INSTALL) syncpkgd $(DESTDIR)$(sbindir)
+	$(INSTALL) rc.syncpkgd $(DESTDIR)/etc/rc.d
+	msgfmt -o $(DESTDIR)/lib/initscripts/messages/hu_HU/LC_MESSAGES/syncpkgd.mo rc.syncpkgd-hu.po
 	$(INSTALL) fwmakepkg $(DESTDIR)$(libdir)
 	$(INSTALL) movepkg $(DESTDIR)$(bindir)
 	$(INSTALL) pacman-source $(DESTDIR)$(bindir)
