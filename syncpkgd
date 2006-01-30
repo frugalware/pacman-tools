@@ -28,8 +28,8 @@ if [ ! -d /home/syncpkgd ]; then
 fi
 
 if [ ! -e /home/syncpkgd/.ssh/id_dsa ]; then
-	echo "can't find my dsa key!"
-	exit 1
+	# generate ssh key
+	su - syncpkgd -c 'yes "" |ssh-keygen -t dsa' &>/dev/null
 fi
 
 if [ "`whoami`" = "root" ]; then
