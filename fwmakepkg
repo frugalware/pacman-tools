@@ -398,6 +398,16 @@ Fmakeinstall() {
 	if [ -e $Fdestdir/usr/share/info/dir ]; then
 		Frm /usr/share/info/dir
 	fi
+	if [ -d $Fdestdir/usr/lib/perl5/?.?.? ]; then
+		Fmv '/usr/lib/perl5/?.?.?' /usr/lib/perl5/current
+		find $Fdestdir/usr/lib/perl5 -name perllocal.pod -exec rm {} \;
+		find $Fdestdir/usr/lib/perl5 -name .packlist -exec rm {} \;
+	fi
+	if [ -e $Fdestdir/usr/lib/perl5/site_perl/?.?.? ]; then
+		Fmv '/usr/lib/perl5/site_perl/?.?.?' /usr/lib/perl5/site_perl/current
+		find $Fdestdir/usr/lib/perl5/site_perl -name perllocal.pod -exec rm {} \;
+		find $Fdestdir/usr/lib/perl5/site_perl -name .packlist -exec rm {} \;
+	fi
 }
 
 ### A default build(): Fpatchall, Fmake, Fmakeinstall
