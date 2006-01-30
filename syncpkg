@@ -46,7 +46,21 @@ in_array()
 blogfile="`pwd`/$blogfile"
 mlogfile="`pwd`/$mlogfile"
 pkglist=`mktemp`
-darcs pull -a >>$blogfile 2>&1
+
+if [ ! -d ~/darcs ]; then
+	mkdir ~/darcs
+fi
+cd ~/darcs
+
+if [ ! -d frugalware-current ]; then
+	darcs get --partial syncpkg@darcs.frugalware.org:/home/ftp/pub/frugalware/frugalware-current >>$blogfile 2>&1
+	cd frugalware-current
+else
+	cd frugalware-current
+	darcs pull -a >>$blogfile 2>&1
+fi
+
+cd tools
 ./checkpkgs -n|grep "\[O\] `uname -m`"|sed 's/\(.*\)-[^- ]*-[^- ]* .*/\1/' >$pkglist
 
 cd ..
