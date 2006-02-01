@@ -11,8 +11,6 @@ error() { return 0; }
 Fdie() { return 0; }
 Finclude() { return 0; }
 
-. /etc/genchangelog.conf
-
 echo -n "running darcs changes... "
 darcs changes FrugalBuild > Changelog
 echo "done."
@@ -25,6 +23,8 @@ if [ "$repo" != "extra" ]; then
 fi
 
 source FrugalBuild || die "errors parsing the FrugalBuild"
+
+. /etc/genchangelog.conf
 
 if [ "$repo" == "frugalware" ]; then
 	cd ../../../frugalware-$arch
