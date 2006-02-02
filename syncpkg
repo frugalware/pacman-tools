@@ -63,6 +63,7 @@ python checkpkgs -n|grep "\[O\] `uname -m`"|sed 's/\(.*\)-[^- ]*-[^- ]* .*/\1/' 
 
 cd ..
 log "number of pkgs to build: `wc -l $pkglist|sed 's/\(.*\) .*/\1/'`"
+sudo makepkg -RC
 
 i=0
 for pkg in `cat $pkglist`
