@@ -17,6 +17,7 @@ echo "done."
 
 echo -n "updating mysql database... "
 [ -z "$arch" ] && arch=`arch`
+[ -z "$uploader" ] && uploader=`echo $HOME|sed 's|.*/\(.*\)$|\1|'`
 repo=`pwd|sed 's|.*/\(.*\)/.*/.*/.*|\1|'`
 if [ "$repo" != "extra" ]; then
 	repo="frugalware"
@@ -28,20 +29,20 @@ source FrugalBuild || die "errors parsing the FrugalBuild"
 
 if [ "$repo" == "frugalware" ]; then
 	cd ../../../frugalware-$arch
-	../tools/fdb2db -b ../source/ -r frugalware -e $fwver -f frugalware-$fwver.fdb -a $arch -h $dbhost -u $dbuser -d $dbname -t $dbtable -c $pkgname
+	../tools/fdb2db -b ../source/ -r frugalware -e $fwver -f frugalware-$fwver.fdb -a $arch -h $dbhost -u $dbuser -d $dbname -t $dbtable -c $pkgname -l $uploader
 	if [ ! -z "$subpkgs" ]; then
 		for subpkg in "${subpkgs[@]}"
 		do
-			../tools/fdb2db -b ../source/ -r frugalware -e $fwver -f frugalware-$fwver.fdb -a $arch -h $dbhost -u $dbuser -d $dbname -t $dbtable -c "$subpkg" -s -n $pkgname
+			../tools/fdb2db -b ../source/ -r frugalware -e $fwver -f frugalware-$fwver.fdb -a $arch -h $dbhost -u $dbuser -d $dbname -t $dbtable -c "$subpkg" -s -n $pkgname -l $uploader
 		done
 	fi
 else
 	cd ../../../frugalware-$arch
-	../../tools/fdb2db -b ../source/ -r extra -e $fwver -f extra-$fwver.fdb -a $arch -h $dbhost -u $dbuser -d $dbname -t $dbtable -c $pkgname
+	../../tools/fdb2db -b ../source/ -r extra -e $fwver -f extra-$fwver.fdb -a $arch -h $dbhost -u $dbuser -d $dbname -t $dbtable -c $pkgname -l $uploader
 	if [ ! -z "$subpkgs" ]; then
 		for subpkg in "${subpkgs[@]}"
 		do
-			../../tools/fdb2db -b ../source/ -r extra -e $fwver -f extra-$fwver.fdb -a $arch -h $dbhost -u $dbuser -d $dbname -t $dbtable -c $subpkg -s -n $pkgname
+			../../tools/fdb2db -b ../source/ -r extra -e $fwver -f extra-$fwver.fdb -a $arch -h $dbhost -u $dbuser -d $dbname -t $dbtable -c $subpkg -s -n $pkgname -l $uploader
 		done
 	fi
 fi
