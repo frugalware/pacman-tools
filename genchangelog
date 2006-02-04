@@ -18,6 +18,7 @@ echo "done."
 echo -n "updating mysql database... "
 [ -z "$arch" ] && arch=`arch`
 [ -z "$uploader" ] && uploader=`echo $HOME|sed 's|.*/\(.*\)$|\1|'`
+CWD=`pwd`
 repo=`pwd|sed 's|.*/\(.*\)/.*/.*/.*|\1|'`
 if [ "$repo" != "extra" ]; then
 	repo="frugalware"
@@ -30,20 +31,32 @@ source FrugalBuild || die "errors parsing the FrugalBuild"
 if [ "$repo" == "frugalware" ]; then
 	cd ../../../frugalware-$arch
 	../tools/fdb2db -b ../source/ -r frugalware -e $fwver -f frugalware-$fwver.fdb -a $arch -h $dbhost -u $dbuser -d $dbname -t $dbtable -c $pkgname -l $uploader
-	if [ ! -z "$subpkgs" ]; then
-		for subpkg in "${subpkgs[@]}"
-		do
-			../tools/fdb2db -b ../source/ -r frugalware -e $fwver -f frugalware-$fwver.fdb -a $arch -h $dbhost -u $dbuser -d $dbname -t $dbtable -c "$subpkg" -s -n $pkgname -l $uploader
-		done
-	fi
 else
 	cd ../../../frugalware-$arch
 	../../tools/fdb2db -b ../source/ -r extra -e $fwver -f extra-$fwver.fdb -a $arch -h $dbhost -u $dbuser -d $dbname -t $dbtable -c $pkgname -l $uploader
-	if [ ! -z "$subpkgs" ]; then
-		for subpkg in "${subpkgs[@]}"
-		do
-			../../tools/fdb2db -b ../source/ -r extra -e $fwver -f extra-$fwver.fdb -a $arch -h $dbhost -u $dbuser -d $dbname -t $dbtable -c $subpkg -s -n $pkgname -l $uploader
-		done
-	fi
 fi
+
+if [ ! -z "$subpkgs" ]; then
+	i=0
+	for subpkg in "${subpkgs[@]}"
+	do
+		cd $CWD
+		groups="${subgroups[$i]}"
+		if [ "$repo" = "frugalware" ] && echo $groups|sed 's/^\([^ ]*\) .*/\1/'|grep -q -- -extra$; then
+			# special case: the subpkg is in extra while the main pkg is in frugalware
+			cd ../../../extra/frugalware-$arch
+			../../tools/fdb2db -b ../../source/ -r extra -e $fwver -f extra-$fwver.fdb -a $arch -h $dbhost -u $dbuser -d $dbname -t $dbtable -c "$subpkg" -s -n $pkgname -l $uploader
+		else
+			# the subpkg is in the same repo as the main one
+			if [ "$repo" == "frugalware" ]; then
+				cd ../../../frugalware-$arch
+				../tools/fdb2db -b ../source/ -r frugalware -e $fwver -f frugalware-$fwver.fdb -a $arch -h $dbhost -u $dbuser -d $dbname -t $dbtable -c "$subpkg" -s -n $pkgname -l $uploader
+			else
+				cd ../../../frugalware-$arch
+				../../tools/fdb2db -b ../source/ -r extra -e $fwver -f extra-$fwver.fdb -a $arch -h $dbhost -u $dbuser -d $dbname -t $dbtable -c $subpkg -s -n $pkgname -l $uploader
+			fi
+		fi
+	done
+fi
+
 echo "done."
