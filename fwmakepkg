@@ -400,14 +400,14 @@ Fmakeinstall() {
 	fi
 	if [ -d $Fdestdir/usr/lib/perl5/?.?.? ]; then
 		Fmv '/usr/lib/perl5/?.?.?' /usr/lib/perl5/current
-		find $Fdestdir/usr/lib/perl5 -name perllocal.pod -exec rm {} \;
-		find $Fdestdir/usr/lib/perl5 -name .packlist -exec rm {} \;
 	fi
+	find $Fdestdir/usr/lib/perl5 -name perllocal.pod -exec rm {} \;
+	find $Fdestdir/usr/lib/perl5 -name .packlist -exec rm {} \;
 	if [ -e $Fdestdir/usr/lib/perl5/site_perl/?.?.? ]; then
 		Fmv '/usr/lib/perl5/site_perl/?.?.?' /usr/lib/perl5/site_perl/current
-		find $Fdestdir/usr/lib/perl5/site_perl -name perllocal.pod -exec rm {} \;
-		find $Fdestdir/usr/lib/perl5/site_perl -name .packlist -exec rm {} \;
 	fi
+	find $Fdestdir/usr/lib/perl5/site_perl -name perllocal.pod -exec rm {} \;
+	find $Fdestdir/usr/lib/perl5/site_perl -name .packlist -exec rm {} \;
 }
 
 ### A default build(): Fpatchall, Fmake, Fmakeinstall
