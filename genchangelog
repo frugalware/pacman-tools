@@ -11,10 +11,10 @@ strip_url()
 	echo $1 | sed 's|^.*://.*/||g'
 }
 
-# fake functions for fwmakepkg
-error() { return 0; }
-Fdie() { return 0; }
-Finclude() { return 0; }
+# fake variable for fwmakepkg
+CHROOT=1
+
+. /usr/lib/frugalware/fwmakepkg
 
 echo -n "running darcs changes... "
 darcs changes FrugalBuild > Changelog
