@@ -6,6 +6,11 @@ die()
 	exit 1
 }
 
+strip_url()
+{
+	echo $1 | sed 's|^.*://.*/||g'
+}
+
 # fake functions for fwmakepkg
 error() { return 0; }
 Fdie() { return 0; }
@@ -15,7 +20,6 @@ echo -n "running darcs changes... "
 darcs changes FrugalBuild > Changelog
 echo "done."
 
-echo -n "updating mysql database... "
 [ -z "$arch" ] && arch=`arch`
 [ -z "$uploader" ] && uploader=`echo $HOME|sed 's|.*/\(.*\)$|\1|'`
 CWD=`pwd`
@@ -28,6 +32,20 @@ source FrugalBuild || die "errors parsing the FrugalBuild"
 
 . /etc/genchangelog.conf
 
+. /etc/makepkg.conf
+
+echo "downloading missing source files..."
+
+for i in ${source[@]}
+do
+	file=`strip_url $i`
+	if [ ! -e $file ]; then
+		echo "downloading $file..."
+		$FTPAGENT $i
+	fi
+done
+
+echo -n "updating mysql database... "
 if [ "$repo" == "frugalware" ]; then
 	cd ../../../frugalware-$arch
 	../tools/fdb2db -b ../source/ -r frugalware -e $fwver -f frugalware-$fwver.fdb -a $arch -h $dbhost -u $dbuser -d $dbname -t $dbtable -c $pkgname -l $uploader
