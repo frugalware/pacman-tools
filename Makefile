@@ -1,6 +1,6 @@
 # Makefile for pacman-tools
 #
-# Copyright (C) 2004 Miklos Vajna <vmiklos@frugalware.org>
+# Copyright (C) 2004-2006 Miklos Vajna <vmiklos@frugalware.org>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -18,6 +18,10 @@
 
 VERSION = 0.6.4
 
+CFLAGS ?= -Wall -g -march=$(shell uname -m) -O2 -pipe
+CFLAGS += -Wall $(shell pkg-config --cflags libxml-2.0)
+LDFLAGS += $(shell pkg-config --libs libxml-2.0)
+
 INSTALL = /usr/bin/install -c
 DESTDIR =
 bindir = /usr/bin
@@ -26,7 +30,7 @@ libdir = /usr/lib/frugalware
 man1dir = /usr/share/man/man1
 sysconfdir = /etc
 
-compile:
+compile: chkperm
 
 install:
 	$(INSTALL) -d $(DESTDIR)$(bindir)
@@ -62,6 +66,10 @@ install:
 	$(INSTALL) etcconfig.py $(DESTDIR)$(sbindir)/etcconfig
 	$(INSTALL) rpm2fpm $(DESTDIR)$(bindir)/rpm2fpm
 	$(INSTALL) fwcpan $(DESTDIR)$(bindir)/fwcpan
+	$(INSTALL) chkperm $(DESTDIR)$(bindir)/chkperm
+
+clean:
+	rm chkperm
 
 dist:
 	darcs changes >_darcs/current/Changelog
