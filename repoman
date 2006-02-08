@@ -54,6 +54,17 @@ upload()
 		dest=`echo $2 |sed 's|^/||;s|\.\./||g'`
 	fi
 	src=$1
+	if echo $1 |grep -q \.fpm$; then
+		msg "Checking for permission"
+		# ok, this is a bit slow, but anyone knows a better sollution? ;-)
+		group=`tar xOjf $1 .PKGINFO 2>&1|grep ^group|sed 's/.* = \(.*\)/\1/;q'`
+		if ! ssh $lopts $host "genchangelog --check $group >/dev/null"; then
+			echo "Permission denied"
+			echo "If you think you should have permission, send a mail to"
+			echo "frugalware-devel@frugalware.org, or edit \$fst/docs/xml/teams.xml via darcs."
+			exit 1
+		fi
+	fi
 	name=`basename $src`
 	msg "Requesting a temporarily file"
 	tmp=`ssh $lopts darcs.frugalware.org mktemp 2>/dev/null`
