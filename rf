@@ -375,7 +375,6 @@ sub getopts ($;$) {
     @args = split( / */, $argumentative );
     while(@ARGV && ($_ = $ARGV[0]) =~ /^-(.)(.*)/s) {
 	($first,$rest) = ($1,$2);
-	print "1->$first;$rest;\n";
 	if (/^--$/) {	# early exit if --
 	    shift @ARGV;
 	    last;
@@ -565,6 +564,10 @@ if (@pkgfiles){
 $pkgver = $opts{t} if $opts{t};
 $pkgrel = $opts{l} if $opts{l};
 
+my $subg = 0;
+my $buildscript = contents 'FrugalBuild';
+if ($buildscript =~ /subgroup.*?-extra/m) {$subg++;}
+
 sub getoldsource{
     my ($url,$sourcefile)= @_;
     my ($sn) = $sourcefile =~ /(.*)-/;
@@ -586,7 +589,7 @@ sub Record{
   print "Recording your improvements\n";
   HELP_MESSAGE && die 'Can not determine pkgver!' unless $pkgver;
   HELP_MESSAGE && die 'Can not determine pkgrel!' unless $pkgrel;
-  apply "darcs record --edit-long-comment -m '$pkgname-$pkgver-$pkgrel-$arch'" . ($noask? ' -a' : ''). ' .';
+  apply "darcs record --edit-long-comment -m '$pkgname-$pkgver-$pkgrel-$arch'" . ($noask? ' -a' : '').(($subg && ($repo ne 'extra')) ? '' : ' .');
 }
 
 sub Push{
