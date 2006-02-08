@@ -1,0 +1,86 @@
+#!/bin/bash
+# 
+#   fwcpan
+#  
+#   Copyright (c) 2006 by Miklos Vajna <vmiklos@frugalware.org>
+#  
+#   This program is free software; you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published by
+#   the Free Software Foundation; either version 2 of the License, or
+#   (at your option) any later version.
+# 
+#   This program is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#   GNU General Public License for more details.
+#  
+#   You should have received a copy of the GNU General Public License
+#   along with this program; if not, write to the Free Software
+#   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, 
+#   USA.
+#
+
+if [ "$1" = "-h" -o "$1" = "--help" ]; then
+	echo "usage: $0 [-i|--install] [module]"
+	echo "usage: $0 -h|--help"
+	exit 0
+fi
+
+if [ "$1" = "-i" -o "$1" = "--install" ]; then
+	inst=1
+	shift
+fi
+
+if [ -z "$1" ]; then
+	echo "What is the name of the module to install?"
+	read needle
+else
+	needle="$1"
+fi
+
+echo -n "Searching CPAN... "
+dump=`mktemp`
+lynx -dump "http://search.cpan.org/search?query=$needle&mode=all" >$dump
+guess=`cat $dump|grep '][A-Z].*::[A-Z]'|sed 's/.*]\(.*\)/\1/;q'`
+modname=`echo $guess|sed 's/::/-/g'`
+pkgname="perl-`echo $modname|tr [A-Z] [a-z]`"
+pkgver=`cat $dump|grep $modname|sed "s/.*$modname-\([^ ]*\) .*/\1/;q"`
+pkgdesc=`cat $dump|grep -1 '][A-Z].*::[A-Z]'|sed -n 's/^ *//g;3 p'`
+suburl=`cat $dump|grep $modname-$pkgver|sed -n 's/.*[0-9]\. \(.*\)/\1/;$ p'`
+echo -e "done.\n"
+
+echo "Guessing module: $guess"
+echo -e "Targets: $pkgname-$pkgver-1\n"
+echo -n "Proceed with upgrade? [Y/n]"
+read junk
+if [ ! -z "$junk" -a ! "`echo $junk|tr [A-Z] [a-z]`" = "y" -a ! "`echo $junk|tr [A-Z] [a-z]`" = "yes" ]; then
+	exit 0
+fi
+
+echo -ne "\nWriting the FrugalBuild... "
+modauthor=`lynx -dump $suburl|grep authors|sed "s|.*id/\(.*\)/$modname.*|\1|"`
+src="http://search.cpan.org/CPAN/authors/id/$modauthor/$modname-$pkgver.tar.gz"
+sha1sum=`lynx -dump -source $src|sha1sum |sed 's/  -$//'`
+
+cat << EOF > FrugalBuild
+# Last Modified: `date -R`
+# Compiling Time: 0.1 SBU
+# Maintainer: Zsolt Szalai <xbit@frugalware.org>
+
+pkgname=$pkgname
+modname=$modname
+modauthor=$modauthor
+pkgver=$pkgver
+pkgrel=1
+pkgdesc="$pkgdesc"
+depends=('perl')
+groups=('devel-extra')
+archs=('`uname -m`')
+Finclude perl
+sha1sums=('$sha1sum')
+EOF
+echo "done."
+
+if [ "$inst" = "1" ]; then
+	makepkg -ci
+fi

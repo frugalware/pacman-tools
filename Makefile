@@ -61,6 +61,7 @@ install:
 	$(INSTALL) pacman-source $(DESTDIR)$(bindir)
 	$(INSTALL) etcconfig.py $(DESTDIR)$(sbindir)/etcconfig
 	$(INSTALL) rpm2fpm $(DESTDIR)$(bindir)/rpm2fpm
+	$(INSTALL) fwcpan $(DESTDIR)$(bindir)/fwcpan
 
 dist:
 	darcs changes >_darcs/current/Changelog
