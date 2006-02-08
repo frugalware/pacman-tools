@@ -11,6 +11,16 @@ strip_url()
 	echo $1 | sed 's|^.*://.*/||g'
 }
 
+if [ "$1" = "--check" ]; then
+	if [ "`echo $HOME|sed 's|.*/\(.*\)$|\1|'`" != "syncpkgd" ]; then
+		. /etc/genchangelog.conf
+		chkperm /home/ftp/pub/frugalware/frugalware-$fwver/docs/xml/teams.xml $2
+		exit $?
+	else
+		exit 0
+	fi
+fi
+
 # fake variable for fwmakepkg
 CHROOT=1
 
