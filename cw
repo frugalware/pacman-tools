@@ -1,5 +1,12 @@
 #!/usr/bin/perl -w
 
+# NOTES:
+#  -b can be used only with '' if multiple arguments given (no Getopt::Long pkg yet)
+#
+#  . is the only directory it scans! ADD $input{dirs} support!
+#  write the html output functions
+#  write a good pod
+
 =head1 NAME
     
 chkworld - Compares FrugalBuild's up2date and pkgver informations
@@ -124,16 +131,12 @@ sub init_chk { #generate the iterator
     
     $input{dirs} = $input{dirs} || ['.',];
     $input{time} = $input{time} || 30;
-    
+
     $input{output} = $input{output} || sub {print "@_\n";};
     $input{preoutput} = $input{preoutput} || sub {};
     $input{postoutput} = $input{postoutput} || sub {};
     
-#my @dirs;
-#if (@ARGV) { @dirs = @ARGV; } else  {@dirs = ('.',);}  # // cant handler arrays :-/
-#my $time = $opts{t} || 30;
-#                        --------------->>>>>>>>>>>>>>>>>>open STDERR, "/dev/null" unless $opts{e};
-    
+    my @blacklist = split / /,$input{blacklist};
     my %m8rs;
     my $dev = $input{devel};
     my ($m8r,$pkgname,$pkgver,$group,$up2date,$signal);    
@@ -142,6 +145,7 @@ sub init_chk { #generate the iterator
     if ($input{sort}){
 	find sub{
 	    if (/^FrugalBuild\z/) {
+		do {next if $File::Find::dir =~ /$blacklist[$_]/} for 0..scalar @blacklist-1;
 		my $buildscript = contents $_;
 		my ($m8r) = $buildscript =~ /^# Maintainer: (.*?) </m;
 		$m8rs{$m8r}++;
@@ -152,10 +156,10 @@ sub init_chk { #generate the iterator
     return sub {
 	$input{preoutput}->();
 	for $dev (keys %m8rs){
-
+	    $input{blacklist} = 'apps base';
 	    find sub{
 		if (/^FrugalBuild\z/){
-		    
+		    do {goto OUT if $File::Find::dir =~ /$blacklist[$_]/} for 0..scalar @blacklist-1;
 		    my $buildscript = contents $_;
 		    ($m8r) = $buildscript =~ /^# Maintainer: (.*?) </m;
 		    do {next unless $m8r =~ /\Q$dev\E/i } if $input{devel} || $input{sort};
@@ -175,6 +179,7 @@ sub init_chk { #generate the iterator
 			$signal = 1;
 		    }
 		    $input{output}->($m8r,$pkgname,$pkgver,$up2date,$group,$signal);
+	      OUT: next;
 	        }
 	     }, @{$input{dirs}};
     
@@ -195,7 +200,7 @@ $Getopt::Std::STANDARD_HELP_VERSION = 1;
 our $VERSION = "0.5";
 
 my %opts;
-getopts('svcmhet:d:', \%opts);
+getopts('svcmhet:d:b:', \%opts);
 
 sub HELP_MESSAGE(){
     print <<END
@@ -205,6 +210,7 @@ usage: chkworld [-vcth] directory ...
          -d developer
          -m htmlized output
          -s sort by developers
+         -b blacklists given dirs
          -e enable standard error output
          -v be verbose
          -c colorized output
@@ -263,6 +269,7 @@ sub std_postout {
     print "Maybe broken up2date  : $maybebroken\n";
 }
 
+#if (@ARGV) { @dirs = @ARGV; } else  {@dirs = ('.',);}  # // cant handler arrays :-/
 
 $preout = $opts{m} ? \&html_preout : \&std_preout;
 $out = $opts{m} ? \&html_out : \&std_out;
@@ -272,6 +279,7 @@ my $chkw = Chkworld::init_chk(
 			      time => $opts{t},
 			      devel => $opts{d},
 			      sort => $opts{s},
+			      blacklist => $opts{b},   # a string!
 			      preoutput => $preout,
 			      output => $out,
 			      postoutput => $postout,
