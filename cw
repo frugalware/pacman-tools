@@ -2,9 +2,6 @@
 
 # NOTES:
 #  -b can be used only with '' if multiple arguments given (no Getopt::Long pkg yet)
-#
-#  . is the only directory it scans! ADD $input{dirs} support!
-#  write the html output functions
 #  write a good pod
 
 =head1 NAME
@@ -269,13 +266,75 @@ sub std_postout {
     print "Maybe broken up2date  : $maybebroken\n";
 }
 
-#if (@ARGV) { @dirs = @ARGV; } else  {@dirs = ('.',);}  # // cant handler arrays :-/
+sub htmlinfo{ #info
+	my ($info) = @_;
+
+	return "\t\t\t<tr>\n\t\t\t\t<td>\n\t\t\t\t\t$info\n\t\t\t\t</td>\n";
+}
+
+sub htmlres{ #status, res
+	my ($status, $res) = @_;
+
+	if($status) {
+		return "\t\t\t\t<td>\n\t\t\t\t\t<font color=\"green\">$res</font>\n\t\t\t\t</td>\n\t\t\t</tr>\n";
+	} else {
+		return "\t\t\t\t<td>\n\t\t\t\t\t<font color=\"red\">$res</font>\n\t\t\t\t</td>\n\t\t\t</tr>\n";
+	}
+}
+
+sub html_preout {
+    open STDERR, "/dev/null" unless $opts{e};
+    print "<html>\n\t<head>\n\t\t<title>\n\t\t\tChkworld status\n\t\t</title>\n\t</head>\n\t<body>\n";
+    print "\t\t<i>Last updated: " . localtime() . "</i>\n";
+    print "\t\t<table>\n";
+}
+
+sub html_out{
+    my ($m8r,$pkgname,$pkgver,$up2date,$group,$signal) = @_;
+
+    $count++;
+    my $info = "Checking for $group/$pkgname-$pkgver... ";
+    print htmlinfo $info if $opts{v};
+    if ($signal == -1) {	
+        $timeouted++; #$noout = 0;
+	print htmlinfo $info unless $opts{v};
+	print htmlres(0, "Timeouted! $m8r");
+    } elsif ($signal == 0){
+#        $noout = 0;
+	print htmlinfo $info unless $opts{v};
+	print (htmlres(0, $up2date ? ("!= " . substr($up2date, 0, 12)) . " $m8r": "There were no output! $m8r"));
+	($up2date ? ($needupdate++) : ($maybebroken++));
+	print " $m8r\n";
+    } else {
+	$passed++;
+	print htmlres(1, "Passed $m8r") if $opts{v};
+    }
+}
+
+sub html_postout{
+    print "\t\t</table>\n";
+    print "\t\t<table>\n";
+    print "\t\t\t<tr>\n\t\t\t\t<td>\n\t\t\t\t\tTotal packages checked:\n\t\t\t\t</td>\n";
+    print "\t\t\t\t<td>\n\t\t\t\t\t$count\n\t\t\t\t</td>\n\t\t\t</tr>\n";
+    print "\t\t\t<tr>\n\t\t\t\t<td>\n\t\t\t\t\tPassed\n\t\t\t\t</td>\n";
+    print "\t\t\t\t<td>\n\t\t\t\t\t$passed\n\t\t\t\t</td>\n\t\t\t</tr>\n";
+    print "\t\t\t<tr>\n\t\t\t\t<td>\n\t\t\t\t\tNeed to update:\n\t\t\t\t</td>\n";
+    print "\t\t\t\t<td>\n\t\t\t\t\t$needupdate\n\t\t\t\t</td>\n\t\t\t</tr>\n";
+    print "\t\t\t<tr>\n\t\t\t\t<td>\n\t\t\t\t\tTimeouted:\n\t\t\t\t</td>\n";
+    print "\t\t\t\t<td>\n\t\t\t\t\t$timeouted\n\t\t\t\t</td>\n\t\t\t</tr>\n";
+    print "\t\t\t<tr>\n\t\t\t\t<td>\n\t\t\t\t\tMaybe broken up2date:\n\t\t\t\t</td>\n";
+    print "\t\t\t\t<td>\n\t\t\t\t\t$maybebroken\n\t\t\t\t</td>\n\t\t\t</tr>\n";
+    print "\t\t</table>\n";
+    print "\t</body>\n</html>\n";
+}
+
 
 $preout = $opts{m} ? \&html_preout : \&std_preout;
 $out = $opts{m} ? \&html_out : \&std_out;
 $postout = $opts{m} ? \&html_postout : \&std_postout;
 
 my $chkw = Chkworld::init_chk(
+			      dirs => \@ARGV,    ###!
 			      time => $opts{t},
 			      devel => $opts{d},
 			      sort => $opts{s},
