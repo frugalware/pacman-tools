@@ -304,7 +304,6 @@ sub html_out{
 	print htmlinfo $info unless $opts{v};
 	print (htmlres(0, $up2date ? ("!= " . substr($up2date, 0, 12)) . " $m8r": "There were no output! $m8r"));
 	($up2date ? ($needupdate++) : ($maybebroken++));
-	print " $m8r\n";
     } else {
 	$passed++;
 	print htmlres(1, "Passed $m8r") if $opts{v};
