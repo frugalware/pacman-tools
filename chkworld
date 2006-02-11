@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/perl -w
 
 =head1 NAME
     
@@ -6,7 +6,7 @@ chkworld - Compares FrugalBuild's up2date and pkgver informations
    
 =head1 SYNOPSIS
     
-chkdep [-vches] [-t num] [-d developer] directory1...
+chkdep [options]
     
 =head1 DESCRIPTION
 
@@ -17,34 +17,46 @@ This way, you will always known, how fresh and crispy the packages you're mainta
 
 =over 4
 
-=item B<-t num>
+=item B<-r|dirs>
+
+Check in the given directories.
+
+=item B<-t|time num>
 
 num is a value in seconds. After num, the checking continues with the next package, 
 shutting down child processes.
 Default is 30.
 
-=item B<-e>
+=item B<-e|error>
 
 Enables standard error output. By default STDERR is redirected to /dev/null.
 
-=item B<-v>
-
-Be verbose.
-
-=item B<-d>
+=item B<-d|devel>
 
 Matches the string given with the Maintainer in FrugalBuild, 
 filtering the output with the specified developer.
 
-=item B<-s>
+=item B<-m|html>
+
+Produces a html output.
+
+=item B<-s|sort>
 
 Output sorted by developers
 
-=item B<-c>
+=item B<-c|color>
 
 Colorized output.
 
-=item B<-h>
+=item B<-v|verbose>
+
+Be verbose.
+
+=item B<-b|blacklist>
+
+Blacklist the given directories, not to preform check in them.
+
+=item B<-h|help>
 
 A little help.
 
@@ -61,10 +73,11 @@ License v2.
     
 =cut
 
-use strict;
+package Chkworld;
+
+require 5.8.8;
 use warnings;
 no warnings qw( uninitialized );
-use Getopt::Std;
 use File::Find;
 use IO::File;
 
@@ -114,6 +127,148 @@ sub timeout{ #time, command
     return $output;
 }
 
+
+#IN:   dirs*, time*, devel* sort* output preoutput postoutput
+#OUT:#
+sub init_chk { #generate the iterator
+    
+    
+    my %input = @_;
+    
+    $input{dirs} = (@{$input{dirs}}) ? $input{dirs} : ['.',];
+    $input{time} = $input{time} || 30;
+
+    $input{output} = $input{output} || sub {print "@_\n";};
+    $input{preoutput} = $input{preoutput} || sub {};
+    $input{postoutput} = $input{postoutput} || sub {};
+    
+    my @blacklist = @{$input{blacklist}};
+    my %m8rs;
+    my $dev = $input{devel};
+    my ($m8r,$pkgname,$pkgver,$group,$up2date,$signal);    
+    my $prog;
+
+    if ($input{sort}){
+	find sub{
+	    if (/^FrugalBuild\z/) {
+		do {next if $File::Find::dir =~ /$blacklist[$_]/} for 0..scalar @blacklist-1;
+		my $buildscript = contents $_;
+		my ($m8r) = $buildscript =~ /^# Maintainer: (.*?) </m;
+		$m8rs{$m8r}++;
+	    }
+	}, @{$input{dirs}};
+    } else { if ($input{devel}) {$m8rs{$input{devel}}++;} else { $m8rs{all}++ }}
+    
+    return sub {
+	$input{preoutput}->();
+	for $dev (keys %m8rs){
+	    find sub{
+		if (/^FrugalBuild\z/){
+		    do {goto OUT if $File::Find::dir =~ /$blacklist[$_]/} for 0..scalar @blacklist-1;
+		    my $buildscript = contents $_;
+		    ($m8r) = $buildscript =~ /^# Maintainer: (.*?) </m;
+		    do {next unless $m8r =~ /\Q$dev\E/i } if $input{devel} || $input{sort};
+		    ($pkgname) = qx'source ./FrugalBuild; echo -n $pkgname';
+		    ($pkgver) = $buildscript =~ /^pkgver=(\S*)/m;
+		    ($group) = $buildscript =~ /^groups=\('?(.*?)('|\s|\))/m;
+		    $group = '?' unless $group;
+		
+		    $up2date = timeout $input{time}, 'CHROOT=1; source /usr/lib/frugalware/fwmakepkg;source ./FrugalBuild;if ( `echo $up2date|grep -q " "` ); then eval $up2date; else echo $up2date; fi';
+		    chomp $up2date unless $up2date eq 'TIMEOUTED';
+		
+		    if ($up2date eq 'TIMEOUTED') {	
+			$signal = -1;
+		    } elsif ($pkgver ne $up2date){
+			$signal = 0;
+		    } else {
+			$signal = 1;
+		    }
+		    $input{output}->($m8r,$pkgname,$pkgver,$up2date,$group,$signal);
+	      OUT: next;
+	        }
+	     }, @{$input{dirs}};
+    
+        }
+        $input{postoutput}->();
+    }
+}
+
+
+package main;
+
+use strict;
+use Data::Dumper;
+use Getopt::Long;
+use Pod::Usage;
+
+our $VERSION = "0.9";
+
+#my %opts;
+#getopts('svcmhet:d:b:', \%opts);
+
+my ($sort, $devel,$html,$time,$error,$verbose,$color,$help,@bl,@dirs);
+
+GetOptions(
+    's|sort' => \$sort, 'd|devel:s' => \$devel, 'm|html' => \$html,
+    't|time:i' => \$time, 'b|blacklist:s{,}' => \@bl, 'e|error' => \$error,
+    'v|verbose' => \$verbose, 'c|color' => \$color, 'h|help' => \$help,
+    'r|dirs:s{,}' => \@dirs,
+    ) || pod2usage(0);
+
+sub HELP_MESSAGE(){
+    pod2usage(1);
+}
+    
+HELP_MESSAGE && exit if $help;
+
+# better be in a module!!!!!!!!!!!!!! 
+my $count = 0;
+my $needupdate = 0;
+my $maybebroken = 0;
+my $timeouted = 0;
+my $passed = 0;
+my ($preout, $out, $postout);
+
+sub std_preout {open STDERR, "/dev/null" unless $error; }
+sub std_out {
+    my ($m8r,$pkgname,$pkgver,$up2date,$group,$signal) = @_;
+
+    $count++;
+    my $info = "Checking for $group/$pkgname-$pkgver... ";
+    print $info if $verbose;
+    if ($signal == -1) {	
+        $timeouted++; #$noout = 0;
+	print $info unless $verbose;
+	if ($color){
+	    print "\033[1;33mTimeouted!\033[1;0m $m8r\n";
+	} else {
+	    print "Timeouted! $m8r\n";
+	}
+    } elsif ($signal == 0){
+#        $noout = 0;
+	print $info unless $verbose;
+	if ($color){
+	    print ($up2date ? ("!= \033[1;31m" . substr($up2date, 0, 12)."\033[1;0m" )  : "\033[1;33mThere were no output!\033[1;0m");
+	} else {
+	    print ($up2date ? ("!= " . substr($up2date, 0, 12)) : "There were no output!");
+	}
+	($up2date ? ($needupdate++) : ($maybebroken++));
+	print " $m8r\n";
+    } else {
+	$passed++;
+	print "Passed $m8r\n" if $verbose && !$color;
+	print "\033[1;32mPassed\033[1;0m\n" if $verbose && $color;
+    }
+}
+
+sub std_postout {
+    print "\nTotal packages checked: $count\n";
+    print "Passed                : $passed\n";
+    print "Need to update        : $needupdate\n";
+    print "Timeouted             : $timeouted\n";
+    print "Maybe broken up2date  : $maybebroken\n";
+}
+
 sub htmlinfo{ #info
 	my ($info) = @_;
 
@@ -130,122 +285,66 @@ sub htmlres{ #status, res
 	}
 }
 
-$Getopt::Std::STANDARD_HELP_VERSION = 1;
-our $VERSION = "0.4";
-
-my %opts;
-getopts('svcmhet:d:', \%opts);
-
-sub HELP_MESSAGE(){
-    print <<END
-chkworld - Compares FrugalBuild's up2date and pkgver informations
-usage: chkworld [-vcth] directory ...
-         -t num
-         -d developer
-         -m htmlized output
-         -s sort by developers
-         -e enable standard error output
-         -v be verbose
-         -c colorized output
-	 -h this help
-       
-END
-}#'
-    
-HELP_MESSAGE && exit if $opts{h};
-    
-my @dirs;
-if (@ARGV) { @dirs = @ARGV; } else  {@dirs = ('.',);}  # // cant handler arrays :-/
-my $time = $opts{t} || 30;
-open STDERR, "/dev/null" unless $opts{e};
-my $count;
-my $needupdate = 0;
-my $maybebroken = 0;
-my $timeouted = 0;
-my $passed = 0;
-my %m8rs;
-my $dev = $opts{d};
-
-if($opts{m}){
-	print "<html>\n\t<head>\n\t\t<title>\n\t\t\tChkworld status\n\t\t</title>\n\t</head>\n\t<body>\n";
-	print "\t\t<i>Last updated: " . localtime() . "</i>\n";
-	print "\t\t<table>\n";
+sub html_preout {
+    open STDERR, "/dev/null" unless $error;
+    print "<html>\n\t<head>\n\t\t<title>\n\t\t\tChkworld status\n\t\t</title>\n\t</head>\n\t<body>\n";
+    print "\t\t<i>Last updated: " . localtime() . "</i>\n";
+    print "\t\t<table>\n";
 }
 
-if ($opts{s}){
-  find sub{
-    if (/^FrugalBuild\z/) {
-      my $buildscript = contents $_;
-      my ($m8r) = $buildscript =~ /^# Maintainer: (.*?) </m;
-	$m8rs{$m8r}++;
-    }
-  }, @dirs;
-} else { if ($opts{d}) {$m8rs{$opts{d}}++;} else { $m8rs{all}++ }}
-    
-for $dev (keys %m8rs){
-    my $noout = 1;
-    find sub{
-      if (/^FrugalBuild\z/) {
-	    
-      my $buildscript = contents $_;
-      my ($m8r) = $buildscript =~ /^# Maintainer: (.*?) </m;
-      do {next unless $m8r =~ /\Q$dev\E/i } if $opts{d} || $opts{s};
-      my ($pkgname) = qx'source ./FrugalBuild; echo -n $pkgname';
-      my ($pkgver) = $buildscript =~ /^pkgver=(\S*)/m;
-      my ($group) = $buildscript =~ /^groups=\('?(.*?)('|\s|\))/m;
-      $group = '?' unless $group;
-      my $info = "Checking for $group/$pkgname-$pkgver... ";
-      $count++;
-      print $info if $opts{v} && !$opts{m};
-      print $opts{m} ? htmlinfo($info) : $info if $opts{v} && $opts{m};
-    
-      my $up2date = timeout $time, 'CHROOT=1; source /usr/lib/frugalware/fwmakepkg;source ./FrugalBuild;if ( `echo $up2date|grep -q " "` ); then eval $up2date; else echo $up2date; fi';
-      chomp $up2date unless $up2date eq 'TIMEOUTED';
-    
-      if ($up2date eq 'TIMEOUTED') {	
-        $timeouted++; $noout = 0;
-	print $opts{m} ? htmlinfo($info) : $info unless $opts{v};
-	print "Timeouted! $m8r\n" if !$opts{c} && !$opts{m};
-	print "\033[1;33mTimeouted!\033[1;0m $m8r\n" if $opts{c} && !$opts{m};
-	print htmlres(0, "Timeouted! $m8r") if $opts{m};
-      } elsif ($pkgver ne $up2date){
-        $noout = 0;
-	print $opts{m} ? htmlinfo($info) : $info unless $opts{v};
-	print ($up2date ? ("!= " . substr($up2date, 0, 12)) : "There were no output!") if !$opts{c} && !$opts{m};
-	print ($up2date ? ("!= \033[1;31m" . substr($up2date, 0, 12)."\033[1;0m" )  : "\033[1;33mThere were no output!\033[1;0m") if $opts{c} && !$opts{m};
-	print (htmlres(0, $up2date ? ("!= " . substr($up2date, 0, 12)) . " $m8r": "There were no output! $m8r")) if $opts{m};
+sub html_out{
+    my ($m8r,$pkgname,$pkgver,$up2date,$group,$signal) = @_;
+
+    $count++;
+    my $info = "Checking for $group/$pkgname-$pkgver... ";
+    print htmlinfo $info if $verbose;
+    if ($signal == -1) {	
+        $timeouted++; #$noout = 0;
+	print htmlinfo $info unless $verbose;
+	print htmlres(0, "Timeouted! $m8r");
+    } elsif ($signal == 0){
+#        $noout = 0;
+	print htmlinfo $info unless $verbose;
+	print (htmlres(0, $up2date ? ("!= " . substr($up2date, 0, 12)) . " $m8r": "There were no output! $m8r"));
 	($up2date ? ($needupdate++) : ($maybebroken++));
-	print " $m8r\n" unless $opts{m};
-      } else {
+    } else {
 	$passed++;
-	print "Passed $m8r\n" if $opts{v} && !$opts{c} && !$opts{m};
-	print "\033[1;32mPassed\033[1;0m\n" if $opts{v} && $opts{c} && !$opts{m};
-	print htmlres(1, "Passed $m8r") if $opts{v} && $opts{m};
-      }
+	print htmlres(1, "Passed $m8r") if $verbose;
     }
-  }, @dirs;
-    print "\n" unless $noout;
 }
 
-if($opts{m}){
-	print "\t\t</table>\n";
-	print "\t\t<table>\n";
-	print "\t\t\t<tr>\n\t\t\t\t<td>\n\t\t\t\t\tTotal packages checked:\n\t\t\t\t</td>\n";
-	print "\t\t\t\t<td>\n\t\t\t\t\t$count\n\t\t\t\t</td>\n\t\t\t</tr>\n";
-	print "\t\t\t<tr>\n\t\t\t\t<td>\n\t\t\t\t\tPassed\n\t\t\t\t</td>\n";
-	print "\t\t\t\t<td>\n\t\t\t\t\t$passed\n\t\t\t\t</td>\n\t\t\t</tr>\n";
-	print "\t\t\t<tr>\n\t\t\t\t<td>\n\t\t\t\t\tNeed to update:\n\t\t\t\t</td>\n";
-	print "\t\t\t\t<td>\n\t\t\t\t\t$needupdate\n\t\t\t\t</td>\n\t\t\t</tr>\n";
-	print "\t\t\t<tr>\n\t\t\t\t<td>\n\t\t\t\t\tTimeouted:\n\t\t\t\t</td>\n";
-	print "\t\t\t\t<td>\n\t\t\t\t\t$timeouted\n\t\t\t\t</td>\n\t\t\t</tr>\n";
-	print "\t\t\t<tr>\n\t\t\t\t<td>\n\t\t\t\t\tMaybe broken up2date:\n\t\t\t\t</td>\n";
-	print "\t\t\t\t<td>\n\t\t\t\t\t$maybebroken\n\t\t\t\t</td>\n\t\t\t</tr>\n";
-	print "\t\t</table>\n";
-	print "\t</body>\n</html>\n";
-} else {
-	print "\nTotal packages checked: $count\n";
-	print "Passed                : $passed\n";
-	print "Need to update        : $needupdate\n";
-	print "Timeouted             : $timeouted\n";
-	print "Maybe broken up2date  : $maybebroken\n";
+sub html_postout{
+    print "\t\t</table>\n";
+    print "\t\t<table>\n";
+    print "\t\t\t<tr>\n\t\t\t\t<td>\n\t\t\t\t\tTotal packages checked:\n\t\t\t\t</td>\n";
+    print "\t\t\t\t<td>\n\t\t\t\t\t$count\n\t\t\t\t</td>\n\t\t\t</tr>\n";
+    print "\t\t\t<tr>\n\t\t\t\t<td>\n\t\t\t\t\tPassed\n\t\t\t\t</td>\n";
+    print "\t\t\t\t<td>\n\t\t\t\t\t$passed\n\t\t\t\t</td>\n\t\t\t</tr>\n";
+    print "\t\t\t<tr>\n\t\t\t\t<td>\n\t\t\t\t\tNeed to update:\n\t\t\t\t</td>\n";
+    print "\t\t\t\t<td>\n\t\t\t\t\t$needupdate\n\t\t\t\t</td>\n\t\t\t</tr>\n";
+    print "\t\t\t<tr>\n\t\t\t\t<td>\n\t\t\t\t\tTimeouted:\n\t\t\t\t</td>\n";
+    print "\t\t\t\t<td>\n\t\t\t\t\t$timeouted\n\t\t\t\t</td>\n\t\t\t</tr>\n";
+    print "\t\t\t<tr>\n\t\t\t\t<td>\n\t\t\t\t\tMaybe broken up2date:\n\t\t\t\t</td>\n";
+    print "\t\t\t\t<td>\n\t\t\t\t\t$maybebroken\n\t\t\t\t</td>\n\t\t\t</tr>\n";
+    print "\t\t</table>\n";
+    print "\t</body>\n</html>\n";
 }
+
+
+$preout = $html ? \&html_preout : \&std_preout;
+$out = $html ? \&html_out : \&std_out;
+$postout = $html ? \&html_postout : \&std_postout;
+
+my $chkw = Chkworld::init_chk(
+			      dirs => \@dirs,
+			      time => $time,
+			      devel => $devel,
+			      sort => $sort,
+			      blacklist => \@bl,
+			      preoutput => $preout,
+			      output => $out,
+			      postoutput => $postout,
+);
+
+$chkw->();
+
