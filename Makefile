@@ -45,6 +45,7 @@ install:
 	$(INSTALL) -d $(DESTDIR)/var/log/syncpkg
 	chown syncpkgd:daemon $(DESTDIR)/var/log/syncpkg
 	$(INSTALL) chkworld $(DESTDIR)$(bindir)/chkworld
+	$(INSTALL) -m644 chkworld.1 $(DESTDIR)$(man1dir)
 	$(INSTALL) chkdep.pl $(DESTDIR)$(bindir)/chkdep
 	$(INSTALL) -m644 chkdep.1 $(DESTDIR)$(man1dir)
 	$(INSTALL) pud $(DESTDIR)$(bindir)
