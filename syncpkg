@@ -75,11 +75,17 @@ do
 	CWD=`pwd`
 	# 4 will find pkgs from extra, but not under _darcs
 	cd `find . -type d -maxdepth 4 -name $pkg 2>/dev/null`
-	rm -f *fpm
+	rm -f *fpm *.log
 	log "making package: $pkg"
-	sudo makepkg -RLu >>$mlogfile 2>&1
-	log "finished making package $pkg with exit code $?"
-	rf -k -f *fpm >>$mlogfile 2>&1
+	sudo makepkg -RLuk >>$mlogfile 2>&1
+	ret=$?
+	log "finished making package $pkg with exit code $ret"
+	if [ -e *.log ]; then
+		echo $ret >`ls *.log`.exitcode
+		[ -d $logdir ] || mkdir -p $logdir
+		mv *.log *.log.exitcode $logdir
+	fi
+	[ -e *.fpm ] && rf -k -f *fpm >>$mlogfile 2>&1
 	cd $CWD
 	i=$(($i+1))
 
