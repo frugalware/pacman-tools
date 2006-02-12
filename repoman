@@ -112,7 +112,7 @@ clean()
 {
 	msg "Cleaning up $1"
 	split_repo_group_pkgname_dir $1
-	ssh $lopts $host "cd $path_to_repo/$dir/../frugalware-${arch:-`arch`} && arch=${arch:-`arch`} sudo -u $sudouser updatesync del $repo-current.fdb $pkgname"
+	ssh $lopts $host "cd $path_to_repo/$dir/../frugalware-${arch:-`arch`} && arch=${arch:-`arch`} sudo -u $sudouser updatesync del $repo-current.fdb $pkgname && genchangelog --clean $pkgname"
 }
 
 changelog()
