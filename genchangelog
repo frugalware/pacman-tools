@@ -10,6 +10,8 @@ strip_url()
 {
 	echo $1 | sed 's|^.*://.*/||g'
 }
+[ -z "$arch" ] && arch=`arch`
+[ -z "$uploader" ] && uploader=`echo $HOME|sed 's|.*/\(.*\)$|\1|'`
 
 if [ "$1" = "--check" ]; then
 	if [ "`echo $HOME|sed 's|.*/\(.*\)$|\1|'`" != "syncpkgd" ]; then
@@ -19,6 +21,15 @@ if [ "$1" = "--check" ]; then
 	else
 		exit 0
 	fi
+elif [ "$1" = "--clean" ]; then
+	. /etc/genchangelog.conf
+	# where are we?
+	if [ "`pwd|sed 's|.*/\([^/]*\)/[^/]*|\1|'`" != "extra" ]; then
+		../tools/fdb2db -b ../source/ -r frugalware -e $fwver -a $arch -h $dbhost -u $dbuser -d $dbname -t $dbtable -D -c $2
+	else
+		../../tools/fdb2db -b ../source/ -r extra -e $fwver -a $arch -h $dbhost -u $dbuser -d $dbname -t $dbtable -D -c $2
+	fi
+	exit 0
 fi
 
 # fake variable for fwmakepkg
@@ -30,8 +41,6 @@ echo -n "running darcs changes... "
 darcs changes FrugalBuild > Changelog
 echo "done."
 
-[ -z "$arch" ] && arch=`arch`
-[ -z "$uploader" ] && uploader=`echo $HOME|sed 's|.*/\(.*\)$|\1|'`
 CWD=`pwd`
 repo=`pwd|sed 's|.*/\(.*\)/.*/.*/.*|\1|'`
 if [ "$repo" != "extra" ]; then
