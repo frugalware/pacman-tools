@@ -63,6 +63,10 @@ python checkpkgs -n|grep "\[O\] `uname -m`"|sed 's/\(.*\)-[^- ]*-[^- ]* .*/\1/' 
 
 cd ..
 log "number of pkgs to build: `wc -l $pkglist|sed 's/\(.*\) .*/\1/'`"
+
+# cleanup the logs and the chroot
+[ ! -z "$days" ] || days="7"
+find /var/log/syncpkg -mtime +$days -exec rm -vrf {} \;
 sudo makepkg -RC >>$blogfile 2>&1
 
 i=0
