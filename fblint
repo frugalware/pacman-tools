@@ -1,0 +1,206 @@
+#!/bin/bash
+# 
+#   fblint for Frugalware
+#  
+#   Copyright (c) 2006 by Miklos Vajna <vmiklos@frugalware.org>
+#  
+#   This program is free software; you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published by
+#   the Free Software Foundation; either version 2 of the License, or
+#   (at your option) any later version.
+# 
+#   This program is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#   GNU General Public License for more details.
+#  
+#   You should have received a copy of the GNU General Public License
+#   along with this program; if not, write to the Free Software
+#   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, 
+#   USA.
+#
+
+die()
+{
+	echo "$0: $@"
+	exit 1
+}
+
+check()
+{
+	[ -z "$quiet" ] && echo -n "checking for $@... "
+}
+
+ok()
+{
+	if [ "$1" = 0 ]; then
+		[ -z "$quiet" ] && echo "done."
+		done=$(($done+1))
+	else
+		[ -z "$quiet" ] && echo "failed."
+		failed=$(($failed+1))
+	fi
+}
+
+if [ "$1" = "-h" ]; then
+	echo "fblint: searches for common FrugalBuild problems"
+	echo "usage: $0 [-h] | [-q] [-p]"
+	echo "       -p		buildscript [./FrugalBuild]"
+	echo "       -h		this help"
+	exit 0
+fi
+
+if [ "$1" = "-q" ]; then
+	quiet="y"
+	shift 1
+fi
+
+if [ "$1" = "-p" ]; then
+	FB="$2"
+else
+	FB="FrugalBuild"
+fi
+
+done="0"
+failed="0"
+CHROOT=1
+. /usr/lib/frugalware/fwmakepkg
+. /etc/makepkg.conf
+
+check "FrugalBuild"
+[ -e $FB ]
+ok $?
+
+check "last modified line"
+grep -q -i '^# Last Modified: ' $FB
+ok $?
+
+check "sbu"
+grep -i -q "^# Compiling Time: [~0-9\.]\+ SBU$" $FB
+ok $?
+
+check "maintainer"
+grep -q '^# Maintainer: ' $FB
+ok $?
+
+check "syntax errors"
+source $FB
+ok $?
+
+check "pkgname"
+[ ! -z "$pkgname" ]
+ok $?
+
+check "pkgver"
+[ ! -z "$pkgver" ]
+ok $?
+
+check "hyphen-less pkgver"
+[ ! `echo $pkgver | grep '-'` ]
+ok $?
+
+check "pkgrel"
+[ ! -z "$pkgrel" ]
+ok $?
+
+check "hyphen-less pkgrel"
+[ ! `echo $pkgrel | grep '-'` ]
+ok $?
+
+check "pkgdesc"
+[ ! -z "$pkgdesc" ]
+ok $?
+
+check "url"
+[ ! -z "$url" ]
+ok $?
+
+check "groups"
+[ ! -z "$groups" ]
+ok $?
+
+check "valid first group"
+! echo $groups |grep -q -- - || echo $groups|grep -q -- -extra$
+ok $?
+
+check "archs"
+[ ! -z "$archs" ]
+ok $?
+
+check "up2date"
+[ ! -z "$up2date" ]
+ok $?
+
+check "right number of sha1sums"
+[ ${#sha1sums[@]} -eq ${#source[@]} ]
+ok $?
+
+if [ ! -z "$subpkgs" ]; then
+	check "subdescs"
+	[ ! -z "$subdescs" ]
+	ok $?
+
+	check "subdepends"
+	[ ! -z "$subdepends" ]
+	ok $?
+
+	check "subgroups"
+	[ ! -z "$subgroups" ]
+	ok $?
+
+	check "right number of subdescs"
+	[ "${#subdescs[@]}" = 0 ] || [ "${#subdescs[@]}" == "${#subpkgs[@]}" ]
+	ok $?
+
+	check "right number of sublicense"
+	[ "${#sublicense[@]}" = 0 ] || [ "${#sublicense[@]}" = "${#subpkgs[@]}" ]
+	ok $?
+
+	check "right number of subreplaces"
+	[ "${#subreplaces[@]}" = 0 ] || [ "${#subreplaces[@]}" = "${#subpkgs[@]}" ]
+	ok $?
+
+	check "right number of subgroups"
+	[ "${#subgroups[@]}" = 0 ] || [ "${#subgroups[@]}" = "${#subpkgs[@]}" ]
+	ok $?
+
+	check "right number of subdepends"
+	[ "${#subdepends[@]}" = 0 ] || [ "${#subdepends[@]}" = "${#subpkgs[@]}" ]
+	ok $?
+
+	check "right number of subrodepends"
+	[ "${#subrodepends[@]}" = 0 ] || [ "${#subrodepends[@]}" = "${#subpkgs[@]}" ]
+	ok $?
+
+	check "right number of subremoves"
+	[ "${#subremoves[@]}" = 0 ] || [ "${#subremoves[@]}" = "${#subpkgs[@]}" ]
+	ok $?
+
+	check "right number of subconflicts"
+	[ "${#subconflicts[@]}" = 0 ] || [ "${#subconflicts[@]}" = "${#subpkgs[@]}" ]
+	ok $?
+
+	check "right number of subprovides"
+	[ "${#subprovides[@]}" = 0 ] || [ "${#subprovides[@]}" = "${#subpkgs[@]}" ]
+	ok $?
+
+	check "right number of subbackup"
+	[ "${#subbackup[@]}" = 0 ] || [ "${#subbackup[@]}" = "${#subpkgs[@]}" ]
+	ok $?
+
+	check "right number of subinstall"
+	[ "${#subinstall[@]}" = 0 ] || [ "${#subinstall[@]}" = "${#subpkgs[@]}" ]
+	ok $?
+
+	check "right number of suboptions"
+	[ "${#suboptions[@]}" = 0 ] || [ "${#suboptions[@]}" = "${#subpkgs[@]}" ]
+	ok $?
+fi
+
+[ -z "$quiet" ] && echo "done: $done, failed $failed"
+
+if [ $failed -gt 0 ]; then
+	exit 1
+else
+	exit 0
+fi

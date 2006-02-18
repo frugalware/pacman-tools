@@ -68,6 +68,7 @@ install:
 	$(INSTALL) rpm2fpm $(DESTDIR)$(bindir)/rpm2fpm
 	$(INSTALL) fwcpan $(DESTDIR)$(bindir)/fwcpan
 	$(INSTALL) chkperm $(DESTDIR)$(bindir)/chkperm
+	$(INSTALL) fblint $(DESTDIR)$(bindir)/fblint
 
 clean:
 	rm chkperm
