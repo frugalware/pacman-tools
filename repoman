@@ -148,7 +148,7 @@ update()
 	# server="http://darcs.frugalware.org/repos/frugalware-current"
 	mkdir -p $fst_root/$repo
 	cd $fst_root/$repo
-	echo "warning: this operation can take minutes, please be patent"
+	echo "warning: this operation can take minutes, please be patient"
 	echo -n ":: Synchronizing the Frugalware Source Tree... "
 	rsync -a $server ./ >/dev/null
 	echo "done."
