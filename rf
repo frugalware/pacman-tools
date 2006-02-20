@@ -459,7 +459,7 @@ eval {require Term::ReadLine::Gnu}; die 'Please install perl-term-readline-gnu!'
 eval {require Term::ReadKey}; die 'Please install perl-term-readkey!' if $@;
 import Term::ReadKey;
 
-$Getopt::Std::STANDARD_HELP_VERSION = 1;
+#$Getopt::Std::STANDARD_HELP_VERSION = 1;
 our $VERSION = "0.5";
 
 sub HELP_MESSAGE(){
