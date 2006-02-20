@@ -67,11 +67,17 @@ upload()
 	fi
 	name=`basename $src`
 	msg "Requesting a temporarily file"
-	tmp=`ssh $lopts darcs.frugalware.org mktemp 2>/dev/null`
+	tmp=`ssh $lopts $host mktemp 2>/dev/null`
 	msg "Uploading file: $src (to $tmp)"
 	scp $src $cpopts$host:$tmp
-	msg "Copying to $dest"
-	ssh $lopts $host "chmod 644 $tmp; sudo -u vmiklos cp $tmp $path_to_repo/$dest/$name && rm $tmp"
+	if echo "`sha1sum $src|sed 's/\(.*\)  .*/\1/'`  $tmp" |ssh $lopts $host sha1sum -c - >/dev/null 2>&1; then
+		msg "Copying to $dest"
+		ssh $lopts $host "chmod 644 $tmp; sudo -u vmiklos cp $tmp $path_to_repo/$dest/$name && rm $tmp"
+	else
+		echo "The uploaded file is corrupted :-/"
+		ssh $lopts $host "rm $tmp"
+		exit 1
+	fi
 }
 
 list()
