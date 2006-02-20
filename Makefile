@@ -16,9 +16,9 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 #
 
-VERSION = 0.6.5
+VERSION = 0.6.6
 
-CFLAGS ?= -Wall -g -march=$(shell uname -m) -O2 -pipe
+CFLAGS ?= -Wall -g -O2 -pipe
 CFLAGS += -Wall $(shell pkg-config --cflags libxml-2.0)
 LDFLAGS += $(shell pkg-config --libs libxml-2.0)
 
