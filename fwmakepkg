@@ -604,7 +604,7 @@ Finclude ()
 			fi
 			i=`echo $i|sed 's|\(.*\)/.*|\1|'`
 		done
-		if [ "$i" ]; then
+		if [ "$i" -a -d "$i"/source/include ]; then
 			local Fincdir=$i/source/include
 		elif [ -d /var/tmp/fst/include ]; then
 			local Fincdir=/var/tmp/fst/include
