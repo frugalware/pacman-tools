@@ -494,6 +494,7 @@ my ($pkgver, $pkgrel);
 sub msystem{
     system @_;
     warn 'Failed to execute!' if $? == -1;
+    return $?>>8;
 }
 
 sub getcommand{
@@ -516,22 +517,24 @@ sub ask{
 
 sub apply{
     my $comm = shift;
+    my $exitcode;
  APP:
     if ((my $an = ask "$comm\n Is this ok? [yagq?]") =~ /^y|^$/i){
-	msystem $comm;
+	$exitcode = msystem $comm;
     } elsif ($an =~ /^a/i){
 	$noask = 1;
-	msystem $comm;
+	$exitcode = msystem $comm;
     } elsif ($an =~ /^g/i){
-	msystem getcommand($comm);
+	$exitcode = msystem getcommand($comm);
     } elsif ($an =~ /^q/i){
 	exit;
     } elsif ($an =~ /^\?/){
-	print "y applay command\na: yes to all further question\ng: give a new command\nq: quit\n\n";
+	print "y apply command\na: yes to all further question\ng: give a new command\nq: quit\n\n";
 	undef $an;
 	goto APP;
   }
     print "\n";
+    return $exitcode;
 }
 
 $repo = '' || $opts{r};
@@ -589,35 +592,41 @@ sub Record{
   print "Recording your improvements\n";
   HELP_MESSAGE && die 'Can not determine pkgver!' unless $pkgver;
   HELP_MESSAGE && die 'Can not determine pkgrel!' unless $pkgrel;
-  apply "darcs record --edit-long-comment -m '$pkgname-$pkgver-$pkgrel-$arch'" . ($noask? ' -a' : '').(($subg && ($repo ne 'extra')) ? '' : ' .');
+  my $ec = apply "darcs record --edit-long-comment -m '$pkgname-$pkgver-$pkgrel-$arch'" . ($noask? ' -a' : '').(($subg && ($repo ne 'extra')) ? '' : ' .');
+  die "Recording FAILED!\n" if $ec == 1;
 }
 
 sub Push{
   print "Pushing the patch\n";
   my $modpkgname = $pkgname;
   $modpkgname =~ s/\+/\\\+/g;
-  apply "darcs push --match 'name $modpkgname'" . ($noask? ' -a' : '');
+  my $ec = apply "darcs push --match 'name $modpkgname'" . ($noask? ' -a' : '');
+  die "Pushing FAILED!\n" if $ec == 1;
 }
 
 sub Upload{
-  print "Uploading source and binary package\n";
-  print "Nothing to do, that's fine!\n\n" unless @sourcefiles;
-  for my $sourcefile (@sourcefiles){
-    apply "repoman up $sourcefile $repo/source/$group/$pkgname/" if $sourcefile;
+    my ($ec,$ev);
+    print "Uploading source and binary package\n";
+    print "Nothing to do, that's fine!\n\n" unless @sourcefiles;
+    for my $sourcefile (@sourcefiles){
+	$ec = apply "repoman up $sourcefile $repo/source/$group/$pkgname/" if $sourcefile;
+    }
+    print "Nothing to do, that's fine!\n\n" unless @pkgfiles;
+    for my $pkgfile (@pkgfiles){
+	$ev = apply "repoman up $pkgfile $repo/$repodir/" if $pkgfile;
   }
-  print "Nothing to do, that's fine!\n\n" unless @pkgfiles;
-  for my $pkgfile (@pkgfiles){
-    apply "repoman up $pkgfile $repo/$repodir/" if $pkgfile;
-  }
+    die "Uploading FAILED!" if $ev || $ec;
 }
 
 sub cL{
   print "Generating ChangeLog\n";
   $repo.='/' if $repo;
-  apply "arch=$arch repoman cl $repo$group/$pkgname";
+  my $ec = apply "arch=$arch repoman cl $repo$group/$pkgname";
+  die "Changelog not generated!" if $ec;
 }
 
 sub Cleanup{
+  my ($ec,$ev);
   unless ($opts{'q'}){
     print "Cleanup on server\n";
     my $repo_=$repo . '/' if $repo;
@@ -627,7 +636,7 @@ sub Cleanup{
       my (@inrepo) = get("$serverprefix/$repo_/source/$group/$pkgname/") =~ /\s(\S+)$/msg;
       for my $ir (@inrepo){
 	unless(scalar grep(/\Q$ir\E/, @indarcs)){
-	  apply "repoman del $repo/source/$group/$pkgname/$ir";}}}
+	  $ec = apply "repoman del $repo/source/$group/$pkgname/$ir";}}}
     if (@pkgfiles){
       #      if( my $oldf = getoldfpm("$serverprefix/$repo/$repodir/",$pkgname) ){ 
       #	apply "repoman del $repo/$repodir/$oldf";}}}
@@ -635,7 +644,8 @@ sub Cleanup{
 	$pkgfile =~ /^(.*)-.*?-.*?-.*?fpm\Z/;
 	print "Something nasty with $pkgfile, is it a package file?" unless $1;
 	if( my $oldf = getoldfpm("$serverprefix/$repo/$repodir/",$1) ){ 
-	  apply "repoman del $repo/$repodir/$oldf";}}}}
+	  $ev = apply "repoman del $repo/$repodir/$oldf";}}}}
+  die "Cleaning up FAILED!" if $ec||$ev;
 }
 
 
