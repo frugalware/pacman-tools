@@ -20,6 +20,43 @@
 #   USA.
 #
 
+get_deps()
+{
+	local indep i name ver
+	echo -n "depends=("
+	indep=0
+	cat $1|while IFS= read i
+	do
+		if [ $indep = 1 ]; then
+			echo "$i"|grep -q '},' && break
+			echo "$i"
+		else
+			echo "$i"|grep -q PREREQ_PM && indep=1
+		fi
+	done |sed 's/\W*\W*\([^\W]*\)\W*#.*/\1/'|while read name junk ver
+	do
+		[ -z "$name" ] && continue
+		name="perl-`echo $name|sed "s/::/-/g;s/'//g"|tr [A-Z] [a-z]`"
+		ver=`echo $ver|sed "s/'//g;s/$//;s/,$//"`
+		if [ "$ver" = "0" ]; then
+			if [ "$first" != 1 ]; then
+				first=1
+				echo -n "'$name'"
+			else
+				echo -n " '$name'"
+			fi
+		else
+			if [ "$first" != 1 ]; then
+				first=1
+				echo -n "'$name>=$ver'"
+			else
+				echo -n " '$name>=$ver'"
+			fi
+		fi
+	done
+	echo ")"
+}
+
 if [ "$1" = "-h" -o "$1" = "--help" ]; then
 	echo "usage: $0 [-i|--install] [module]"
 	echo "usage: $0 -h|--help"
@@ -54,13 +91,18 @@ echo -e "Targets: $pkgname-$pkgver-1\n"
 echo -n "Proceed with upgrade? [Y/n]"
 read junk
 if [ ! -z "$junk" -a ! "`echo $junk|tr [A-Z] [a-z]`" = "y" -a ! "`echo $junk|tr [A-Z] [a-z]`" = "yes" ]; then
+	rm -f $dump
 	exit 0
 fi
 
 echo -ne "\nWriting the FrugalBuild... "
 modauthor=`lynx -dump $suburl|grep authors|sed "s|.*id/\(.*\)/$modname.*|\1|;q"`
 src="http://search.cpan.org/CPAN/authors/id/$modauthor/$modname-$pkgver.tar.gz"
-sha1sum=`lynx -dump -source $src|sha1sum |sed 's/  -$//'`
+srcdump=`mktemp`
+lynx -dump -source $src >$srcdump
+sha1sum=`cat $srcdump|sha1sum |sed 's/  -$//'`
+makedump=`mktemp`
+tar xOzf $srcdump $modname-$pkgver/Makefile.PL >$makedump 2>/dev/null
 
 cat << EOF > FrugalBuild
 # Last Modified: `date -R`
@@ -73,13 +115,15 @@ modauthor=$modauthor
 pkgver=$pkgver
 pkgrel=1
 pkgdesc="$pkgdesc"
-depends=('perl')
+`get_deps $makedump`
 groups=('devel-extra')
 archs=('`uname -m`')
 Finclude perl
 sha1sums=('$sha1sum')
 EOF
 echo "done."
+
+rm -f $dump $srcdump $makedump
 
 if [ "$inst" = "1" ]; then
 	makepkg -ci
