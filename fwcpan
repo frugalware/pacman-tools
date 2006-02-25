@@ -58,7 +58,7 @@ if [ ! -z "$junk" -a ! "`echo $junk|tr [A-Z] [a-z]`" = "y" -a ! "`echo $junk|tr 
 fi
 
 echo -ne "\nWriting the FrugalBuild... "
-modauthor=`lynx -dump $suburl|grep authors|sed "s|.*id/\(.*\)/$modname.*|\1|"`
+modauthor=`lynx -dump $suburl|grep authors|sed "s|.*id/\(.*\)/$modname.*|\1|;q"`
 src="http://search.cpan.org/CPAN/authors/id/$modauthor/$modname-$pkgver.tar.gz"
 sha1sum=`lynx -dump -source $src|sha1sum |sed 's/  -$//'`
 
