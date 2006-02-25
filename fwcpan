@@ -45,7 +45,7 @@ guess=`cat $dump|grep '][A-Z].*::[A-Z]'|sed 's/.*]\(.*\)/\1/;q'`
 modname=`echo $guess|sed 's/::/-/g'`
 pkgname="perl-`echo $modname|tr [A-Z] [a-z]`"
 pkgver=`cat $dump|grep $modname|sed "s/.*$modname-\([^ ]*\) .*/\1/;q"`
-pkgdesc=`cat $dump|grep -1 '][A-Z].*::[A-Z]'|sed -n 's/^ *//g;3 p'`
+pkgdesc=`cat $dump|grep -1 '][A-Z].*::[A-Z]'|sed -n "s/\\\`/'/g;s/^ *//g;3 p"`
 suburl=`cat $dump|grep $modname-$pkgver|sed -n 's/.*[0-9]\. \(.*\)/\1/;$ p'`
 echo -e "done.\n"
 
