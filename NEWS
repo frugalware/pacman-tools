@@ -1,0 +1,7 @@
+VERSION         DESCRIPTION
+-----------------------------------------------------------------------------
+0.6.7         - added a NEWS file
+              - fwcpan: dependency support, bugfixes
+              - syncpkg: cleanup the chroot before every package
+              - rf: die on darcs or repoman errors
+              - fwmakepkg: yet another fix for darcs & Finclude
