@@ -67,7 +67,6 @@ log "number of pkgs to build: `wc -l $pkglist|sed 's/\(.*\) .*/\1/'`"
 # cleanup the logs and the chroot
 [ ! -z "$days" ] || days="7"
 find /var/log/syncpkg -mtime +$days -exec rm -vrf {} \;
-sudo makepkg -RC >>$blogfile 2>&1
 
 i=0
 for pkg in `cat $pkglist`
@@ -81,6 +80,7 @@ do
 	cd `find . -type d -maxdepth 4 -name $pkg 2>/dev/null`
 	rm -f *fpm *.log
 	log "making package: $pkg"
+	sudo makepkg -RC >>$mlogfile 2>&1
 	sudo makepkg -RLuk >>$mlogfile 2>&1
 	ret=$?
 	log "finished making package $pkg with exit code $ret"
