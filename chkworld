@@ -248,9 +248,9 @@ sub std_out {
 #        $noout = 0;
 	print $info unless $verbose;
 	if ($color){
-	    print ($up2date ? ("!= \033[1;31m" . substr($up2date, 0, 12)."\033[1;0m" )  : "\033[1;33mThere were no output!\033[1;0m");
+	    print ($up2date ? ("!= \033[1;31m" . substr($up2date, 0, 12)."\033[1;0m" )  : "\033[1;33mThere was no output!\033[1;0m");
 	} else {
-	    print ($up2date ? ("!= " . substr($up2date, 0, 12)) : "There were no output!");
+	    print ($up2date ? ("!= " . substr($up2date, 0, 12)) : "There was no output!");
 	}
 	($up2date ? ($needupdate++) : ($maybebroken++));
 	print " $m8r\n";
@@ -305,7 +305,7 @@ sub html_out{
     } elsif ($signal == 0){
 #        $noout = 0;
 	print htmlinfo $info unless $verbose;
-	print (htmlres(0, $up2date ? ("!= " . substr($up2date, 0, 12)) . " $m8r": "There were no output! $m8r"));
+	print (htmlres(0, $up2date ? ("!= " . substr($up2date, 0, 12)) . " $m8r": "There was no output! $m8r"));
 	($up2date ? ($needupdate++) : ($maybebroken++));
     } else {
 	$passed++;
