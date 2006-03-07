@@ -91,6 +91,10 @@ check "pkgname"
 [ ! -z "$pkgname" ]
 ok $?
 
+check "uppercase letters in pkgname"
+[[ ! "$pkgname" =~ "[A-Z]" ]]
+ok $?
+
 check "pkgver"
 [ ! -z "$pkgver" ]
 ok $?
