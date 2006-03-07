@@ -20,6 +20,11 @@ Run it from the packages darcs directory.
 
 =head2 ACTIONS
 
+=item B<-H>
+
+runs a FrugalBuild checking, before recording.
+Can be overridden, with actions -RCPUL
+
 =item B<-R>
 
     darcs record your patch
@@ -464,7 +469,7 @@ our $VERSION = "0.5";
 
 sub HELP_MESSAGE(){
   print <<END
-	rf [-RCPUL] [-s source1 source2 ...] [-f package1 package2] [-d] [-q] [-k] [-n name]
+	rf [-RCPULH] [-s source1 source2 ...] [-f package1 package2] [-d] [-q] [-k] [-n name]
 END
 }
 
@@ -477,12 +482,13 @@ sub contents {
     return $cont;
 }
 
+my $chkonce = 0;
 my %opts;
-Getopts::getopts('hr:a:o:p:g:n:s:f:v:dqkt:l:WRCPUL', \%opts);
+Getopts::getopts('hr:a:o:p:g:n:s:f:v:dqkt:l:WRCPULH', \%opts);
 
 HELP_MESSAGE && die if $opts{h};
 
-$opts{R}=$opts{C}=$opts{P}=$opts{U}=$opts{L} = 1 unless $opts{R}|| $opts{C}||$opts{P}||$opts{U}||$opts{L};
+$opts{R}=$opts{C}=$opts{P}=$opts{U}=$opts{L}=$opts{H} = 1 unless $opts{R}|| $opts{C}||$opts{P}||$opts{U}||$opts{L}||$opts{H};
 
 my ($distrib,$version,$repo,$arch, $repodir, $serverprefix, $group, $pkgname, $noask) =
     ('frugalware',$opts{v},undef,$opts{a}, $opts{o}, $opts{p}, $opts{g}, $opts{n}, $opts{k});
@@ -588,7 +594,17 @@ sub getoldfpm{
     return 0;
 }
 
+sub ChkFB {
+ return 0 if $chkonce;
+ $chkonce = 1 unless $chkonce;
+ print "Checking FrugalBuild...";
+ my $ec = msystem 'fblint -q';
+ do { print "FAILED\n"; return 1; } if $ec;
+ print "Ok\n"; return 0;
+}
+
 sub Record{
+  die if ChkFB;
   print "Recording your improvements\n";
   HELP_MESSAGE && die 'Can not determine pkgver!' unless $pkgver;
   HELP_MESSAGE && die 'Can not determine pkgrel!' unless $pkgrel;
@@ -658,6 +674,7 @@ sub Warning {
 }
 
 Warning if $opts{W};
+do { die if ChkFB } if $opts{H};
 Record if $opts{R};
 Cleanup if $opts{C};
 Push if $opts{P};
