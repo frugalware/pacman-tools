@@ -32,11 +32,11 @@ check()
 	eval $2
 	if [ "$?" = 0 ]; then
 		[ "$_fblint_verbose" ] && echo "done."
-		done=$(($done+1))
+		_fblint_done=$(($_fblint_done+1))
 	else
-		[ ! "$_fblint_verbose" -a ! "$quiet" ] && echo -n "checking for $1... "
-		[ "$quiet" ] || echo "failed."
-		failed=$(($failed+1))
+		[ ! "$_fblint_verbose" -a ! "$_fblint_quiet" ] && echo -n "checking for $1... "
+		[ "$_fblint_quiet" ] || echo "failed."
+		_fblint_failed=$(($_fblint_failed+1))
 	fi
 }
 
@@ -51,7 +51,7 @@ if [ "$1" = "-h" ]; then
 fi
 
 if [ "$1" = "-q" ]; then
-	quiet="y"
+	_fblint_quiet="y"
 	shift 1
 fi
 
@@ -61,22 +61,22 @@ if [ "$1" = "-v" ]; then
 fi
 
 if [ "$1" = "-p" ]; then
-	FB="$2"
+	_fblint_fb="$2"
 else
-	FB="FrugalBuild"
+	_fblint_fb="FrugalBuild"
 fi
 
-done="0"
-failed="0"
+_fblint_done="0"
+_fblint_failed="0"
 CHROOT=1
 . /usr/lib/frugalware/fwmakepkg
 . /etc/makepkg.conf
 
-check "FrugalBuild" "[ -e $FB ]"
-check "last modified line" "grep -q -i '^# Last Modified: ' $FB"
-check "sbu" "grep -i -q \"^# Compiling Time: [~0-9\.]\+ SBU$\" $FB"
-check "maintainer" "grep -q '^# Maintainer: ' $FB"
-check "syntax errors" "source $FB"
+check "FrugalBuild" "[ -e $_fblint_fb ]"
+check "last modified line" "grep -q -i '^# Last Modified: ' $_fblint_fb"
+check "sbu" "grep -i -q \"^# Compiling Time: [~0-9\.]\+ SBU$\" $_fblint_fb"
+check "maintainer" "grep -q '^# Maintainer: ' $_fblint_fb"
+check "syntax errors" "source $_fblint_fb"
 check "pkgname" "[ ! -z \"$pkgname\" ]"
 check "uppercase letters in pkgname" "[[ ! \"$pkgname\" =~ \"[A-Z]\" ]]"
 check "pkgver" "[ ! -z \"$pkgver\" ]"
@@ -113,9 +113,9 @@ if [ ! -z "$subpkgs" ]; then
 	check "right number of suboptions" "[ \"${#suboptions[@]}\" = 0 ] || [ \"${#suboptions[@]}\" = \"${#subpkgs[@]}\" ]"
 fi
 
-[ "$_fblint_verbose" ] && echo "done: $done, failed $failed"
+[ "$_fblint_verbose" ] && echo "done: $_fblint_done, failed $_fblint_failed"
 
-if [ $failed -gt 0 ]; then
+if [ $_fblint_failed -gt 0 ]; then
 	exit 1
 else
 	exit 0
