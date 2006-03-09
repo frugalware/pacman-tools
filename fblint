@@ -28,23 +28,23 @@ die()
 
 check()
 {
-	[ -z "$quiet" ] && echo -n "checking for $@... "
-}
-
-ok()
-{
-	if [ "$1" = 0 ]; then
-		[ -z "$quiet" ] && echo "done."
+	[ "$_fblint_verbose" ] && echo -n "checking for $1... "
+	eval $2
+	if [ "$?" = 0 ]; then
+		[ "$_fblint_verbose" ] && echo "done."
 		done=$(($done+1))
 	else
-		[ -z "$quiet" ] && echo "failed."
+		[ ! "$_fblint_verbose" -a ! "$quiet" ] && echo -n "checking for $1... "
+		[ "$quiet" ] || echo "failed."
 		failed=$(($failed+1))
 	fi
 }
 
 if [ "$1" = "-h" ]; then
 	echo "fblint: searches for common FrugalBuild problems"
-	echo "usage: $0 [-h] | [-q] [-p]"
+	echo "usage: $0 [-h] | [-q] [-v] [-p]"
+	echo "       -q		quiet mode, exit with error if at least one test failed"
+	echo "       -v		verbose node, output the passed tests, too"
 	echo "       -p		buildscript [./FrugalBuild]"
 	echo "       -h		this help"
 	exit 0
@@ -52,6 +52,11 @@ fi
 
 if [ "$1" = "-q" ]; then
 	quiet="y"
+	shift 1
+fi
+
+if [ "$1" = "-v" ]; then
+	_fblint_verbose="y"
 	shift 1
 fi
 
@@ -67,141 +72,48 @@ CHROOT=1
 . /usr/lib/frugalware/fwmakepkg
 . /etc/makepkg.conf
 
-check "FrugalBuild"
-[ -e $FB ]
-ok $?
-
-check "last modified line"
-grep -q -i '^# Last Modified: ' $FB
-ok $?
-
-check "sbu"
-grep -i -q "^# Compiling Time: [~0-9\.]\+ SBU$" $FB
-ok $?
-
-check "maintainer"
-grep -q '^# Maintainer: ' $FB
-ok $?
-
-check "syntax errors"
-source $FB
-ok $?
-
-check "pkgname"
-[ ! -z "$pkgname" ]
-ok $?
-
-check "uppercase letters in pkgname"
-[[ ! "$pkgname" =~ "[A-Z]" ]]
-ok $?
-
-check "pkgver"
-[ ! -z "$pkgver" ]
-ok $?
-
-check "hyphen-less pkgver"
-[ ! `echo $pkgver | grep '-'` ]
-ok $?
-
-check "pkgrel"
-[ ! -z "$pkgrel" ]
-ok $?
-
-check "hyphen-less pkgrel"
-[ ! `echo $pkgrel | grep '-'` ]
-ok $?
-
-check "pkgdesc"
-[ ! -z "$pkgdesc" ]
-ok $?
-
-check "url"
-[ ! -z "$url" ]
-ok $?
-
-check "groups"
-[ ! -z "$groups" ]
-ok $?
-
-check "valid first group"
-! echo $groups |grep -q -- - || echo $groups|grep -q -- -extra$
-ok $?
-
-check "archs"
-[ ! -z "$archs" ]
-ok $?
-
-check "up2date"
-[ ! -z "$up2date" ]
-ok $?
-
-check "right number of sha1sums"
-[ ${#sha1sums[@]} -eq ${#source[@]} ]
-ok $?
+check "FrugalBuild" "[ -e $FB ]"
+check "last modified line" "grep -q -i '^# Last Modified: ' $FB"
+check "sbu" "grep -i -q \"^# Compiling Time: [~0-9\.]\+ SBU$\" $FB"
+check "maintainer" "grep -q '^# Maintainer: ' $FB"
+check "syntax errors" "source $FB"
+check "pkgname" "[ ! -z \"$pkgname\" ]"
+check "uppercase letters in pkgname" "[[ ! \"$pkgname\" =~ \"[A-Z]\" ]]"
+check "pkgver" "[ ! -z \"$pkgver\" ]"
+check "hyphen-less pkgver" "[ ! `echo $pkgver | grep '-'` ]"
+check "pkgrel" "[ ! -z "$pkgrel" ]"
+check "hyphen-less pkgrel" "[ ! `echo $pkgrel | grep '-'` ]"
+check "pkgdesc" "[ ! -z \"$pkgdesc\" ]"
+check "url" "[ ! -z \"$url\" ]"
+check "groups" "[ ! -z \"$groups\" ]"
+check "valid first group" "! echo $groups |grep -q -- - || echo $groups|grep -q -- -extra$"
+check "archs" "[ ! -z \"$archs\" ]"
+check "up2date" "[ ! -z \"$up2date\" ]"
+check "right number of sha1sums" "[ ${#sha1sums[@]} -eq ${#source[@]} ]"
 
 if [ ! -z "$subpkgs" ]; then
-	check "subdescs"
-	[ ! -z "$subdescs" ]
-	ok $?
-
-	check "subdepends"
-	[ ! -z "$subdepends" ]
-	ok $?
-
-	check "subgroups"
-	[ ! -z "$subgroups" ]
-	ok $?
-
-	check "right number of subdescs"
-	[ "${#subdescs[@]}" = 0 ] || [ "${#subdescs[@]}" == "${#subpkgs[@]}" ]
-	ok $?
-
-	check "right number of sublicense"
-	[ "${#sublicense[@]}" = 0 ] || [ "${#sublicense[@]}" = "${#subpkgs[@]}" ]
-	ok $?
-
-	check "right number of subreplaces"
-	[ "${#subreplaces[@]}" = 0 ] || [ "${#subreplaces[@]}" = "${#subpkgs[@]}" ]
-	ok $?
-
-	check "right number of subgroups"
-	[ "${#subgroups[@]}" = 0 ] || [ "${#subgroups[@]}" = "${#subpkgs[@]}" ]
-	ok $?
-
-	check "right number of subdepends"
-	[ "${#subdepends[@]}" = 0 ] || [ "${#subdepends[@]}" = "${#subpkgs[@]}" ]
-	ok $?
-
-	check "right number of subrodepends"
-	[ "${#subrodepends[@]}" = 0 ] || [ "${#subrodepends[@]}" = "${#subpkgs[@]}" ]
-	ok $?
-
-	check "right number of subremoves"
-	[ "${#subremoves[@]}" = 0 ] || [ "${#subremoves[@]}" = "${#subpkgs[@]}" ]
-	ok $?
-
-	check "right number of subconflicts"
-	[ "${#subconflicts[@]}" = 0 ] || [ "${#subconflicts[@]}" = "${#subpkgs[@]}" ]
-	ok $?
-
-	check "right number of subprovides"
-	[ "${#subprovides[@]}" = 0 ] || [ "${#subprovides[@]}" = "${#subpkgs[@]}" ]
-	ok $?
-
-	check "right number of subbackup"
-	[ "${#subbackup[@]}" = 0 ] || [ "${#subbackup[@]}" = "${#subpkgs[@]}" ]
-	ok $?
-
-	check "right number of subinstall"
-	[ "${#subinstall[@]}" = 0 ] || [ "${#subinstall[@]}" = "${#subpkgs[@]}" ]
-	ok $?
-
-	check "right number of suboptions"
-	[ "${#suboptions[@]}" = 0 ] || [ "${#suboptions[@]}" = "${#subpkgs[@]}" ]
-	ok $?
+	check "subdescs" "[ ! -z \"$subdescs\" ]"
+	check "subdepends" "[ ! -z \"$subdepends\" ]"
+	check "subgroups" "[ ! -z \"$subgroups\" ]"
+	check "right number of subdescs" "[ \"${#subdescs[@]}\" = 0 ] || [ \"${#subdescs[@]}\" == \"${#subpkgs[@]}\" ]"
+	check "right number of sublicense" "[ \"${#sublicense[@]}\" = 0 ] || [ \"${#sublicense[@]}\" = \"${#subpkgs[@]}\" ]"
+	check "right number of subreplaces" \
+		"[ \"${#subreplaces[@]}\" = 0 ] || [ \"${#subreplaces[@]}\" = \"${#subpkgs[@]}\" ]"
+	check "right number of subgroups" "[ \"${#subgroups[@]}\" = 0 ] || [ \"${#subgroups[@]}\" = \"${#subpkgs[@]}\" ]"
+	check "right number of subdepends" "[ \"${#subdepends[@]}\" = 0 ] || [ \"${#subdepends[@]}\" = \"${#subpkgs[@]}\" ]"
+	check "right number of subrodepends" \
+		"[ \"${#subrodepends[@]}\" = 0 ] || [ \"${#subrodepends[@]}\" = \"${#subpkgs[@]}\" ]"
+	check "right number of subremoves" "[ \"${#subremoves[@]}\" = 0 ] || [ \"${#subremoves[@]}\" = \"${#subpkgs[@]}\" ]"
+	check "right number of subconflicts" \
+		"[ \"${#subconflicts[@]}\" = 0 ] || [ \"${#subconflicts[@]}\" = \"${#subpkgs[@]}\" ]"
+	check "right number of subprovides" \
+		"[ \"${#subprovides[@]}\" = 0 ] || [ \"${#subprovides[@]}\" = \"${#subpkgs[@]}\" ]"
+	check "right number of subbackup" "[ \"${#subbackup[@]}\" = 0 ] || [ \"${#subbackup[@]}\" = \"${#subpkgs[@]}\" ]"
+	check "right number of subinstall" "[ \"${#subinstall[@]}\" = 0 ] || [ \"${#subinstall[@]}\" = \"${#subpkgs[@]}\" ]"
+	check "right number of suboptions" "[ \"${#suboptions[@]}\" = 0 ] || [ \"${#suboptions[@]}\" = \"${#subpkgs[@]}\" ]"
 fi
 
-[ -z "$quiet" ] && echo "done: $done, failed $failed"
+[ "$_fblint_verbose" ] && echo "done: $done, failed $failed"
 
 if [ $failed -gt 0 ]; then
 	exit 1
