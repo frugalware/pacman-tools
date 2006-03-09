@@ -578,6 +578,7 @@ my $buildscript = contents 'FrugalBuild';
 if ($buildscript =~ /subgroup.*?-extra/m) {$subg++;}
 
 sub getoldsource{
+#OBSOLETE
     my ($url,$sourcefile)= @_;
     my ($sn) = $sourcefile =~ /(.*)-/;
     if (get($url) =~ /(\Q$sn\E.*?tar.*?)\s/) {
@@ -588,7 +589,7 @@ sub getoldsource{
 
 sub getoldfpm{
     my ($url,$pkgname)= @_;
-    if (get($url) =~ /(\Q$pkgname\E-[^-]*?-[^-]*?-[^-]*?fpm)\s/) {
+    if (qx"repoman ls $repo/$repodir" =~ /(\Q$pkgname\E-[^-]*?-[^-]*?-[^-]*?fpm)\s/) {
 	return $1;
     }
     return 0;
