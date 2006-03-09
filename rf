@@ -563,10 +563,14 @@ HELP_MESSAGE && die 'No physical group given!' unless $group;
   
 HELP_MESSAGE && die 'Can not determine pkgname!' unless $pkgname;
 
+my $buildscript = contents 'FrugalBuild';
+
+$opts{L} = 0 if $buildscript =~ /^nobuild=|^options.*?nobuild/;
+
 if (@pkgfiles){
     ($pkgver,$pkgrel) = $pkgfiles[0] =~ /^.*-(.*?)-(.*?)-.*?fpm\Z/
 } else {  #get them from Frugalbuild
-    my $buildscript = contents 'FrugalBuild';
+    $buildscript = contents 'FrugalBuild';
     ($pkgver) = $buildscript =~ /^pkgver=(\S*)/m;
     ($pkgrel) = $buildscript =~ /^pkgrel=(\S*)/m;
 }
@@ -574,7 +578,6 @@ $pkgver = $opts{t} if $opts{t};
 $pkgrel = $opts{l} if $opts{l};
 
 my $subg = 0;
-my $buildscript = contents 'FrugalBuild';
 if ($buildscript =~ /subgroup.*?-extra/m) {$subg++;}
 
 sub getoldsource{
