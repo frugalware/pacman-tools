@@ -475,6 +475,9 @@ END
 
 sub contents {
     my $name = shift;
+    unless (-e $name || -r $name) {
+      die "No $name found, or don't have the rights. Are you in a package's directory?";
+    }
     my $sfh = IO::File->new( "< $name" );
     local $/ = undef;
     my $cont = $sfh->getline;
