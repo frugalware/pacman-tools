@@ -565,7 +565,7 @@ HELP_MESSAGE && die 'Can not determine pkgname!' unless $pkgname;
 
 my $buildscript = contents 'FrugalBuild';
 
-$opts{L} = 0 if $buildscript =~ /^nobuild=|^options.*?nobuild/;
+$opts{L} = 0 if $buildscript =~ /^nobuild=|^options.*?nobuild/m;
 
 if (@pkgfiles){
     ($pkgver,$pkgrel) = $pkgfiles[0] =~ /^.*-(.*?)-(.*?)-.*?fpm\Z/
