@@ -240,9 +240,9 @@ sub std_out {
         $timeouted++; #$noout = 0;
 	print $info unless $verbose;
 	if ($color){
-	    print "\033[1;33mTimeouted!\033[1;0m $m8r\n";
+	    print "\033[1;33mTimed out!\033[1;0m $m8r\n";
 	} else {
-	    print "Timeouted! $m8r\n";
+	    print "Timed out! $m8r\n";
 	}
     } elsif ($signal == 0){
 #        $noout = 0;
@@ -265,7 +265,7 @@ sub std_postout {
     print "\nTotal packages checked: $count\n";
     print "Passed                : $passed\n";
     print "Need to update        : $needupdate\n";
-    print "Timeouted             : $timeouted\n";
+    print "Timed out             : $timeouted\n";
     print "Maybe broken up2date  : $maybebroken\n";
 }
 
@@ -301,7 +301,7 @@ sub html_out{
     if ($signal == -1) {	
         $timeouted++; #$noout = 0;
 	print htmlinfo $info unless $verbose;
-	print htmlres(0, "Timeouted! $m8r");
+	print htmlres(0, "Timed out! $m8r");
     } elsif ($signal == 0){
 #        $noout = 0;
 	print htmlinfo $info unless $verbose;
@@ -322,7 +322,7 @@ sub html_postout{
     print "\t\t\t\t<td>\n\t\t\t\t\t$passed\n\t\t\t\t</td>\n\t\t\t</tr>\n";
     print "\t\t\t<tr>\n\t\t\t\t<td>\n\t\t\t\t\tNeed to update:\n\t\t\t\t</td>\n";
     print "\t\t\t\t<td>\n\t\t\t\t\t$needupdate\n\t\t\t\t</td>\n\t\t\t</tr>\n";
-    print "\t\t\t<tr>\n\t\t\t\t<td>\n\t\t\t\t\tTimeouted:\n\t\t\t\t</td>\n";
+    print "\t\t\t<tr>\n\t\t\t\t<td>\n\t\t\t\t\tTimed out:\n\t\t\t\t</td>\n";
     print "\t\t\t\t<td>\n\t\t\t\t\t$timeouted\n\t\t\t\t</td>\n\t\t\t</tr>\n";
     print "\t\t\t<tr>\n\t\t\t\t<td>\n\t\t\t\t\tMaybe broken up2date:\n\t\t\t\t</td>\n";
     print "\t\t\t\t<td>\n\t\t\t\t\t$maybebroken\n\t\t\t\t</td>\n\t\t\t</tr>\n";
