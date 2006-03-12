@@ -673,9 +673,15 @@ Fsplit()
 		# split the / suffix if used
 		path=`echo $i|sed 's|/$||'`
 
-		dir=`echo $path|sed 's|/[^/]*$||'`
-		mkdir -p $startdir/pkg.$subpkg/$dir/
-		mv $Fdestdir/$path $startdir/pkg.$subpkg/$dir/
+		if [ ! -e "$Fdestdir/$path" ]; then
+			error "Can't move $path to $subpkg: file or directory does not exists!"
+			Fdie
+		else
+			Fmessage "Moving $path to subpackage $subpkg"
+			dir=`echo $path|sed 's|/[^/]*$||'`
+			mkdir -p $startdir/pkg.$subpkg/$dir/
+			mv $Fdestdir/$path $startdir/pkg.$subpkg/$dir/
+		fi
 	done
 }
 
