@@ -56,6 +56,8 @@ if [ ! -d frugalware-current ]; then
 else
 	cd frugalware-current
 	darcs pull -a >>$blogfile 2>&1
+	# revert changes if there are any
+	darcs revert -a >>$blogfile 2>&1
 fi
 
 cd tools
