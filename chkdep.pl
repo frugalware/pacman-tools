@@ -75,7 +75,8 @@ use Data::Dumper;
 $Getopt::Std::STANDARD_HELP_VERSION = 1;
 our $VERSION = "1.9";
 
-my %alias = ( 'xorg' => 'x' );
+my %alias = ( 'xorg' => 'x',
+	      'libgl' => 'opengl');
 my %reversalias = map { $alias{$_} => $_ } keys %alias;
 
 my %opts;
