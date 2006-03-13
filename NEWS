@@ -1,5 +1,14 @@
 VERSION         DESCRIPTION
 -----------------------------------------------------------------------------
+0.6.8         - fwmakepkg: Fsplit(): added error handling
+              - chkdep: replace libgl with opengl
+              - rf: use repoman ls everywere it is possible
+              - rf: don't call repoman cl for nobuild packages
+              - syncpkgd: run dr rev after dr pull
+              - chkworld: spelling fix
+              - fblint: require -v for full all tests, output errors only by
+                default
+              - fblint: check for uppercase letters in pkgname
 0.6.7         - added a NEWS file
               - fwcpan: dependency support, bugfixes
               - syncpkg: cleanup the chroot before every package
