@@ -117,6 +117,16 @@ Can be overridden, with actions -RCPUL
 
 =head1 CHANGES
 
+=head2 0.6
+
+Release as stable
+darcs and -k bugfix
+new getopts method - but still not good enough!
+fblint check
+nobuild option handling
+use of 'repoman ls'
+more little bugfixes
+
 =head2 0.5
 
     Release as stable
@@ -465,7 +475,7 @@ eval {require Term::ReadKey}; die 'Please install perl-term-readkey!' if $@;
 import Term::ReadKey;
 
 #$Getopt::Std::STANDARD_HELP_VERSION = 1;
-our $VERSION = "0.5";
+our $VERSION = "0.6";
 
 sub HELP_MESSAGE(){
   print <<END
