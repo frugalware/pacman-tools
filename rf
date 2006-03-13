@@ -603,10 +603,10 @@ sub getoldfpm{
 
 sub ChkFB {
  return 0 if $chkonce;
- $chkonce = 1 unless $chkonce;
- print "Checking FrugalBuild...";
- my $ec = msystem 'fblint -q';
- do { print "FAILED\n"; return 1; } if $ec;
+ $chkonce = 1 unless $chkonce;	# dont want to see suck a thing!
+ print "Checking FrugalBuild... ";
+ my @fblint = grep {/\.\.\. failed./} qx/fblint/;
+ do { print "\n", @fblint; return 1; } if @fblint;
  print "Ok\n"; return 0;
 }
 
