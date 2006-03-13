@@ -47,7 +47,7 @@ if [ "$repo" != "extra" ]; then
 	repo="frugalware"
 fi
 
-source FrugalBuild || die "errors parsing the FrugalBuild"
+CARCH=$arch source FrugalBuild || die "errors parsing the FrugalBuild"
 
 . /etc/genchangelog.conf
 
