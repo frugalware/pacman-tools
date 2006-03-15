@@ -69,6 +69,7 @@ log "number of pkgs to build: `wc -l $pkglist|sed 's/\(.*\) .*/\1/'`"
 # cleanup the logs and the chroot
 [ ! -z "$days" ] || days="7"
 find /var/log/syncpkg -mtime +$days -exec rm -vrf {} \;
+rmdir /var/log/syncpkg/* 2>/dev/null
 
 i=0
 for pkg in `cat $pkglist`
