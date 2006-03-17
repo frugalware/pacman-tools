@@ -1,5 +1,9 @@
 VERSION         DESCRIPTION
 -----------------------------------------------------------------------------
+0.6.9         - updated rf to 0.6
+              - repoman cl now downloads != i686 sources, too
+              - syncpkg deletes the empty log dirs
+              - bugfix in fwmakepkg for Frcd2 and Fsplit
 0.6.8         - fwmakepkg: Fsplit(): added error handling
               - chkdep: replace libgl with opengl
               - rf: use repoman ls everywere it is possible
