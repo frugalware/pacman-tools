@@ -665,8 +665,12 @@ sub Cleanup{
     my $repo_=$repo . '/' if $repo;
     print "Nothing to do, that's fine!\n\n" unless @sourcefiles || @pkgfiles;
     if (@sourcefiles){
-      my (@indarcs) = qx"repoman ls _darcs/current/$repo_/source/$group/$pkgname/";# =~ /\s(\S+)$/msg;
-      my (@inrepo) = qx"repoman ls $repo_/source/$group/$pkgname/";# =~ /\s(\S+)$/msg;
+      my (@indarcs) = qx"repoman ls _darcs/current/$repo_/source/$group/$pkgname/ 2>&1";
+      my (@inrepo) = qx"repoman ls $repo_/source/$group/$pkgname/ 2>&1";
+      if ($inrepo[1] =~ 'No such file or') {
+	print "Probably it is a new package, passing by...\n";
+	return;
+      }
       for my $ir (@inrepo){
 	unless(scalar grep(/\Q$ir\E/, @indarcs)){
 	  $ec = apply "repoman del $repo/source/$group/$pkgname/$ir";}}}
