@@ -142,6 +142,9 @@ die()
 
 update()
 {
+	if [ ! "`type -p rsync`" ]; then
+		die "The rsync program is missing. Please install it with pacman -S rsync."
+	fi
 	if [ -z "$1" ]; then
 		repo=$reponame
 	else
