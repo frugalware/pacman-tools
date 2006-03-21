@@ -155,8 +155,14 @@ update()
 	mkdir -p $fst_root/$repo
 	cd $fst_root/$repo
 	echo "warning: this operation can take minutes, please be patient"
-	echo -n ":: Synchronizing the Frugalware Source Tree... "
-	rsync -a $server ./ >/dev/null
+	syncstr=":: Synchronizing the Frugalware Source Tree... "
+	if [ "$verbose" != 1 ]; then
+		echo -n $syncstr
+		rsync -a $server ./ >/dev/null
+	else
+		echo $syncstr
+		rsync -a $server ./
+	fi
 	echo "done."
 }
 
