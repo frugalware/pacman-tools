@@ -189,6 +189,7 @@ merge()
 {
 	chk_updated $fst_root
 	dir=`find $fst_root -type d -name "$1"|sed -n '$ p'`
+	[ -z "$dir" ] && die "package '$1' not found"
 	cd $dir
 	makepkg $makepkg_opts
 }
