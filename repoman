@@ -187,7 +187,27 @@ search()
 
 merge()
 {
+	# sanility checks
 	chk_updated $fst_root
+	# install essential packages if necessary
+	echo -n "checking for essential packages... "
+	. /etc/makepkg.conf
+	for i in "$COREPKGS"
+	do
+		missing="$missing `pacman -Sg $i |grep -v '^\w'` "
+	done
+	for i in `pacman -Q|sed 's/\([^ ]*\) .*/\1/'`
+	do
+		missing=`echo $missing |sed "s/\( \|^\)$i\( \|$\)/ /"`
+	done
+	if [ ! -z "$missing" ]; then
+		echo "failed"
+		echo "Use the following command to install the missing packages:"
+		echo "pacman -S $missing"
+		exit 1
+	else
+		echo "done"
+	fi
 	dir=`find $fst_root -type d -name "$1"|sed -n '$ p'`
 	[ -z "$dir" ] && die "package '$1' not found"
 	cd $dir
