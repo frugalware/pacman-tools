@@ -615,6 +615,10 @@ Finclude ()
 			do
 				source $Fincdir/$i.sh || Fdie
 			done
+		else
+			echo "Could not find the scheme dir! (\$fst/source/include)"
+			echo "Please edit your /etc/repoman.conf or ~/.repoman.conf."
+			Fdie
 		fi
 	fi
 }
