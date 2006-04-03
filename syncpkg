@@ -96,7 +96,7 @@ do
 		[ -d $logdir ] || mkdir -p $logdir
 		mv *.log *.log.exitcode $logdir
 	fi
-	[ -e *.fpm ] && rf -k -f *fpm >>$mlogfile 2>&1
+	[ "$ret" == "0" ] && rf -k -f *fpm >>$mlogfile 2>&1
 	cd $CWD
 	i=$(($i+1))
 
