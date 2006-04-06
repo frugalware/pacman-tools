@@ -1,5 +1,8 @@
 VERSION         DESCRIPTION
 -----------------------------------------------------------------------------
+0.7.0         - repoman: experimental support for uploading to -stable
+              - fwmakepkg: moved most of the functions to the "util" scheme
+              - rf: handle new packages during cleanup
 0.6.9         - updated rf to 0.6
               - repoman cl now downloads != i686 sources, too
               - syncpkg deletes the empty log dirs
