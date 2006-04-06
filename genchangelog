@@ -13,6 +13,11 @@ strip_url()
 [ -z "$arch" ] && arch=`arch`
 [ -z "$uploader" ] && uploader=`echo $HOME|sed 's|.*/\(.*\)$|\1|'`
 
+if [ "$1" = "--repo" ]; then
+	fwver=`echo $2 |sed 's/frugalware-//'`
+	shift 2
+fi
+
 if [ "$1" = "--check" ]; then
 	if [ "`echo $HOME|sed 's|.*/\(.*\)$|\1|'`" != "syncpkgd" ]; then
 		. /etc/genchangelog.conf
@@ -65,12 +70,13 @@ do
 done
 
 echo -n "updating mysql database... "
+[ "$fwver" = "current" ] && reposuffix="-current"
 if [ "$repo" == "frugalware" ]; then
 	cd ../../../frugalware-$arch
-	../tools/fdb2db -b ../source/ -r frugalware -e $fwver -f frugalware-$fwver.fdb -a $arch -h $dbhost -u $dbuser -d $dbname -t $dbtable -c $pkgname -l $uploader
+	../tools/fdb2db -b ../source/ -r frugalware -e $fwver -f frugalware$reposuffix.fdb -a $arch -h $dbhost -u $dbuser -d $dbname -t $dbtable -c $pkgname -l $uploader
 else
 	cd ../../../frugalware-$arch
-	../../tools/fdb2db -b ../source/ -r extra -e $fwver -f extra-$fwver.fdb -a $arch -h $dbhost -u $dbuser -d $dbname -t $dbtable -c $pkgname -l $uploader
+	../../tools/fdb2db -b ../source/ -r extra -e $fwver -f extra$reposuffix.fdb -a $arch -h $dbhost -u $dbuser -d $dbname -t $dbtable -c $pkgname -l $uploader
 fi
 
 if [ ! -z "$subpkgs" ]; then
@@ -82,15 +88,15 @@ if [ ! -z "$subpkgs" ]; then
 		if [ "$repo" = "frugalware" ] && echo $groups|sed 's/^\([^ ]*\) .*/\1/'|grep -q -- -extra$; then
 			# special case: the subpkg is in extra while the main pkg is in frugalware
 			cd ../../../extra/frugalware-$arch
-			../../tools/fdb2db -b ../../source/ -r extra -e $fwver -f extra-$fwver.fdb -a $arch -h $dbhost -u $dbuser -d $dbname -t $dbtable -c "$subpkg" -s -n $pkgname -l $uploader
+			../../tools/fdb2db -b ../../source/ -r extra -e $fwver -f extra$reposuffix.fdb -a $arch -h $dbhost -u $dbuser -d $dbname -t $dbtable -c "$subpkg" -s -n $pkgname -l $uploader
 		else
 			# the subpkg is in the same repo as the main one
 			if [ "$repo" == "frugalware" ]; then
 				cd ../../../frugalware-$arch
-				../tools/fdb2db -b ../source/ -r frugalware -e $fwver -f frugalware-$fwver.fdb -a $arch -h $dbhost -u $dbuser -d $dbname -t $dbtable -c "$subpkg" -s -n $pkgname -l $uploader
+				../tools/fdb2db -b ../source/ -r frugalware -e $fwver -f frugalware$reposuffix.fdb -a $arch -h $dbhost -u $dbuser -d $dbname -t $dbtable -c "$subpkg" -s -n $pkgname -l $uploader
 			else
 				cd ../../../frugalware-$arch
-				../../tools/fdb2db -b ../source/ -r extra -e $fwver -f extra-$fwver.fdb -a $arch -h $dbhost -u $dbuser -d $dbname -t $dbtable -c $subpkg -s -n $pkgname -l $uploader
+				../../tools/fdb2db -b ../source/ -r extra -e $fwver -f extra$reposuffix.fdb -a $arch -h $dbhost -u $dbuser -d $dbname -t $dbtable -c $subpkg -s -n $pkgname -l $uploader
 			fi
 		fi
 	done
