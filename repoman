@@ -58,7 +58,7 @@ upload()
 		msg "Checking for permission"
 		# ok, this is a bit slow, but anyone knows a better sollution? ;-)
 		group=`tar xOjf $1 .PKGINFO 2>&1|grep ^group|sed 's/.* = \(.*\)/\1/;q'`
-		if ! ssh $lopts $host "genchangelog --check $group >/dev/null"; then
+		if ! ssh $lopts $host "genchangelog --repo $reponame --check $group >/dev/null"; then
 			echo "Permission denied"
 			echo "If you think you should have permission, send a mail to"
 			echo "frugalware-devel@frugalware.org, or edit \$fst/docs/xml/teams.xml via darcs."
@@ -118,20 +118,22 @@ clean()
 {
 	msg "Cleaning up $1"
 	split_repo_group_pkgname_dir $1
-	ssh $lopts $host "cd $path_to_repo/$dir/../frugalware-${arch:-`arch`} && arch=${arch:-`arch`} sudo -u $sudouser updatesync del $repo-current.fdb $pkgname && genchangelog --clean $pkgname"
+	[[ "$reponame" =~ "-current$" ]] && reposuffix="-current"
+	ssh $lopts $host "cd $path_to_repo/$dir/../frugalware-${arch:-`arch`} && arch=${arch:-`arch`} sudo -u $sudouser updatesync del $repo$reposuffix.fdb $pkgname && genchangelog --repo $reponame --clean $pkgname"
 }
 
 changelog()
 {
 	msg "Generating Changelog for $1"
 	split_repo_group_pkgname_dir $1
+	[[ "$reponame" =~ "-current$" ]] && reposuffix="-current"
 	if [ "$verbose" == 1 ]; then
 		catcmd="cat Changelog"
 	else
 		# just a workaround for the "syntax error near unexpected token `;'" bug
 		catcmd="echo -n \"\""
 	fi
-	ssh $lopts $host "cd $path_to_repo; if [ ! -e _darcs/rlock ]; then touch _darcs/rlock; cd $dir/../frugalware-${arch:-`arch`} && arch=${arch:-`arch`} sudo -u $sudouser updatesync upd $repo-current.fdb ../source/$group/$pkgname/FrugalBuild && if [ -d $path_to_repo/extra/source/subpkgs/$pkgname ]; then cd $path_to_repo/extra/frugalware-${arch:-`arch`} && arch=${arch:-`arch`} sudo -u $sudouser updatesync upd extra-current.fdb ../source/subpkgs/$pkgname/FrugalBuild; fi; cd $path_to_repo && rm _darcs/rlock && cd $path_to_repo/$dir/$group/$pkgname && arch=${arch:-`arch`} sudo -u $sudouser genchangelog; $catcmd; else echo \"Couldn't get lock.\"; fi"
+	ssh $lopts $host "cd $path_to_repo; if [ ! -e _darcs/rlock ]; then touch _darcs/rlock; cd $dir/../frugalware-${arch:-`arch`} && arch=${arch:-`arch`} sudo -u $sudouser updatesync upd $repo$reposuffix.fdb ../source/$group/$pkgname/FrugalBuild && if [ -d $path_to_repo/extra/source/subpkgs/$pkgname ]; then cd $path_to_repo/extra/frugalware-${arch:-`arch`} && arch=${arch:-`arch`} sudo -u $sudouser updatesync upd extra$reposuffix.fdb ../source/subpkgs/$pkgname/FrugalBuild; fi; cd $path_to_repo && rm _darcs/rlock && cd $path_to_repo/$dir/$group/$pkgname && arch=${arch:-`arch`} sudo -u $sudouser genchangelog --repo $reponame; $catcmd; else echo \"Couldn't get lock.\"; fi"
 }
 
 die()
@@ -252,6 +254,7 @@ while [ "$1" != "" ]; do
 		-t|--tree)
 			shift 1
 			path_to_repo=`echo $path_to_repo|sed "s/current/$1/"`
+			reponame=`echo $reponame|sed "s/current/$1/"`
 		;;
 		-*)
 			echo "Wrong parameter!"
