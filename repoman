@@ -249,6 +249,10 @@ while [ "$1" != "" ]; do
 		-v|--verbose)
 			 verbose=1
 		;;
+		-t|--tree)
+			shift 1
+			path_to_repo=`echo $path_to_repo|sed "s/current/$1/"`
+		;;
 		-*)
 			echo "Wrong parameter!"
 			usage
