@@ -218,7 +218,6 @@ merge()
 
 [ -e /etc/repoman.conf ] && . /etc/repoman.conf || \
 	die "Can't find /etc/repoman.conf!"
-[ -e ~/.repoman.conf ] && . ~/.repoman.conf
 
 # Initializating variables.
 version='0.2.0'
