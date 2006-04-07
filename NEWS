@@ -1,5 +1,9 @@
 VERSION         DESCRIPTION
 -----------------------------------------------------------------------------
+0.7.1         - bugfix in fwmakepkg for chkworld and others who want to use
+                fwmakepkg without makepkg
+              - buffix in repoman.conf to be able to build outside a darcs
+                tree
 0.7.0         - repoman: experimental support for uploading to -stable
               - fwmakepkg: moved most of the functions to the "util" scheme
               - rf: handle new packages during cleanup
