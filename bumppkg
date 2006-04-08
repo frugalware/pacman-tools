@@ -28,6 +28,9 @@ die()
 
 check_complex()
 {
+	if [ ! -f FrugalBuild ]; then
+		die "Could not find FrugalBuild!"
+	fi
 	if [ "`grep -c sha1sums= FrugalBuild`" -gt 1 ]; then
 		die "This FrugalBuild is too complex, update it manually!"
 	fi
@@ -87,6 +90,12 @@ src_download()
 	rm -rf pkg src
 }
 
+do_build()
+{
+	sudo makepkg -R
+	Fmessage "done, testing time!"
+}
+
 USE_COLOR="y"
 . /usr/lib/frugalware/fwmakepkg
 
@@ -94,4 +103,4 @@ check_complex
 update_pkgver
 src_cleanup
 src_download
-sudo makepkg -R
+do_build
