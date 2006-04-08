@@ -83,7 +83,8 @@ src_download()
 	fi
 
 	Fmessage "updating \$sha1sums() in the FrugalBuild"
-	sed -i "/^sha1sums/,/)/d" FrugalBuild
+	sed -i "/^sha1sums.*)/d" FrugalBuild || \
+		sed -i "/^sha1sums/,/)/d" FrugalBuild
 	makepkg -dg >>FrugalBuild
 
 	Fmessage "cleaning up the duplicated source files"
