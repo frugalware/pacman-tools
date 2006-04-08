@@ -1,0 +1,97 @@
+#!/bin/bash
+# 
+#   bumppkg
+#  
+#   Copyright (c) 2006 by Miklos Vajna <vmiklos@frugalware.org>
+#  
+#   This program is free software; you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published by
+#   the Free Software Foundation; either version 2 of the License, or
+#   (at your option) any later version.
+# 
+#   This program is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#   GNU General Public License for more details.
+#  
+#   You should have received a copy of the GNU General Public License
+#   along with this program; if not, write to the Free Software
+#   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, 
+#   USA.
+#
+
+die()
+{
+	echo $0: $@
+	exit 1
+}
+
+check_complex()
+{
+	if [ "`grep -c sha1sums= FrugalBuild`" -gt 1 ]; then
+		die "This FrugalBuild is too complex, update it manually!"
+	fi
+}
+
+src_cleanup()
+{
+	local i root workdir
+
+	Fmessage "cleaning up old source files"
+	i=`pwd`
+	while true
+	do
+		if [ -e "$i/_darcs" ]; then
+			break
+		elif [ "$i" == "" ]; then
+			break
+		fi
+		i=`echo $i|sed 's|\(.*\)/.*|\1|'`
+	done
+	root=$i
+	workdir=`pwd|sed "s|$root||"`
+	rootlist=`mktemp`
+	worklist=`mktemp`
+	ls $root/_darcs/current/$workdir >$rootlist
+	ls >$worklist
+	for i in `diff -u $rootlist $worklist|grep ^+[^+]|sed 's/^+//'`
+	do
+		rm -v $i
+	done
+	rm $rootlist $worklist
+}
+
+update_pkgver()
+{
+	Fmessage "updating \$pkgver and \$pkgrel"
+	newpkgver=`chkworld |grep != |sed 's/.*!= \([^ ]*\) .*/\1/'`
+	if [[ "$newpkgver" =~ " " ]] || [ -z "$newpkgver" ]; then
+		die "Dunno what is the new version or this package is already up to date!"
+	fi
+	sed -i "s/^pkgver=.*/pkgver=$newpkgver/;s/^pkgrel=.*/pkgrel=1/;/# vim: ft=sh/d" FrugalBuild
+}
+
+src_download()
+{
+	Fmessage "downloading the new source"
+	makepkg -dg
+	if [ $? != 0 ]; then
+		die "failed to download the source"
+	fi
+
+	Fmessage "updating \$sha1sums() in the FrugalBuild"
+	sed -i "/^sha1sums/,/)/d" FrugalBuild
+	makepkg -dg >>FrugalBuild
+
+	Fmessage "cleaning up the duplicated source files"
+	rm -rf pkg src
+}
+
+USE_COLOR="y"
+. /usr/lib/frugalware/fwmakepkg
+
+check_complex
+update_pkgver
+src_cleanup
+src_download
+sudo makepkg -R
