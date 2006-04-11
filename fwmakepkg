@@ -37,6 +37,10 @@ Finclude ()
 		if [ ! -z "$Fincdir" ]; then
 			for i in "$@"
 			do
+				# it's okay not having a util.sh, for example when using -stable
+				if [ "$i" = "util" -a ! -e "$Fincdir/util.sh" ]; then
+					return 0
+				fi
 				source $Fincdir/$i.sh || Fdie
 			done
 		else
@@ -47,7 +51,4 @@ Finclude ()
 	fi
 }
 
-# it's okay not having a util.sh, for example when using -stable
-if [ -e $Fincdir/util.sh ]; then
-	Finclude util
-fi
+Finclude util
