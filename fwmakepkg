@@ -47,4 +47,7 @@ Finclude ()
 	fi
 }
 
-Finclude util
+# it's okay not having a util.sh, for example when using -stable
+if [ -e $Fincdir/util.sh ]; then
+	Finclude util
+fi
