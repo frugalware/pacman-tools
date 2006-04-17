@@ -109,18 +109,21 @@ cat << EOF > FrugalBuild
 # Compiling Time: 0.1 SBU
 # Maintainer: Zsolt Szalai <xbit@frugalware.org>
 
-pkgname=$pkgname
 modname=$modname
 modauthor=$modauthor
 pkgver=$pkgver
 pkgrel=1
 pkgdesc="$pkgdesc"
 `get_deps $makedump`
-groups=('devel-extra')
 archs=('`uname -m`')
 Finclude perl
 sha1sums=('$sha1sum')
 EOF
+
+# clean up the unnecessary directives, they're inherited from perl.sh
+sed -i "/depends=()/d" FrugalBuild
+sed -i "/archs=('i686')/d" FrugalBuild
+
 echo "done."
 
 rm -f $dump $srcdump $makedump
