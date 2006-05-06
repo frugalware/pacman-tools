@@ -1,5 +1,10 @@
 VERSION         DESCRIPTION
 -----------------------------------------------------------------------------
+0.7.2         - chkworld: support for inheriting pkgver and groups() from a
+                scheme
+              - syncpkgd: logging and other small fixes
+              - fwcpan: use the defaults from perl.sh if possible
+              - repoman: spelling fixes
 0.7.1         - bugfix in fwmakepkg for chkworld and others who want to use
                 fwmakepkg without makepkg
               - buffix in repoman.conf to be able to build outside a darcs
