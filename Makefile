@@ -69,7 +69,6 @@ install:
 	$(INSTALL) fwcpan $(DESTDIR)$(bindir)/fwcpan
 	$(INSTALL) chkperm $(DESTDIR)$(bindir)/chkperm
 	$(INSTALL) fblint $(DESTDIR)$(bindir)/fblint
-	$(INSTALL) bumppkg $(DESTDIR)$(bindir)/bumppkg
 
 clean:
 	rm chkperm
