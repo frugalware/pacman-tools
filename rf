@@ -584,8 +584,8 @@ if (@pkgfiles){
     ($pkgver,$pkgrel) = $pkgfiles[0] =~ /^.*-(.*?)-(.*?)-.*?fpm\Z/
 } else {  #get them from Frugalbuild
     $buildscript = contents 'FrugalBuild';
-    ($pkgver) = $buildscript =~ /^pkgver=(\S*)/m;
-    ($pkgrel) = $buildscript =~ /^pkgrel=(\S*)/m;
+    ($pkgver) = qx'source /usr/lib/frugalware/fwmakepkg;source ./FrugalBuild; echo -n $pkgver';
+    ($pkgrel) = qx'source /usr/lib/frugalware/fwmakepkg;source ./FrugalBuild; echo -n $pkgrel';
 }
 $pkgver = $opts{t} if $opts{t};
 $pkgrel = $opts{l} if $opts{l};
