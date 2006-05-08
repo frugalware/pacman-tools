@@ -92,6 +92,10 @@ check "up2date" "[ ! -z \"$up2date\" ]"
 check "right number of sha1sums" "[ ${#sha1sums[@]} -eq ${#source[@]} ]"
 
 if [ ! -z "$subpkgs" ]; then
+	for subpkg in "${subpkgs[@]}"
+	do
+		check "uppercase letters in subpkgs" "[[ ! \"$subpkg\" =~ \"[A-Z]\" ]]"
+	done
 	check "subdescs" "[ ! -z \"$subdescs\" ]"
 	check "subdepends" "[ ! -z \"$subdepends\" ]"
 	check "subgroups" "[ ! -z \"$subgroups\" ]"
