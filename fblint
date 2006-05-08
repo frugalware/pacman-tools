@@ -97,7 +97,7 @@ if [ ! -z "$subpkgs" ]; then
 		check "uppercase letters in subpkgs" "[[ ! \"$subpkg\" =~ \"[A-Z]\" ]]"
 	done
 	check "subdescs" "[ ! -z \"$subdescs\" ]"
-	check "subdepends" "[ ! -z \"$subdepends\" ]"
+	check "subdepends" "[ ! -z \"$subdepends\" ] || [ ! -z \"$subrodepends\" ]"
 	check "subgroups" "[ ! -z \"$subgroups\" ]"
 	check "right number of subdescs" "[ \"${#subdescs[@]}\" = 0 ] || [ \"${#subdescs[@]}\" == \"${#subpkgs[@]}\" ]"
 	check "right number of sublicense" "[ \"${#sublicense[@]}\" = 0 ] || [ \"${#sublicense[@]}\" = \"${#subpkgs[@]}\" ]"
