@@ -83,6 +83,7 @@ do
 	cd `find . -type d -maxdepth 4 -name $pkg 2>/dev/null`
 	rm -f *fpm *.log
 	log "making package: $pkg"
+	echo "$pkg" >/tmp/sync.pkg
 	sudo makepkg -RC >>$mlogfile 2>&1
 	# TODO: at this point maybe some dirs are not umounted perfectly
 	# till we find a real sollution (sudo for umount?), here is a workaround:
@@ -91,6 +92,7 @@ do
 	sudo makepkg -RLuk >>$mlogfile 2>&1
 	ret=$?
 	log "finished making package $pkg with exit code $ret"
+	rm /tmp/sync.pkg
 	if [ -e *.log ]; then
 		echo $ret >`ls *.log`.exitcode
 		[ -d $logdir ] || mkdir -p $logdir
