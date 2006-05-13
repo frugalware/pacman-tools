@@ -30,7 +30,7 @@ libdir = /usr/lib/frugalware
 man1dir = /usr/share/man/man1
 sysconfdir = /etc
 
-compile: chkperm
+compile: chkperm genauthors
 
 install:
 	$(INSTALL) -d $(DESTDIR)$(bindir)
@@ -68,10 +68,11 @@ install:
 	$(INSTALL) rpm2fpm $(DESTDIR)$(bindir)/rpm2fpm
 	$(INSTALL) fwcpan $(DESTDIR)$(bindir)/fwcpan
 	$(INSTALL) chkperm $(DESTDIR)$(bindir)/chkperm
+	$(INSTALL) genauthors $(DESTDIR)$(bindir)/genauthors
 	$(INSTALL) fblint $(DESTDIR)$(bindir)/fblint
 
 clean:
-	rm chkperm
+	rm chkperm genauthors
 
 dist:
 	darcs changes >_darcs/current/Changelog
