@@ -77,5 +77,6 @@ clean:
 dist:
 	darcs changes >_darcs/current/Changelog
 	darcs dist -d pacman-tools-$(VERSION)
-	mv pacman-tools-$(VERSION).tar.gz ../
+	gpg -ba -u 20F55619 pacman-tools-$(VERSION).tar.gz
+	mv pacman-tools-$(VERSION).tar.gz{,.asc} ../
 	rm _darcs/current/Changelog
