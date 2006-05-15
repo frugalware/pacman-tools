@@ -1,5 +1,13 @@
 VERSION         DESCRIPTION
 -----------------------------------------------------------------------------
+0.7.3         - rf: support for Finclude'ed pkgver&pkgrel
+              - fblint:
+                - check for uppercase letters in subpkgs
+                - added subrodepends to subdepends check
+                - instead of sha1sums(), signatures() or md5sums() is enough,
+                  too
+              - syncpkg: dump the currently built package's name to /tmp
+              - new tool: genauthors to generate the AUTHORS file from xml
 0.7.2         - chkworld: support for inheriting pkgver and groups() from a
                 scheme
               - syncpkgd: logging and other small fixes
