@@ -60,7 +60,7 @@ CARCH=$arch source FrugalBuild || die "errors parsing the FrugalBuild"
 
 echo "downloading missing source files..."
 
-for i in ${source[@]}
+for i in ${source[@]} ${signatures[@]}
 do
 	file=`strip_url $i`
 	if [ ! -e $file ]; then
