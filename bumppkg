@@ -82,13 +82,15 @@ src_download()
 		die "failed to download the source"
 	fi
 
-	Fmessage "updating \$sha1sums() in the FrugalBuild"
-	if grep -q '^sha1sums.*)' FrugalBuild; then
-		sed -i "/^sha1sums.*)/d" FrugalBuild
-	else
-		sed -i "/^sha1sums/,/)/d" FrugalBuild
+	if grep sha1sums= FrugalBuild; then
+		Fmessage "updating \$sha1sums() in the FrugalBuild"
+		if grep -q '^sha1sums.*)' FrugalBuild; then
+			sed -i "/^sha1sums.*)/d" FrugalBuild
+		else
+			sed -i "/^sha1sums/,/)/d" FrugalBuild
+		fi
+		makepkg -dg >>FrugalBuild
 	fi
-	makepkg -dg >>FrugalBuild
 
 	Fmessage "cleaning up the duplicated source files"
 	rm -rf pkg src
