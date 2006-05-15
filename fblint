@@ -89,7 +89,16 @@ check "groups" "[ ! -z \"$groups\" ]"
 check "valid first group" "! echo $groups |grep -q -- - || echo $groups|grep -q -- -extra$"
 check "archs" "[ ! -z \"$archs\" ]"
 check "up2date" "[ ! -z \"$up2date\" ]"
-check "right number of sha1sums" "[ ${#sha1sums[@]} -eq ${#source[@]} ]"
+check "md5sums/sha1sums/signatures" "[ ${#md5sums[@]} -gt 0 -o ${#sha1sums[@]} -gt 0 -o ${#signatures[@]} -gt 0 ]"
+if [ ${#md5sums[@]} -gt 0 ]; then
+	check "right number of md5sums" "[ ${#md5sums[@]} -eq ${#source[@]} ]"
+fi
+if [ ${#sha1sums[@]} -gt 0 ]; then
+	check "right number of sha1sums" "[ ${#sha1sums[@]} -eq ${#source[@]} ]"
+fi
+if [ ${#signatures[@]} -gt 0 ]; then
+	check "right number of signatures" "[ ${#signatures[@]} -eq ${#source[@]} ]"
+fi
 
 if [ ! -z "$subpkgs" ]; then
 	for subpkg in "${subpkgs[@]}"
