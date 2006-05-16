@@ -50,18 +50,25 @@ if [ ! -d ~/darcs ]; then
 fi
 cd ~/darcs
 
-if [ ! -d frugalware-current ]; then
-	darcs get --partial syncpkgd@darcs.frugalware.org:/home/ftp/pub/frugalware/frugalware-current >>$blogfile 2>&1
-	cd frugalware-current
+if [ -z "$1" ]; then
+	echo "parameter #1 (tree) is missing!"
+	exit 1
 else
-	cd frugalware-current
+	tree=$1
+fi
+
+if [ ! -d frugalware-$tree ]; then
+	darcs get --partial syncpkgd@darcs.frugalware.org:/home/ftp/pub/frugalware/frugalware-$tree >>$blogfile 2>&1
+	cd frugalware-$tree
+else
+	cd frugalware-$tree
 	darcs pull -a >>$blogfile 2>&1
 	# revert changes if there are any
 	darcs revert -a >>$blogfile 2>&1
 fi
 
 cd tools
-python checkpkgs -n|grep "\[O\] `uname -m`"|sed 's/\(.*\)-[^- ]*-[^- ]* .*/\1/' >$pkglist
+python checkpkgs -t $tree -n|grep "\[O\] `uname -m`"|sed 's/\(.*\)-[^- ]*-[^- ]* .*/\1/' >$pkglist
 
 cd ..
 log "number of pkgs to build: `wc -l $pkglist|sed 's/\(.*\) .*/\1/'`"
@@ -89,7 +96,12 @@ do
 	# till we find a real sollution (sudo for umount?), here is a workaround:
 	# for i in `mount|grep /var/chroot.vmiklos|sed 's/.* on \([^ ]*\) .*/\1/'`; do sudo umount $i; done
 	# if $CHROOTDIR is /var/chroot.vmiklos
-	sudo makepkg -RLuk >>$mlogfile 2>&1
+	if [ "$tree" = "current" ]; then
+		makepkgtree="$tree"
+	else
+		makepkgtree="stable"
+	fi
+	sudo makepkg -t $makepkgtree -RLuk >>$mlogfile 2>&1
 	ret=$?
 	log "finished making package $pkg with exit code $ret"
 	rm /tmp/sync.pkg
@@ -98,7 +110,7 @@ do
 		[ -d $logdir ] || mkdir -p $logdir
 		mv *.log *.log.exitcode $logdir
 	fi
-	[ "$ret" == "0" ] && rf -CPUL -k -f *fpm >>$mlogfile 2>&1
+	[ "$ret" == "0" ] && rf -v $tree -CPUL -k -f *fpm >>$mlogfile 2>&1
 	cd $CWD
 	i=$(($i+1))
 
