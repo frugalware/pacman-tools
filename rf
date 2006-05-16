@@ -605,7 +605,7 @@ sub getoldsource{
 
 sub getoldfpm{
     my ($url,$pkgname)= @_;
-    if (qx"repoman ls $repo/$repodir" =~ /(\Q$pkgname\E-[^-]*?-[^-]*?-[^-]*?fpm)\s/) {
+    if (qx"repoman -t $version ls $repo/$repodir" =~ /(\Q$pkgname\E-[^-]*?-[^-]*?-[^-]*?fpm)\s/) {
 	return $1;
     }
     return 0;
@@ -642,11 +642,11 @@ sub Upload{
     print "Uploading source and binary package\n";
     print "Nothing to do, that's fine!\n\n" unless @sourcefiles;
     for my $sourcefile (@sourcefiles){
-	$ec = apply "repoman up $sourcefile $repo/source/$group/$pkgname/" if $sourcefile;
+	$ec = apply "repoman -t $version up $sourcefile $repo/source/$group/$pkgname/" if $sourcefile;
     }
     print "Nothing to do, that's fine!\n\n" unless @pkgfiles;
     for my $pkgfile (@pkgfiles){
-	$ev = apply "repoman up $pkgfile $repo/$repodir/" if $pkgfile;
+	$ev = apply "repoman -t $version up $pkgfile $repo/$repodir/" if $pkgfile;
   }
     die "Uploading FAILED!" if $ev || $ec;
 }
@@ -654,7 +654,7 @@ sub Upload{
 sub cL{
   print "Generating ChangeLog\n";
   $repo.='/' if $repo;
-  my $ec = apply "arch=$arch repoman cl $repo$group/$pkgname";
+  my $ec = apply "arch=$arch repoman -t $version cl $repo$group/$pkgname";
   die "Changelog not generated!" if $ec;
 }
 
@@ -665,23 +665,23 @@ sub Cleanup{
     my $repo_=$repo . '/' if $repo;
     print "Nothing to do, that's fine!\n\n" unless @sourcefiles || @pkgfiles;
     if (@sourcefiles){
-      my (@indarcs) = qx"repoman ls _darcs/current/$repo_/source/$group/$pkgname/ 2>&1";
-      my (@inrepo) = qx"repoman ls $repo_/source/$group/$pkgname/ 2>&1";
+      my (@indarcs) = qx"repoman -t $version ls _darcs/current/$repo_/source/$group/$pkgname/ 2>&1";
+      my (@inrepo) = qx"repoman -t $version ls $repo_/source/$group/$pkgname/ 2>&1";
       if ($inrepo[1] =~ 'No such file or') {
 	print "Probably it is a new package, passing by...\n";
 	return;
       }
       for my $ir (@inrepo){
 	unless(scalar grep(/\Q$ir\E/, @indarcs)){
-	  $ec = apply "repoman del $repo/source/$group/$pkgname/$ir";}}}
+	  $ec = apply "repoman -t $version del $repo/source/$group/$pkgname/$ir";}}}
     if (@pkgfiles){
       #      if( my $oldf = getoldfpm("$serverprefix/$repo/$repodir/",$pkgname) ){ 
-      #	apply "repoman del $repo/$repodir/$oldf";}}}
+      #	apply "repoman -t $version del $repo/$repodir/$oldf";}}}
       for my $pkgfile (@pkgfiles){
 	$pkgfile =~ /^(.*)-.*?-.*?-.*?fpm\Z/;
 	print "Something nasty with $pkgfile, is it a package file?" unless $1;
 	if( my $oldf = getoldfpm("$serverprefix/$repo/$repodir/",$1) ){ 
-	  $ev = apply "repoman del $repo/$repodir/$oldf";}}}}
+	  $ev = apply "repoman -t $version del $repo/$repodir/$oldf";}}}}
   die "Cleaning up FAILED!" if $ec||$ev;
 }
 
