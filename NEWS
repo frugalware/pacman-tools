@@ -1,5 +1,7 @@
 VERSION         DESCRIPTION
 -----------------------------------------------------------------------------
+0.7.4         - genchangelog: gpg support
+              - rf, syncpkg, syncpkgd: -stable support
 0.7.3         - rf: support for Finclude'ed pkgver&pkgrel
               - fblint:
                 - check for uppercase letters in subpkgs
