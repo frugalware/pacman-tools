@@ -1,0 +1,2 @@
+mkdir t && sudo pacman -Sy -r t needed
+/home/vmiklos/darcs/pacman-tools/mkiso/t and frugalware-current hardwired
