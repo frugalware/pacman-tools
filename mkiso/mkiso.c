@@ -12,6 +12,9 @@ typedef struct __isopkg_t
 
 GList *isopkgs=NULL;
 
+// for 650Mb = 1024*1024*650 = 681574400 bytes with about 11Mb to spare
+#define CD_SIZE 670000000
+
 int strrcmp(const char *haystack, const char *needle)
 {
 	if(strlen(haystack) < strlen(needle))
@@ -69,6 +72,7 @@ int main()
 {
 	PM_DB *db_local, *db_fwcurr;
 	PM_LIST *sorted, *i, *junk;
+	int total=0, volume=1;
 
 	if(alpm_initialize("/home/vmiklos/darcs/pacman-tools/mkiso/t") == -1)
 		fprintf(stderr, "failed to initilize alpm library (%s)\n", alpm_strerror(pm_errno));
@@ -105,12 +109,19 @@ int main()
 	{
 		PM_SYNCPKG *sync = alpm_list_getdata(i);
 		PM_PKG *pkg = alpm_sync_getinfo(sync, PM_SYNC_PKG);
-		printf("%s-%s-%s%s %ld\n",
+		long int size = (long int)alpm_pkg_getinfo(pkg, PM_PKG_SIZE);
+		if (total+size > CD_SIZE)
+		{
+			total=0;
+			volume++;
+		}
+		total += size;
+		printf("%d: %s-%s-%s%s %ld\n",
+			volume,
 			(char*)alpm_pkg_getinfo(pkg, PM_PKG_NAME),
 			(char*)alpm_pkg_getinfo(pkg, PM_PKG_VERSION),
 			(char*)alpm_pkg_getinfo(pkg, PM_PKG_ARCH),
-			PM_EXT_PKG,
-			(long int)alpm_pkg_getinfo(pkg, PM_PKG_SIZE));
+			PM_EXT_PKG, size);
 	}
 	alpm_trans_release();
 	return(0);
