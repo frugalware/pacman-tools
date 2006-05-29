@@ -7,6 +7,13 @@ void cb_log(unsigned short level, char *msg)
 	printf("%s\n", msg);
 }
 
+int strrcmp(const char *haystack, const char *needle)
+{
+	if(strlen(haystack) < strlen(needle))
+		return(1);
+	return(strcmp(haystack + strlen(haystack) - strlen(needle), needle));
+}
+
 int main()
 {
 	PM_DB *db_local, *db_fwcurr;
