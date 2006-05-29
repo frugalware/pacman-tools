@@ -16,6 +16,29 @@ int strrcmp(const char *haystack, const char *needle)
 	return(strcmp(haystack + strlen(haystack) - strlen(needle), needle));
 }
 
+int detect_priority(PM_PKG *pkg)
+{
+	PM_LIST *i = alpm_pkg_getinfo(pkg, PM_PKG_GROUPS);
+	char *grp = alpm_list_getdata(i);
+
+	if(strrcmp(grp, "-extra"))
+	{
+		if(!strcmp(grp, "base") || !strcmp(grp, "apps") || !strcmp(grp, "lib") || !strcmp(grp, "multimedia") || !strcmp(grp, "network") || !strcmp(grp, "devel"))
+			return(80);
+		else
+			return(60);
+	}
+	else
+	{
+		if(!strcmp(grp, "locale-extra"))
+			return(40);
+		else
+			return(20);
+	}
+	fprintf(stderr, "possible invalid group '%s' for package '%s'\n", grp, (char*)alpm_pkg_getinfo(pkg, PM_PKG_NAME));
+	return(0);
+}
+
 int main()
 {
 	PM_DB *db_local, *db_fwcurr;
