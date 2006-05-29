@@ -3,6 +3,12 @@
 #include <alpm.h>
 #include <glib.h>
 
+typedef struct __isopkg_t
+{
+	PM_PKG *pkg;
+	int priority;
+} isopkg_t;
+
 int strrcmp(const char *haystack, const char *needle)
 {
 	if(strlen(haystack) < strlen(needle))
