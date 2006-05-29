@@ -102,11 +102,38 @@ char *get_label(char *version, char *arch, char *media, int volume)
 		return(g_strdup_printf("Frugalware %s-%s Install %s", version, arch, media));
 }
 
+int mkiso()
+{
+	PM_LIST *i, *sorted;
+	int total=0, volume=1;
+
+	sorted = alpm_trans_getinfo(PM_TRANS_PACKAGES);
+	for(i = alpm_list_first(sorted); i; i = alpm_list_next(i))
+	{
+		PM_SYNCPKG *sync = alpm_list_getdata(i);
+		PM_PKG *pkg = alpm_sync_getinfo(sync, PM_SYNC_PKG);
+		long int size = (long int)alpm_pkg_getinfo(pkg, PM_PKG_SIZE);
+		if (total+size > CD_SIZE)
+		{
+			total=0;
+			volume++;
+		}
+		total += size;
+		if(volume==VOLUME)
+			printf("frugalware-%s/%s-%s-%s%s\n",
+			ARCH,
+			(char*)alpm_pkg_getinfo(pkg, PM_PKG_NAME),
+			(char*)alpm_pkg_getinfo(pkg, PM_PKG_VERSION),
+			(char*)alpm_pkg_getinfo(pkg, PM_PKG_ARCH),
+			PM_EXT_PKG);
+	}
+	return(0);
+}
+
 int main()
 {
 	PM_DB *db_local, *db_fwcurr;
-	PM_LIST *sorted, *i, *junk;
-	int total=0, volume=1;
+	PM_LIST *i, *junk;
 
 	if(alpm_initialize("/home/vmiklos/darcs/pacman-tools/mkiso/t") == -1)
 		fprintf(stderr, "failed to initilize alpm library (%s)\n", alpm_strerror(pm_errno));
@@ -138,26 +165,7 @@ int main()
 	if(alpm_trans_prepare(&junk) == -1)
 		fprintf(stderr, "failed to prepare transaction (%s)\n", alpm_strerror(pm_errno));
 
-	sorted = alpm_trans_getinfo(PM_TRANS_PACKAGES);
-	for(i = alpm_list_first(sorted); i; i = alpm_list_next(i))
-	{
-		PM_SYNCPKG *sync = alpm_list_getdata(i);
-		PM_PKG *pkg = alpm_sync_getinfo(sync, PM_SYNC_PKG);
-		long int size = (long int)alpm_pkg_getinfo(pkg, PM_PKG_SIZE);
-		if (total+size > CD_SIZE)
-		{
-			total=0;
-			volume++;
-		}
-		total += size;
-		if(volume==VOLUME)
-			printf("frugalware-%s/%s-%s-%s%s\n",
-			ARCH,
-			(char*)alpm_pkg_getinfo(pkg, PM_PKG_NAME),
-			(char*)alpm_pkg_getinfo(pkg, PM_PKG_VERSION),
-			(char*)alpm_pkg_getinfo(pkg, PM_PKG_ARCH),
-			PM_EXT_PKG);
-	}
+	mkiso();
 	alpm_trans_release();
 	return(0);
 }
