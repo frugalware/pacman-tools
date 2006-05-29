@@ -68,16 +68,17 @@ int add_targets()
 	return(0);
 }
 
-char *get_timestamp(char *buf)
+char *get_timestamp()
 {
 	time_t t;
 	struct tm *tm;
+	char buf[9];
 
 	t = time(NULL);
 	tm = localtime(&t);
 
 	sprintf(buf, "20%02d%02d%02d", tm->tm_year-100, tm->tm_mon+1, tm->tm_mday);
-	return(buf);
+	return(strdup(buf));
 }
 
 int main()
