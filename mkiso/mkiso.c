@@ -89,6 +89,14 @@ char *get_filename(char *version, char *arch, char *media, int volume)
 		return(g_strdup_printf("frugalware-%s-%s-%s.iso", version, arch, media));
 }
 
+char *get_label(char *version, char *arch, char *media, int volume)
+{
+	if(volume)
+		return(g_strdup_printf("Frugalware %s-%s Install %s #%d", version, arch, media, volume));
+	else
+		return(g_strdup_printf("Frugalware %s-%s Install %s", version, arch, media));
+}
+
 int main()
 {
 	PM_DB *db_local, *db_fwcurr;
