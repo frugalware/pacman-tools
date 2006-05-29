@@ -81,6 +81,14 @@ char *get_timestamp()
 	return(strdup(buf));
 }
 
+char *get_filename(char *version, char *arch, char *media, int volume)
+{
+	if(volume)
+		return(g_strdup_printf("frugalware-%s-%s-%s%d.iso", version, arch, media, volume));
+	else
+		return(g_strdup_printf("frugalware-%s-%s-%s.iso", version, arch, media));
+}
+
 int main()
 {
 	PM_DB *db_local, *db_fwcurr;
