@@ -1,11 +1,7 @@
 #include <stdio.h>
+#include <string.h>
 #include <alpm.h>
 #include <glib.h>
-
-void cb_log(unsigned short level, char *msg)
-{
-	printf("%s\n", msg);
-}
 
 int strrcmp(const char *haystack, const char *needle)
 {
@@ -21,8 +17,6 @@ int main()
 
 	if(alpm_initialize("/home/vmiklos/darcs/pacman-tools/mkiso/t") == -1)
 		fprintf(stderr, "failed to initilize alpm library (%s)\n", alpm_strerror(pm_errno));
-	if(alpm_set_option(PM_OPT_LOGCB, (long)cb_log) == -1)
-		printf("failed to set option LOGCB (%s)\n", alpm_strerror(pm_errno));
 	if((db_local = alpm_db_register("local"))==NULL)
 		fprintf(stderr, "could not register 'local' database (%s)\n", alpm_strerror(pm_errno));
 	if((db_fwcurr = alpm_db_register("frugalware-current"))==NULL)
