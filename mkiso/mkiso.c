@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <alpm.h>
 #include <glib.h>
@@ -8,6 +9,8 @@ typedef struct __isopkg_t
 	PM_PKG *pkg;
 	int priority;
 } isopkg_t;
+
+GList *isopkgs=NULL;
 
 int strrcmp(const char *haystack, const char *needle)
 {
@@ -39,6 +42,29 @@ int detect_priority(PM_PKG *pkg)
 	return(0);
 }
 
+int sort_isopkgs(gconstpointer a, gconstpointer b)
+{
+	const isopkg_t *pa = a;
+	const isopkg_t *pb = b;
+	return ((pa->priority < pb->priority) ? 1 : -1);
+}
+
+int add_targets()
+{
+	int i;
+	for (i=0; i<g_list_length(isopkgs); i++)
+	{
+		isopkg_t *isopkg = g_list_nth_data(isopkgs, i);
+		char *pkgname = alpm_pkg_getinfo(isopkg->pkg, PM_PKG_NAME);
+		if(alpm_trans_addtarget(pkgname))
+		{
+			fprintf(stderr, "failed to add target '%s' (%s)\n", pkgname, alpm_strerror(pm_errno));
+			return(1);
+		}
+	}
+	return(0);
+}
+
 int main()
 {
 	PM_DB *db_local, *db_fwcurr;
@@ -56,13 +82,20 @@ int main()
 	for(i=alpm_db_getpkgcache(db_fwcurr); i; i=alpm_list_next(i))
 	{
 		PM_PKG *pkg=alpm_list_getdata(i);
-		char *pkgname = alpm_pkg_getinfo(pkg, PM_PKG_NAME);
+		isopkg_t *isopkg;
 
-		if(alpm_trans_addtarget(pkgname))
-			fprintf(stderr, "failed to add target '%s' (%s)\n", pkgname, alpm_strerror(pm_errno));
+		if((isopkg = (isopkg_t *)malloc(sizeof(isopkg_t)))==NULL)
+		{
+			fprintf(stderr, "out of memory!\n");
+			return(1);
+		}
+		isopkg->pkg = pkg;
+		isopkg->priority = detect_priority(pkg);
+		isopkgs = g_list_append(isopkgs, isopkg);
 	}
-	/*alpm_trans_release();
-	return(0);*/
+
+	isopkgs = g_list_sort(isopkgs, sort_isopkgs);
+	add_targets();
 
 	if(alpm_trans_prepare(&junk) == -1)
 		fprintf(stderr, "failed to prepare transaction (%s)\n", alpm_strerror(pm_errno));
