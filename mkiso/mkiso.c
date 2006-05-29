@@ -15,6 +15,11 @@ GList *isopkgs=NULL;
 // for 650Mb = 1024*1024*650 = 681574400 bytes with about 11Mb to spare
 #define CD_SIZE 670000000
 
+// FIXME: cmdline switch, config file or something else for these
+#define ARCH "i686"
+#define MEDIA "cd"
+#define VOLUME 1
+
 int strrcmp(const char *haystack, const char *needle)
 {
 	if(strlen(haystack) < strlen(needle))
@@ -145,12 +150,13 @@ int main()
 			volume++;
 		}
 		total += size;
-		printf("%d: %s-%s-%s%s %ld\n",
-			volume,
+		if(volume==VOLUME)
+			printf("frugalware-%s/%s-%s-%s%s\n",
+			ARCH,
 			(char*)alpm_pkg_getinfo(pkg, PM_PKG_NAME),
 			(char*)alpm_pkg_getinfo(pkg, PM_PKG_VERSION),
 			(char*)alpm_pkg_getinfo(pkg, PM_PKG_ARCH),
-			PM_EXT_PKG, size);
+			PM_EXT_PKG);
 	}
 	alpm_trans_release();
 	return(0);
