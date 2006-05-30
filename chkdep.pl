@@ -155,12 +155,12 @@ for my $line (@ldd){
     } else {
       if (! $libs{$lib}) {
 	$libs{$lib} = 1;
-	my ($pkg) = qx/pacman -Qo $lib/ =~ /owned by (.*?)\s/;
+	my ($pkg) = qx/LANG= LC_ALL= pacman -Qo $lib/ =~ /owned by (.*?)\s/;
 	print "WARNING: No package found containing $lib\n" if !$pkg && $opts{v};
 	
 	if ($pkg ne $pkgname) {
 	  unless ($opts{f}){
-	    my ($pkgdeps) = qx/pacman -Qi $pkg/ =~ /Depends.*?: (.*?)Removes/s;
+	    my ($pkgdeps) = qx/LANG= LC_ALL= pacman -Qi $pkg/ =~ /Depends.*?: (.*?)Removes/s;
 	    foreach my $dd (split(' ',$pkgdeps)){
 	      $depsdep{$dd} = 1;
 	    }
@@ -178,7 +178,7 @@ my $deps = 'depends=(';
 foreach my $key (keys %pkgs){
   $deps .= "\'$key\' " unless $depsdep{$key};
   if ($opts{e}){
-    my $comm = "pacman -Qi " . ($reversalias{$key} || $key);
+    my $comm = "LANG= LC_ALL= pacman -Qi " . ($reversalias{$key} || $key);
     my ($group) = qx/$comm/ =~ /Groups.*?: (.*?)$/sm;
     printf "%-20s%s\n", "$key is in", $group;
   }
