@@ -102,6 +102,22 @@ char *get_label(char *version, char *arch, char *media, int volume)
 		return(g_strdup_printf("Frugalware %s-%s Install %s", version, arch, media));
 }
 
+int iso_add(FILE *fp, char *fmt, ...)
+{
+	va_list args;
+
+	char str[PATH_MAX];
+
+	va_start(args, fmt);
+	vsnprintf(str, PATH_MAX, fmt, args);
+	va_end(args);
+
+	if(!fp)
+		return(1);
+	fprintf(fp, "%s=%s\n", str, str);
+	return(0);
+}
+
 int mkiso()
 {
 	PM_LIST *i, *sorted;
