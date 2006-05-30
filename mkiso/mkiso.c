@@ -149,7 +149,7 @@ int mkiso()
 	if(VOLUME==1)
 	{
 		iso_add(fp, "frugalware-%s/frugalware-current.fdb");
-		if(!strcmp(MEDIA, dvd))
+		if(!strcmp(MEDIA, "dvd"))
 			iso_add(fp, "extra/frugalware-%s/extra-current.fdb");
 	}
 
