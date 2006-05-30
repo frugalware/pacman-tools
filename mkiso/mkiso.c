@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 #include <alpm.h>
 #include <glib.h>
 
@@ -19,6 +20,7 @@ GList *isopkgs=NULL;
 #define ARCH "i686"
 #define MEDIA "cd"
 #define VOLUME 1
+#define KERNEL "2.6.16-fw5"
 
 int strrcmp(const char *haystack, const char *needle)
 {
@@ -122,6 +124,28 @@ int mkiso()
 {
 	PM_LIST *i, *sorted;
 	int total=0, volume=1;
+	char *version=get_timestamp();
+	char *fname=get_filename(version, ARCH, MEDIA, VOLUME);
+	char *label=get_label(version, ARCH, MEDIA, VOLUME);
+	char *flist;
+	char *cmdline;
+	char cwd[PATH_MAX] = "";
+	FILE *fp;
+
+	flist = strdup("/tmp/mkiso_XXXXXX");
+	mkstemp(flist);
+
+	if((fp=fopen(flist, "w"))==NULL)
+		return(1);
+	// initial filelist
+	iso_add(fp, "AUTHORS");
+	iso_add(fp, "ChangeLog.txt");
+	iso_add(fp, "LICENSE");
+	iso_add(fp, "docs");
+	iso_add(fp, "boot/vmlinuz-%s-%s", KERNEL, ARCH);
+	iso_add(fp, "boot/initrd-%s.img.gz", ARCH);
+	// FIXME: generate the menu.lst automatically
+	iso_add(fp, "boot/grub");
 
 	sorted = alpm_trans_getinfo(PM_TRANS_PACKAGES);
 	for(i = alpm_list_first(sorted); i; i = alpm_list_next(i))
@@ -129,20 +153,44 @@ int mkiso()
 		PM_SYNCPKG *sync = alpm_list_getdata(i);
 		PM_PKG *pkg = alpm_sync_getinfo(sync, PM_SYNC_PKG);
 		long int size = (long int)alpm_pkg_getinfo(pkg, PM_PKG_SIZE);
-		if (total+size > CD_SIZE)
+		// FIXME: 20971520 is ~20mb for the initrd&kernel
+		if (total+size > CD_SIZE - 20971520)
 		{
 			total=0;
 			volume++;
 		}
 		total += size;
 		if(volume==VOLUME)
-			printf("frugalware-%s/%s-%s-%s%s\n",
+			iso_add(fp, "frugalware-%s/%s-%s-%s%s",
 			ARCH,
 			(char*)alpm_pkg_getinfo(pkg, PM_PKG_NAME),
 			(char*)alpm_pkg_getinfo(pkg, PM_PKG_VERSION),
 			(char*)alpm_pkg_getinfo(pkg, PM_PKG_ARCH),
 			PM_EXT_PKG);
 	}
+	fclose(fp);
+
+	getcwd(cwd, PATH_MAX);
+	chdir("/home/ftp/pub/frugalware/frugalware-current");
+
+	cmdline = g_strdup_printf("mkisofs -o %s "
+		"-R -J -V \"Frugalware Install\" "
+		"-A \"%s\" "
+		"-graft-points "
+		"-path-list %s "
+		"-hide-rr-moved "
+		"-b boot/grub/stage2_eltorito "
+		"-v -d -N -no-emul-boot -boot-load-size 4 -boot-info-table",
+		fname, label, flist);
+	system(cmdline);
+
+	free(version);
+	free(fname);
+	free(label);
+	unlink(flist);
+	free(flist);
+	free(cmdline);
+	chdir(cwd);
 	return(0);
 }
 
@@ -178,8 +226,11 @@ int main()
 	isopkgs = g_list_sort(isopkgs, sort_isopkgs);
 	add_targets();
 
+	printf("sorting dependencies...");
+	fflush(stdout);
 	if(alpm_trans_prepare(&junk) == -1)
 		fprintf(stderr, "failed to prepare transaction (%s)\n", alpm_strerror(pm_errno));
+	printf(" done.\n");
 
 	mkiso();
 	alpm_trans_release();
