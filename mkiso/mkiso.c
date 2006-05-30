@@ -146,6 +146,11 @@ int mkiso()
 	iso_add(fp, "boot/initrd-%s.img.gz", ARCH);
 	// FIXME: generate the menu.lst automatically
 	iso_add(fp, "boot/grub");
+	if(VOLUME==1)
+	{
+		iso_add(fp, "frugalware-%s/frugalware-current.fdb");
+		iso_add(fp, "extra/frugalware-%s/extra-current.fdb");
+	}
 
 	sorted = alpm_trans_getinfo(PM_TRANS_PACKAGES);
 	for(i = alpm_list_first(sorted); i; i = alpm_list_next(i))
