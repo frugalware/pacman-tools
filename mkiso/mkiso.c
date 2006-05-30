@@ -149,7 +149,8 @@ int mkiso()
 	if(VOLUME==1)
 	{
 		iso_add(fp, "frugalware-%s/frugalware-current.fdb");
-		iso_add(fp, "extra/frugalware-%s/extra-current.fdb");
+		if(!strcmp(MEDIA, dvd))
+			iso_add(fp, "extra/frugalware-%s/extra-current.fdb");
 	}
 
 	sorted = alpm_trans_getinfo(PM_TRANS_PACKAGES);
