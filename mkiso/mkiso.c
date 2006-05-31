@@ -148,7 +148,8 @@ int mkiso()
 	iso_add(fp, "boot/grub");
 	if(VOLUME==1)
 	{
-		iso_add(fp, "frugalware-%s/frugalware-current.fdb");
+		if(!strcmp(MEDIA, "cd") || !strcmp(MEDIA, "dvd"))
+			iso_add(fp, "frugalware-%s/frugalware-current.fdb");
 		if(!strcmp(MEDIA, "dvd"))
 			iso_add(fp, "extra/frugalware-%s/extra-current.fdb");
 	}
@@ -214,6 +215,7 @@ int main()
 	if(alpm_trans_init(PM_TRANS_TYPE_SYNC, PM_TRANS_FLAG_NOCONFLICTS, NULL, NULL, NULL) == -1)
 		fprintf(stderr, "failed to init transaction (%s)\n", alpm_strerror(pm_errno));
 
+	if(strcmp(MEDIA, "net"))
 	for(i=alpm_db_getpkgcache(db_fwcurr); i; i=alpm_list_next(i))
 	{
 		PM_PKG *pkg=alpm_list_getdata(i);
