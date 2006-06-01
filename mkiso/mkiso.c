@@ -23,6 +23,8 @@ GList *isopkgs=NULL;
 #define VOLUME 2
 #define KERNEL "2.6.16-fw5"
 
+#define FST_ROOT "/home/ftp/pub/frugalware/frugalware-current"
+
 int strrcmp(const char *haystack, const char *needle)
 {
 	if(strlen(haystack) < strlen(needle))
@@ -186,7 +188,7 @@ int mkiso()
 	fclose(fp);
 
 	getcwd(cwd, PATH_MAX);
-	chdir("/home/ftp/pub/frugalware/frugalware-current");
+	chdir(FST_ROOT);
 
 	cmdline = g_strdup_printf("mkisofs -o %s "
 		"-R -J -V \"Frugalware Install\" "
@@ -214,21 +216,44 @@ void cb_log(unsigned short level, char *msg)
 	printf("%s\n", msg);
 }
 
+PM_DB *db_register(char *treename)
+{
+	PM_DB *db;
+	char *ptr;
+
+	if(!(db = alpm_db_register(treename)))
+	{
+		fprintf(stderr, "could not register '%s' database (%s)\n", treename, alpm_strerror(pm_errno));
+		return(NULL);
+	}
+	if(!strcmp(treename, "frugalware-current"))
+		ptr = g_strdup_printf("%s/frugalware-%s/%s.fdb", FST_ROOT, ARCH, treename);
+	else
+		ptr = g_strdup_printf("%s/extra/frugalware-%s/%s.fdb", FST_ROOT, ARCH, treename);
+	if(alpm_db_update(db, ptr) == -1)
+	{
+		fprintf(stderr, "failed to update %s (%s)\n", treename, alpm_strerror(pm_errno));
+		return(NULL);
+	}
+	return(db);
+}
+
 int main()
 {
 	PM_DB *db_local, *db_fwcurr, *db_fwextra;
 	PM_LIST *i, *junk;
+	char tmproot[] = "/tmp/mkiso_XXXXXX";
 
-	if(alpm_initialize("/home/vmiklos/darcs/pacman-tools/mkiso/t") == -1)
+	mkdtemp(tmproot);
+
+	if(alpm_initialize(tmproot) == -1)
 		fprintf(stderr, "failed to initilize alpm library (%s)\n", alpm_strerror(pm_errno));
 	alpm_set_option(PM_OPT_LOGCB, (long)cb_log);
 	alpm_set_option(PM_OPT_LOGMASK, (long)-1);
 	if((db_local = alpm_db_register("local"))==NULL)
 		fprintf(stderr, "could not register 'local' database (%s)\n", alpm_strerror(pm_errno));
-	if((db_fwcurr = alpm_db_register("frugalware-current"))==NULL)
-		fprintf(stderr, "could not register 'frugalware-current' database (%s)\n", alpm_strerror(pm_errno));
-	if((db_fwextra = alpm_db_register("extra-current"))==NULL)
-		fprintf(stderr, "could not register 'extra-current' database (%s)\n", alpm_strerror(pm_errno));
+	db_fwcurr = db_register("frugalware-current");
+	db_fwextra = db_register("extra-current");
 	if(alpm_trans_init(PM_TRANS_TYPE_SYNC, PM_TRANS_FLAG_NOCONFLICTS, NULL, NULL, NULL) == -1)
 		fprintf(stderr, "failed to init transaction (%s)\n", alpm_strerror(pm_errno));
 
