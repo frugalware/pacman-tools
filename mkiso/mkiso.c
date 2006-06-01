@@ -13,13 +13,14 @@ typedef struct __isopkg_t
 
 GList *isopkgs=NULL;
 
-// for 650Mb = 1024*1024*650 = 681574400 bytes with about 11Mb to spare
-#define CD_SIZE 670000000
+// for 650Mb = 1024*650 = 681574400 bytes with about 11Mb to spare
+//#define CD_SIZE 665600
+#define CD_SIZE 4590208
 
 // FIXME: cmdline switch, config file or something else for these
 #define ARCH "i686"
-#define MEDIA "cd"
-#define VOLUME 1
+#define MEDIA "dvd"
+#define VOLUME 2
 #define KERNEL "2.6.16-fw5"
 
 int strrcmp(const char *haystack, const char *needle)
@@ -159,21 +160,28 @@ int mkiso()
 	{
 		PM_SYNCPKG *sync = alpm_list_getdata(i);
 		PM_PKG *pkg = alpm_sync_getinfo(sync, PM_SYNC_PKG);
-		long int size = (long int)alpm_pkg_getinfo(pkg, PM_PKG_SIZE);
+		long int size = (long int)alpm_pkg_getinfo(pkg, PM_PKG_SIZE)/1024;
+		char *ptr;
 		// FIXME: 20971520 is ~20mb for the initrd&kernel
-		if (total+size > CD_SIZE - 20971520)
+		if (total+size > CD_SIZE - 20480)
 		{
 			total=0;
 			volume++;
 		}
 		total += size;
 		if(volume==VOLUME)
-			iso_add(fp, "frugalware-%s/%s-%s-%s%s",
+		{
+			if(detect_priority(pkg)>50)
+				ptr = strdup("frugalware-%s/%s-%s-%s%s");
+			else
+				ptr = strdup("extra/frugalware-%s/%s-%s-%s%s");
+			iso_add(fp, ptr,
 			ARCH,
 			(char*)alpm_pkg_getinfo(pkg, PM_PKG_NAME),
 			(char*)alpm_pkg_getinfo(pkg, PM_PKG_VERSION),
 			(char*)alpm_pkg_getinfo(pkg, PM_PKG_ARCH),
 			PM_EXT_PKG);
+		}
 	}
 	fclose(fp);
 
@@ -201,21 +209,31 @@ int mkiso()
 	return(0);
 }
 
+void cb_log(unsigned short level, char *msg)
+{
+	printf("%s\n", msg);
+}
+
 int main()
 {
-	PM_DB *db_local, *db_fwcurr;
+	PM_DB *db_local, *db_fwcurr, *db_fwextra;
 	PM_LIST *i, *junk;
 
 	if(alpm_initialize("/home/vmiklos/darcs/pacman-tools/mkiso/t") == -1)
 		fprintf(stderr, "failed to initilize alpm library (%s)\n", alpm_strerror(pm_errno));
+	alpm_set_option(PM_OPT_LOGCB, (long)cb_log);
+	alpm_set_option(PM_OPT_LOGMASK, (long)-1);
 	if((db_local = alpm_db_register("local"))==NULL)
 		fprintf(stderr, "could not register 'local' database (%s)\n", alpm_strerror(pm_errno));
 	if((db_fwcurr = alpm_db_register("frugalware-current"))==NULL)
 		fprintf(stderr, "could not register 'frugalware-current' database (%s)\n", alpm_strerror(pm_errno));
+	if((db_fwextra = alpm_db_register("extra-current"))==NULL)
+		fprintf(stderr, "could not register 'extra-current' database (%s)\n", alpm_strerror(pm_errno));
 	if(alpm_trans_init(PM_TRANS_TYPE_SYNC, PM_TRANS_FLAG_NOCONFLICTS, NULL, NULL, NULL) == -1)
 		fprintf(stderr, "failed to init transaction (%s)\n", alpm_strerror(pm_errno));
 
 	if(strcmp(MEDIA, "net"))
+	{
 	for(i=alpm_db_getpkgcache(db_fwcurr); i; i=alpm_list_next(i))
 	{
 		PM_PKG *pkg=alpm_list_getdata(i);
@@ -229,6 +247,21 @@ int main()
 		isopkg->pkg = pkg;
 		isopkg->priority = detect_priority(pkg);
 		isopkgs = g_list_append(isopkgs, isopkg);
+	}
+	for(i=alpm_db_getpkgcache(db_fwextra); i; i=alpm_list_next(i))
+	{
+		PM_PKG *pkg=alpm_list_getdata(i);
+		isopkg_t *isopkg;
+
+		if((isopkg = (isopkg_t *)malloc(sizeof(isopkg_t)))==NULL)
+		{
+			fprintf(stderr, "out of memory!\n");
+			return(1);
+		}
+		isopkg->pkg = pkg;
+		isopkg->priority = detect_priority(pkg);
+		isopkgs = g_list_append(isopkgs, isopkg);
+	}
 	}
 
 	isopkgs = g_list_sort(isopkgs, sort_isopkgs);
