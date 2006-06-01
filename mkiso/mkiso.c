@@ -237,7 +237,11 @@ int main()
 	printf("sorting dependencies...");
 	fflush(stdout);
 	if(alpm_trans_prepare(&junk) == -1)
+	{
 		fprintf(stderr, "failed to prepare transaction (%s)\n", alpm_strerror(pm_errno));
+		alpm_trans_release();
+		return(1);
+	}
 	printf(" done.\n");
 
 	mkiso();
