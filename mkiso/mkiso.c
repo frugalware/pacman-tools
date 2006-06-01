@@ -23,7 +23,6 @@ GList *isopkgs=NULL;
 #define ARCH "i686"
 #define MEDIA "dvd"
 #define VOLUME 2
-#define KERNEL "2.6.16-fw5"
 
 #define FST_ROOT "/home/ftp/pub/frugalware/frugalware-current"
 
@@ -125,6 +124,30 @@ int iso_add(FILE *fp, char *fmt, ...)
 	return(0);
 }
 
+char *detect_kernel()
+{
+	DIR *dir;
+	struct dirent *ent;
+	char *ptr = g_strdup_printf("%s/boot", FST_ROOT);
+
+	dir = opendir(ptr);
+	free(ptr);
+	if (!dir)
+		return(NULL);
+	while ((ent = readdir(dir)))
+	{
+		if(!strcmp(ent->d_name, ".") || !strcmp(ent->d_name, ".."))
+			continue;
+		if(strstr(ent->d_name, "vmlinuz-") && strstr(ent->d_name, ARCH))
+		{
+			closedir(dir);
+			return(strdup(ent->d_name+strlen("vmlinuz-")));
+		}
+	}
+	closedir(dir);
+	return(NULL);
+}
+
 int mkiso()
 {
 	PM_LIST *i, *sorted;
@@ -132,8 +155,7 @@ int mkiso()
 	char *version=get_timestamp();
 	char *fname=get_filename(version, ARCH, MEDIA, VOLUME);
 	char *label=get_label(version, ARCH, MEDIA, VOLUME);
-	char *flist;
-	char *cmdline;
+	char *flist, *cmdline, *ptr;
 	char cwd[PATH_MAX] = "";
 	FILE *fp;
 
@@ -147,7 +169,9 @@ int mkiso()
 	iso_add(fp, "ChangeLog.txt");
 	iso_add(fp, "LICENSE");
 	iso_add(fp, "docs");
-	iso_add(fp, "boot/vmlinuz-%s-%s", KERNEL, ARCH);
+	ptr = detect_kernel();
+	iso_add(fp, "boot/vmlinuz-%s-%s", ptr, ARCH);
+	free(ptr);
 	iso_add(fp, "boot/initrd-%s.img.gz", ARCH);
 	// FIXME: generate the menu.lst automatically
 	iso_add(fp, "boot/grub");
