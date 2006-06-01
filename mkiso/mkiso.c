@@ -239,6 +239,22 @@ int main()
 	if(alpm_trans_prepare(&junk) == -1)
 	{
 		fprintf(stderr, "failed to prepare transaction (%s)\n", alpm_strerror(pm_errno));
+		for(i = alpm_list_first(junk); i; i = alpm_list_next(i))
+		{
+			PM_DEPMISS *miss = alpm_list_getdata(i);
+
+			printf(":: %s: %s %s", (char*)alpm_dep_getinfo(miss, PM_DEP_TARGET),
+				(int)alpm_dep_getinfo(miss, PM_DEP_TYPE) == PM_DEP_TYPE_DEPEND ? "requires" : "is required by",
+				(char*)alpm_dep_getinfo(miss, PM_DEP_NAME));
+			switch((int)alpm_dep_getinfo(miss, PM_DEP_MOD))
+			{
+				case PM_DEP_MOD_EQ: printf("=%s\n", (char*)alpm_dep_getinfo(miss, PM_DEP_VERSION)); break;
+				case PM_DEP_MOD_GE: printf(">=%s\n", (char*)alpm_dep_getinfo(miss, PM_DEP_VERSION)); break;
+				case PM_DEP_MOD_LE: printf("<=%s\n", (char*)alpm_dep_getinfo(miss, PM_DEP_VERSION)); break;
+				default: printf("\n"); break;
+			}
+		}
+		alpm_list_free(junk);
 		alpm_trans_release();
 		return(1);
 	}
