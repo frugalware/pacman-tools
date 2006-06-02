@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE volumes [
+<!ELEMENT volumes (fst_root , version? , volume+)>
+<!ELEMENT volume (arch? , media , serial? , size?)>
+<!ELEMENT version (#PCDATA)>
+<!ELEMENT arch (#PCDATA)>
+<!ELEMENT media (#PCDATA)>
+<!ELEMENT serial (#PCDATA)>
+<!ELEMENT size (#PCDATA)>
+]>
+
+<volumes>
+	<fst_root>/home/ftp/pub/frugalware/frugalware-current</fst_root>
+	<volume>
+		<arch>i686</arch>
+		<media>cd</media>
+		<serial>1</serial>
+	</volume>
+	<volume>
+		<arch>i686</arch>
+		<media>net</media>
+	</volume>
+</volumes>

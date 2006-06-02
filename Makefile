@@ -29,6 +29,7 @@ sbindir = /usr/sbin
 libdir = /usr/lib/frugalware
 man1dir = /usr/share/man/man1
 sysconfdir = /etc
+docdir = /usr/share/doc/pacman-tools-$(VERSION)
 
 compile: chkperm genauthors
 	$(MAKE) -C mkiso
@@ -39,6 +40,7 @@ install:
 	$(INSTALL) -d $(DESTDIR)$(libdir)
 	$(INSTALL) -d $(DESTDIR)$(man1dir)
 	$(INSTALL) -d $(DESTDIR)$(sysconfdir)
+	$(INSTALL) -d $(DESTDIR)$(docdir)
 	$(INSTALL) -d $(DESTDIR)/home/syncpkgd
 	$(INSTALL) -d $(DESTDIR)/etc/rc.d
 	$(INSTALL) -d $(DESTDIR)/lib/initscripts/messages/hu_HU/LC_MESSAGES/
@@ -72,6 +74,7 @@ install:
 	$(INSTALL) genauthors $(DESTDIR)$(bindir)/genauthors
 	$(INSTALL) fblint $(DESTDIR)$(bindir)/fblint
 	$(INSTALL) mkiso/mkiso $(DESTDIR)$(bindir)/mkiso
+	$(INSTALL) -m644 mkiso/volumes.xml $(DESTDIR)$(docdir)/volumes.xml
 
 clean:
 	rm chkperm genauthors
