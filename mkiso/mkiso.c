@@ -99,9 +99,9 @@ int parseVolume(xmlDoc *doc, xmlNode *cur)
 	}
 	if(!volume->size)
 	{
-		if(strcmp(volume->media, "cd"))
+		if(!strcmp(volume->media, "cd"))
 			volume->size=CD_SIZE;
-		else if(strcmp(volume->media, "dvd"))
+		else if(!strcmp(volume->media, "dvd"))
 			volume->size=DVD_SIZE;
 	}
 	volumes = g_list_append(volumes, volume);
