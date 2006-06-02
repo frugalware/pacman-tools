@@ -442,32 +442,10 @@ int rmrf(char *path)
 	return(0);
 }
 
-int main(int argc, char **argv)
+int prepare(PM_DB *db_fwcurr, PM_DB *db_fwextra)
 {
-	PM_DB *db_local, *db_fwcurr, *db_fwextra;
 	PM_LIST *i, *junk;
-	char tmproot[] = "/tmp/mkiso_XXXXXX";
-	char *xmlfile = strdup("volumes.xml");
-	int j;
 
-	if(argc >= 2)
-	{
-		free(xmlfile);
-		xmlfile = strdup(argv[1]);
-	}
-
-	if(parseVolumes(xmlfile))
-		return(1);
-	mkdtemp(tmproot);
-
-	if(alpm_initialize(tmproot) == -1)
-		fprintf(stderr, "failed to initilize alpm library (%s)\n", alpm_strerror(pm_errno));
-	alpm_set_option(PM_OPT_LOGCB, (long)cb_log);
-	alpm_set_option(PM_OPT_LOGMASK, (long)-1);
-	if((db_local = alpm_db_register("local"))==NULL)
-		fprintf(stderr, "could not register 'local' database (%s)\n", alpm_strerror(pm_errno));
-	db_fwcurr = db_register("frugalware-current");
-	db_fwextra = db_register("extra-current");
 	if(alpm_trans_init(PM_TRANS_TYPE_SYNC, PM_TRANS_FLAG_NOCONFLICTS, NULL, NULL, NULL) == -1)
 		fprintf(stderr, "failed to init transaction (%s)\n", alpm_strerror(pm_errno));
 
@@ -531,6 +509,36 @@ int main(int argc, char **argv)
 
 	mkiso();
 	alpm_trans_release();
+	return(0);
+}
+
+int main(int argc, char **argv)
+{
+	PM_DB *db_local, *db_fwcurr, *db_fwextra;
+	char tmproot[] = "/tmp/mkiso_XXXXXX";
+	char *xmlfile = strdup("volumes.xml");
+
+	if(argc >= 2)
+	{
+		free(xmlfile);
+		xmlfile = strdup(argv[1]);
+	}
+
+	if(parseVolumes(xmlfile))
+		return(1);
+	mkdtemp(tmproot);
+
+	if(alpm_initialize(tmproot) == -1)
+		fprintf(stderr, "failed to initilize alpm library (%s)\n", alpm_strerror(pm_errno));
+	alpm_set_option(PM_OPT_LOGCB, (long)cb_log);
+	alpm_set_option(PM_OPT_LOGMASK, (long)-1);
+	if((db_local = alpm_db_register("local"))==NULL)
+		fprintf(stderr, "could not register 'local' database (%s)\n", alpm_strerror(pm_errno));
+	db_fwcurr = db_register("frugalware-current");
+	db_fwextra = db_register("extra-current");
+
+	///
+
 	alpm_release();
 	rmrf(tmproot);
 	free(fst_root);
