@@ -278,7 +278,7 @@ char *detect_kernel(char *arch)
 	return(NULL);
 }
 
-int mkiso(volume_t *volume)
+int mkiso(volume_t *volume, int countonly)
 {
 	PM_LIST *i, *sorted;
 	int total=0, myvolume=1;
@@ -355,7 +355,10 @@ int mkiso(volume_t *volume)
 		"-b boot/grub/stage2_eltorito "
 		"-v -d -N -no-emul-boot -boot-load-size 4 -boot-info-table",
 		fname, label, flist);
-	system(cmdline);
+	if(!countonly)
+		system(cmdline);
+	else
+		printf("expected volume number: %d\n", myvolume);
 
 	free(fname);
 	free(label);
@@ -438,7 +441,7 @@ int rmrf(char *path)
 	return(0);
 }
 
-int prepare(volume_t *volume, char *tmproot)
+int prepare(volume_t *volume, char *tmproot, int countonly)
 {
 	PM_LIST *i, *junk;
 	PM_DB *db_local, *db_fwcurr, *db_fwextra;
@@ -513,7 +516,7 @@ int prepare(volume_t *volume, char *tmproot)
 		return(1);
 	}
 
-	mkiso(volume);
+	mkiso(volume, countonly);
 	alpm_trans_release();
 	alpm_release();
 	return(0);
@@ -523,12 +526,19 @@ int main(int argc, char **argv)
 {
 	char tmproot[] = "/tmp/mkiso_XXXXXX";
 	char *xmlfile = strdup("volumes.xml");
-	int i;
+	int i, countonly=0;
 
 	if(argc >= 2)
 	{
-		free(xmlfile);
-		xmlfile = strdup(argv[1]);
+		if(strcmp(argv[1], "-c"))
+		{
+			free(xmlfile);
+			xmlfile = strdup(argv[1]);
+		}
+		else
+		{
+			countonly=1;
+		}
 	}
 
 	if(parseVolumes(xmlfile))
@@ -536,7 +546,7 @@ int main(int argc, char **argv)
 	mkdtemp(tmproot);
 
 	for(i=0;i<g_list_length(volumes);i++)
-		if(prepare(g_list_nth_data(volumes, i), tmproot))
+		if(prepare(g_list_nth_data(volumes, i), tmproot, countonly))
 			break;
 
 	rmrf(tmproot);
