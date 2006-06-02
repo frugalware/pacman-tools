@@ -36,11 +36,6 @@ char *fst_ver=NULL;
 #define CD_SIZE 665600
 #define DVD_SIZE 4590208
 
-// FIXME: cmdline switch, config file or something else for these
-#define ARCH "i686"
-#define MEDIA "dvd"
-#define VOLUME 2
-
 char *getarch()
 {
 	struct utsname name;
@@ -259,7 +254,7 @@ int iso_add(FILE *fp, char *fmt, ...)
 	return(0);
 }
 
-char *detect_kernel()
+char *detect_kernel(char *arch)
 {
 	DIR *dir;
 	struct dirent *ent;
@@ -273,7 +268,7 @@ char *detect_kernel()
 	{
 		if(!strcmp(ent->d_name, ".") || !strcmp(ent->d_name, ".."))
 			continue;
-		if(strstr(ent->d_name, "vmlinuz-") && strstr(ent->d_name, ARCH))
+		if(strstr(ent->d_name, "vmlinuz-") && strstr(ent->d_name, arch))
 		{
 			closedir(dir);
 			return(strdup(ent->d_name+strlen("vmlinuz-")));
@@ -283,12 +278,12 @@ char *detect_kernel()
 	return(NULL);
 }
 
-int mkiso()
+int mkiso(volume_t *volume)
 {
 	PM_LIST *i, *sorted;
-	int total=0, volume=1;
-	char *fname=get_filename(fst_ver, ARCH, MEDIA, VOLUME);
-	char *label=get_label(fst_ver, ARCH, MEDIA, VOLUME);
+	int total=0, myvolume=1;
+	char *fname=get_filename(fst_ver, volume->arch, volume->media, volume->serial);
+	char *label=get_label(fst_ver, volume->arch, volume->media, volume->serial);
 	char *flist, *cmdline, *ptr;
 	char cwd[PATH_MAX] = "";
 	FILE *fp;
@@ -303,17 +298,16 @@ int mkiso()
 	iso_add(fp, "ChangeLog.txt");
 	iso_add(fp, "LICENSE");
 	iso_add(fp, "docs");
-	ptr = detect_kernel();
-	iso_add(fp, "boot/vmlinuz-%s-%s", ptr, ARCH);
+	ptr = detect_kernel(volume->arch);
+	iso_add(fp, "boot/vmlinuz-%s", ptr);
 	free(ptr);
-	iso_add(fp, "boot/initrd-%s.img.gz", ARCH);
+	iso_add(fp, "boot/initrd-%s.img.gz", volume->arch);
 	// FIXME: generate the menu.lst automatically
 	iso_add(fp, "boot/grub");
-	if(VOLUME==1)
+	// first volume of !net medias
+	if(volume->serial==1)
 	{
-		if(!strcmp(MEDIA, "cd") || !strcmp(MEDIA, "dvd"))
 			iso_add(fp, "frugalware-%s/frugalware-current.fdb");
-		if(!strcmp(MEDIA, "dvd"))
 			iso_add(fp, "extra/frugalware-%s/extra-current.fdb");
 	}
 
@@ -325,20 +319,22 @@ int mkiso()
 		long int size = (long int)alpm_pkg_getinfo(pkg, PM_PKG_SIZE)/1024;
 		char *ptr;
 		// FIXME: 20971520 is ~20mb for the initrd&kernel
-		if (total+size > CD_SIZE - 20480)
+		if (total+size > volume->size - 20480)
 		{
 			total=0;
-			volume++;
+			myvolume++;
 		}
 		total += size;
-		if(volume==VOLUME)
+		if(myvolume==volume->serial)
 		{
+			// XXX: a separate function could determine the right
+			// path without any hardcoded number..
 			if(detect_priority(pkg)>50)
 				ptr = strdup("frugalware-%s/%s-%s-%s%s");
 			else
 				ptr = strdup("extra/frugalware-%s/%s-%s-%s%s");
 			iso_add(fp, ptr,
-			ARCH,
+			volume->arch,
 			(char*)alpm_pkg_getinfo(pkg, PM_PKG_NAME),
 			(char*)alpm_pkg_getinfo(pkg, PM_PKG_VERSION),
 			(char*)alpm_pkg_getinfo(pkg, PM_PKG_ARCH),
@@ -375,7 +371,7 @@ void cb_log(unsigned short level, char *msg)
 	printf("%s\n", msg);
 }
 
-PM_DB *db_register(char *treename)
+PM_DB *db_register(volume_t *volume, char *treename)
 {
 	PM_DB *db;
 	char *ptr;
@@ -386,9 +382,9 @@ PM_DB *db_register(char *treename)
 		return(NULL);
 	}
 	if(!strcmp(treename, "frugalware-current"))
-		ptr = g_strdup_printf("%s/frugalware-%s/%s.fdb", fst_root, ARCH, treename);
+		ptr = g_strdup_printf("%s/frugalware-%s/%s.fdb", fst_root, volume->arch, treename);
 	else
-		ptr = g_strdup_printf("%s/extra/frugalware-%s/%s.fdb", fst_root, ARCH, treename);
+		ptr = g_strdup_printf("%s/extra/frugalware-%s/%s.fdb", fst_root, volume->arch, treename);
 	if(alpm_db_update(db, ptr) == -1)
 	{
 		fprintf(stderr, "failed to update %s (%s)\n", treename, alpm_strerror(pm_errno));
@@ -442,14 +438,24 @@ int rmrf(char *path)
 	return(0);
 }
 
-int prepare(PM_DB *db_fwcurr, PM_DB *db_fwextra)
+int prepare(volume_t *volume, char *tmproot)
 {
 	PM_LIST *i, *junk;
+	PM_DB *db_local, *db_fwcurr, *db_fwextra;
+
+	if(alpm_initialize(tmproot) == -1)
+		fprintf(stderr, "failed to initilize alpm library (%s)\n", alpm_strerror(pm_errno));
+	alpm_set_option(PM_OPT_LOGCB, (long)cb_log);
+	alpm_set_option(PM_OPT_LOGMASK, (long)-1);
+	if((db_local = alpm_db_register("local"))==NULL)
+		fprintf(stderr, "could not register 'local' database (%s)\n", alpm_strerror(pm_errno));
+	db_fwcurr = db_register(volume, "frugalware-current");
+	db_fwextra = db_register(volume, "extra-current");
 
 	if(alpm_trans_init(PM_TRANS_TYPE_SYNC, PM_TRANS_FLAG_NOCONFLICTS, NULL, NULL, NULL) == -1)
 		fprintf(stderr, "failed to init transaction (%s)\n", alpm_strerror(pm_errno));
 
-	if(strcmp(MEDIA, "net"))
+	if(strcmp(volume->media, "net"))
 	{
 		for(i=alpm_db_getpkgcache(db_fwcurr); i; i=alpm_list_next(i))
 		{
@@ -507,16 +513,17 @@ int prepare(PM_DB *db_fwcurr, PM_DB *db_fwextra)
 		return(1);
 	}
 
-	mkiso();
+	mkiso(volume);
 	alpm_trans_release();
+	alpm_release();
 	return(0);
 }
 
 int main(int argc, char **argv)
 {
-	PM_DB *db_local, *db_fwcurr, *db_fwextra;
 	char tmproot[] = "/tmp/mkiso_XXXXXX";
 	char *xmlfile = strdup("volumes.xml");
+	int i;
 
 	if(argc >= 2)
 	{
@@ -528,18 +535,10 @@ int main(int argc, char **argv)
 		return(1);
 	mkdtemp(tmproot);
 
-	if(alpm_initialize(tmproot) == -1)
-		fprintf(stderr, "failed to initilize alpm library (%s)\n", alpm_strerror(pm_errno));
-	alpm_set_option(PM_OPT_LOGCB, (long)cb_log);
-	alpm_set_option(PM_OPT_LOGMASK, (long)-1);
-	if((db_local = alpm_db_register("local"))==NULL)
-		fprintf(stderr, "could not register 'local' database (%s)\n", alpm_strerror(pm_errno));
-	db_fwcurr = db_register("frugalware-current");
-	db_fwextra = db_register("extra-current");
+	for(i=0;i<g_list_length(volumes);i++)
+		if(prepare(g_list_nth_data(volumes, i), tmproot))
+			break;
 
-	///
-
-	alpm_release();
 	rmrf(tmproot);
 	free(fst_root);
 	free(fst_ver);
