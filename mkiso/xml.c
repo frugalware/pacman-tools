@@ -32,6 +32,7 @@
 extern GList *volumes;
 extern char *fst_root;
 extern char *fst_ver;
+extern char *fst_codename;
 extern char *out_dir;
 
 static char *get_arch()
@@ -144,6 +145,8 @@ int parseVolumes(char *docname)
 			fst_root = strdup((char*)key);
 		else if((!xmlStrcmp(cur->name, (const xmlChar *)"version")))
 			fst_ver = strdup((char*)key);
+		else if((!xmlStrcmp(cur->name, (const xmlChar *)"codename")))
+			fst_codename = strdup((char*)key);
 		else if((!xmlStrcmp(cur->name, (const xmlChar *)"out_dir")))
 			out_dir = strdup((char*)key);
 		else if((!xmlStrcmp(cur->name, (const xmlChar *)"volume")))
@@ -159,6 +162,8 @@ int parseVolumes(char *docname)
 	}
 	if(!fst_ver)
 		fst_ver = get_timestamp();
+	if(!fst_codename)
+		fst_codename = strdup("-current");
 	if(!volumes)
 	{
 		fprintf(stderr, "at least one volume is required\n");

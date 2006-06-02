@@ -29,15 +29,17 @@
 #include <alpm.h>
 #include <glib.h>
 
+#include "mkiso.h"
 #include "xml.h"
 #include "boot.h"
-#include "mkiso.h"
+#include "menu.h"
 
 GList *isopkgs=NULL;
 GList *volumes=NULL;
 
 char *fst_root=NULL;
 char *fst_ver=NULL;
+char *fst_codename=NULL;
 char *out_dir=NULL;
 
 int strrcmp(const char *haystack, const char *needle)
@@ -162,7 +164,7 @@ int mkiso(volume_t *volume, int countonly)
 	int total=0, myvolume=1, bootsize;
 	char *fname=get_filename(fst_ver, volume->arch, volume->media, volume->serial);
 	char *label=get_label(fst_ver, volume->arch, volume->media, volume->serial);
-	char *flist, *cmdline, *ptr, *kptr, *iptr;
+	char *flist, *cmdline, *ptr, *kptr, *iptr, *menu;
 	char cwd[PATH_MAX] = "";
 	FILE *fp;
 
@@ -186,8 +188,10 @@ int mkiso(volume_t *volume, int countonly)
 	bootsize = boot_size(fst_root, kptr, iptr);
 	free(kptr);
 	free(iptr);
-	// FIXME: generate the menu.lst automatically
-	iso_add(fp, "boot/grub");
+	iso_add(fp, "boot/grub/message");
+	iso_add(fp, "boot/grub/stage2_eltorito");
+	menu = mkmenu(volume);
+	fprintf(fp, "boot/grub/menu.lst=%s\n", menu);
 	// first volume of !net medias
 	if(volume->serial==1)
 	{
@@ -245,6 +249,8 @@ int mkiso(volume_t *volume, int countonly)
 
 	free(fname);
 	free(label);
+	unlink(menu);
+	free(menu);
 	unlink(flist);
 	free(flist);
 	free(cmdline);
