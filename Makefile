@@ -31,6 +31,7 @@ man1dir = /usr/share/man/man1
 sysconfdir = /etc
 
 compile: chkperm genauthors
+	$(MAKE) -C mkiso
 
 install:
 	$(INSTALL) -d $(DESTDIR)$(bindir)
@@ -70,9 +71,11 @@ install:
 	$(INSTALL) chkperm $(DESTDIR)$(bindir)/chkperm
 	$(INSTALL) genauthors $(DESTDIR)$(bindir)/genauthors
 	$(INSTALL) fblint $(DESTDIR)$(bindir)/fblint
+	$(INSTALL) mkiso/mkiso $(DESTDIR)$(bindir)/mkiso
 
 clean:
 	rm chkperm genauthors
+	$(MAKE) -C mkiso clean
 
 dist:
 	darcs changes >_darcs/current/Changelog
