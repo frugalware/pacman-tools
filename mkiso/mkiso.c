@@ -473,34 +473,34 @@ int main(int argc, char **argv)
 
 	if(strcmp(MEDIA, "net"))
 	{
-	for(i=alpm_db_getpkgcache(db_fwcurr); i; i=alpm_list_next(i))
-	{
-		PM_PKG *pkg=alpm_list_getdata(i);
-		isopkg_t *isopkg;
-
-		if((isopkg = (isopkg_t *)malloc(sizeof(isopkg_t)))==NULL)
+		for(i=alpm_db_getpkgcache(db_fwcurr); i; i=alpm_list_next(i))
 		{
-			fprintf(stderr, "out of memory!\n");
-			return(1);
-		}
-		isopkg->pkg = pkg;
-		isopkg->priority = detect_priority(pkg);
-		isopkgs = g_list_append(isopkgs, isopkg);
-	}
-	for(i=alpm_db_getpkgcache(db_fwextra); i; i=alpm_list_next(i))
-	{
-		PM_PKG *pkg=alpm_list_getdata(i);
-		isopkg_t *isopkg;
+			PM_PKG *pkg=alpm_list_getdata(i);
+			isopkg_t *isopkg;
 
-		if((isopkg = (isopkg_t *)malloc(sizeof(isopkg_t)))==NULL)
-		{
-			fprintf(stderr, "out of memory!\n");
-			return(1);
+			if((isopkg = (isopkg_t *)malloc(sizeof(isopkg_t)))==NULL)
+			{
+				fprintf(stderr, "out of memory!\n");
+				return(1);
+			}
+			isopkg->pkg = pkg;
+			isopkg->priority = detect_priority(pkg);
+			isopkgs = g_list_append(isopkgs, isopkg);
 		}
-		isopkg->pkg = pkg;
-		isopkg->priority = detect_priority(pkg);
-		isopkgs = g_list_append(isopkgs, isopkg);
-	}
+		for(i=alpm_db_getpkgcache(db_fwextra); i; i=alpm_list_next(i))
+		{
+			PM_PKG *pkg=alpm_list_getdata(i);
+			isopkg_t *isopkg;
+
+			if((isopkg = (isopkg_t *)malloc(sizeof(isopkg_t)))==NULL)
+			{
+				fprintf(stderr, "out of memory!\n");
+				return(1);
+			}
+			isopkg->pkg = pkg;
+			isopkg->priority = detect_priority(pkg);
+			isopkgs = g_list_append(isopkgs, isopkg);
+		}
 	}
 
 	isopkgs = g_list_sort(isopkgs, sort_isopkgs);
