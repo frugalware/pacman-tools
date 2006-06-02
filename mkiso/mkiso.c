@@ -30,6 +30,7 @@
 #include <glib.h>
 
 #include "xml.h"
+#include "boot.h"
 #include "mkiso.h"
 
 GList *isopkgs=NULL;
@@ -150,10 +151,10 @@ char *detect_kernel(char *arch)
 int mkiso(volume_t *volume, int countonly)
 {
 	PM_LIST *i, *sorted;
-	int total=0, myvolume=1;
+	int total=0, myvolume=1, bootsize;
 	char *fname=get_filename(fst_ver, volume->arch, volume->media, volume->serial);
 	char *label=get_label(fst_ver, volume->arch, volume->media, volume->serial);
-	char *flist, *cmdline, *ptr;
+	char *flist, *cmdline, *ptr, *kptr, *iptr;
 	char cwd[PATH_MAX] = "";
 	FILE *fp;
 
@@ -168,9 +169,15 @@ int mkiso(volume_t *volume, int countonly)
 	iso_add(fp, "LICENSE");
 	iso_add(fp, "docs");
 	ptr = detect_kernel(volume->arch);
-	iso_add(fp, "boot/vmlinuz-%s", ptr);
+	kptr = g_strdup_printf("boot/vmlinuz-%s", ptr);
 	free(ptr);
-	iso_add(fp, "boot/initrd-%s.img.gz", volume->arch);
+	iso_add(fp, kptr);
+	iptr = g_strdup_printf("boot/initrd-%s.img.gz", volume->arch);
+	iso_add(fp, iptr);
+	// how many space is needed for the kernel & initrd?
+	bootsize = boot_size(fst_root, kptr, iptr);
+	free(kptr);
+	free(iptr);
 	// FIXME: generate the menu.lst automatically
 	iso_add(fp, "boot/grub");
 	// first volume of !net medias
@@ -187,8 +194,7 @@ int mkiso(volume_t *volume, int countonly)
 		PM_PKG *pkg = alpm_sync_getinfo(sync, PM_SYNC_PKG);
 		long int size = (long int)alpm_pkg_getinfo(pkg, PM_PKG_SIZE)/1024;
 		char *ptr;
-		// FIXME: 20971520 is ~20mb for the initrd&kernel
-		if (total+size > volume->size - 20480)
+		if (total+size > volume->size - bootsize)
 		{
 			total=0;
 			myvolume++;

@@ -1,5 +1,5 @@
 /*
- *  mkiso.h
+ *  boot.h
  *
  *  Copyright (c) 2006 by Miklos Vajna <vmiklos@frugalware.org>
  *
@@ -19,19 +19,5 @@
  *  USA.
  */
 
-#define CD_SIZE 655360
-#define DVD_SIZE 4812800
-
-typedef struct __volume_t
-{
-	char *arch;
-	char *media;
-	int serial;
-	int size;
-} volume_t;
-
-typedef struct __isopkg_t
-{
-	PM_PKG *pkg;
-	int priority;
-} isopkg_t;
+int gunzip_size(char *path);
+int boot_size(char *root, char *kernel, char *initrd);
