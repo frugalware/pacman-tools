@@ -4,8 +4,20 @@
 #include <unistd.h>
 #include <errno.h>
 #include <dirent.h>
+#include <sys/types.h>
+#include <sys/utsname.h>
 #include <alpm.h>
 #include <glib.h>
+#include <libxml/xmlmemory.h>
+#include <libxml/parser.h>
+
+typedef struct __volume_t
+{
+	char *arch;
+	char *media;
+	int serial;
+	int size;
+} volume_t;
 
 typedef struct __isopkg_t
 {
@@ -14,17 +26,153 @@ typedef struct __isopkg_t
 } isopkg_t;
 
 GList *isopkgs=NULL;
+GList *volumes=NULL;
+
+char *fst_root=NULL;
+char *fst_ver=NULL;
 
 // for 650Mb = 1024*650 = 681574400 bytes with about 11Mb to spare
-//#define CD_SIZE 665600
-#define CD_SIZE 4590208
+// FIXME: correct this after the kernel&initrd FIXME is done
+#define CD_SIZE 665600
+#define DVD_SIZE 4590208
 
 // FIXME: cmdline switch, config file or something else for these
 #define ARCH "i686"
 #define MEDIA "dvd"
 #define VOLUME 2
 
-#define FST_ROOT "/home/ftp/pub/frugalware/frugalware-current"
+char *getarch()
+{
+	struct utsname name;
+
+	uname (&name);
+	return(strdup(name.machine));
+}
+
+char *get_timestamp()
+{
+	time_t t;
+	struct tm *tm;
+	char buf[9];
+
+	t = time(NULL);
+	tm = localtime(&t);
+
+	sprintf(buf, "20%02d%02d%02d", tm->tm_year-100, tm->tm_mon+1, tm->tm_mday);
+	return(strdup(buf));
+}
+
+int parseVolume(xmlDoc *doc, xmlNode *cur)
+{
+	xmlChar *key;
+	cur = cur->xmlChildrenNode;
+	volume_t *volume;
+
+	if((volume = (volume_t *)malloc(sizeof(volume_t)))==NULL)
+	{
+		fprintf(stderr, "out of memory!\n");
+		return(1);
+	}
+	memset(volume, 0, sizeof(volume_t));
+	while (cur != NULL)
+	{
+		key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
+		if ((!xmlStrcmp(cur->name, (const xmlChar *)"arch")))
+			volume->arch = strdup((char*)key);
+		if ((!xmlStrcmp(cur->name, (const xmlChar *)"media")))
+			volume->media = strdup((char*)key);
+		if ((!xmlStrcmp(cur->name, (const xmlChar *)"serial")))
+			volume->serial = atoi((char*)key);
+		if ((!xmlStrcmp(cur->name, (const xmlChar *)"size")))
+			volume->size = atoi((char*)key);
+		xmlFree(key);
+		cur = cur->next;
+	}
+	if(!volume->arch)
+	{
+		volume->arch = getarch();
+	}
+	if(!volume->media)
+	{
+		fprintf(stderr, "media directive for a volume is required!\n");
+		return(1);
+	}
+	if(!volume->serial && strcmp(volume->media, "net"))
+	{
+		fprintf(stderr, "media serial for a cd/dvd is required!\n");
+		return(1);
+	}
+	if(!volume->size)
+	{
+		if(strcmp(volume->media, "cd"))
+			volume->size=CD_SIZE;
+		else if(strcmp(volume->media, "dvd"))
+			volume->size=DVD_SIZE;
+	}
+	volumes = g_list_append(volumes, volume);
+	return(0);
+}
+
+int parseVolumes(char *docname)
+{
+	xmlDocPtr doc;
+	xmlNodePtr cur;
+	xmlChar *key;
+
+	doc = xmlParseFile(docname);
+
+	if(doc == NULL)
+	{
+		fprintf(stderr, "document not parsed successfully\n");
+		return(1);
+	}
+
+	cur = xmlDocGetRootElement(doc);
+
+	if(cur == NULL)
+	{
+		fprintf(stderr, "empty document\n");
+		xmlFreeDoc(doc);
+		return(1);
+	}
+
+	if(xmlStrcmp(cur->name, (const xmlChar *)"volumes"))
+	{
+		fprintf(stderr, "document of the wrong type, root node != volumes");
+		xmlFreeDoc(doc);
+		return(1);
+	}
+
+	cur = cur->xmlChildrenNode;
+	while(cur != NULL)
+	{
+		key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
+		if((!xmlStrcmp(cur->name, (const xmlChar *)"fst_root")))
+			fst_root = strdup((char*)key);
+		else if((!xmlStrcmp(cur->name, (const xmlChar *)"version")))
+			fst_ver = strdup((char*)key);
+		else if((!xmlStrcmp(cur->name, (const xmlChar *)"volume")))
+			if(parseVolume(doc, cur))
+				return(1);
+		xmlFree(key);
+		cur = cur->next;
+	}
+	if(!fst_root)
+	{
+		fprintf(stderr, "missing fst_root directive\n");
+		return(1);
+	}
+	if(!fst_ver)
+		fst_ver = get_timestamp();
+	if(!volumes)
+	{
+		fprintf(stderr, "at least one volume is required\n");
+		return(1);
+	}
+
+	xmlFreeDoc(doc);
+	return(0);
+}
 
 int strrcmp(const char *haystack, const char *needle)
 {
@@ -79,19 +227,6 @@ int add_targets()
 	return(0);
 }
 
-char *get_timestamp()
-{
-	time_t t;
-	struct tm *tm;
-	char buf[9];
-
-	t = time(NULL);
-	tm = localtime(&t);
-
-	sprintf(buf, "20%02d%02d%02d", tm->tm_year-100, tm->tm_mon+1, tm->tm_mday);
-	return(strdup(buf));
-}
-
 char *get_filename(char *version, char *arch, char *media, int volume)
 {
 	if(volume)
@@ -128,7 +263,7 @@ char *detect_kernel()
 {
 	DIR *dir;
 	struct dirent *ent;
-	char *ptr = g_strdup_printf("%s/boot", FST_ROOT);
+	char *ptr = g_strdup_printf("%s/boot", fst_root);
 
 	dir = opendir(ptr);
 	free(ptr);
@@ -152,9 +287,8 @@ int mkiso()
 {
 	PM_LIST *i, *sorted;
 	int total=0, volume=1;
-	char *version=get_timestamp();
-	char *fname=get_filename(version, ARCH, MEDIA, VOLUME);
-	char *label=get_label(version, ARCH, MEDIA, VOLUME);
+	char *fname=get_filename(fst_ver, ARCH, MEDIA, VOLUME);
+	char *label=get_label(fst_ver, ARCH, MEDIA, VOLUME);
 	char *flist, *cmdline, *ptr;
 	char cwd[PATH_MAX] = "";
 	FILE *fp;
@@ -214,7 +348,7 @@ int mkiso()
 	fclose(fp);
 
 	getcwd(cwd, PATH_MAX);
-	chdir(FST_ROOT);
+	chdir(fst_root);
 
 	cmdline = g_strdup_printf("mkisofs -o %s "
 		"-R -J -V \"Frugalware Install\" "
@@ -227,7 +361,6 @@ int mkiso()
 		fname, label, flist);
 	system(cmdline);
 
-	free(version);
 	free(fname);
 	free(label);
 	unlink(flist);
@@ -253,9 +386,9 @@ PM_DB *db_register(char *treename)
 		return(NULL);
 	}
 	if(!strcmp(treename, "frugalware-current"))
-		ptr = g_strdup_printf("%s/frugalware-%s/%s.fdb", FST_ROOT, ARCH, treename);
+		ptr = g_strdup_printf("%s/frugalware-%s/%s.fdb", fst_root, ARCH, treename);
 	else
-		ptr = g_strdup_printf("%s/extra/frugalware-%s/%s.fdb", FST_ROOT, ARCH, treename);
+		ptr = g_strdup_printf("%s/extra/frugalware-%s/%s.fdb", fst_root, ARCH, treename);
 	if(alpm_db_update(db, ptr) == -1)
 	{
 		fprintf(stderr, "failed to update %s (%s)\n", treename, alpm_strerror(pm_errno));
@@ -309,12 +442,36 @@ int rmrf(char *path)
 	return(0);
 }
 
-int main()
+int main(int argc, char **argv)
 {
 	PM_DB *db_local, *db_fwcurr, *db_fwextra;
 	PM_LIST *i, *junk;
 	char tmproot[] = "/tmp/mkiso_XXXXXX";
+	char *xmlfile = strdup("volumes.xml");
+	int j;
 
+	if(argc >= 2)
+	{
+		free(xmlfile);
+		xmlfile = strdup(argv[1]);
+	}
+
+	if(parseVolumes(xmlfile))
+		return(1);
+	else
+	{
+		printf("xml parsolva, jol\nstat:\n");
+		printf("fst_root: %s\n", fst_root);
+		printf("fst_ver: %s\n", fst_ver);
+		for(j=0;j<g_list_length(volumes);j++)
+		{
+			volume_t *volume = g_list_nth_data(volumes, j);
+
+			printf("arch: %s, media: %s, serial: %d, size: %d\n",
+				volume->arch, volume->media, volume->serial, volume->size);
+		}
+		return(0);
+	}
 	mkdtemp(tmproot);
 
 	if(alpm_initialize(tmproot) == -1)
@@ -390,5 +547,7 @@ int main()
 	alpm_trans_release();
 	alpm_release();
 	rmrf(tmproot);
+	free(fst_root);
+	free(fst_ver);
 	return(0);
 }
