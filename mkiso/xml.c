@@ -32,6 +32,7 @@
 extern GList *volumes;
 extern char *fst_root;
 extern char *fst_ver;
+extern char *out_dir;
 
 static char *get_arch()
 {
@@ -143,6 +144,8 @@ int parseVolumes(char *docname)
 			fst_root = strdup((char*)key);
 		else if((!xmlStrcmp(cur->name, (const xmlChar *)"version")))
 			fst_ver = strdup((char*)key);
+		else if((!xmlStrcmp(cur->name, (const xmlChar *)"out_dir")))
+			out_dir = strdup((char*)key);
 		else if((!xmlStrcmp(cur->name, (const xmlChar *)"volume")))
 			if(parseVolume(doc, cur))
 				return(1);

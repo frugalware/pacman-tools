@@ -38,6 +38,7 @@ GList *volumes=NULL;
 
 char *fst_root=NULL;
 char *fst_ver=NULL;
+char *out_dir=NULL;
 
 int strrcmp(const char *haystack, const char *needle)
 {
@@ -94,10 +95,17 @@ int add_targets()
 
 char *get_filename(char *version, char *arch, char *media, int volume)
 {
-	if(volume)
-		return(g_strdup_printf("frugalware-%s-%s-%s%d.iso", version, arch, media, volume));
+	char *ptr=NULL;
+
+	if(out_dir)
+		ptr = g_strdup_printf("%s/", out_dir);
 	else
-		return(g_strdup_printf("frugalware-%s-%s-%s.iso", version, arch, media));
+		ptr = strdup("");
+	if(volume)
+		return(g_strdup_printf("%sfrugalware-%s-%s-%s%d.iso", ptr, version, arch, media, volume));
+	else
+		return(g_strdup_printf("%sfrugalware-%s-%s-%s.iso", ptr, version, arch, media));
+	free(ptr);
 }
 
 char *get_label(char *version, char *arch, char *media, int volume)
