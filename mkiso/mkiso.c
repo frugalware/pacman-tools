@@ -401,6 +401,12 @@ int main(int argc, char **argv)
 
 	if(argc >= 2)
 	{
+		if(!strcmp(argv[1], "-h") || !strcmp(argv[1], "--help"))
+		{
+			printf("usage: %s [ -h ] [ -c | volumes.xml ]\n", argv[0]);
+			free(xmlfile);
+			return(0);
+		}
 		if(strcmp(argv[1], "-c"))
 		{
 			free(xmlfile);
