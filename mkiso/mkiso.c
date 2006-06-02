@@ -458,20 +458,6 @@ int main(int argc, char **argv)
 
 	if(parseVolumes(xmlfile))
 		return(1);
-	else
-	{
-		printf("xml parsolva, jol\nstat:\n");
-		printf("fst_root: %s\n", fst_root);
-		printf("fst_ver: %s\n", fst_ver);
-		for(j=0;j<g_list_length(volumes);j++)
-		{
-			volume_t *volume = g_list_nth_data(volumes, j);
-
-			printf("arch: %s, media: %s, serial: %d, size: %d\n",
-				volume->arch, volume->media, volume->serial, volume->size);
-		}
-		return(0);
-	}
 	mkdtemp(tmproot);
 
 	if(alpm_initialize(tmproot) == -1)
