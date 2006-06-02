@@ -519,6 +519,8 @@ int prepare(volume_t *volume, char *tmproot, int countonly)
 	mkiso(volume, countonly);
 	alpm_trans_release();
 	alpm_release();
+	g_list_free(isopkgs);
+	isopkgs=NULL;
 	return(0);
 }
 
