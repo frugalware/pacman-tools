@@ -1,5 +1,6 @@
 VERSION         DESCRIPTION
 -----------------------------------------------------------------------------
+0.7.5         - new tool: mkiso. see man mkiso!
 0.7.4         - genchangelog: gpg support
               - rf, syncpkg, syncpkgd: -stable support
 0.7.3         - rf: support for Finclude'ed pkgver&pkgrel
