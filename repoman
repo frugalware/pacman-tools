@@ -56,8 +56,7 @@ upload()
 	src=$1
 	if echo $1 |grep -q \.fpm$; then
 		msg "Checking for permission"
-		# ok, this is a bit slow, but anyone knows a better sollution? ;-)
-		group=`tar xOjf $1 .PKGINFO 2>&1|grep ^group|sed 's/.* = \(.*\)/\1/;q'`
+		group=`LANG= LC_ALL= pacman -Qi -p $1 |grep ^Group|sed 's/.* : \([^ ]*\) .*/\1/'`
 		if ! ssh $lopts $host "genchangelog --repo $reponame --check $group >/dev/null"; then
 			echo "Permission denied"
 			echo "If you think you should have permission, send a mail to"
