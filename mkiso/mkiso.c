@@ -418,6 +418,7 @@ int main(int argc, char **argv)
 	char tmproot[] = "/tmp/mkiso_XXXXXX";
 	char *xmlfile = strdup("volumes.xml");
 	int i, countonly=0;
+	char *ptr;
 
 	if(argc >= 2)
 	{
@@ -441,6 +442,9 @@ int main(int argc, char **argv)
 	if(parseVolumes(xmlfile))
 		return(1);
 	mkdtemp(tmproot);
+	ptr = g_strdup_printf("%s/tmp", tmproot);
+	mkdir(ptr, 0700);
+	free(ptr);
 
 	for(i=0;i<g_list_length(volumes);i++)
 		if(prepare(g_list_nth_data(volumes, i), tmproot, countonly))
