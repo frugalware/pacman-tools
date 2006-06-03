@@ -196,8 +196,8 @@ int mkiso(volume_t *volume, int countonly)
 	// first volume of !net medias
 	if(volume->serial==1)
 	{
-			iso_add(fp, "frugalware-%s/frugalware-current.fdb");
-			iso_add(fp, "extra/frugalware-%s/extra-current.fdb");
+			iso_add(fp, "frugalware-%s/frugalware-current.fdb", volume->arch);
+			iso_add(fp, "extra/frugalware-%s/extra-current.fdb", volume->arch);
 	}
 
 	sorted = alpm_trans_getinfo(PM_TRANS_PACKAGES);
