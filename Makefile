@@ -28,6 +28,7 @@ bindir = /usr/bin
 sbindir = /usr/sbin
 libdir = /usr/lib/frugalware
 man1dir = /usr/share/man/man1
+man8dir = /usr/share/man/man8
 sysconfdir = /etc
 docdir = /usr/share/doc/pacman-tools-$(VERSION)
 
@@ -39,6 +40,7 @@ install:
 	$(INSTALL) -d $(DESTDIR)$(sbindir)
 	$(INSTALL) -d $(DESTDIR)$(libdir)
 	$(INSTALL) -d $(DESTDIR)$(man1dir)
+	$(INSTALL) -d $(DESTDIR)$(man8dir)
 	$(INSTALL) -d $(DESTDIR)$(sysconfdir)
 	$(INSTALL) -d $(DESTDIR)$(docdir)
 	$(INSTALL) -d $(DESTDIR)/home/syncpkgd
@@ -74,6 +76,7 @@ install:
 	$(INSTALL) genauthors $(DESTDIR)$(bindir)/genauthors
 	$(INSTALL) fblint $(DESTDIR)$(bindir)/fblint
 	$(INSTALL) mkiso/mkiso $(DESTDIR)$(bindir)/mkiso
+	$(INSTALL) -m644 mkiso/mkiso.8 $(DESTDIR)$(man8dir)
 	$(INSTALL) -m644 mkiso/volumes.xml $(DESTDIR)$(docdir)/volumes.xml
 
 clean:
