@@ -646,7 +646,8 @@ sub Upload{
     }
     print "Nothing to do, that's fine!\n\n" unless @pkgfiles;
     for my $pkgfile (@pkgfiles){
-	$ev = apply "repoman -t $version up $pkgfile $repo/$repodir/" if $pkgfile;
+	my $repo_ = "extra" if(qx/LANG= LC_ALL= pacman -Qi -p $pkgfile/ =~ /Groups.*-extra/);
+	$ev = apply "repoman -t $version up $pkgfile $repo_/$repodir/" if $pkgfile;
   }
     die "Uploading FAILED!" if $ev || $ec;
 }
