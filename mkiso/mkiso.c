@@ -26,6 +26,7 @@
 #include <errno.h>
 #include <dirent.h>
 #include <sys/types.h>
+#include <sys/stat.h>
 #include <alpm.h>
 #include <glib.h>
 
