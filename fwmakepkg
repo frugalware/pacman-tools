@@ -25,7 +25,7 @@ Finclude ()
 			elif [ "$i" == "" ]; then
 				break
 			fi
-			i=`echo $i|sed 's|\(.*\)/.*|\1|'`
+			i=${i%/*}
 		done
 		if [ "$i" -a -d "$i"/source/include ]; then
 			local Fincdir=$i/source/include
