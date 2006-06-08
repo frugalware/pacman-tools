@@ -87,7 +87,7 @@ sub HELP_MESSAGE(){
 chkdep - checks dependencies of packages for Frugalware Linux
 usage: chkdep [-vi] [-n package_name] -d dir | -p file
          -d directory
-         -p same_package.fpm
+         -p some_package.fpm
          -n package_name (use with -d if necessary)
          -f full list
          -e add groups to output
