@@ -34,6 +34,7 @@ extern char *fst_root;
 extern char *fst_ver;
 extern char *fst_codename;
 extern char *out_dir;
+extern char *lang;
 
 static char *get_arch()
 {
@@ -149,6 +150,8 @@ int parseVolumes(char *docname)
 			fst_codename = strdup((char*)key);
 		else if((!xmlStrcmp(cur->name, (const xmlChar *)"out_dir")))
 			out_dir = strdup((char*)key);
+		else if((!xmlStrcmp(cur->name, (const xmlChar *)"lang")))
+			lang = strdup((char*)key);
 		else if((!xmlStrcmp(cur->name, (const xmlChar *)"volume")))
 			if(parseVolume(doc, cur))
 				return(1);

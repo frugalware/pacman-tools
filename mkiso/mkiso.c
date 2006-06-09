@@ -43,6 +43,7 @@ char *fst_root=NULL;
 char *fst_ver=NULL;
 char *fst_codename=NULL;
 char *out_dir=NULL;
+char *lang=NULL;
 
 int strrcmp(const char *haystack, const char *needle)
 {
@@ -55,6 +56,7 @@ int detect_priority(PM_PKG *pkg)
 {
 	PM_LIST *i = alpm_pkg_getinfo(pkg, PM_PKG_GROUPS);
 	char *grp = alpm_list_getdata(i);
+	char *name = alpm_pkg_getinfo(pkg, PM_PKG_NAME);
 
 	if(strrcmp(grp, "-extra"))
 	{
@@ -66,7 +68,24 @@ int detect_priority(PM_PKG *pkg)
 	else
 	{
 		if(!strcmp(grp, "locale-extra"))
-			return(40);
+		{
+			if(lang)
+			{
+				char *ptr = g_strdup_printf("-%s", lang);
+				if(!strrcmp(name, ptr))
+				{
+					free(ptr);
+					return(40);
+				}
+				else
+				{
+					free(ptr);
+					return(20);
+				}
+			}
+			else
+				return(40);
+		}
 		else
 			return(20);
 	}
@@ -528,5 +547,8 @@ int main(int argc, char **argv)
 	rmrf(tmproot);
 	free(fst_root);
 	free(fst_ver);
+	free(fst_codename);
+	free(out_dir);
+	free(lang);
 	return(0);
 }

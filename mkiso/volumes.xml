@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE volumes [
-<!ELEMENT volumes (fst_root , out_dir? , version? , codename? , volume+)>
+<!ELEMENT volumes (fst_root , out_dir? , version? , codename? , lang? , volume+)>
 <!ELEMENT volume (arch? , media , serial? , size?)>
 <!ELEMENT version (#PCDATA)>
+<!ELEMENT codename (#PCDATA)>
+<!ELEMENT lang (#PCDATA)>
 <!ELEMENT arch (#PCDATA)>
 <!ELEMENT media (#PCDATA)>
 <!ELEMENT serial (#PCDATA)>
