@@ -42,9 +42,11 @@ CHROOT=1
 
 . /usr/lib/frugalware/fwmakepkg
 
-echo -n "running darcs changes... "
-darcs changes FrugalBuild > Changelog
-echo "done."
+if [ ! -e Changelog ] || [ `stat -c %Y Changelog` -lt `stat -c %Y FrugalBuild` ]; then
+	echo -n "running darcs changes... "
+	darcs changes FrugalBuild > Changelog
+	echo "done."
+fi
 
 CWD=`pwd`
 repo=`pwd|sed 's|.*/\(.*\)/.*/.*/.*|\1|'`
