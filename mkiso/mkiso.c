@@ -37,6 +37,7 @@
 
 GList *isopkgs=NULL;
 GList *volumes=NULL;
+GList *isogrps=NULL;
 
 char *fst_root=NULL;
 char *fst_ver=NULL;
@@ -159,6 +160,70 @@ char *detect_kernel(char *arch)
 	return(NULL);
 }
 
+int isogrp_strin(char *str)
+{
+	int i;
+
+	for(i=0;i<g_list_length(isogrps);i++)
+	{
+		isogrp_t *grp = g_list_nth_data(isogrps, i);
+		if(!strcmp(grp->name, str))
+			return(1);
+	}
+	return(0);
+}
+
+int isogrp_add(PM_PKG *pkg)
+{
+	int i;
+	PM_LIST *grps = alpm_pkg_getinfo(pkg, PM_PKG_GROUPS);
+	char *grp = alpm_list_getdata(grps);
+
+	if(isogrp_strin(grp))
+	{
+		for(i=0;i<g_list_length(isogrps);i++)
+		{
+			isogrp_t *isogrp = g_list_nth_data(isogrps, i);
+			if(!strcmp(isogrp->name, grp))
+			{
+				isogrp->size += (long int)alpm_pkg_getinfo(pkg, PM_PKG_SIZE)/1024;
+				isogrp->usize += (long int)alpm_pkg_getinfo(pkg, PM_PKG_USIZE)/1024;
+				break;
+			}
+		}
+	}
+	else
+	{
+		isogrp_t *isogrp;
+		if((isogrp = (isogrp_t *)malloc(sizeof(isogrp_t)))==NULL)
+		{
+			fprintf(stderr, "out of memory!\n");
+			return(1);
+		}
+		isogrp->name = strdup(grp);
+		isogrp->size = (long int)alpm_pkg_getinfo(pkg, PM_PKG_SIZE)/1024;
+		isogrp->usize = (long int)alpm_pkg_getinfo(pkg, PM_PKG_USIZE)/1024;
+		isogrps = g_list_append(isogrps, isogrp);
+	}
+	return(0);
+}
+
+void isogrp_stat(FILE *fp)
+{
+	int i;
+	int sum=0, usum=0;
+
+	for(i=0;i<g_list_length(isogrps);i++)
+	{
+		isogrp_t *grp = g_list_nth_data(isogrps, i);
+		sum += (int)grp->size/1024;
+		usum += (int)grp->usize/1024;
+		fprintf(fp, "%-16s %4dMB %4dMB\n", grp->name, (int)grp->size/1024, (int)grp->usize/1024);
+		free(grp->name);
+	}
+	fprintf(fp, "%-16s %4dMB %4dMB\n", "total", sum, usum);
+}
+
 int mkiso(volume_t *volume, int countonly)
 {
 	PM_LIST *i, *sorted;
@@ -227,6 +292,7 @@ int mkiso(volume_t *volume, int countonly)
 			(char*)alpm_pkg_getinfo(pkg, PM_PKG_VERSION),
 			(char*)alpm_pkg_getinfo(pkg, PM_PKG_ARCH),
 			PM_EXT_PKG);
+			isogrp_add(pkg);
 		}
 	}
 	fclose(fp);
@@ -243,6 +309,12 @@ int mkiso(volume_t *volume, int countonly)
 		"-b boot/grub/stage2_eltorito "
 		"-v -d -N -no-emul-boot -boot-load-size 4 -boot-info-table",
 		fname, label, flist);
+	ptr = g_strdup_printf("%s.lst", fname);
+	if((fp=fopen(ptr, "w"))==NULL)
+		return(1);
+	free(ptr);
+	isogrp_stat(fp);
+	fclose(fp);
 	if(!countonly)
 		system(cmdline);
 	else
@@ -411,6 +483,8 @@ int prepare(volume_t *volume, char *tmproot, int countonly)
 	alpm_release();
 	g_list_free(isopkgs);
 	isopkgs=NULL;
+	g_list_free(isogrps);
+	isogrps=NULL;
 	return(0);
 }
 

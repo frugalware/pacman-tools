@@ -36,4 +36,11 @@ typedef struct __isopkg_t
 	int priority;
 } isopkg_t;
 
+typedef struct __isogrp_t
+{
+	char *name;
+	long int size;
+	long int usize;
+} isogrp_t;
+
 char *detect_kernel(char *arch);
