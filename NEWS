@@ -1,5 +1,12 @@
 VERSION         DESCRIPTION
 -----------------------------------------------------------------------------
+0.7.6         - rf now handles subpackages even if they're in extra
+              - fwmakepkg: cleanup, $Fincdir is now a public variable
+                this allows you to use a scriptlet as a scheme and customize
+                it in build()
+              - genchangelog: don't regenerate Changelog if it's up to date
+              - mkiso: added an optional <lang> directive
+                       create a .lst before the .iso with some stat
 0.7.5         - new tool: mkiso. see man mkiso!
 0.7.4         - genchangelog: gpg support
               - rf, syncpkg, syncpkgd: -stable support
