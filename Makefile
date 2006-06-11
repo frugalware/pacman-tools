@@ -90,3 +90,7 @@ dist:
 		-ba -u 20F55619 pacman-tools-$(VERSION).tar.gz
 	mv pacman-tools-$(VERSION).tar.gz{,.asc} ../
 	rm _darcs/current/Changelog
+
+release:
+	darcs tag --checkpoint $(VERSION)
+	$(MAKE) dist
