@@ -28,11 +28,11 @@ Finclude ()
 			i=${i%/*}
 		done
 		if [ "$i" -a -d "$i"/source/include ]; then
-			local Fincdir=$i/source/include
+			Fincdir=$i/source/include
 		elif [ -d /var/tmp/fst/include ]; then
-			local Fincdir=/var/tmp/fst/include
+			Fincdir=/var/tmp/fst/include
 		elif [ -d $fst_root/$reponame/source/include ]; then
-			local Fincdir=$fst_root/$reponame/source/include
+			Fincdir=$fst_root/$reponame/source/include
 		fi
 		if [ ! -z "$Fincdir" ]; then
 			for i in "$@"
