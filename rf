@@ -660,7 +660,7 @@ sub cL{
 }
 
 sub Cleanup{
-  my ($ec,$ev);
+  my ($ec,$ev,$ir);
   unless ($opts{'q'}){
     print "Cleanup on server\n";
     my $repo_=$repo . '/' if $repo;
@@ -672,7 +672,9 @@ sub Cleanup{
 	print "Probably it is a new package, passing by...\n";
 	return;
       }
-      for my $ir (@inrepo){
+      splice(@inrepo,0,1);
+      @inrepo = grep $_ ne "Changelog\n",@inrepo;
+      foreach $ir (@inrepo){
 	unless(scalar grep(/\Q$ir\E/, @indarcs)){
 	  $ec = apply "repoman -t $version del $repo/source/$group/$pkgname/$ir";}}}
     if (@pkgfiles){
