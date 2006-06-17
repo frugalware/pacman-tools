@@ -183,7 +183,7 @@ search()
 {
 	chk_updated $fst_root
 	[ -z "$*" ] || grepcmd="|grep $*"
-	eval "find $fst_root/$reponame/{source,extra/source} -name FrugalBuild |xargs grep ^nobuild= |sed 's|$fst_root/$reponame/\(.*\)/source/\(.*\)/FrugalBuild:.*|\1/\2|' $grepcmd"
+	eval "find $fst_root/$reponame/{source,extra/source} -name FrugalBuild |xargs grep '\(options=(.*nobuild.*)\|^nobuild=\)' |sed 's|$fst_root/$reponame/\(.*\)/source/\(.*\)/FrugalBuild:.*|\1/\2|' $grepcmd"
 }
 
 merge()
