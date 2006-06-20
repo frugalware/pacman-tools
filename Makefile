@@ -80,7 +80,7 @@ install:
 	$(INSTALL) -m644 mkiso/volumes.xml $(DESTDIR)$(docdir)/volumes.xml
 
 clean:
-	rm chkperm genauthors
+	rm -f chkperm genauthors
 	$(MAKE) -C mkiso clean
 
 dist:
