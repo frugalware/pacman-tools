@@ -168,12 +168,12 @@ sub init_chk { #generate the iterator
 		    my $buildscript = contents $_;
 		    ($m8r) = $buildscript =~ /^# Maintainer: (.*?) </m;
 		    do {next unless $m8r =~ /\Q$dev\E/i } if $input{devel} || $input{sort};
-		    ($pkgname) = qx'source ./FrugalBuild; echo -n $pkgname';
+		    ($pkgname) = qx'source /usr/lib/frugalware/fwmakepkg;source ./FrugalBuild; echo -n $pkgname';
 		    ($pkgver) = qx'source /usr/lib/frugalware/fwmakepkg;source ./FrugalBuild; echo -n $pkgver';
 		    ($group) = qx'source /usr/lib/frugalware/fwmakepkg;source ./FrugalBuild; echo -n $groups';
 		    $group = '?' unless $group;
 		
-		    $up2date = timeout $input{time}, 'CHROOT=1; source /usr/lib/frugalware/fwmakepkg;source ./FrugalBuild;if ( `echo $up2date|grep -q " "` ); then eval $up2date; else echo $up2date; fi';
+		    $up2date = timeout $input{time}, 'source /usr/lib/frugalware/fwmakepkg;source ./FrugalBuild;if ( `echo $up2date|grep -q " "` ); then eval $up2date; else echo $up2date; fi';
 		    chomp $up2date unless $up2date eq 'TIMEOUTED';
 		
 		    if ($up2date eq 'TIMEOUTED') {	
