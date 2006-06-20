@@ -18,8 +18,8 @@
 
 VERSION = 0.7.6
 
-CFLAGS ?= -Wall -g -O2 -pipe
-CFLAGS += -Wall $(shell pkg-config --cflags libxml-2.0)
+CFLAGS ?= -Wall -Werror -g -O2 -pipe
+CFLAGS += $(shell pkg-config --cflags libxml-2.0)
 LDFLAGS += $(shell pkg-config --libs libxml-2.0)
 
 INSTALL = /usr/bin/install -c
