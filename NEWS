@@ -1,5 +1,9 @@
 VERSION         DESCRIPTION
 -----------------------------------------------------------------------------
+0.7.7         - small fixes and improvements (-Werror) in the build system
+              - chkworld: handle Finclude even for pkgname
+              - repoman: support for options=('nobuild') nost just nobuild=1
+              - rf: fixed bug #577
 0.7.6         - rf now handles subpackages even if they're in extra
               - fwmakepkg: cleanup, $Fincdir is now a public variable
                 this allows you to use a scriptlet as a scheme and customize
