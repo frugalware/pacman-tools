@@ -78,15 +78,15 @@ fi
 echo -n "Searching CPAN... "
 dump=`mktemp`
 lynx -dump "http://search.cpan.org/search?query=$needle&mode=module" >$dump
-guess=`cat $dump|grep -i "$needle-" | sed 's/.*\]\([^ ]*\)-.*\].*/\1/;q'`
-modname=`echo $guess|sed 's/::/-/g'`
-pkgname="perl-`echo $modname|tr [A-Z] [a-z]`"
+needle=`echo $needle|sed 's/::/-/g'`
+modname=`cat $dump|grep -i "$needle-" | sed 's/.*\]\([^ ]*\)-.*\].*/\1/;q'`
+pkgname="perl-`echo $modname|tr [:upper:] [:lower:]`"
 pkgver=`cat $dump|grep $modname-|sed "s/.*$modname-\([^ ]*\) .*/\1/;q"`
 pkgdesc=`cat $dump|grep -1 $modname-|sed 's/   //g;q'`
 suburl=`cat $dump|grep $modname-$pkgver|sed -n 's/.*[0-9]\. \(.*\)/\1/;$ p'`
 echo -e "done.\n"
 
-echo "Guessing module: $guess"
+echo "Guessing module: $modname"
 echo -e "Targets: $pkgname-$pkgver-1\n"
 echo -n "Proceed with upgrade? [Y/n]"
 read junk
