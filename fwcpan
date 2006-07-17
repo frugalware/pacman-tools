@@ -80,6 +80,11 @@ dump=`mktemp`
 lynx -dump "http://search.cpan.org/search?query=$needle&mode=module" >$dump
 needle=`echo $needle|sed 's/::/-/g'`
 modname=`cat $dump|grep -i "$needle-" | sed 's/.*\]\([^ ]*\)-.*\].*/\1/;q'`
+if [ -z "$modname" ]; then
+	echo "Sorry, I can't find just a module!"
+	rm -f $dump
+	exit 0
+fi
 pkgname="perl-`echo $modname|tr [:upper:] [:lower:]`"
 pkgver=`cat $dump|grep $modname-|sed "s/.*$modname-\([^ ]*\) .*/\1/;q"`
 pkgdesc=`cat $dump|grep -1 $modname-|sed 's/   //g;q'`
