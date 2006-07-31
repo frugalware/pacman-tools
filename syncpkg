@@ -86,8 +86,7 @@ do
 	fi
 
 	CWD=`pwd`
-	# 4 will find pkgs from extra, but not under _darcs
-	cd `find . -type d -maxdepth 4 -name $pkg 2>/dev/null`
+	cd `find source -maxdepth 2 -type d -name $pkg`
 	rm -f *fpm *.log
 	log "making package: $pkg"
 	echo "$pkg" >/tmp/sync.pkg
