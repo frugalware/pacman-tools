@@ -43,7 +43,7 @@ echo -n "Searching for a mirror... "
 repo=`pacman -Si $1|grep ^Repo|sed -n 's/.* \([^ ]*\)/\1/;1 p'`
 dir=`grep ^Server /etc/pacman.d/$repo|sed -n 's/.* = \(.*\)/\1/;1 p'`
 arch=`grep ^Server /etc/pacman.d/$repo |sed -n 's/.*-\(.*\)/\1/;1 p'`
-cat=`pacman -Si $1 |grep ^G |sed 's/.* : \([^ ]*\) .*/\1/; s/-extra$//'`
+cat=`pacman -Si $1 |grep ^G |sed 's/.* : \([^ ]*\) .*/\1/'`
 echo "done."
 
 mkdir $1 2>/dev/null || \
