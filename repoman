@@ -87,14 +87,9 @@ list()
 	ssh $lopts $host "ls $* $path_to_repo/$dir"
 }
 
-split_repo_group_pkgname_dir()
+split_group_pkgname()
 {
-	if echo $1 |grep -q '^[^/]\+/[^/]\+/[^/]\+$'; then
-		repo=`echo $1 |sed 's|\([^/]\+\)/[^/]\+/[^/]\+|\1|'`
-		group=`echo $1 |sed 's|[^/]\+/\([^/]\+\)/[^/]\+|\1|'`
-		pkgname=`echo $1 |sed 's|[^/]\+/[^/]\+/\([^/]\+\)|\1|'`
-	elif echo $1 |grep -q '^[^/]\+/[^/]\+$'; then
-		repo="frugalware"
+	if echo $1 |grep -q '^[^/]\+/[^/]\+$'; then
 		group=`echo $1 |sed 's|\([^/]\+\)/[^/]\+|\1|'`
 		pkgname=`echo $1 |sed 's|[^/]\+/\([^/]\+\)|\1|'`
 	else
@@ -102,29 +97,20 @@ split_repo_group_pkgname_dir()
 		usage
 		exit 1
 	fi
-	if [ "$repo" == "frugalware" ]; then
-		dir="source"
-	elif [ "$repo" == "extra" ]; then
-		dir="extra/source"
-	else
-		echo "No such repo!"
-		exit 1
-	fi
-
 }
 
 clean()
 {
 	msg "Cleaning up $1"
-	split_repo_group_pkgname_dir $1
+	split_group_pkgname $1
 	[[ "$reponame" =~ "-current$" ]] && reposuffix="-current"
-	ssh $lopts $host "cd $path_to_repo/$dir/../frugalware-${arch:-`arch`} && arch=${arch:-`arch`} sudo -u $sudouser updatesync del $repo$reposuffix.fdb $pkgname && genchangelog --repo $reponame --clean $pkgname"
+	ssh $lopts $host "cd $path_to_repo/frugalware-${arch:-`arch`} && arch=${arch:-`arch`} sudo -u $sudouser updatesync del $repo$reposuffix.fdb $pkgname && genchangelog --repo $reponame --clean $pkgname"
 }
 
 changelog()
 {
 	msg "Generating Changelog for $1"
-	split_repo_group_pkgname_dir $1
+	split_group_pkgname $1
 	[[ "$reponame" =~ "-current$" ]] && reposuffix="-current"
 	if [ "$verbose" == 1 ]; then
 		catcmd="cat Changelog"
@@ -132,7 +118,7 @@ changelog()
 		# just a workaround for the "syntax error near unexpected token `;'" bug
 		catcmd="echo -n \"\""
 	fi
-	ssh $lopts $host "cd $path_to_repo; if [ ! -e _darcs/rlock ]; then touch _darcs/rlock; cd $dir/../frugalware-${arch:-`arch`} && arch=${arch:-`arch`} sudo -u $sudouser updatesync upd $repo$reposuffix.fdb ../source/$group/$pkgname/FrugalBuild && if [ -d $path_to_repo/extra/source/subpkgs/$pkgname ]; then cd $path_to_repo/extra/frugalware-${arch:-`arch`} && arch=${arch:-`arch`} sudo -u $sudouser updatesync upd extra$reposuffix.fdb ../source/subpkgs/$pkgname/FrugalBuild; fi; cd $path_to_repo && rm _darcs/rlock && cd $path_to_repo/$dir/$group/$pkgname && arch=${arch:-`arch`} sudo -u $sudouser genchangelog --repo $reponame; $catcmd; else echo \"Couldn't get lock.\"; fi"
+	ssh $lopts $host "cd $path_to_repo; if [ ! -e _darcs/rlock ]; then touch _darcs/rlock; frugalware-${arch:-`arch`} && arch=${arch:-`arch`} sudo -u $sudouser updatesync upd $repo$reposuffix.fdb ../source/$group/$pkgname/FrugalBuild && cd .. && rm _darcs/rlock && cd $path_to_repo/source/$group/$pkgname && arch=${arch:-`arch`} sudo -u $sudouser genchangelog --repo $reponame; $catcmd; else echo \"Couldn't get lock.\"; fi"
 }
 
 die()
@@ -183,7 +169,7 @@ search()
 {
 	chk_updated $fst_root
 	[ -z "$*" ] || grepcmd="|grep $*"
-	eval "find $fst_root/$reponame/{source,extra/source} -name FrugalBuild |xargs grep '\(options=(.*nobuild.*)\|^nobuild=\)' |sed 's|$fst_root/$reponame/\(.*\)/source/\(.*\)/FrugalBuild:.*|\1/\2|' $grepcmd"
+	eval "find $fst_root/$reponame/source -name FrugalBuild |xargs grep '\(options=(.*nobuild.*)\|^nobuild=\)' |sed 's|$fst_root/$reponame/source/\(.*\)/FrugalBuild:.*|\1|' $grepcmd"
 }
 
 merge()
