@@ -20,7 +20,7 @@
  */
 
 #define CD_SIZE 655360
-#define DVD_SIZE 4812800
+#define DVD_SIZE 4360350
 
 typedef struct __volume_t
 {

@@ -27,6 +27,8 @@
 #include <dirent.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <getopt.h>
+
 #include <alpm.h>
 #include <glib.h>
 
@@ -243,7 +245,7 @@ void isogrp_stat(FILE *fp)
 	fprintf(fp, "%-16s %4dMB %4dMB\n", "total", sum, usum);
 }
 
-int mkiso(volume_t *volume, int countonly)
+int mkiso(volume_t *volume, int countonly, int stable)
 {
 	PM_LIST *i, *sorted;
 	int total=0, myvolume=1, bootsize;
@@ -280,8 +282,10 @@ int mkiso(volume_t *volume, int countonly)
 	// first volume of !net medias
 	if(volume->serial==1)
 	{
+		if(stable)
+			iso_add(fp, "frugalware-%s/frugalware.fdb", volume->arch);
+		else
 			iso_add(fp, "frugalware-%s/frugalware-current.fdb", volume->arch);
-			iso_add(fp, "extra/frugalware-%s/extra-current.fdb", volume->arch);
 	}
 
 	sorted = alpm_trans_getinfo(PM_TRANS_PACKAGES);
@@ -299,12 +303,7 @@ int mkiso(volume_t *volume, int countonly)
 		total += size;
 		if(myvolume==volume->serial)
 		{
-			// XXX: a separate function could determine the right
-			// path without any hardcoded number..
-			if(detect_priority(pkg)>50)
-				ptr = strdup("frugalware-%s/%s-%s-%s%s");
-			else
-				ptr = strdup("extra/frugalware-%s/%s-%s-%s%s");
+			ptr = strdup("frugalware-%s/%s-%s-%s%s");
 			iso_add(fp, ptr,
 			volume->arch,
 			(char*)alpm_pkg_getinfo(pkg, PM_PKG_NAME),
@@ -365,10 +364,7 @@ PM_DB *db_register(volume_t *volume, char *treename)
 		fprintf(stderr, "could not register '%s' database (%s)\n", treename, alpm_strerror(pm_errno));
 		return(NULL);
 	}
-	if(!strcmp(treename, "frugalware-current"))
-		ptr = g_strdup_printf("%s/frugalware-%s/%s.fdb", fst_root, volume->arch, treename);
-	else
-		ptr = g_strdup_printf("%s/extra/frugalware-%s/%s.fdb", fst_root, volume->arch, treename);
+	ptr = g_strdup_printf("%s/frugalware-%s/%s.fdb", fst_root, volume->arch, treename);
 	if(alpm_db_update(db, ptr) == -1)
 	{
 		fprintf(stderr, "failed to update %s (%s)\n", treename, alpm_strerror(pm_errno));
@@ -422,10 +418,10 @@ int rmrf(char *path)
 	return(0);
 }
 
-int prepare(volume_t *volume, char *tmproot, int countonly)
+int prepare(volume_t *volume, char *tmproot, int countonly, int stable)
 {
 	PM_LIST *i, *junk;
-	PM_DB *db_local, *db_fwcurr, *db_fwextra;
+	PM_DB *db_local, *db_sync;
 
 	if(alpm_initialize(tmproot) == -1)
 		fprintf(stderr, "failed to initilize alpm library (%s)\n", alpm_strerror(pm_errno));
@@ -433,29 +429,17 @@ int prepare(volume_t *volume, char *tmproot, int countonly)
 	alpm_set_option(PM_OPT_LOGMASK, (long)-1);
 	if((db_local = alpm_db_register("local"))==NULL)
 		fprintf(stderr, "could not register 'local' database (%s)\n", alpm_strerror(pm_errno));
-	db_fwcurr = db_register(volume, "frugalware-current");
-	db_fwextra = db_register(volume, "extra-current");
+	if(stable)
+		db_sync = db_register(volume, "frugalware");
+	else
+		db_sync = db_register(volume, "frugalware-current");
 
 	if(alpm_trans_init(PM_TRANS_TYPE_SYNC, PM_TRANS_FLAG_NOCONFLICTS, NULL, NULL, NULL) == -1)
 		fprintf(stderr, "failed to init transaction (%s)\n", alpm_strerror(pm_errno));
 
 	if(strcmp(volume->media, "net"))
 	{
-		for(i=alpm_db_getpkgcache(db_fwcurr); i; i=alpm_list_next(i))
-		{
-			PM_PKG *pkg=alpm_list_getdata(i);
-			isopkg_t *isopkg;
-
-			if((isopkg = (isopkg_t *)malloc(sizeof(isopkg_t)))==NULL)
-			{
-				fprintf(stderr, "out of memory!\n");
-				return(1);
-			}
-			isopkg->pkg = pkg;
-			isopkg->priority = detect_priority(pkg);
-			isopkgs = g_list_append(isopkgs, isopkg);
-		}
-		for(i=alpm_db_getpkgcache(db_fwextra); i; i=alpm_list_next(i))
+		for(i=alpm_db_getpkgcache(db_sync); i; i=alpm_list_next(i))
 		{
 			PM_PKG *pkg=alpm_list_getdata(i);
 			isopkg_t *isopkg;
@@ -497,7 +481,7 @@ int prepare(volume_t *volume, char *tmproot, int countonly)
 		return(1);
 	}
 
-	mkiso(volume, countonly);
+	mkiso(volume, countonly, stable);
 	alpm_trans_release();
 	alpm_release();
 	g_list_free(isopkgs);
@@ -511,25 +495,43 @@ int main(int argc, char **argv)
 {
 	char tmproot[] = "/tmp/mkiso_XXXXXX";
 	char *xmlfile = strdup("volumes.xml");
-	int i, countonly=0;
+	int i, countonly=0, stable=0;
 	char *ptr;
+	int opt;
+	int option_index;
+	static struct option opts[] =
+	{
+		{"help",        no_argument,       0, 'h'},
+		{"count",       no_argument,       0, 'c'},
+		{"stable",      no_argument,       0, 's'},
+		{"file",        required_argument, 0, 'f'},
+		{0, 0, 0, 0}
+	};
 
 	if(argc >= 2)
 	{
-		if(!strcmp(argv[1], "-h") || !strcmp(argv[1], "--help"))
+		while((opt = getopt_long(argc, argv, "hcsf:", opts, &option_index)))
 		{
-			printf("usage: %s [ -h ] [ -c | volumes.xml ]\n", argv[0]);
-			free(xmlfile);
-			return(0);
-		}
-		if(strcmp(argv[1], "-c"))
-		{
-			free(xmlfile);
-			xmlfile = strdup(argv[1]);
-		}
-		else
-		{
-			countonly=1;
+			if(opt < 0)
+				break;
+			switch(opt)
+			{
+				case 'h':
+					printf("usage: %s [ options ]\n", argv[0]);
+					printf("       -h | --help    this help\n");
+					printf("       -c | --count   count the possible number of images only\n");
+					printf("       -s | --stable  indicate that the source repo is a -stable one\n");
+					printf("       -f | --file    use some other source instead of volumes.xml\n");
+					free(xmlfile);
+					return(0);
+				break;
+				case 'c': countonly=1; break;
+				case 's': stable=1; break;
+				case 'f':
+					  free(xmlfile);
+					  xmlfile = strdup(optarg);
+				break;
+			}
 		}
 	}
 
@@ -541,7 +543,7 @@ int main(int argc, char **argv)
 	free(ptr);
 
 	for(i=0;i<g_list_length(volumes);i++)
-		if(prepare(g_list_nth_data(volumes, i), tmproot, countonly))
+		if(prepare(g_list_nth_data(volumes, i), tmproot, countonly, stable))
 			break;
 
 	rmrf(tmproot);
