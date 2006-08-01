@@ -1,5 +1,7 @@
 VERSION         DESCRIPTION
 -----------------------------------------------------------------------------
+0.7.8         - fwcpan: many bugfixes, thanks crazy for pointing them out
+              - added support for having no separate "extra" repo
 0.7.7         - small fixes and improvements (-Werror) in the build system
               - chkworld: handle Finclude even for pkgname
               - repoman: support for options=('nobuild') nost just nobuild=1
