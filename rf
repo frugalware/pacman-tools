@@ -625,7 +625,7 @@ sub Record{
   print "Recording your improvements\n";
   HELP_MESSAGE && die 'Can not determine pkgver!' unless $pkgver;
   HELP_MESSAGE && die 'Can not determine pkgrel!' unless $pkgrel;
-  my $ec = apply "darcs record --edit-long-comment -m '$pkgname-$pkgver-$pkgrel-$arch'" . ($noask? ' -a' : '').(($subg && ($repo ne 'extra')) ? '' : ' .');
+  my $ec = apply "darcs record --edit-long-comment -m '$pkgname-$pkgver-$pkgrel-$arch'" . ($noask? ' -a' : '').' .';
   die "Recording FAILED!\n" if $ec == 1;
 }
 
