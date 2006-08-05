@@ -580,13 +580,12 @@ my $buildscript = contents 'FrugalBuild';
 
 $opts{L} = 0 if $buildscript =~ /^nobuild=|^options.*?nobuild/m;
 
-if (@pkgfiles){
-    ($pkgver,$pkgrel) = $pkgfiles[0] =~ /^.*-(.*?)-(.*?)-.*?fpm\Z/
-} else {  #get them from Frugalbuild
-    $buildscript = contents 'FrugalBuild';
-    ($pkgver) = qx'source /usr/lib/frugalware/fwmakepkg;source ./FrugalBuild; echo -n $pkgver';
-    ($pkgrel) = qx'source /usr/lib/frugalware/fwmakepkg;source ./FrugalBuild; echo -n $pkgrel';
-}
+$buildscript = contents 'FrugalBuild';
+($pkgver) = qx'source /usr/lib/frugalware/fwmakepkg;source ./FrugalBuild; echo -n $pkgver';
+($pkgrel) = qx'source /usr/lib/frugalware/fwmakepkg;source ./FrugalBuild; echo -n $pkgrel';
+
+($pkgver,$pkgrel) = $pkgfiles[0] =~ /^.*-(.*?)-(.*?)-.*?fpm\Z/ unless $pkgver || $pkgrel;
+
 $pkgver = $opts{t} if $opts{t};
 $pkgrel = $opts{l} if $opts{l};
 
