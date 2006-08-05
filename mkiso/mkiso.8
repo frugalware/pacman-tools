@@ -13,6 +13,7 @@ A typical iso generation should be done as follows:
 Create a working directory:
 
 $ mkdir -p ~/iso
+
 $ cd ~/iso
 
 .TP
@@ -38,6 +39,8 @@ In this example we create a netinstall iso, so leave only the following entry:
 .TP
 Now we need a few base files:
 
+NOTE: feel free to choose a different rsync mirror from /etc/repoman.conf!
+
 $ rsync -avP rsync://ftp5.frugalware.org/packages/frugalware/pub/frugalware/frugalware-current/AUTHORS ./
 
 $ rsync -avP rsync://ftp5.frugalware.org/packages/frugalware/pub/frugalware/frugalware-current/ChangeLog.txt ./
@@ -58,10 +61,6 @@ $ rsync -avP rsync://ftp5.frugalware.org/packages/frugalware/pub/frugalware/frug
 Finally the packages and package databases. For the netinstall we can ignore the fpms:
 
 $ rsync -avP rsync://ftp5.frugalware.org/packages/frugalware/pub/frugalware/frugalware-current/frugalware-i686 ./ --exclude '*fpm'
-
-$ mkdir extra
-
-$ rsync -avP rsync://ftp5.frugalware.org/packages/frugalware/pub/frugalware/frugalware-current/extra/frugalware-i686 ./extra/ --exclude '*fpm'
 
 .TP
 Ok, we have the necessary files, let's make the iso!
@@ -91,11 +90,16 @@ them from the 'setup' darcs repo.
 .B -h|--help
 Show the help screen.
 .TP
-.B -c
+.B -c|--count
 Do not generate the isos, just print out the number of required isos for the
 given size.
 .TP
-.B <volumes.xml>
+.B -s|--stable
+Assume that the given repo is a -stable one, so that there will be a
+frugalware.fdb under the frugalware-<arch> directory, not a
+frugalware-current.fdb.
+.TP
+.B -f|--file <volumes.xml>
 By default, mkiso searches for the file named "volumes.xml". If you want a
 different one, then just specify it.
 .SH AUTHORS
