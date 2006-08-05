@@ -138,20 +138,22 @@ update()
 		repo=$1
 	fi
 	# Search for a mirror.
-	[ -e /etc/pacman.d/frugalware-current ] || \
-		die "Can't find any mirror!\nMaybe try a 'pacman -S pacman'";
-	server="rsync://`grep ^Server /etc/pacman.d/frugalware-current |sed -n 's|.*= .*://\(.*\)|\1|;1 p'`/../_darcs/current/"
-	# server="http://darcs.frugalware.org/repos/frugalware-current"
+	if [ -z "$mirror" ]; then
+		echo -e "$0: Can't find any mirror!"
+		[ -e /etc/repoman.conf.pacnew ] && echo -e "$0: HINT: merge the contents of /etc/repoman.conf.pacnew to /etc/repoman.conf!"
+		exit 1
+	fi
+	server="$mirror/_darcs/current/"
 	mkdir -p $fst_root/$repo
 	cd $fst_root/$repo
 	echo "warning: this operation can take minutes, please be patient"
 	syncstr=":: Synchronizing the Frugalware Source Tree... "
 	if [ "$verbose" != 1 ]; then
 		echo -n $syncstr
-		rsync -a $server ./ >/dev/null
+		rsync -azq $server ./
 	else
 		echo $syncstr
-		rsync -a $server ./
+		rsync -azvP $server ./
 	fi
 	echo "done."
 }
