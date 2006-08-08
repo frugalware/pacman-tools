@@ -108,11 +108,13 @@ if [ ! -z "$subpkgs" ]; then
 	check "subdescs" "[ ! -z \"$subdescs\" ]"
 	check "subdepends" "[ ! -z \"$subdepends\" ] || [ ! -z \"$subrodepends\" ]"
 	check "subgroups" "[ ! -z \"$subgroups\" ]"
+	check "subarchs" "[ ! -z \"$subarchs\" ]"
 	check "right number of subdescs" "[ \"${#subdescs[@]}\" = 0 ] || [ \"${#subdescs[@]}\" == \"${#subpkgs[@]}\" ]"
 	check "right number of sublicense" "[ \"${#sublicense[@]}\" = 0 ] || [ \"${#sublicense[@]}\" = \"${#subpkgs[@]}\" ]"
 	check "right number of subreplaces" \
 		"[ \"${#subreplaces[@]}\" = 0 ] || [ \"${#subreplaces[@]}\" = \"${#subpkgs[@]}\" ]"
 	check "right number of subgroups" "[ \"${#subgroups[@]}\" = 0 ] || [ \"${#subgroups[@]}\" = \"${#subpkgs[@]}\" ]"
+	check "right number of subarchs" "[ \"${#subarchs[@]}\" = 0 ] || [ \"${#subarchs[@]}\" = \"${#subpkgs[@]}\" ]"
 	check "right number of subdepends" "[ \"${#subdepends[@]}\" = 0 ] || [ \"${#subdepends[@]}\" = \"${#subpkgs[@]}\" ]"
 	check "right number of subrodepends" \
 		"[ \"${#subrodepends[@]}\" = 0 ] || [ \"${#subrodepends[@]}\" = \"${#subpkgs[@]}\" ]"
