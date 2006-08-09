@@ -34,6 +34,7 @@ docdir = /usr/share/doc/pacman-tools-$(VERSION)
 
 compile: chkperm genauthors
 	$(MAKE) -C mkiso
+	help2man -n "mirrors Frugalware archives" -S Frugalware -N ./fwmirror |sed 's/\\(co/(c)/' >fwmirror.1
 
 install:
 	$(INSTALL) -d $(DESTDIR)$(bindir)
@@ -77,6 +78,7 @@ install:
 	$(INSTALL) fblint $(DESTDIR)$(bindir)/fblint
 	$(INSTALL) mkiso/mkiso $(DESTDIR)$(bindir)/mkiso
 	$(INSTALL) fwmirror $(DESTDIR)$(bindir)/fwmirror
+	$(INSTALL) -m644 fwmirror.1 $(DESTDIR)$(man1dir)
 	$(INSTALL) -m644 mkiso/mkiso.8 $(DESTDIR)$(man8dir)
 	$(INSTALL) -m644 mkiso/volumes.xml $(DESTDIR)$(docdir)/volumes.xml
 
