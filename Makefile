@@ -76,6 +76,7 @@ install:
 	$(INSTALL) genauthors $(DESTDIR)$(bindir)/genauthors
 	$(INSTALL) fblint $(DESTDIR)$(bindir)/fblint
 	$(INSTALL) mkiso/mkiso $(DESTDIR)$(bindir)/mkiso
+	$(INSTALL) fwmirror $(DESTDIR)$(bindir)/fwmirror
 	$(INSTALL) -m644 mkiso/mkiso.8 $(DESTDIR)$(man8dir)
 	$(INSTALL) -m644 mkiso/volumes.xml $(DESTDIR)$(docdir)/volumes.xml
 
