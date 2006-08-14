@@ -1,5 +1,10 @@
 VERSION         DESCRIPTION
 -----------------------------------------------------------------------------
+0.8.0         - genchangelog: fpm2db support
+              - minor fwcpan improvements (mpdep and fwcpan cleanup)
+              - updated mkiso documentation
+              - fblint: added more rules
+              - fwmirror: new tool to help mirroring
 0.7.9         - repoman:
                 - bugfix for having no extra repo
 		- now there is a separate (from pacman.conf) mirror list in
