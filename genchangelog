@@ -16,19 +16,19 @@ strip_url()
 if [ "$1" = "--repo" ]; then
 	fwver=`echo $2 |sed 's/frugalware-//'`
 	shift 2
+else
+	[ -z "$fwver" ] && fwver="current"
 fi
 
 if [ "$1" = "--check" ]; then
 	if [ "`echo $HOME|sed 's|.*/\(.*\)$|\1|'`" != "syncpkgd" ]; then
-		. /etc/genchangelog.conf
 		chkperm /home/ftp/pub/frugalware/frugalware-$fwver/docs/xml/teams.xml $2
 		exit $?
 	else
 		exit 0
 	fi
 elif [ "$1" = "--clean" ]; then
-	. /etc/genchangelog.conf
-	../tools/fdb2db -b ../source/ -r frugalware -e $fwver -a $arch -h $dbhost -u $dbuser -d $dbname -t $dbtable -D -c $2
+	../tools/fpm2db -D -m $2
 	exit 0
 fi
 
@@ -47,8 +47,6 @@ CWD=`pwd`
 
 CARCH=$arch source FrugalBuild || die "errors parsing the FrugalBuild"
 
-. /etc/genchangelog.conf
-
 . /etc/makepkg.conf
 
 echo "downloading missing source files..."
@@ -62,19 +60,18 @@ do
 	fi
 done
 
-echo -n "updating mysql database... "
+echo -n "updating the mysql2 database... "
 [ "$fwver" = "current" ] && reposuffix="-current"
 cd ../../../frugalware-$arch
-../tools/fdb2db -b ../source/ -r frugalware -e $fwver -f frugalware$reposuffix.fdb -a $arch -h $dbhost -u $dbuser -d $dbname -t $dbtable -c $pkgname -l $uploader
+../tools/fpm2db -f $pkgname-$pkgver-$pkgrel-$arch.fpm
 
 if [ ! -z "$subpkgs" ]; then
 	i=0
 	for subpkg in "${subpkgs[@]}"
 	do
 		cd $CWD
-		groups="${subgroups[$i]}"
 		cd ../../../frugalware-$arch
-		../tools/fdb2db -b ../source/ -r frugalware -e $fwver -f frugalware$reposuffix.fdb -a $arch -h $dbhost -u $dbuser -d $dbname -t $dbtable -c "$subpkg" -s -n $pkgname -l $uploader
+		../tools/fpm2db -f $subpkg-$pkgver-$pkgrel-$arch.fpm -m $pkgname -g $groups
 	done
 fi
 
