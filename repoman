@@ -32,11 +32,10 @@ delete()
 	# Strip leading / and any ..
 	file=`echo $1|sed 's|^/||;s|\.\./||g'`
 	msg "Deleting file: $file"
-	if [ "$verbose" == 0 ]; then
-		ssh $lopts $host "sudo -u $sudouser rm $path_to_repo/$file"
-	else
-		ssh $lopts $host "sudo -u $sudouser rm -v $path_to_repo/$file"
+	if [ "$verbose" != 0 ]; then
+		rmopts="-v"
 	fi
+	ssh $lopts $host "cd $path_to_repo; if [ ! -e _darcs/lock ]; then sudo -u $sudouser rm $rmopts $file; else echo \"Couldn't get lock.\"; fi"
 	
 }
 
