@@ -106,7 +106,6 @@ if [ ! -z "$subpkgs" ]; then
 		check "uppercase letters in subpkgs" "[[ ! \"$subpkg\" =~ \"[A-Z]\" ]]"
 	done
 	check "subdescs" "[ ! -z \"$subdescs\" ]"
-	check "subdepends" "[ ! -z \"$subdepends\" ] || [ ! -z \"$subrodepends\" ]"
 	check "subgroups" "[ ! -z \"$subgroups\" ]"
 	check "subarchs" "[ ! -z \"$subarchs\" ]"
 	check "right number of subdescs" "[ \"${#subdescs[@]}\" = 0 ] || [ \"${#subdescs[@]}\" == \"${#subpkgs[@]}\" ]"
