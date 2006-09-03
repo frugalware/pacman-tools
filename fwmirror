@@ -126,7 +126,7 @@ done
 
 # exclude source if not requested
 if ! in_array source ${myarchs[@]}; then
-	rsync_opts="$rsync_opts --exclude /source/ /_darcs/"
+	rsync_opts="$rsync_opts --exclude /source/ --exclude /_darcs/"
 fi
 
 # the funny part
