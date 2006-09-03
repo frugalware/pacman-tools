@@ -18,6 +18,8 @@
 
 VERSION = 0.8.0
 
+LANGS = hu pl
+
 CFLAGS ?= -Wall -Werror -g -O2 -pipe
 CFLAGS += $(shell pkg-config --cflags libxml-2.0)
 LDFLAGS += $(shell pkg-config --libs libxml-2.0)
@@ -46,7 +48,9 @@ install:
 	$(INSTALL) -d $(DESTDIR)$(docdir)
 	$(INSTALL) -d $(DESTDIR)/home/syncpkgd
 	$(INSTALL) -d $(DESTDIR)/etc/rc.d
-	$(INSTALL) -d $(DESTDIR)/lib/initscripts/messages/hu_HU/LC_MESSAGES/
+	for i in $(LANGS); do \
+		mkdir -p $(DESTDIR)/lib/initscripts/messages/`echo $$i|sed 's/.*-\(.*\).po/\1/'`/LC_MESSAGES/; \
+	done
 	chown syncpkgd:daemon $(DESTDIR)/home/syncpkgd
 	$(INSTALL) -d $(DESTDIR)/var/log/syncpkg
 	chown syncpkgd:daemon $(DESTDIR)/var/log/syncpkg
@@ -65,7 +69,9 @@ install:
 	$(INSTALL) -m644 syncpkg.conf $(DESTDIR)$(sysconfdir)
 	$(INSTALL) syncpkgd $(DESTDIR)$(sbindir)
 	$(INSTALL) rc.syncpkgd $(DESTDIR)/etc/rc.d
-	msgfmt -o $(DESTDIR)/lib/initscripts/messages/hu_HU/LC_MESSAGES/syncpkgd.mo rc.syncpkgd-hu.po
+	for i in $(LANGS); do \
+		msgfmt -c --statistics -o $(DESTDIR)/lib/initscripts/messages/`echo $$i|sed 's/.*-\(.*\).po/\1/'`/LC_MESSAGES/syncpkgd.mo rc.syncpkgd-$$i; \
+	done
 	$(INSTALL) fwmakepkg $(DESTDIR)$(libdir)
 	$(INSTALL) movepkg $(DESTDIR)$(bindir)
 	$(INSTALL) pacman-source $(DESTDIR)$(bindir)
