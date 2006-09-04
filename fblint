@@ -20,6 +20,8 @@
 #   USA.
 #
 
+myver="0.6.5"
+
 die()
 {
 	echo "$0: $@"
@@ -40,13 +42,22 @@ check()
 	fi
 }
 
-if [ "$1" = "-h" ]; then
-	echo "fblint: searches for common FrugalBuild problems"
-	echo "usage: $0 [-h] | [-q] [-v] [-p]"
+if [ "$1" = "--version" ]; then
+	echo "fblint (pacman-tools) $myver"
+	echo
+	echo "Copyright (c) 2006 by Miklos Vajna <vmiklos@frugalware.org>"
+	echo "This is free software; see the source for copying conditions.  There is NO"
+	echo "warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE."
+	exit 0
+fi
+
+if [ "$1" = "--help" ]; then
+	echo "usage: $0 [--help] | [--version] | [-q] [-v] [-p]"
 	echo "       -q		quiet mode, exit with error if at least one test failed"
 	echo "       -v		verbose node, output the passed tests, too"
 	echo "       -p		buildscript [./FrugalBuild]"
-	echo "       -h		this help"
+	echo "       --help	this help"
+	echo "       --version	version information"
 	exit 0
 fi
 

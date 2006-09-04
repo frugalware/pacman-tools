@@ -39,6 +39,7 @@ compile: chkperm genauthors
 	help2man -n "mirrors Frugalware archives" -S Frugalware -N ./fwmirror |sed 's/\\(co/(c)/' >fwmirror.1
 	help2man -n "controls upload rights for Frugalware packages" -S Frugalware -N ./chkperm |sed 's/\\(co/(c)/' \
 		>chkperm.1
+	help2man -n "searches for common FrugalBuild problems" -S Frugalware -N ./fblint |sed 's/\\(co/(c)/' >fblint.1
 
 install:
 	$(INSTALL) -d $(DESTDIR)$(bindir)
@@ -87,6 +88,7 @@ install:
 	$(INSTALL) fwmirror $(DESTDIR)$(bindir)/fwmirror
 	$(INSTALL) -m644 fwmirror.1 $(DESTDIR)$(man1dir)
 	$(INSTALL) -m644 chkperm.1 $(DESTDIR)$(man1dir)
+	$(INSTALL) -m644 fblint.1 $(DESTDIR)$(man1dir)
 	$(INSTALL) -m644 mkiso/mkiso.8 $(DESTDIR)$(man8dir)
 	$(INSTALL) -m644 mkiso/volumes.xml $(DESTDIR)$(docdir)/volumes.xml
 
