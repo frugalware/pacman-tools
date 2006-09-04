@@ -36,9 +36,11 @@ docdir = /usr/share/doc/pacman-tools-$(VERSION)
 
 compile: chkperm genauthors
 	$(MAKE) -C mkiso
+	chmod +x fwmirror
 	help2man -n "mirrors Frugalware archives" -S Frugalware -N ./fwmirror |sed 's/\\(co/(c)/' >fwmirror.1
 	help2man -n "controls upload rights for Frugalware packages" -S Frugalware -N ./chkperm |sed 's/\\(co/(c)/' \
 		>chkperm.1
+	chmod +x fblint
 	help2man -n "searches for common FrugalBuild problems" -S Frugalware -N ./fblint |sed 's/\\(co/(c)/' >fblint.1
 
 install:
