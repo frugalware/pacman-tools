@@ -1,5 +1,6 @@
 VERSION         DESCRIPTION
 -----------------------------------------------------------------------------
+0.8.2         - bugfix for repoman del
 0.8.1         - new manpages: chkperm/fblint
               - fix bug in fwmirror when source is not mirrored
               - repoman: locking improvements
