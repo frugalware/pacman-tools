@@ -1,5 +1,10 @@
 VERSION         DESCRIPTION
 -----------------------------------------------------------------------------
+0.8.1         - new manpages: chkperm/fblint
+              - fix bug in fwmirror when source is not mirrored
+              - repoman: locking improvements
+              - fblint: don't be agressive against subdepends()
+              - added Polish translation
 0.8.0         - genchangelog: fpm2db support
               - minor fwcpan improvements (mpdep and fwcpan cleanup)
               - updated mkiso documentation
