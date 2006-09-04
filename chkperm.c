@@ -126,7 +126,13 @@ int main(int argc, char **argv)
 
 	if(argc <= 2)
 	{
-		printf("Usage: %s /path/to/teams.xml <group>\n", argv[0]);
+		if(argc == 2 && !strcmp(argv[1], "--version"))
+			printf("chkperm (pacman-tools) 0.6.5\n\n"
+				"Copyright (c) 2006 by Miklos Vajna <vmiklos@frugalware.org>\n"
+				"This is free software; see the source for copying conditions. There is NO\n"
+				"warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n");
+		else if(argc == 2)
+			printf("Usage: %s /path/to/teams.xml <group>\n", argv[0]);
 		return(1);
 	}
 
