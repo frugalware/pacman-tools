@@ -83,7 +83,14 @@ CHROOT=1
 . /usr/lib/frugalware/fwmakepkg
 . /etc/makepkg.conf
 
-check "FrugalBuild" "[ -e $_fblint_fb ]"
+echo -n "Checking if FrugalBuild exists ... "
+if [ -e $_fblint_fb ]; then
+       echo "OK!"
+else
+       echo "Error! File to check does not exist!"
+       exit 1
+fi
+
 check "last modified line" "grep -q -i '^# Last Modified: ' $_fblint_fb"
 check "sbu" "grep -i -q \"^# Compiling Time: [~0-9\.]\+ SBU$\" $_fblint_fb"
 check "maintainer" "grep -q '^# Maintainer: ' $_fblint_fb"
