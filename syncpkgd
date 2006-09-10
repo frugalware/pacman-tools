@@ -44,7 +44,7 @@ else
 	# start syncpkg again and again
 	while true
 	do
-		syncpkg 0.4
+		syncpkg 0.5
 		syncpkg current
 		sleep 2h
 	done
