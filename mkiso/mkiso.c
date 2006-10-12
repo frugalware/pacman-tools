@@ -364,8 +364,10 @@ PM_DB *db_register(volume_t *volume, char *treename)
 		fprintf(stderr, "could not register '%s' database (%s)\n", treename, alpm_strerror(pm_errno));
 		return(NULL);
 	}
-	ptr = g_strdup_printf("%s/frugalware-%s/%s.fdb", fst_root, volume->arch, treename);
-	if(alpm_db_update(db, ptr) == -1)
+	ptr = g_strdup_printf("file://%s/frugalware-%s", fst_root, volume->arch);
+	alpm_db_setserver(db, ptr);
+	free(ptr);
+	if(alpm_db_update(0, db) == -1)
 	{
 		fprintf(stderr, "failed to update %s (%s)\n", treename, alpm_strerror(pm_errno));
 		return(NULL);
