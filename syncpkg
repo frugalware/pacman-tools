@@ -100,7 +100,8 @@ do
 	else
 		makepkgtree="stable"
 	fi
-	sudo makepkg -t $makepkgtree -RLuk >>$mlogfile 2>&1
+	# -R can be removed after we drop backwards compatibility with <=pacman-3.4.1
+	sudo makepkg -t $makepkgtree -RLuck >>$mlogfile 2>&1
 	ret=$?
 	log "finished making package $pkg with exit code $ret"
 	rm /tmp/sync.pkg
