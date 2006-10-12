@@ -65,7 +65,11 @@ upload()
 	fi
 	name=`basename $src`
 	msg "Requesting a temporary file"
-	tmp=`ssh $lopts $host mktemp 2>/dev/null`
+	tmp=`ssh $lopts $host "cd $path_to_repo; if [ ! -e _darcs/freeze ]; then mktemp 2>/dev/null; fi"`
+	if [ -z "$tmp" ]; then
+		echo "The repo is freezed."
+		exit 1
+	fi
 	msg "Uploading file: $src (to $tmp)"
 	scp $src $cpopts$host:$tmp
 	if echo "`sha1sum $src|sed 's/\(.*\)  .*/\1/'`  $tmp" |ssh $lopts $host sha1sum -c - >/dev/null 2>&1; then
@@ -117,7 +121,7 @@ changelog()
 		# just a workaround for the "syntax error near unexpected token `;'" bug
 		catcmd="echo -n \"\""
 	fi
-	ssh $lopts $host "cd $path_to_repo; if [ ! -e _darcs/rlock ]; then touch _darcs/rlock; cd frugalware-${arch:-`arch`}; arch=${arch:-`arch`} sudo -u $sudouser updatesync upd frugalware$reposuffix.fdb ../source/$group/$pkgname/FrugalBuild; cd $path_to_repo; rm _darcs/rlock; cd $path_to_repo/source/$group/$pkgname; arch=${arch:-`arch`} sudo -u $sudouser genchangelog --repo $reponame; $catcmd; else echo \"Couldn't get lock.\"; fi"
+	ssh $lopts $host "cd $path_to_repo; if [ ! -e _darcs/rlock -a ! -e _darcs/freeze ]; then touch _darcs/rlock; cd frugalware-${arch:-`arch`}; arch=${arch:-`arch`} sudo -u $sudouser updatesync upd frugalware$reposuffix.fdb ../source/$group/$pkgname/FrugalBuild; cd $path_to_repo; rm _darcs/rlock; cd $path_to_repo/source/$group/$pkgname; arch=${arch:-`arch`} sudo -u $sudouser genchangelog --repo $reponame; $catcmd; else echo \"Couldn't get lock.\"; fi"
 }
 
 die()
