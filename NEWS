@@ -1,5 +1,9 @@
 VERSION         DESCRIPTION
 -----------------------------------------------------------------------------
+0.8.3         - bugfix in fblint
+              - syncpkg: support for pacman-3.4.2 and Frugalware-0.5
+              - repoman del/up/cl now handles _darcs/freeze
+              - repoman up now requires packages to be built in chroot
 0.8.2         - bugfix for repoman del
 0.8.1         - new manpages: chkperm/fblint
               - fix bug in fwmirror when source is not mirrored
