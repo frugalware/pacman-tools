@@ -62,6 +62,12 @@ upload()
 			echo "frugalware-devel@frugalware.org, or edit \$fst/docs/xml/teams.xml via darcs."
 			exit 1
 		fi
+		if ! LANG= LC_ALL= pacman -Qi -p $1 |grep -q "^Build Type.*chroot$"; then
+			echo "$1 is not built in chroot. Remove the -H option"
+			echo "from your makepkg commandline switches, rebuild your"
+			echo "package and try again."
+			exit 1
+		fi
 	fi
 	name=`basename $src`
 	msg "Requesting a temporary file"
