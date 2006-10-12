@@ -35,7 +35,7 @@ delete()
 	if [ "$verbose" != 0 ]; then
 		rmopts="-v"
 	fi
-	ssh $lopts $host "cd $path_to_repo; if [ ! -e _darcs/lock ]; then sudo -u $sudouser rm $rmopts $path_to_repo/$file; else echo \"Couldn't get lock.\"; fi"
+	ssh $lopts $host "cd $path_to_repo; if [ ! -e _darcs/freeze ]; then sudo -u $sudouser rm $rmopts $path_to_repo/$file; else echo \"The repo is freezed.\"; fi"
 	
 }
 
