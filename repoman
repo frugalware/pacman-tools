@@ -112,7 +112,7 @@ clean()
 {
 	msg "Cleaning up $1"
 	split_group_pkgname $1
-	[[ "$reponame" =~ "-current$" ]] && reposuffix="-current"
+	[[ "$reponame" = "frugalware-current" ]] && reposuffix="-current"
 	ssh $lopts $host "cd $path_to_repo/frugalware-${arch:-`arch`} && arch=${arch:-`arch`} sudo -u $sudouser updatesync del frugalware$reposuffix.fdb $pkgname && genchangelog --repo $reponame --clean $pkgname"
 }
 
@@ -120,7 +120,7 @@ changelog()
 {
 	msg "Generating Changelog for $1"
 	split_group_pkgname $1
-	[[ "$reponame" =~ "-current$" ]] && reposuffix="-current"
+	[[ "$reponame" = "frugalware-current" ]] && reposuffix="-current"
 	if [ "$verbose" == 1 ]; then
 		catcmd="cat Changelog"
 	else
