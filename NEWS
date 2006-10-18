@@ -1,5 +1,8 @@
 VERSION         DESCRIPTION
 -----------------------------------------------------------------------------
+0.8.4         - repoman merge no longer builds in a chroot
+              - repoman: ported to bash-3.2
+              - pear-makefb: new tool to generate pear buildscripts
 0.8.3         - bugfix in fblint
               - syncpkg: support for pacman-3.4.2 and Frugalware-0.5
               - repoman del/up/cl now handles _darcs/freeze
