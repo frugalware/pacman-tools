@@ -1,0 +1,96 @@
+#!/usr/bin/env python
+
+__author__ = "Miklos Vajna <vmiklos@frugalware.org>"
+__version__ = "0.8.4"
+__date__ = "Thu, 19 Oct 2006 00:18:19 +0200"
+__copyright__ = "Copyright (c) 2006 Miklos Vajna"
+__license__ = "GPL"
+
+import os, urllib, sys, sha
+from xml.dom import minidom
+from email.Utils import formatdate
+
+def usage():
+	print "Usage: %s packagename" % sys.argv[0]
+
+if len(sys.argv) < 2:
+	usage()
+	sys.exit(1)
+if sys.argv[1] == "--help":
+	usage()
+	sys.exit(0)
+if sys.argv[1] == "--version":
+	print """pear-makefb (pacman-tools) %s
+
+%s
+This is free software; see the source for copying conditions.  There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.""" % (__version__, __copyright__)
+	sys.exit(0)
+
+name = sys.argv[1]
+deps = []
+
+sys.stdout.write("Writing the FrugalBuild...")
+sys.stdout.flush()
+sock = urllib.urlopen("http://cvs.php.net/viewvc.cgi/pear/%s/package.xml?revision=HEAD" % name)
+
+pkg = minidom.parse(sock)
+sock.close()
+
+out = open("FrugalBuild", "w")
+out.write("""# Last Modified: %s
+# Compiling Time:  SBU
+# Maintainer: crazy <crazy@frugalware.org>\n\n""" % formatdate(localtime=True))
+
+out.write('_F_pear_name="%s"\n' % name)
+
+try:
+	pkgver = pkg.getElementsByTagName('version')[0].firstChild.toxml()
+except IndexError:
+	print " No such package!"
+	os.unlink("FrugalBuild")
+	sys.exit(1)
+out.write("pkgver=%s\n" % pkgver)
+
+out.write('pkgdesc="%s"\n' % pkg.getElementsByTagName('summary')[0].firstChild.toxml())
+
+for i in pkg.getElementsByTagName('deps')[0].getElementsByTagName("dep"):
+	# we do not list optional deps in the FB
+	# currently extensions are not splitted to separate subpackages
+	if i.attributes["optional"].value == "yes" or i.attributes["type"].value == "ext":
+		continue
+	if i.attributes["type"].value == "php":
+		s = "php"
+	if i.attributes["type"].value == "pkg":
+		s = "php-pear-%s" % i.firstChild.toxml().lower()
+	# turn the separator to a string
+	rel = {
+		"has": None,
+		"eq": "=",
+		"lt": "<=",
+		"le": "<=",
+		"gt": ">=",
+		"ge": ">="
+	} [i.attributes["rel"].value]
+	if rel:
+		s += rel + i.attributes["version"].value
+	deps.append(s)
+out.write("depends=('%s')\n" % "' '".join(deps))
+out.write("Finclude pear\n")
+
+remote = urllib.urlopen('http://pear.php.net/get/%s-%s.tgz' % (name, pkgver))
+local = open('%s-%s.tgz' % (name, pkgver), 'w')
+local.write(remote.read())
+remote.close()
+local.close()
+ctx = sha.new()
+sock = open('%s-%s.tgz' % (name, pkgver))
+while True:
+	buf = sock.read(16384)
+	if not buf:
+		break
+	ctx.update(buf)
+sock.close()
+out.write("sha1sums=('%s')\n" % ctx.hexdigest())
+out.close()
+sys.stdout.write(" done.\n")

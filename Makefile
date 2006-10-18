@@ -36,8 +36,10 @@ docdir = /usr/share/doc/pacman-tools-$(VERSION)
 
 compile: chkperm genauthors
 	$(MAKE) -C mkiso
-	chmod +x fwmirror
+	chmod +x fwmirror pear-makefb
 	help2man -n "mirrors Frugalware archives" -S Frugalware -N ./fwmirror |sed 's/\\(co/(c)/' >fwmirror.1
+	help2man -n "Writes FrugalBuild scripts for PHP PEAR packages" -S Frugalware -N ./pear-makefb |sed 's/\\(co/(c)/' \
+		>pear-makefb.1
 	help2man -n "controls upload rights for Frugalware packages" -S Frugalware -N ./chkperm |sed 's/\\(co/(c)/' \
 		>chkperm.1
 	chmod +x fblint
@@ -89,6 +91,8 @@ install:
 	$(INSTALL) mkiso/mkiso $(DESTDIR)$(bindir)/mkiso
 	$(INSTALL) fwmirror $(DESTDIR)$(bindir)/fwmirror
 	$(INSTALL) -m644 fwmirror.1 $(DESTDIR)$(man1dir)
+	$(INSTALL) pear-makefb $(DESTDIR)$(bindir)/pear-makefb
+	$(INSTALL) -m644 pear-makefb.1 $(DESTDIR)$(man1dir)
 	$(INSTALL) -m644 chkperm.1 $(DESTDIR)$(man1dir)
 	$(INSTALL) -m644 fblint.1 $(DESTDIR)$(man1dir)
 	$(INSTALL) -m644 mkiso/mkiso.8 $(DESTDIR)$(man8dir)
