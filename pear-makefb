@@ -11,7 +11,7 @@ from xml.dom import minidom
 from email.Utils import formatdate
 
 def usage():
-	print "Usage: %s packagename" % sys.argv[0]
+	print "Usage: %s packagename [--pecl]" % sys.argv[0]
 
 if len(sys.argv) < 2:
 	usage()
@@ -28,11 +28,20 @@ warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.""" %
 	sys.exit(0)
 
 name = sys.argv[1]
+pear = True
+try:
+	if sys.argv[2] == "--pecl":
+		pear = False
+except:
+	pass
 deps = []
 
 sys.stdout.write("Writing the FrugalBuild...")
 sys.stdout.flush()
-sock = urllib.urlopen("http://cvs.php.net/viewvc.cgi/pear/%s/package.xml?revision=HEAD" % name)
+if pear:
+	sock = urllib.urlopen("http://cvs.php.net/viewvc.cgi/pear/%s/package.xml?revision=HEAD" % name)
+else:
+	sock = urllib.urlopen("http://cvs.php.net/viewvc.cgi/pecl/%s/package.xml?revision=HEAD" % name)
 
 pkg = minidom.parse(sock)
 sock.close()
@@ -42,43 +51,61 @@ out.write("""# Last Modified: %s
 # Compiling Time:  SBU
 # Maintainer: crazy <crazy@frugalware.org>\n\n""" % formatdate(localtime=True))
 
-out.write('_F_pear_name="%s"\n' % name)
+if pear:
+	out.write('_F_pear_name="%s"\n' % name)
+else:
+	out.write('_F_pecl_name="%s"\n' % name)
 
 try:
 	pkgver = pkg.getElementsByTagName('version')[0].firstChild.toxml()
 except IndexError:
 	print " No such package!"
-	os.unlink("FrugalBuild")
 	sys.exit(1)
 out.write("pkgver=%s\n" % pkgver)
 
 out.write('pkgdesc="%s"\n' % pkg.getElementsByTagName('summary')[0].firstChild.toxml())
 
-for i in pkg.getElementsByTagName('deps')[0].getElementsByTagName("dep"):
-	# we do not list optional deps in the FB
-	# currently extensions are not splitted to separate subpackages
-	if i.attributes["optional"].value == "yes" or i.attributes["type"].value == "ext":
-		continue
-	if i.attributes["type"].value == "php":
-		s = "php"
-	if i.attributes["type"].value == "pkg":
-		s = "php-pear-%s" % i.firstChild.toxml().lower()
-	# turn the separator to a string
-	rel = {
-		"has": None,
-		"eq": "=",
-		"lt": "<=",
-		"le": "<=",
-		"gt": ">=",
-		"ge": ">="
-	} [i.attributes["rel"].value]
-	if rel:
-		s += rel + i.attributes["version"].value
-	deps.append(s)
+try:
+	for i in pkg.getElementsByTagName('deps')[0].getElementsByTagName("dep"):
+		# we do not list optional deps in the FB
+		# currently extensions are not splitted to separate subpackages
+		try:
+			if i.attributes["optional"].value == "yes":
+				continue
+		except KeyError:
+			pass
+		if i.attributes["type"].value == "ext":
+			continue
+		if i.attributes["type"].value == "php":
+			s = "php"
+		if i.attributes["type"].value == "pkg":
+			s = "php-pear-%s" % i.firstChild.toxml().lower()
+		# turn the separator to a string
+		rel = {
+			"has": None,
+			"eq": "=",
+			"lt": "<=",
+			"le": "<=",
+			"gt": ">=",
+			"ge": ">="
+		} [i.attributes["rel"].value]
+		if rel:
+			s += rel + i.attributes["version"].value
+		deps.append(s)
+except IndexError:
+	print " The version of the package xml is probably not 1.0!"
+	os.unlink("FrugalBuild")
+	sys.exit(1)
 out.write("depends=('%s')\n" % "' '".join(deps))
-out.write("Finclude pear\n")
+if pear:
+	out.write("Finclude pear\n")
+else:
+	out.write("Finclude pecl\n")
 
-remote = urllib.urlopen('http://pear.php.net/get/%s-%s.tgz' % (name, pkgver))
+if pear:
+	remote = urllib.urlopen('http://pear.php.net/get/%s-%s.tgz' % (name, pkgver))
+else:
+	remote = urllib.urlopen('http://pecl.php.net/get/%s-%s.tgz' % (name, pkgver))
 local = open('%s-%s.tgz' % (name, pkgver), 'w')
 local.write(remote.read())
 remote.close()
