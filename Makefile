@@ -38,8 +38,8 @@ compile: chkperm genauthors
 	$(MAKE) -C mkiso
 	chmod +x fwmirror pear-makefb
 	help2man -n "mirrors Frugalware archives" -S Frugalware -N ./fwmirror |sed 's/\\(co/(c)/' >fwmirror.1
-	help2man -n "Writes FrugalBuild scripts for PHP PEAR packages" -S Frugalware -N ./pear-makefb |sed 's/\\(co/(c)/' \
-		>pear-makefb.1
+	help2man -n "Writes FrugalBuild scripts for PHP PEAR/PECL packages" -S Frugalware -N ./pear-makefb \
+		|sed 's/\\(co/(c)/' >pear-makefb.1
 	help2man -n "controls upload rights for Frugalware packages" -S Frugalware -N ./chkperm |sed 's/\\(co/(c)/' \
 		>chkperm.1
 	chmod +x fblint
