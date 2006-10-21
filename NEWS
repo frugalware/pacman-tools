@@ -1,5 +1,8 @@
 VERSION         DESCRIPTION
 -----------------------------------------------------------------------------
+0.8.5         - pear-makefb: support for pecl packages
+	      - fblint, fwcpan, pear-makefb and syncpkg no longer uses
+	        makepkg's -L option
 0.8.4         - repoman merge no longer builds in a chroot
               - repoman: ported to bash-3.2
               - pear-makefb: new tool to generate pear buildscripts
