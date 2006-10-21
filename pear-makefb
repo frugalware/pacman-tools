@@ -47,9 +47,8 @@ pkg = minidom.parse(sock)
 sock.close()
 
 out = open("FrugalBuild", "w")
-out.write("""# Last Modified: %s
-# Compiling Time:  SBU
-# Maintainer: crazy <crazy@frugalware.org>\n\n""" % formatdate(localtime=True))
+out.write("""# Compiling Time:  SBU
+# Maintainer: crazy <crazy@frugalware.org>\n\n""")
 
 if pear:
 	out.write('_F_pear_name="%s"\n' % name)

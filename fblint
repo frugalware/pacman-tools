@@ -91,7 +91,7 @@ else
        exit 1
 fi
 
-check "last modified line" "grep -q -i '^# Last Modified: ' $_fblint_fb"
+check "no last modified line" "! grep -q -i '^# Last Modified: ' $_fblint_fb"
 check "sbu" "grep -i -q \"^# Compiling Time: [~0-9\.]\+ SBU$\" $_fblint_fb"
 check "maintainer" "grep -q '^# Maintainer: ' $_fblint_fb"
 check "syntax errors" "source $_fblint_fb"
