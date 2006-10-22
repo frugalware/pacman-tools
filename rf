@@ -78,6 +78,10 @@ Can be overridden, with actions -RCPUL
     Group of the package, meaning the physical group, eg. the 
     /extra/devel/adevelpkg has devel group.
 
+=item B<-m>
+
+    Don't run fblint.
+
 =item B<-n>
 
     Name of the package
@@ -497,11 +501,12 @@ sub contents {
 
 my $chkonce = 0;
 my %opts;
-Getopts::getopts('hr:a:o:p:g:n:s:f:v:dqkt:l:WRCPULH', \%opts);
+Getopts::getopts('hmr:a:o:p:g:n:s:f:v:dqkt:l:WRCPULH', \%opts);
 
 HELP_MESSAGE && die if $opts{h};
 
 $opts{R}=$opts{C}=$opts{P}=$opts{U}=$opts{L}=$opts{H} = 1 unless $opts{R}|| $opts{C}||$opts{P}||$opts{U}||$opts{L}||$opts{H};
+$chkonce = 1 if $opts{m};
 
 my ($distrib,$version,$repo,$arch, $repodir, $serverprefix, $group, $pkgname, $noask) =
     ('frugalware',$opts{v},undef,$opts{a}, $opts{o}, $opts{p}, $opts{g}, $opts{n}, $opts{k});
