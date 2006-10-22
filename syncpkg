@@ -90,7 +90,6 @@ do
 	rm -f *fpm *.log
 	log "making package: $pkg"
 	echo "$pkg" >/tmp/sync.pkg
-	sudo makepkg -t $makepkgtree -RC >>$mlogfile 2>&1
 	# TODO: at this point maybe some dirs are not umounted perfectly
 	# till we find a real sollution (sudo for umount?), here is a workaround:
 	# for i in `mount|grep /var/chroot.vmiklos|sed 's/.* on \([^ ]*\) .*/\1/'`; do sudo umount $i; done
@@ -100,6 +99,7 @@ do
 	else
 		makepkgtree="stable"
 	fi
+	sudo makepkg -t $makepkgtree -RC >>$mlogfile 2>&1
 	# -R and -L can be removed after Frugalware-0.6
 	sudo makepkg -t $makepkgtree -RLuck >>$mlogfile 2>&1
 	ret=$?
