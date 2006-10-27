@@ -53,6 +53,7 @@ echo "downloading missing source files..."
 
 for i in ${source[@]} ${signatures[@]}
 do
+	[[ "$i" =~ "http://ftp.frugalware.org" ]] && continue
 	file=`strip_url $i`
 	if [ ! -e $file ]; then
 		echo "downloading $file..."
