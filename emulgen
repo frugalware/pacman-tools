@@ -1,0 +1,42 @@
+#!/bin/sh
+
+. /usr/lib/frugalware/fwmakepkg
+. /etc/makepkg.conf
+
+unset LANG LC_ALL
+
+if [ -z "$1" ]; then
+	echo "usage: $0 <pkgname>"
+	exit 1
+fi
+
+pkgname=$1
+
+if ! pacman -Q $1 &>/dev/null; then
+	echo "package '$1' is not installed, you should create the FrugalBuild"
+	echo "manually :-/"
+	exit 1
+fi
+
+pkgver=`pacman -Qi $1|grep ^Version|sed 's/.* : //'`
+pkgdesc=`pacman -Qi $1|grep ^Desc|sed 's/.* : //'`
+url=`pacman -Qi $1|grep ^URL|sed 's/.* : //'`
+depends="`pacman -Qi $1|grep ^Depends|sed \"s/ $//;s/[<>]\?=[^ ]\+//g;s/.* : //;s/ /-emul' '/g\"`-emul"
+
+cat >FrugalBuild <<EOF
+# Compiling Time: 0.01 SBU
+# Maintainer: Christian Hamar alias krix <krics@linuxforum.hu>
+
+pkgname=$pkgname-emul
+pkgver=${pkgver//-/_}
+pkgrel=1
+pkgdesc="$pkgdesc for emulation of i686 on x86_64"
+url="$url"
+EOF
+if [ -n "$depends" ]; then
+	echo "depends=('$depends')" >> FrugalBuild
+fi
+echo "Finclude emul" >> FrugalBuild
+. FrugalBuild
+$FTPAGENT $source
+echo "sha1sums=('`sha1sum $(echo "$source" | sed 's|^.*://.*/||g')|sed 's/  .*//'`')" >> FrugalBuild
