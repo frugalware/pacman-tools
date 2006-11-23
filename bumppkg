@@ -102,7 +102,7 @@ src_download()
 
 do_build()
 {
-	sudo makepkg -c
+	sudo makepkg -c || die "build failed!"
 	Fmessage "done, testing time!"
 }
 
