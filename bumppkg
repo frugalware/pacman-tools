@@ -55,7 +55,11 @@ src_cleanup()
 	workdir=`pwd|sed "s|$root||"`
 	rootlist=`mktemp`
 	worklist=`mktemp`
-	ls $root/_darcs/current/$workdir >$rootlist
+	darcsdir="_darcs/pristine"
+	if [ ! -d $root/$darcsdir ]; then
+		darcsdir="_darcs/current"
+	fi
+	ls $root/$darcsdir/$workdir >$rootlist
 	ls >$worklist
 	for i in `diff -u $rootlist $worklist|grep ^+[^+]|sed 's/^+//'`
 	do
