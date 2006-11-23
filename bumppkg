@@ -106,11 +106,25 @@ do_build()
 	Fmessage "done, testing time!"
 }
 
+do_record()
+{
+	source FrugalBuild || die "failed to source the FrugalBuild!"
+	echo -e "`date +"%a %b %d %H:%M:%S %Z %Y"`
+`cat $root/_darcs/prefs/author`
+$pkgname-$pkgver-$pkgrel-$CARCH
+$@" | darcs rec -a --pipe
+}
+
 USE_COLOR="y"
 . /usr/lib/frugalware/fwmakepkg
+. /etc/makepkg.conf
 
 check_complex
 update_pkgver
 src_cleanup
 src_download
 do_build
+if [ "$1" == "--record" ]; then
+	do_record "$2"
+	shift 2
+fi
