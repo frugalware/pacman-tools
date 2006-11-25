@@ -38,7 +38,7 @@ check_complex()
 
 src_cleanup()
 {
-	local i root workdir
+	local i workdir
 
 	Fmessage "cleaning up old source files"
 	i=`pwd`
