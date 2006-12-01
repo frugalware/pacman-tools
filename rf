@@ -114,7 +114,11 @@ Can be overridden, with actions -RCPUL
 =item B<-d> 
     
     Delete the files given in -s and -f
-    
+
+#=item B<-c>
+#
+#    Try to delete source and .fpm files
+#    
 =item B<-k>
 
     Answer yes to all questions.
@@ -501,7 +505,7 @@ sub contents {
 
 my $chkonce = 0;
 my %opts;
-Getopts::getopts('hmr:a:o:p:g:n:s:f:v:dqkt:l:WRCPULH', \%opts);
+Getopts::getopts('chmr:a:o:p:g:n:s:f:v:dqkt:l:WRCPULH', \%opts);
 
 HELP_MESSAGE && die if $opts{h};
 
@@ -664,32 +668,40 @@ sub cL{
 }
 
 sub Cleanup{
-  my ($ec,$ev,$ir);
-  unless ($opts{'q'}){
-    print "Cleanup on server\n";
-    my $repo_=$repo . '/' if $repo;
-    print "Nothing to do, that's fine!\n\n" unless @sourcefiles || @pkgfiles;
-    if (@sourcefiles){
-      my (@indarcs) = qx"repoman -t $version ls _darcs/current/$repo_/source/$group/$pkgname/ 2>&1";
-      my (@inrepo) = qx"repoman -t $version ls $repo_/source/$group/$pkgname/ 2>&1";
-      if ($inrepo[1] =~ 'No such file or') {
-	print "Probably it is a new package, passing by...\n";
-	return;
-      }
-      splice(@inrepo,0,1);
-      @inrepo = grep $_ ne "Changelog\n",@inrepo;
-      foreach $ir (@inrepo){
-	unless(scalar grep(/\Q$ir\E/, @indarcs)){
-	  $ec = apply "repoman -t $version del $repo/source/$group/$pkgname/$ir";}}}
-    if (@pkgfiles){
-      #      if( my $oldf = getoldfpm("$serverprefix/$repo/$repodir/",$pkgname) ){ 
-      #	apply "repoman -t $version del $repo/$repodir/$oldf";}}}
-      for my $pkgfile (@pkgfiles){
-	$pkgfile =~ /^(.*)-.*?-.*?-.*?fpm\Z/;
-	print "Something nasty with $pkgfile, is it a package file?" unless $1;
-	if( my $oldf = getoldfpm("$serverprefix/$repo/$repodir/",$1) ){ 
-	  $ev = apply "repoman -t $version del $repo/$repodir/$oldf";}}}}
-  die "Cleaning up FAILED!" if $ec||$ev;
+    my ($ec,$ev,$ir);
+    unless ($opts{'q'}){
+	print "Cleanup on server\n";
+	my $repo_=$repo . '/' if $repo;
+#    print "Nothing to do, that's fine!\n\n" unless @sourcefiles || @pkgfiles;
+#    if (@sourcefiles){
+	my (@indarcs) = qx"repoman -t $version ls _darcs/current/$repo_/source/$group/$pkgname/ 2>&1";
+	my (@inrepo) = qx"repoman -t $version ls $repo_/source/$group/$pkgname/ 2>&1";
+	if ($inrepo[1] =~ 'No such file or') {
+	    print "Probably it is a new package, passing by...\n";
+	    return;
+#      }
+	    splice(@inrepo,0,1);
+ 	    @inrepo = grep $_ ne "Changelog\n",@inrepo;
+	    foreach $ir (@inrepo){
+		unless(scalar grep(/\Q$ir\E/, @indarcs)){
+		    $ec = apply "repoman -t $version del $repo/source/$group/$pkgname/$ir";}}}
+	if (@pkgfiles){
+	    #      if( my $oldf = getoldfpm("$serverprefix/$repo/$repodir/",$pkgname) ){ 
+	    #	apply "repoman -t $version del $repo/$repodir/$oldf";}}}
+	    for my $pkgfile (@pkgfiles){
+		$pkgfile =~ /^(.*)-.*?-.*?-.*?fpm\Z/;
+		print "Something nasty with $pkgfile, is it a package file?" unless $1;
+		if( my $oldf = getoldfpm("$serverprefix/$repo/$repodir/",$1) ){ 
+		    $ev = apply "repoman -t $version del $repo/$repodir/$oldf";
+		}
+	    }
+	} else {   # at least try to del old fpm
+	    if( my $oldf = getoldfpm("$serverprefix/$repo/$repodir/",$pkgname) ){ 
+		$ev = apply "repoman -t $version del $repo/$repodir/$oldf";
+	    } else { print "Can't del package file!"; }
+	}
+    }
+    die "Cleaning up FAILED!" if $ec||$ev;
 }
 
 
