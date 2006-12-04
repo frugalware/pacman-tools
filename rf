@@ -117,7 +117,7 @@ Can be overridden, with actions -RCPUL
 
 =item B<-c>
 
-    Try to delete only .fpm files
+    Try to delete the sources, too.
     
 =item B<-k>
 
@@ -670,7 +670,7 @@ sub cL{
 sub Cleanup{
     my ($ec,$ev,$ir);
     unless ($opts{'q'}){
-	unless ($opts{'c'}){
+	if ($opts{'c'}){
 	    print "Cleanup on server\n";
 	    my $repo_=$repo . '/' if $repo;
 	    #    print "Nothing to do, that's fine!\n\n" unless @sourcefiles || @pkgfiles;
