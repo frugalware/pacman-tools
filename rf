@@ -115,10 +115,10 @@ Can be overridden, with actions -RCPUL
     
     Delete the files given in -s and -f
 
-#=item B<-c>
-#
-#    Try to delete source and .fpm files
-#    
+=item B<-c>
+
+    Try to delete only .fpm files
+    
 =item B<-k>
 
     Answer yes to all questions.
@@ -670,21 +670,23 @@ sub cL{
 sub Cleanup{
     my ($ec,$ev,$ir);
     unless ($opts{'q'}){
-	print "Cleanup on server\n";
-	my $repo_=$repo . '/' if $repo;
-	#    print "Nothing to do, that's fine!\n\n" unless @sourcefiles || @pkgfiles;
-	#    if (@sourcefiles){
-	my (@indarcs) = qx"repoman -t $version ls _darcs/current/$repo_/source/$group/$pkgname/ 2>&1";
-	my (@inrepo) = qx"repoman -t $version ls $repo_/source/$group/$pkgname/ 2>&1";
-	if ($inrepo[1] =~ 'No such file or') {
-	    print "Probably it is a new package, passing by...\n";
-	    return;
-	}
-	splice(@inrepo,0,1);
-	@inrepo = grep $_ ne "Changelog\n",@inrepo;
-	foreach $ir (@inrepo){
-	    unless(scalar grep(/\Q$ir\E/, @indarcs)){
-		$ec = apply "repoman -t $version del $repo/source/$group/$pkgname/$ir";
+	unless ($opts{'c'}){
+	    print "Cleanup on server\n";
+	    my $repo_=$repo . '/' if $repo;
+	    #    print "Nothing to do, that's fine!\n\n" unless @sourcefiles || @pkgfiles;
+	    #    if (@sourcefiles){
+	    my (@indarcs) = qx"repoman -t $version ls _darcs/current/$repo_/source/$group/$pkgname/ 2>&1";
+	    my (@inrepo) = qx"repoman -t $version ls $repo_/source/$group/$pkgname/ 2>&1";
+	    if ($inrepo[1] =~ 'No such file or') {
+		print "Probably it is a new package, passing by...\n";
+		return;
+	    }
+	    splice(@inrepo,0,1);
+	    @inrepo = grep $_ ne "Changelog\n",@inrepo;
+	    foreach $ir (@inrepo){
+		unless(scalar grep(/\Q$ir\E/, @indarcs)){
+		    $ec = apply "repoman -t $version del $repo/source/$group/$pkgname/$ir";
+		}
 	    }
 	}
 	
