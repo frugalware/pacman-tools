@@ -1,0 +1,15 @@
+#!/bin/bash
+
+if [ "`pwd|sed 's|.*/\(.*\)|\1|'`" != "emul-extra" ]; then
+	echo "where are you?"
+	exit 1
+fi
+
+darcs pull -a
+
+for i in `chkworld |grep ^Checking |sed 's|.*/\(.*\)-[^-]*\.\.\..*|\1|'`
+do
+	cd $i
+	bumppkg --record "version bump" --push
+	cd ..
+done
