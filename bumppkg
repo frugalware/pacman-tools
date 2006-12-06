@@ -130,5 +130,5 @@ if [ "$1" == "--record" ]; then
 fi
 
 if [ "$1" == "--push" ]; then
-	rf -k -f *fpm -s FrugalBuild
+	rf -k -c -f *fpm
 fi
