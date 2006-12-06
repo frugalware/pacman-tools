@@ -119,6 +119,10 @@ USE_COLOR="y"
 . /usr/lib/frugalware/fwmakepkg
 . /etc/makepkg.conf
 
+if [ "$1" == "--record-only" ]; then
+	do_record "$2"
+	exit 0
+fi
 check_complex
 update_pkgver
 src_cleanup
