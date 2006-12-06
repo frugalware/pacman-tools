@@ -134,5 +134,5 @@ if [ "$1" == "--record" ]; then
 fi
 
 if [ "$1" == "--push" ]; then
-	rf -k -c -f *fpm
+	rf -k -c -f *-$CARCH.fpm
 fi
