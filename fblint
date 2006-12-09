@@ -42,6 +42,23 @@ check()
 	fi
 }
 
+get_root()
+{
+	local i
+
+	i=`pwd`
+	while true
+	do
+		if [ -e "$i/_darcs" ]; then
+			break
+		elif [ "$i" == "" ]; then
+			break
+		fi
+		i=`echo $i|sed 's|\(.*\)/.*|\1|'`
+	done
+	basename $i
+}
+
 if [ "$1" = "--version" ]; then
 	echo "fblint (pacman-tools) $myver"
 	echo
@@ -143,6 +160,10 @@ if [ ! -z "$subpkgs" ]; then
 	check "right number of subbackup" "[ \"${#subbackup[@]}\" = 0 ] || [ \"${#subbackup[@]}\" = \"${#subpkgs[@]}\" ]"
 	check "right number of subinstall" "[ \"${#subinstall[@]}\" = 0 ] || [ \"${#subinstall[@]}\" = \"${#subpkgs[@]}\" ]"
 	check "right number of suboptions" "[ \"${#suboptions[@]}\" = 0 ] || [ \"${#suboptions[@]}\" = \"${#subpkgs[@]}\" ]"
+fi
+
+if [ "`get_root`" = "frugalware-stable" ]; then
+	check "unchanged pkgrel" "echo $pkgrel | grep -q '\(siwenna\|terminus\)'"
 fi
 
 [ "$_fblint_verbose" ] && echo "done: $_fblint_done, failed $_fblint_failed"
