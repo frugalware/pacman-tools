@@ -36,12 +36,9 @@ check_complex()
 	fi
 }
 
-src_cleanup()
+get_root()
 {
-	local i workdir
-
-	Fmessage "cleaning up old source files"
-	i=`pwd`
+	local i=`pwd`
 	while true
 	do
 		if [ -e "$i/_darcs" ]; then
@@ -51,7 +48,15 @@ src_cleanup()
 		fi
 		i=`echo $i|sed 's|\(.*\)/.*|\1|'`
 	done
-	root=$i
+	echo $i
+}
+
+src_cleanup()
+{
+	local root i workdir
+
+	Fmessage "cleaning up old source files"
+	root="`get_root`"
 	workdir=`pwd|sed "s|$root||"`
 	rootlist=`mktemp`
 	worklist=`mktemp`
@@ -109,6 +114,7 @@ do_build()
 do_record()
 {
 	source FrugalBuild || die "failed to source the FrugalBuild!"
+	root="`get_root`"
 	echo -e "`date +"%a %b %d %H:%M:%S %Z %Y"`
 `cat $root/_darcs/prefs/author`
 $pkgname-$pkgver-$pkgrel-$CARCH
