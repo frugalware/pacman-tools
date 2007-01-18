@@ -1,16 +1,29 @@
-.TH "REPOMAN" "1" "April 2006" "Frugalware 0.4" "pacman-tools"
+.TH "REPOMAN" "1" "January 2007" "Frugalware 0.6" "pacman-tools"
 .SH NAME
-repoman \- Frugalware's program to maintain packages via darcs and ssh
+repoman \- Frugalware's program to maintain/build packages via ssh/rsync
 .SH SYNOPSIS
 \fBrepoman\fR [\fIglobal options\fR] [\fIcommand\fR] [\fIcommand options\fR]
 .SH DESCRIPTION
 .BR repoman
 is meant for Frugalware developers to upload or delete source
 tarballs, fpm packages and generate changelogs.
+
+Also it's a tool for users to automatically build and install packages on the
+target host.
 .br
 Note: \fBrepoman\fR only runs \fIinside\fR a darcs repository.
 .SH USAGE
 A typical package update should be done as follows:
+
+.TP
+0) Configure repoman:
+
+echo 'stable_servers=("vmiklos@darcs.frugalware.org:/home/ftp/pub/frugalware/frugalware-current")' > ~/.repoman.conf
+
+echo 'fst_root=~/darcs' >> ~/.repoman.conf
+
+Replace my nick (vmiklos) with your nick and make sure about you have the darcs tree in ~/darcs/current.
+
 .TP
 1) Get the repo and set defaults.
 
@@ -61,9 +74,7 @@ Or if you would like to rename a file in the source, run this:
 
 darcs mv 01-xorg-8.6.2-vmware-amd64.patch 02-xorg-6.8.2-vmware-amd64.patch
 
-Then build the packages with 'makepkg -c', or better:
-
-su -c 'makepkg -Ra'
+Then build the packages with 'sudo makepkg -c'.
 
 .TP
 4) Recording the changes.
