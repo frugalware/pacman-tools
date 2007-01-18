@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# (c) 2005-2006 Miklos Vajna <vmiklos@frugalware.org>
+# (c) 2005-2007 Miklos Vajna <vmiklos@frugalware.org>
 # repoman for Frugalware
 # distributed under GPL License
 
@@ -29,14 +29,29 @@ msg()
 
 delete()
 {
+	local i files rmopts host
+	server=$(eval "echo \$${reponame}_servers")
+	if echo $server |grep -q :; then
+		host=${server%:*}
+		path=${server#*:}
+	else
+		die "The first server in the $reponame repo is read-only, please update the list of servers."
+	fi
+	sudouser=$(eval "echo \$${reponame}_sudo")
+	[ -n "$sudouser" ] && sudo="sudo -u $sudouser"
 	# Strip leading / and any ..
-	file=`echo $1|sed 's|^/||;s|\.\./||g'`
-	msg "Deleting file: $file"
+	for i in $*
+	do
+		files="$files `echo $i|sed 's|^/||;s|\.\./||g'`"
+	done
 	if [ "$verbose" != 0 ]; then
 		rmopts="-v"
 	fi
-	ssh $lopts $host "cd $path_to_repo; if [ ! -e _darcs/freeze ]; then sudo -u $sudouser rm $rmopts $path_to_repo/$file; else echo \"The repo is freezed.\"; fi"
-	
+	for i in $files
+	do
+		msg "Deleting file(s): $i"
+		ssh $host "cd $path; if [ ! -e _darcs/lock ]; then $sudo rm $rmopts $path/$i; else echo \"Couldn't get lock.\"; fi"
+	done
 }
 
 upload()
@@ -46,6 +61,15 @@ upload()
 		usage
 		exit 1
 	fi
+	server=$(eval "echo \$${reponame}_servers")
+	if echo $server |grep -q :; then
+		host=${server%:*}
+		path=${server#*:}
+	else
+		die "The first server in the $reponame repo is read-only, please update the list of servers."
+	fi
+	sudouser=$(eval "echo \$${reponame}_sudo")
+	[ -n "$sudouser" ] && sudo="sudo -u $sudouser"
 	if [ -z "$2" ]; then
 		dest="frugalware-`uname -m`"
 	else
@@ -53,47 +77,32 @@ upload()
 		dest=`echo $2 |sed 's|^/||;s|\.\./||g'`
 	fi
 	src=$1
-	if echo $1 |grep -q \.fpm$; then
-		msg "Checking for permission"
-		group=`LANG= LC_ALL= pacman -Qi -p $1 |grep ^Group|sed 's/.* : \([^ ]*\) .*/\1/'`
-		if ! ssh $lopts $host "genchangelog --repo $reponame --check $group >/dev/null"; then
-			echo "Permission denied"
-			echo "If you think you should have permission, send a mail to"
-			echo "frugalware-devel@frugalware.org, or edit \$fst/docs/xml/teams.xml via darcs."
-			exit 1
-		fi
-		if ! LANG= LC_ALL= pacman -Qi -p $1 |grep -q "^Build Type.*chroot$"; then
-			echo "$1 is not built in chroot. Remove the -H option"
-			echo "from your makepkg commandline switches, rebuild your"
-			echo "package and try again."
-			exit 1
-		fi
-	fi
 	name=`basename $src`
 	msg "Requesting a temporary file"
-	tmp=`ssh $lopts $host "cd $path_to_repo; if [ ! -e _darcs/freeze ]; then mktemp 2>/dev/null; fi"`
-	if [ -z "$tmp" ]; then
-		echo "The repo is freezed."
-		exit 1
-	fi
+	tmp=`ssh $host mktemp 2>/dev/null`
 	msg "Uploading file: $src (to $tmp)"
-	scp $src $cpopts$host:$tmp
-	if echo "`sha1sum $src|sed 's/\(.*\)  .*/\1/'`  $tmp" |ssh $lopts $host sha1sum -c - >/dev/null 2>&1; then
+	scp $src $host:$tmp
+	if echo "`sha1sum $src|sed 's/\(.*\)  .*/\1/'`  $tmp" |ssh $host sha1sum -c - >/dev/null 2>&1; then
 		msg "Copying to $dest"
-		ssh $lopts $host "chmod 644 $tmp; sudo -u vmiklos cp $tmp $path_to_repo/$dest/$name && rm $tmp"
+		ssh $host "chmod 644 $tmp; $sudo cp $tmp $path/$dest/$name && rm $tmp"
 	else
 		echo "The uploaded file is corrupted :-/"
-		ssh $lopts $host "rm $tmp"
+		ssh $host "rm $tmp"
 		exit 1
 	fi
 }
 
 list()
 {
+	server=$(eval "echo \$${reponame}_servers")
+	if echo $server |grep -q :; then
+		host=${server%:*}
+		path=${server#*:}
+	else
+		die "The first server in the $reponame repo is read-only, please update the list of servers."
+	fi
 	msg "Fetching contents of directory: $1"
-	dir=$1
-	shift 1
-	ssh $lopts $host "ls $* $path_to_repo/$dir"
+	ssh $host "ls $path/$1"
 }
 
 split_group_pkgname()
@@ -112,22 +121,42 @@ clean()
 {
 	msg "Cleaning up $1"
 	split_group_pkgname $1
-	[[ "$reponame" = "frugalware-current" ]] && reposuffix="-current"
-	ssh $lopts $host "cd $path_to_repo/frugalware-${arch:-`arch`} && arch=${arch:-`arch`} sudo -u $sudouser updatesync del frugalware$reposuffix.fdb $pkgname && genchangelog --repo $reponame --clean $pkgname"
+	server=$(eval "echo \$${reponame}_servers")
+	if echo $server |grep -q :; then
+		host=${server%:*}
+		path=${server#*:}
+	else
+		die "The first server in the $reponame repo is read-only, please update the list of servers."
+	fi
+	sudouser=$(eval "echo \$${reponame}_sudo")
+	[ -n "$sudouser" ] && sudo="sudo -u $sudouser"
+	fdb=$(eval "echo \$${reponame}_fdb")
+	[ -z "$fdb" ] && fdb="$reponame.fdb"
+	ssh $host "cd $path/frugalware-${arch:-`arch`} && arch=${arch:-`arch`} $sudo updatesync del $fdb $pkgname && genchangelog --repo ${server##*/} --clean $pkgname"
 }
 
 changelog()
 {
 	msg "Generating Changelog for $1"
 	split_group_pkgname $1
-	[[ "$reponame" = "frugalware-current" ]] && reposuffix="-current"
+	server=$(eval "echo \$${reponame}_servers")
+	if echo $server |grep -q :; then
+		host=${server%:*}
+		path=${server#*:}
+	else
+		die "The first server in the $reponame repo is read-only, please update the list of servers."
+	fi
+	sudouser=$(eval "echo \$${reponame}_sudo")
+	[ -n "$sudouser" ] && sudo="sudo -u $sudouser"
+	fdb=$(eval "echo \$${reponame}_fdb")
+	[ -z "$fdb" ] && fdb="$reponame.fdb"
 	if [ "$verbose" == 1 ]; then
 		catcmd="cat Changelog"
 	else
 		# just a workaround for the "syntax error near unexpected token `;'" bug
 		catcmd="echo -n \"\""
 	fi
-	ssh $lopts $host "cd $path_to_repo; if [ ! -e _darcs/rlock -a ! -e _darcs/freeze ]; then touch _darcs/rlock; cd frugalware-${arch:-`arch`}; arch=${arch:-`arch`} sudo -u $sudouser updatesync upd frugalware$reposuffix.fdb ../source/$group/$pkgname/FrugalBuild; cd $path_to_repo; rm _darcs/rlock; cd $path_to_repo/source/$group/$pkgname; arch=${arch:-`arch`} sudo -u $sudouser genchangelog --repo $reponame; $catcmd; else echo \"Couldn't get lock.\"; fi"
+	ssh $host "cd $path; if [ ! -e _darcs/rlock ]; then touch _darcs/rlock; cd frugalware-${arch:-`arch`}; arch=${arch:-`arch`} $sudo updatesync upd $fdb ../source/$group/$pkgname/FrugalBuild; cd $path; rm _darcs/rlock; cd $path/source/$group/$pkgname; arch=${arch:-`arch`} $sudo genchangelog --repo ${server##*/}; $catcmd; else echo \"Couldn't get lock.\"; fi"
 }
 
 die()
@@ -141,30 +170,41 @@ update()
 	if [ ! "`type -p rsync`" ]; then
 		die "The rsync program is missing. Please install it with pacman -S rsync."
 	fi
-	if [ -z "$1" ]; then
-		repo=$reponame
-	else
-		repo=$1
-	fi
-	# Search for a mirror.
-	if [ -z "$mirror" ]; then
-		echo -e "$0: Can't find any mirror!"
-		[ -e /etc/repoman.conf.pacnew ] && echo -e "$0: HINT: merge the contents of /etc/repoman.conf.pacnew to /etc/repoman.conf!"
-		exit 1
-	fi
-	server="$mirror/_darcs/current/"
-	mkdir -p $fst_root/$repo
-	cd $fst_root/$repo
-	echo "warning: this operation can take minutes, please be patient"
-	syncstr=":: Synchronizing the Frugalware Source Tree... "
-	if [ "$verbose" != 1 ]; then
-		echo -n $syncstr
-		rsync -azq $server ./
-	else
-		echo $syncstr
-		rsync -azvP $server ./
-	fi
-	echo "done."
+	for i in ${repos[@]}
+	do
+		# Search for a server.
+		eval "servers=(\${${i}_servers[@]})"
+		if [ -z "$servers" ]; then
+			echo -e "$0: Can't find any server!"
+			if [ -e /etc/repoman.conf.pacnew ]; then
+				echo -e "$0: HINT: merge the contents of /etc/repoman.conf.pacnew to /etc/repoman.conf!"
+			fi
+			exit 1
+		fi
+		echo ":: Synchronizing source trees..."
+		for j in ${servers[@]}
+		do
+			server="$j/_darcs/current/"
+			mkdir -p $fst_root/$i
+			cd $fst_root/$i
+			echo "warning: this operation can take minutes, please be patient"
+			if [ "$verbose" != 1 ]; then
+				echo -n "$i... "
+				rsync -azq $server ./
+				ret=$?
+			else
+				echo "$i..."
+				rsync -azvP $server ./
+				ret=$?
+			fi
+			if [ $ret != 0 ]; then
+				echo "failed."
+			else
+				echo "done."
+				break
+			fi
+		done
+	done
 }
 
 chk_updated()
@@ -180,13 +220,23 @@ search()
 {
 	chk_updated $fst_root
 	[ -z "$*" ] || grepcmd="|grep $*"
-	eval "find $fst_root/$reponame/source -name FrugalBuild |xargs grep '\(options=(.*nobuild.*)\|^nobuild=\)' |sed 's|$fst_root/$reponame/source/\(.*\)/FrugalBuild:.*|\1|' $grepcmd"
+	for i in ${repos[@]}
+	do
+		eval "find $fst_root/$i/source -name FrugalBuild |xargs grep '\(options=(.*nobuild.*)\|^nobuild=\)' |sed 's|$fst_root/||;s|/source/[^/]*||;s|/FrugalBuild:.*||' $grepcmd"
+	done
 }
 
 merge()
 {
+	local repo target
+	if echo $1 |grep -q /; then
+		repo=${1%/*}
+		target=${1#*/}
+	else
+		target=$1
+	fi
 	# sanility checks
-	chk_updated $fst_root
+	chk_updated $fst_root/$repo
 	# install essential packages if necessary
 	echo -n "checking for essential packages... "
 	. /etc/makepkg.conf
@@ -206,8 +256,8 @@ merge()
 	else
 		echo "done"
 	fi
-	dir=`find $fst_root -type d -name "$1"|sed -n '$ p'`
-	[ -z "$dir" ] && die "package '$1' not found"
+	dir=`find $fst_root/$repo -maxdepth 4 -type d -name "$target"|sed -n '$ p'`
+	[ -z "$dir" ] && die "package '$target' not found"
 	cd $dir
 	makepkg $makepkg_opts
 }
@@ -216,7 +266,7 @@ merge()
 	die "Can't find /etc/repoman.conf!"
 
 # Initializating variables.
-version='0.2.0'
+version='0.3.0'
 
 # Checking for darcs.
 which darcs >/dev/null 2>&1
@@ -226,11 +276,6 @@ if [ $? != 0 ]; then
 fi
 
 # Pharsing parameters.
-
-if ! [ -z "$REPOMAN_LOGIN" ]; then
-	lopts="-l $REPOMAN_LOGIN"
-	cpopts="$REPOMAN_LOGIN@"
-fi
 
 if [ $# -le 0 ]; then
 	usage
@@ -248,8 +293,7 @@ while [ "$1" != "" ]; do
 		;;
 		-t|--tree)
 			shift 1
-			path_to_repo=`echo $path_to_repo|sed "s/current/$1/"`
-			reponame=`echo $reponame|sed "s/current/$1/"`
+			reponame=$1
 		;;
 		-*)
 			echo "Wrong parameter!"
