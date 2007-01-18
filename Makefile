@@ -36,6 +36,7 @@ docdir = /usr/share/doc/pacman-tools-$(VERSION)
 
 compile: chkperm genauthors
 	$(MAKE) -C mkiso
+	$(MAKE) -C repoman.d
 	chmod +x fwmirror pear-makefb
 	help2man -n "mirrors Frugalware archives" -S Frugalware -N ./fwmirror |sed 's/\\(co/(c)/' >fwmirror.1
 	help2man -n "Writes FrugalBuild scripts for PHP PEAR/PECL packages" -S Frugalware -N ./pear-makefb \

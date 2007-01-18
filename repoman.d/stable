@@ -1,0 +1,36 @@
+#
+# frugalware-stable repository
+#
+
+repos=(${repos[@]} 'stable')
+
+current_servers=(
+# -----------
+# - BELGIUM -
+# -----------
+# Belgian National Research Network (1 GBit)
+"rsync://rsync5.frugalware.org/packages/frugalware/pub/frugalware/frugalware-stable"
+# -----------
+# - HUNGARY -
+# -----------
+# Free Software Network (100 MBit)
+"rsync://rsync4.frugalware.org/pub/linux/distributions/frugalware/frugalware-stable"
+# -----------
+# - IRELAND -
+# -----------
+# Ireland's National Education and Research Network (2 GBit)
+"rsync://rsync12.frugalware.org/mirrors/ftp.frugalware.org/pub/frugalware/frugalware-stable"
+# -------
+# - USA -
+# -------
+# SourceMirrors (100 MBit)
+"rsync://rsync6.frugalware.org/frugalware/frugalware/frugalware-stable"
+# TDS Telecom (1 GBit)
+"rsync://rsync10.frugalware.org/pub/linux/frugalware/frugalware-stable"
+)
+
+# the rest is only for developers who upload packages
+# if the server requires sudo usage, the name of the user to execute the commands as
+current_sudo="vmiklos"
+# name of the package database
+current_fdb="frugalware.fdb"
