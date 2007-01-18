@@ -53,6 +53,7 @@ install:
 	$(INSTALL) -d $(DESTDIR)$(man1dir)
 	$(INSTALL) -d $(DESTDIR)$(man8dir)
 	$(INSTALL) -d $(DESTDIR)$(sysconfdir)
+	$(INSTALL) -d $(DESTDIR)$(sysconfdir)/repoman.d
 	$(INSTALL) -d $(DESTDIR)$(docdir)
 	$(INSTALL) -d $(DESTDIR)/home/syncpkgd
 	$(INSTALL) -d $(DESTDIR)/etc/rc.d
@@ -73,6 +74,8 @@ install:
 	$(INSTALL) repoman $(DESTDIR)$(bindir)
 	$(INSTALL) -m644 repoman.1 $(DESTDIR)$(man1dir)
 	$(INSTALL) -m644 repoman.conf $(DESTDIR)$(sysconfdir)
+	$(INSTALL) -m644 repoman.d/current $(DESTDIR)$(sysconfdir)/repoman.d/current
+	$(INSTALL) -m644 repoman.d/stable $(DESTDIR)$(sysconfdir)/repoman.d/stable
 	$(INSTALL) syncpkg $(DESTDIR)$(bindir)
 	$(INSTALL) -m644 syncpkg.conf $(DESTDIR)$(sysconfdir)
 	$(INSTALL) syncpkgd $(DESTDIR)$(sbindir)
