@@ -172,7 +172,7 @@ update()
 	fi
 	for i in ${repos[@]}
 	do
-		pushonly=$(eval "echo \$${reponame}_pushonly")
+		pushonly=$(eval "echo \$${i}_pushonly")
 		[ "$pushonly" = "y" ] && continue
 		# Search for a server.
 		eval "servers=(\${${i}_servers[@]})"
