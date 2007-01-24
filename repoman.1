@@ -24,6 +24,8 @@ echo 'fst_root=~/darcs' >> ~/.repoman.conf
 
 Replace my nick (vmiklos) with your nick and make sure about you have the darcs tree in ~/darcs/current.
 
+If you want to use more than one (conflicting, ie.: current and stable) trees, then please add the <reponame>_pushonly=y option to each repo except one. Example: if the host system is -current and you want to enabled current and stable, then add stable_pushonly="y" to your config.
+
 .TP
 1) Get the repo and set defaults.
 
@@ -38,7 +40,9 @@ Example for the pacman-tools repo:
 
 darcs get --partial http://darcs.frugalware.org/repos/pacman-tools
 
-cd frugalware-current
+mv frugalware-current current
+
+cd current
 
 echo "yourname <email@addr.ess>" > _darcs/prefs/author
 
@@ -171,8 +175,8 @@ Example: repoman up sendmail-8.13.4-2-i686.fpm extra/frugalware-i686/
 .TP
 .BI upd|update " [repo]"
 Update a repo in /var/fst. If the option repo parameter omitted, the repoman
-will update the frugalware-current repo. If the frugalware-current repo not
-yet exists, then repoman will download it (it may take some time!).
+will update all repos. If a repo does not
+exist yet, then repoman will download it (it may take some time!).
 
 .TP
 .BI s|search " [regexp]"
