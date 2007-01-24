@@ -172,6 +172,8 @@ update()
 	fi
 	for i in ${repos[@]}
 	do
+		pushonly=$(eval "echo \$${reponame}_pushonly")
+		[ "$pushonly" = "y" ] && continue
 		# Search for a server.
 		eval "servers=(\${${i}_servers[@]})"
 		if [ -z "$servers" ]; then
@@ -228,15 +230,14 @@ search()
 
 merge()
 {
-	local repo target
+	local i repo target
 	if echo $1 |grep -q /; then
 		repo=${1%/*}
 		target=${1#*/}
 	else
+		repo="${repos[@]}"
 		target=$1
 	fi
-	# sanility checks
-	chk_updated $fst_root/$repo
 	# install essential packages if necessary
 	echo -n "checking for essential packages... "
 	. /etc/makepkg.conf
@@ -256,10 +257,23 @@ merge()
 	else
 		echo "done"
 	fi
-	dir=`find $fst_root/$repo -maxdepth 4 -type d -name "$target"|sed -n '$ p'`
-	[ -z "$dir" ] && die "package '$target' not found"
-	cd $dir
-	makepkg $makepkg_opts
+	found=0
+	for i in ${repo[@]}
+	do
+		# sanility checks
+		chk_updated $fst_root/$i
+		pushonly=$(eval "echo \$${i}_pushonly")
+		[ "$pushonly" = "y" ] && continue
+		dir=`find $fst_root/$i -maxdepth 4 -type d -name "$target"|sed -n '$ p'`
+		if [ -z "$dir" ]; then
+			continue
+		else
+			found=1
+			cd $dir
+			makepkg $makepkg_opts
+		fi
+	done
+	[ "$found" = 0 ] && die "package '$target' not found"
 }
 
 [ -e /etc/repoman.conf ] && . /etc/repoman.conf || \
