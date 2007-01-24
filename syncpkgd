@@ -27,6 +27,13 @@ if [ ! -d /home/syncpkgd ]; then
 	exit 1
 fi
 
+if [ ! -e /home/syncpkgd/.repoman.conf ]; then
+	echo "can't find my config"
+	exit 1
+fi
+
+source /home/syncpkgd/.repoman.conf
+
 if [ ! -e /home/syncpkgd/.ssh/id_dsa ]; then
 	# generate ssh key
 	su - syncpkgd -c 'yes "" |ssh-keygen -t dsa' &>/dev/null
@@ -44,8 +51,10 @@ else
 	# start syncpkg again and again
 	while true
 	do
-		syncpkg 0.5
-		syncpkg current
+		for i in ${repos[@]}
+		do
+			syncpkg $i
+		done
 		sleep 2h
 	done
 fi
