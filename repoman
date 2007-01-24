@@ -27,16 +27,22 @@ msg()
 	echo -e "\033[1;32m==>\033[1;0m \033[1;1m$1\033[1;0m" >&2
 }
 
+
+check_servers()
+{
+	server=$(eval "echo \$${reponame}_servers")
+        if echo $server |grep -q :; then
+                host=${server%:*}
+                path=${server#*:}
+        else
+                die "The first server in the $reponame repo is read-only, please update the list of servers."
+        fi
+}
+
 delete()
 {
 	local i files rmopts host
-	server=$(eval "echo \$${reponame}_servers")
-	if echo $server |grep -q :; then
-		host=${server%:*}
-		path=${server#*:}
-	else
-		die "The first server in the $reponame repo is read-only, please update the list of servers."
-	fi
+	check_servers
 	sudouser=$(eval "echo \$${reponame}_sudo")
 	[ -n "$sudouser" ] && sudo="sudo -u $sudouser"
 	# Strip leading / and any ..
@@ -61,13 +67,7 @@ upload()
 		usage
 		exit 1
 	fi
-	server=$(eval "echo \$${reponame}_servers")
-	if echo $server |grep -q :; then
-		host=${server%:*}
-		path=${server#*:}
-	else
-		die "The first server in the $reponame repo is read-only, please update the list of servers."
-	fi
+	check_servers
 	sudouser=$(eval "echo \$${reponame}_sudo")
 	[ -n "$sudouser" ] && sudo="sudo -u $sudouser"
 	if [ -z "$2" ]; then
@@ -94,13 +94,7 @@ upload()
 
 list()
 {
-	server=$(eval "echo \$${reponame}_servers")
-	if echo $server |grep -q :; then
-		host=${server%:*}
-		path=${server#*:}
-	else
-		die "The first server in the $reponame repo is read-only, please update the list of servers."
-	fi
+	check_servers
 	msg "Fetching contents of directory: $1"
 	ssh $host "ls $path/$1"
 }
@@ -121,13 +115,7 @@ clean()
 {
 	msg "Cleaning up $1"
 	split_group_pkgname $1
-	server=$(eval "echo \$${reponame}_servers")
-	if echo $server |grep -q :; then
-		host=${server%:*}
-		path=${server#*:}
-	else
-		die "The first server in the $reponame repo is read-only, please update the list of servers."
-	fi
+	check_servers
 	sudouser=$(eval "echo \$${reponame}_sudo")
 	[ -n "$sudouser" ] && sudo="sudo -u $sudouser"
 	fdb=$(eval "echo \$${reponame}_fdb")
@@ -139,13 +127,7 @@ changelog()
 {
 	msg "Generating Changelog for $1"
 	split_group_pkgname $1
-	server=$(eval "echo \$${reponame}_servers")
-	if echo $server |grep -q :; then
-		host=${server%:*}
-		path=${server#*:}
-	else
-		die "The first server in the $reponame repo is read-only, please update the list of servers."
-	fi
+	check_servers
 	sudouser=$(eval "echo \$${reponame}_sudo")
 	[ -n "$sudouser" ] && sudo="sudo -u $sudouser"
 	fdb=$(eval "echo \$${reponame}_fdb")
