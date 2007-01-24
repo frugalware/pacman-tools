@@ -132,7 +132,7 @@ clean()
 	[ -n "$sudouser" ] && sudo="sudo -u $sudouser"
 	fdb=$(eval "echo \$${reponame}_fdb")
 	[ -z "$fdb" ] && fdb="$reponame.fdb"
-	ssh $host "cd $path/frugalware-${arch:-`arch`} && arch=${arch:-`arch`} $sudo updatesync del $fdb $pkgname && genchangelog --repo ${server##*/} --clean $pkgname"
+	ssh $host "cd $path/frugalware-${arch:-`arch`} && arch=${arch:-`arch`} $sudo updatesync del $fdb $pkgname && genchangelog --clean $pkgname"
 }
 
 changelog()
@@ -156,7 +156,7 @@ changelog()
 		# just a workaround for the "syntax error near unexpected token `;'" bug
 		catcmd="echo -n \"\""
 	fi
-	ssh $host "cd $path; if [ ! -e _darcs/rlock ]; then touch _darcs/rlock; cd frugalware-${arch:-`arch`}; arch=${arch:-`arch`} $sudo updatesync upd $fdb ../source/$group/$pkgname/FrugalBuild; cd $path; rm _darcs/rlock; cd $path/source/$group/$pkgname; arch=${arch:-`arch`} $sudo genchangelog --repo ${server##*/}; $catcmd; else echo \"Couldn't get lock.\"; fi"
+	ssh $host "cd $path; if [ ! -e _darcs/rlock ]; then touch _darcs/rlock; cd frugalware-${arch:-`arch`}; arch=${arch:-`arch`} $sudo updatesync upd $fdb ../source/$group/$pkgname/FrugalBuild; cd $path; rm _darcs/rlock; cd $path/source/$group/$pkgname; arch=${arch:-`arch`} $sudo genchangelog; $catcmd; else echo \"Couldn't get lock.\"; fi"
 }
 
 die()
