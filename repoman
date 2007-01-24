@@ -296,6 +296,9 @@ if [ $# -le 0 ]; then
 	exit 0
 fi
 
+# default for the -t parameter
+reponame=${repos[0]}
+
 while [ "$1" != "" ]; do
 	case $1 in
 		-h|--help)
