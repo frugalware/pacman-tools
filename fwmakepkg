@@ -31,8 +31,8 @@ Finclude ()
 			Fincdir=$i/source/include
 		elif [ -d /var/tmp/fst/include ]; then
 			Fincdir=/var/tmp/fst/include
-		elif [ -d $fst_root/$reponame/source/include ]; then
-			Fincdir=$fst_root/$reponame/source/include
+		elif [ -d $fst_root/$repos/source/include ]; then
+			Fincdir=$fst_root/$repos/source/include
 		fi
 		if [ ! -z "$Fincdir" ]; then
 			for i in "$@"
