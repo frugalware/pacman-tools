@@ -13,6 +13,8 @@ strip_url()
 [ -z "$arch" ] && arch=`arch`
 [ -z "$uploader" ] && uploader=`echo $HOME|sed 's|.*/\(.*\)$|\1|'`
 
+echo $* |grep -q -- --check && exit 0
+
 if [ "$1" = "--clean" -a -e ../tools/fpm2db ]; then
 	../tools/fpm2db -D -m $2
 	exit 0
