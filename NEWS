@@ -1,5 +1,16 @@
 VERSION         DESCRIPTION
 -----------------------------------------------------------------------------
+0.8.6         - info for upgraders:
+                - the recommeneded darcs pathes are changed, you should
+                  mv ~/path/to/frugalware-stable ~/path/to/stable and
+                  mv ~/path/to/frugalware-current ~/path/to/current
+		- also read the 0th point of man repoman, you'll need that info
+		  since the config is totally changed
+              - initial support for custom repos
+              - new rf options: -m and -c
+              - new scrtips: syncemul and emulgen
+	      - new config format, now the mirror list is up to date, generated
+	        from mirrors2.xml
 0.8.5         - pear-makefb: support for pecl packages
 	      - fblint, fwcpan, pear-makefb and syncpkg no longer uses
 	        makepkg's -L option
