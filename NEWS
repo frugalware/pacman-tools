@@ -7,6 +7,8 @@ VERSION         DESCRIPTION
 		- also read the 0th point of man repoman, you'll need that info
 		  since the config is totally changed
               - initial support for custom repos
+		- NOTE: this requires makepkg 3.4.7 from pacman darcs at the
+		  moment
               - new rf options: -m and -c
               - new scrtips: syncemul and emulgen
 	      - new config format, now the mirror list is up to date, generated
