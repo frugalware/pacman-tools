@@ -4,7 +4,7 @@
 
 repos=(${repos[@]} 'stable')
 
-current_servers=(
+stable_servers=(
 # -----------
 # - BELGIUM -
 # -----------
@@ -31,6 +31,6 @@ current_servers=(
 
 # the rest is only for developers who upload packages
 # if the server requires sudo usage, the name of the user to execute the commands as
-current_sudo="vmiklos"
+stable_sudo="vmiklos"
 # name of the package database
-current_fdb="frugalware.fdb"
+stable_fdb="frugalware.fdb"
