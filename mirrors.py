@@ -48,8 +48,8 @@ sock.write("""#
 
 repos=(${repos[@]} '%s')
 
-current_servers=(
-""" % (ver, out))
+%s_servers=(
+""" % (ver, out, out))
 for i in countries:
 	dumped = False
 	for j in mirrors[i]:
@@ -70,8 +70,8 @@ sock.write(""")
 
 # the rest is only for developers who upload packages
 # if the server requires sudo usage, the name of the user to execute the commands as
-current_sudo="vmiklos"
+%s_sudo="vmiklos"
 # name of the package database
-current_fdb="%s.fdb"
-""" % repo)
+%s_fdb="%s.fdb"
+""" % (out, out, repo))
 sock.close()
