@@ -4,8 +4,12 @@
 # fwmakepkg for Frugalware
 # distributed under GPL License
 
-[ -e /etc/repoman.conf ] && . /etc/repoman.conf || \
-	die "Can't find /etc/repoman.conf!"
+if [ -e /etc/repoman.conf ]; then
+	. /etc/repoman.conf
+else
+	echo "Can't find /etc/repoman.conf!"
+	exit 1
+fi
 [ -z "$startdir" ] && startdir=`pwd`
 
 ### Include a scheme. They are in $fst_root/source/include/, and they have a \
