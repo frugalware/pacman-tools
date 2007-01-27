@@ -85,20 +85,10 @@ update_pkgver()
 
 src_download()
 {
-	Fmessage "downloading the new source"
-	makepkg -dg
+	Fmessage "running makepkg -dG"
+	makepkg -dG
 	if [ $? != 0 ]; then
-		die "failed to download the source"
-	fi
-
-	if grep sha1sums= FrugalBuild; then
-		Fmessage "updating \$sha1sums() in the FrugalBuild"
-		if grep -q '^sha1sums.*)' FrugalBuild; then
-			sed -i "/^sha1sums.*)/d" FrugalBuild
-		else
-			sed -i "/^sha1sums/,/)/d" FrugalBuild
-		fi
-		makepkg -dg >>FrugalBuild
+		die "failed to run makepkg -dG"
 	fi
 
 	Fmessage "cleaning up the duplicated source files"
