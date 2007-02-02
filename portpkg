@@ -1,0 +1,33 @@
+#!/bin/bash
+
+die()
+{
+	echo "$@"
+	exit 1
+}
+
+. /usr/lib/frugalware/fwmakepkg
+
+. FrugalBuild || die "error while parsing the buildscript"
+
+# update archs()
+if ! echo ${archs[@]} |grep -q `uname -m`; then
+	if grep -q archs= FrugalBuild; then
+		sed -i "s/^\(archs=(.*\))/\1 '`uname -m`')/" FrugalBuild
+	else
+		echo "archs=(\${archs[@]} '`uname -m`')" >> FrugalBuild
+	fi
+	. FrugalBuild
+	echo ${archs[@]} |grep -q `uname -m` || die "failed to add `uname -m` to archs()"
+fi
+
+if ! ls *fpm &>/dev/null; then
+	sudo makepkg -cuk || die "build failed"
+fi
+
+if [ "$1" == "--rf" ]; then
+	bumppkg --record-only "added `uname -m` to archs()" || die "failed to record the patch"
+	rf -k -f *fpm
+else
+	die "now run '$0 --rf' to record and push your changes"
+fi
