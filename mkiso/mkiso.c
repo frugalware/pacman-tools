@@ -543,6 +543,12 @@ int main(int argc, char **argv)
 	ptr = g_strdup_printf("%s/tmp", tmproot);
 	mkdir(ptr, 0700);
 	free(ptr);
+	ptr = g_strdup_printf("%s/var", tmproot);
+	mkdir(ptr, 0700);
+	free(ptr);
+	ptr = g_strdup_printf("%s/var/log", tmproot);
+	mkdir(ptr, 0700);
+	free(ptr);
 
 	for(i=0;i<g_list_length(volumes);i++)
 		if(prepare(g_list_nth_data(volumes, i), tmproot, countonly, stable))
