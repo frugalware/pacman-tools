@@ -139,6 +139,7 @@ if [ "$1" == "--rebuild" ]; then
 	if [ "$1" == "--rf" ]; then
 		rf -k -f *-$CARCH.fpm
 	fi
+	exit 0
 fi
 
 check_complex
