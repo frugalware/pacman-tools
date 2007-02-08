@@ -73,6 +73,13 @@ src_cleanup()
 	rm $rootlist $worklist
 }
 
+update_pkgrel()
+{
+	local rel=$1
+	[ -z "$rel" ] && rel=1
+	sed -i "s/^pkgrel=.*/pkgrel=$rel/" FrugalBuild
+}
+
 update_pkgver()
 {
 	Fmessage "updating \$pkgver and \$pkgrel"
@@ -80,7 +87,7 @@ update_pkgver()
 	if [[ "$newpkgver" =~ " " ]] || [ -z "$newpkgver" ]; then
 		die "Dunno what is the new version or this package is already up to date!"
 	fi
-	sed -i "s/^pkgver=.*/pkgver=$newpkgver/;s/^pkgrel=.*/pkgrel=1/;/# vim: ft=sh/d" FrugalBuild
+	sed -i "s/^pkgver=.*/pkgver=$newpkgver/;/# vim: ft=sh/d" FrugalBuild
 }
 
 src_download()
@@ -97,7 +104,7 @@ src_download()
 
 do_build()
 {
-	sudo makepkg -c || die "build failed!"
+	sudo makepkg -c$1 || die "build failed!"
 	Fmessage "done, testing time!"
 }
 
@@ -119,8 +126,24 @@ if [ "$1" == "--record-only" ]; then
 	do_record "$2"
 	exit 0
 fi
+
+if [ "$1" == "--rebuild" ]; then
+	shift 1
+	source FrugalBuild || die "failed to source the FrugalBuild!"
+	update_pkgrel $(($pkgrel+1))
+	do_build u
+	if [ -n "$1" ]; then
+		do_record "$1"
+		shift 1
+	fi
+	if [ "$1" == "--rf" ]; then
+		rf -k -f *-$CARCH.fpm
+	fi
+fi
+
 check_complex
 update_pkgver
+update_pkgrel
 src_cleanup
 src_download
 do_build
