@@ -646,22 +646,23 @@ sub Push{
   my $ec = apply "darcs push --match 'name $modpkgname'" . ($noask? ' -a' : '');
   die "Pushing FAILED!\n" if $ec == 1;
 }
+
 sub UploadFPM{
     my ($ec,$ev);
 
-	print "Getting old FPM...";
+	print "Getting old FPM...\n";
         if (@pkgfiles){
             for my $pkgfile (@pkgfiles){
                 $pkgfile =~ /^(.*)-.*?-.*?-.*?fpm\Z/;
                 print "Something nasty with $pkgfile, is it a package file?" unless $1;
                 if( $oldfpm = getoldfpm("$serverprefix/$repo/$repodir/",$1) ){
                     print "Ok\n";
-                }
+                } else { print "Failed! Don`t forget to modify the delete command!\n"; }
             }
         } else {   # at least try to notice old fpm
             if( $oldfpm = getoldfpm("$serverprefix/$repo/$repodir/",$pkgname) ){
                 print "Ok\n";
-            } else { print "Can't see the old package file!"; }
+            } else { print "Can't see the old package file!\n"; }
         }
 
     print "Uploading binary package\n";
