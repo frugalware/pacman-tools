@@ -601,6 +601,8 @@ $pkgrel = $opts{l} if $opts{l};
 my $subg = 0;
 if ($buildscript =~ /subgroup.*?-extra/m) {$subg++;}
 
+my $oldfpm;
+
 sub getoldsource{
 #OBSOLETE
     my ($url,$sourcefile)= @_;
@@ -646,6 +648,22 @@ sub Push{
 }
 sub UploadFPM{
     my ($ec,$ev);
+
+	print "Getting old FPM...";
+        if (@pkgfiles){
+            for my $pkgfile (@pkgfiles){
+                $pkgfile =~ /^(.*)-.*?-.*?-.*?fpm\Z/;
+                print "Something nasty with $pkgfile, is it a package file?" unless $1;
+                if( $oldfpm = getoldfpm("$serverprefix/$repo/$repodir/",$1) ){
+                    print "Ok\n";
+                }
+            }
+        } else {   # at least try to notice old fpm
+            if( $oldfpm = getoldfpm("$serverprefix/$repo/$repodir/",$pkgname) ){
+                print "Ok\n";
+            } else { print "Can't see the old package file!"; }
+        }
+
     print "Uploading binary package\n";
     print "Nothing to do, that's fine!\n\n" unless @pkgfiles;
     for my $pkgfile (@pkgfiles){
@@ -695,21 +713,7 @@ sub Cleanup{
 	    }
 	}
 	
-	if (@pkgfiles){
-	    #      if( my $oldf = getoldfpm("$serverprefix/$repo/$repodir/",$pkgname) ){ 
-	    #	apply "repoman -t $version del $repo/$repodir/$oldf";}}}
-	    for my $pkgfile (@pkgfiles){
-		$pkgfile =~ /^(.*)-.*?-.*?-.*?fpm\Z/;
-		print "Something nasty with $pkgfile, is it a package file?" unless $1;
-		if( my $oldf = getoldfpm("$serverprefix/$repo/$repodir/",$1) ){ 
-		    $ev = apply "repoman -t $version del $repo/$repodir/$oldf";
-		}
-	    }
-	} else {   # at least try to del old fpm
-	    if( my $oldf = getoldfpm("$serverprefix/$repo/$repodir/",$pkgname) ){ 
-		$ev = apply "repoman -t $version del $repo/$repodir/$oldf";
-	    } else { print "Can't del package file!"; }
-	}
+        $ev = apply "repoman -t $version del $repo/$repodir/$oldfpm";
     }
     die "Cleaning up FAILED!" if $ec||$ev;
 }
