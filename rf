@@ -505,11 +505,11 @@ sub contents {
 
 my $chkonce = 0;
 my %opts;
-Getopts::getopts('chmr:a:o:p:g:n:s:f:v:dqkt:l:WRCPULH', \%opts);
+Getopts::getopts('chmr:a:o:p:g:n:s:f:v:dqkt:l:WRCPULHF', \%opts);
 
 HELP_MESSAGE && die if $opts{h};
 
-$opts{R}=$opts{C}=$opts{P}=$opts{U}=$opts{L}=$opts{H} = 1 unless $opts{R}|| $opts{C}||$opts{P}||$opts{U}||$opts{L}||$opts{H};
+$opts{R}=$opts{C}=$opts{P}=$opts{U}=$opts{L}=$opts{H}=$opts{F} = 1 unless $opts{R}|| $opts{C}||$opts{P}||$opts{U}||$opts{L}||$opts{H}||$opts{F};
 $chkonce = 1 if $opts{m};
 
 my ($distrib,$version,$repo,$arch, $repodir, $serverprefix, $group, $pkgname, $noask) =
@@ -644,20 +644,25 @@ sub Push{
   my $ec = apply "darcs push --match 'name $modpkgname'" . ($noask? ' -a' : '');
   die "Pushing FAILED!\n" if $ec == 1;
 }
-
-sub Upload{
+sub UploadFPM{
     my ($ec,$ev);
-    print "Uploading source and binary package\n";
+    print "Uploading binary package\n";
+    print "Nothing to do, that's fine!\n\n" unless @pkgfiles;
+    for my $pkgfile (@pkgfiles){
+        #my $repo_ = "extra" if(qx/LANG= LC_ALL= pacman -Qi -p $pkgfile/ =~ /Groups.*-extr$
+        $ev = apply "repoman -t $version up $pkgfile /$repodir/" if $pkgfile;
+  }
+    die "Uploading FAILED!" if $ev;
+}
+
+sub UploadSRC{
+    my ($ec,$ev);
+    print "Uploading source package\n";
     print "Nothing to do, that's fine!\n\n" unless @sourcefiles;
     for my $sourcefile (@sourcefiles){
 	$ec = apply "repoman -t $version up $sourcefile $repo/source/$group/$pkgname/" if $sourcefile;
     }
-    print "Nothing to do, that's fine!\n\n" unless @pkgfiles;
-    for my $pkgfile (@pkgfiles){
-	#my $repo_ = "extra" if(qx/LANG= LC_ALL= pacman -Qi -p $pkgfile/ =~ /Groups.*-extra/);
-	$ev = apply "repoman -t $version up $pkgfile /$repodir/" if $pkgfile;
-  }
-    die "Uploading FAILED!" if $ev || $ec;
+    die "Uploading FAILED!" if $ec;
 }
 
 sub cL{
@@ -721,9 +726,10 @@ sub Warning {
 Warning if $opts{W};
 do { die if ChkFB } if $opts{H};
 Record if $opts{R};
+UploadFPM if $opts{F};
 Cleanup if $opts{C};
 Push if $opts{P};
-Upload if $opts{U};
+UploadSRC if $opts{U};
 cL if $opts{L};
 
 if ($opts{d}){ #delete source & fpm        doesnt ask it, -d is not default!
