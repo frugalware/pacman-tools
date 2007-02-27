@@ -1,5 +1,10 @@
 VERSION         DESCRIPTION
 -----------------------------------------------------------------------------
+0.8.7         - syncpkg no longer hardwires our stable version
+              - genchangelog: added support for options=('nomirror')
+              - mkiso: create /var/log, too - not just /tmp
+              - rf: various bugfixes
+              - added FST api manpages
 0.8.6         - info for upgraders:
                 - the recommeneded darcs pathes are changed, you should
                   mv ~/path/to/frugalware-stable ~/path/to/stable and
