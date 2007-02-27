@@ -30,11 +30,13 @@ bindir = /usr/bin
 sbindir = /usr/sbin
 libdir = /usr/lib/frugalware
 man1dir = /usr/share/man/man1
+man3dir = /usr/share/man/man3
 man8dir = /usr/share/man/man8
 sysconfdir = /etc
 docdir = /usr/share/doc/pacman-tools-$(VERSION)
+FINCDIR = $(shell source /usr/lib/frugalware/fwmakepkg; echo $$Fincdir)
 
-compile: chkperm genauthors
+compile: chkperm genauthors apidocs
 	$(MAKE) -C mkiso
 	$(MAKE) -C repoman.d
 	chmod +x fwmirror pear-makefb
@@ -51,6 +53,7 @@ install:
 	$(INSTALL) -d $(DESTDIR)$(sbindir)
 	$(INSTALL) -d $(DESTDIR)$(libdir)
 	$(INSTALL) -d $(DESTDIR)$(man1dir)
+	$(INSTALL) -d $(DESTDIR)$(man3dir)
 	$(INSTALL) -d $(DESTDIR)$(man8dir)
 	$(INSTALL) -d $(DESTDIR)$(sysconfdir)
 	$(INSTALL) -d $(DESTDIR)$(sysconfdir)/repoman.d
@@ -101,9 +104,10 @@ install:
 	$(INSTALL) -m644 fblint.1 $(DESTDIR)$(man1dir)
 	$(INSTALL) -m644 mkiso/mkiso.8 $(DESTDIR)$(man8dir)
 	$(INSTALL) -m644 mkiso/volumes.xml $(DESTDIR)$(docdir)/volumes.xml
+	$(INSTALL) -m644 apidocs/*.3 $(DESTDIR)$(man3dir)
 
 clean:
-	rm -f chkperm genauthors
+	rm -rf chkperm genauthors apidocs
 	$(MAKE) -C mkiso clean
 
 dist:
@@ -117,3 +121,7 @@ dist:
 release:
 	darcs tag --checkpoint $(VERSION)
 	$(MAKE) dist
+
+apidocs:
+	cp -a $(FINCDIR) apidocs
+	make -C apidocs
