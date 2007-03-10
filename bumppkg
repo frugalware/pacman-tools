@@ -112,7 +112,7 @@ do_record()
 {
 	source FrugalBuild || die "failed to source the FrugalBuild!"
 	root="`get_root`"
-	echo -e "`date +"%a %b %d %H:%M:%S %Z %Y"`
+	echo -e "`LANG= LC_ALL= date +"%a %b %d %H:%M:%S %Z %Y"`
 `cat $root/_darcs/prefs/author`
 $pkgname-$pkgver-$pkgrel-$CARCH
 $@" | darcs rec -a --pipe
