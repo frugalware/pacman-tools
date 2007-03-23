@@ -649,8 +649,7 @@ sub Push{
 
 sub UploadFPM{
     my ($ec,$ev);
- my $oldver; 
- my $oldname; 
+
 	print "Getting old FPM...\n";
         if (@pkgfiles){
             for my $pkgfile (@pkgfiles){
@@ -669,16 +668,8 @@ sub UploadFPM{
     print "Uploading binary package\n";
     print "Nothing to do, that's fine!\n\n" unless @pkgfiles;
     for my $pkgfile (@pkgfiles){
-	if ($oldfpm) {
-		$oldfpm =~ /^(.*)-(.*?)-.*?-.*?fpm\Z/;
-		$oldname = $1;
-		$oldver = $2;
-	}
-	$pkgfile =~ /^(.*)-(.*?)-.*?-.*?fpm\Z/;
         #my $repo_ = "extra" if(qx/LANG= LC_ALL= pacman -Qi -p $pkgfile/ =~ /Groups.*-extr$
-	unless ($1 eq $oldname && $oldver eq $2) {
-        	$ev = apply "repoman -t $version up $pkgfile /$repodir/" if $pkgfile;
-	}
+        $ev = apply "repoman -t $version up $pkgfile /$repodir/" if $pkgfile;
   }
     die "Uploading FAILED!" if $ev;
 }
