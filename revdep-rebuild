@@ -1,0 +1,44 @@
+#!/bin/bash
+
+unset LANG LC_ALL
+
+_go_getroot ()
+{
+    [ -e /etc/repoman.conf ] && . /etc/repoman.conf;
+    [ -e ~/.repoman.conf ] && . ~/.repoman.conf;
+    echo $fst_root/$repos
+}
+go ()
+{
+    cd `_go_getroot`;
+    cd `find source -type d -name $1`
+}
+die()
+{
+	echo $*
+	exit 1
+}
+
+id=$1
+
+[ -z "$id" ] && die "usage: $0 <package id>"
+
+pkg=$(lynx -dump http://frugalware.org/packages/$id |grep 'Name:'|sed 's/.*]//')
+ver=$(lynx -dump http://frugalware.org/packages/$id |grep 'Version:'|sed 's/.*Version: //')
+revdeps=$(lynx -source -dump http://frugalware.org/packages/$id|grep "Exact reverse depends:"|sed 's|<a href="[^"]*">\([^<]*\)</a>|\1|g;s|.*<td>\(.*\)</td>.*|\1|')
+count=$(echo $revdeps|sed 's/ /\n/g'|wc -l)
+
+echo "Rebuilding $count packages for $pkg-$ver"
+echo
+echo "Targets: $revdeps"
+echo "Press ENTER to continue"
+read junk
+
+log=`mktemp`
+for i in $revdeps
+do
+	go $i
+	echo bumppkg --rebuild "rebuilt with $pkg-$ver" --rf || echo $i >>$log
+done
+cat $log
+rm $log
