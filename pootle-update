@@ -1,0 +1,50 @@
+#!/bin/bash
+
+cd $1
+
+# FIXME: hard-wiring such a list to here is very ugly
+
+echo -n "downloading new pots... "
+rsync rsync://rsync.frugalware.org/pub/other/setup/po/setup.pot setup/templates/setup.pot
+rsync rsync://rsync.frugalware.org/pub/frugalware/frugalware-current/docs/po/docs.pot docs/templates/docs.pot
+rsync rsync://rsync.frugalware.org/pub/other/homepage-ng/frugalware/po/homepage.pot homepage/templates/homepage.pot
+rsync rsync://rsync.frugalware.org/pub/other/pacman-g2/pacman-g2/src/pacman-g2/po/pacman-g2.pot pacman/templates/pacman-g2.pot
+rsync rsync://rsync.frugalware.org/pub/other/pacman-g2/pacman-g2/lib/libalpm/po/libalpm.pot pacman/templates/libalpm.pot
+rsync rsync://rsync.frugalware.org/pub/other/frugalwareutils/frugalwareutils/grubconfig/po/grubconfig.pot frugalwareutils/templates/grubconfig.pot
+rsync rsync://rsync.frugalware.org/pub/other/frugalwareutils/frugalwareutils/libfwdialog/po/libfwdialog.pot frugalwareutils/templates/libfwdialog.pot
+rsync rsync://rsync.frugalware.org/pub/other/frugalwareutils/frugalwareutils/libfwnetconfig/po/libfwnetconfig.pot frugalwareutils/templates/libfwnetconfig.pot
+rsync rsync://rsync.frugalware.org/pub/other/frugalwareutils/frugalwareutils/libfwxconfig/po/xconfig-helper.pot frugalwareutils/templates/xconfig-helper.pot
+rsync rsync://rsync.frugalware.org/pub/other/frugalwareutils/frugalwareutils/libfwxwmconfig/po/libfwxwmconfig.pot frugalwareutils/templates/libfwxwmconfig.pot
+rsync rsync://rsync.frugalware.org/pub/other/frugalwareutils/frugalwareutils/mouseconfig/po/mouseconfig.pot frugalwareutils/templates/mouseconfig.pot
+rsync rsync://rsync.frugalware.org/pub/other/frugalwareutils/frugalwareutils/netconfig/po/netconfig.pot frugalwareutils/templates/netconfig.pot
+rsync rsync://rsync.frugalware.org/pub/other/frugalwareutils/frugalwareutils/raidconfig/po/raidconfig.pot frugalwareutils/templates/raidconfig.pot
+rsync rsync://rsync.frugalware.org/pub/other/frugalwareutils/frugalwareutils/setup/po/setup.pot frugalwareutils/templates/setup.pot
+rsync rsync://rsync.frugalware.org/pub/other/frugalwareutils/frugalwareutils/timeconfig/po/timeconfig.pot frugalwareutils/templates/timeconfig.pot
+rsync rsync://rsync.frugalware.org/pub/other/frugalwareutils/frugalwareutils/xconfig/po/xconfig.pot frugalwareutils/templates/xconfig.pot
+rsync rsync://rsync.frugalware.org/pub/other/frugalwareutils/frugalwareutils/xwmconfig/po/xwmconfig.pot frugalwareutils/templates/xwmconfig.pot
+echo "done."
+
+for i in *
+do
+	[ -d $i ] || continue
+	[ -d $i/templates ] || continue
+	[ "$i" = "pootle" ] && continue
+	cd $i || continue
+	for j in $(cd templates; ls *.pot)
+	do
+		pot=$(basename $j .pot)
+		for k in *
+		do
+			[ "$k" = "templates" ] && continue
+			cd $k || continue
+			if msgmerge $pot.po ../templates/$pot.pot -o $pot.new.po; then
+				mv -f $pot.new.po $pot.po
+			else
+				echo "msgmerge for $i/$j/$k/$pot failed!"
+				rm -f $pot.new.po
+			fi
+			cd ..
+		done
+	done
+	cd ..
+done
