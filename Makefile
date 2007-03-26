@@ -95,6 +95,7 @@ install:
 	$(INSTALL) chkperm $(DESTDIR)$(bindir)/chkperm
 	$(INSTALL) genauthors $(DESTDIR)$(bindir)/genauthors
 	$(INSTALL) fblint $(DESTDIR)$(bindir)/fblint
+	$(INSTALL) pootle-update $(DESTDIR)$(bindir)/pootle-update
 	$(INSTALL) mkiso/mkiso $(DESTDIR)$(bindir)/mkiso
 	$(INSTALL) fwmirror $(DESTDIR)$(bindir)/fwmirror
 	$(INSTALL) -m644 fwmirror.1 $(DESTDIR)$(man1dir)
