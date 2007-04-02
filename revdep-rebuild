@@ -38,7 +38,7 @@ log=`mktemp`
 for i in $revdeps
 do
 	go $i
-	echo bumppkg --rebuild "rebuilt with $pkg-$ver" --rf || echo $i >>$log
+	bumppkg --rebuild "rebuilt with $pkg-$ver" --rf || echo $i >>$log
 done
 cat $log
 rm $log
