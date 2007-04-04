@@ -1,0 +1,18 @@
+#!/bin/bash
+
+unset LANG LC_ALL
+. /usr/lib/frugalware/fwmakepkg
+Finclude python
+
+modules=$(python /usr/lib/python$_F_python_ver/modulefinder.py /usr/bin/bzr | grep $_F_python_libdir|sed "s|.*$_F_python_libdir||")
+
+for i in $modules
+do
+	file=/$_F_python_libdir$i
+	pkg=$(pacman-g2 -Qo $file 2>/dev/null |sed 's/.*owned by \([^ ]*\) .*/\1/')
+	if ! echo ${deps[@]} |grep -q $pkg; then
+		[ "$pkg" != "bzr" ] && deps=(${deps[@]} $pkg)
+	fi
+done
+
+echo deps: ${deps[@]}
