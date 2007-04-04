@@ -1,0 +1,44 @@
+#!/bin/bash
+
+. /usr/lib/frugalware/fwmakepkg
+
+header()
+{
+	echo '<?xml version="1.0" encoding="UTF-8"?>'
+	echo '<pofile filename="descs.po" language="Hungarian">'
+}
+
+footer()
+{
+	echo '</pofile>'
+}
+
+# $1: msgid
+# $2: pkgname
+# $3: state (can be f, u, or t - defaults to u)
+genmsgentry()
+{
+	echo -e "\t<message packagename=\"$2\" state=\"${3:-u}\">"
+	echo -e "\t\t<msgid>$1</msgid>"
+	echo -e "\t\t<msgstr></msgstr>"
+	echo -e "\t</message>"
+}
+
+header
+for pkg in $(find . -name FrugalBuild)
+do
+	cd $(dirname $pkg)
+	unset pkgdesc pkgname subpkgs subdescs
+	source FrugalBuild
+	genmsgentry "$pkgdesc" "$pkgname"
+	if [ ! -z "$subpkgs" ]; then
+		i=0
+		for subpkg in "${subpkgs[@]}"
+		do
+			genmsgentry "${subdescs[$i]}" $subpkg
+			i=$(($i+1))
+		done
+	fi
+	cd - >/dev/null
+done
+footer
