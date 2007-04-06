@@ -1,5 +1,8 @@
 VERSION         DESCRIPTION
 -----------------------------------------------------------------------------
+0.8.8         - new scripts: chkdep-py, revdep-rebuild and pootle-update
+              - bumppkg: i18n fix
+              - ported to libpacman
 0.8.7         - syncpkg no longer hardwires our stable version
               - genchangelog: added support for options=('nomirror')
               - mkiso: create /var/log, too - not just /tmp
