@@ -25,7 +25,7 @@
 #include <libxml/xmlmemory.h>
 #include <libxml/parser.h>
 #include <glib.h>
-#include <alpm.h>
+#include <pacman.h>
 
 #include "mkiso.h"
 

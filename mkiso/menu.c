@@ -23,7 +23,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <glib.h>
-#include <alpm.h>
+#include <pacman.h>
 
 #include "mkiso.h"
 #include "boot.h"

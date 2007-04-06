@@ -29,7 +29,7 @@
 #include <sys/stat.h>
 #include <getopt.h>
 
-#include <alpm.h>
+#include <pacman.h>
 #include <glib.h>
 
 #include "mkiso.h"
@@ -56,9 +56,9 @@ int strrcmp(const char *haystack, const char *needle)
 
 int detect_priority(PM_PKG *pkg)
 {
-	PM_LIST *i = alpm_pkg_getinfo(pkg, PM_PKG_GROUPS);
-	char *grp = alpm_list_getdata(i);
-	char *name = alpm_pkg_getinfo(pkg, PM_PKG_NAME);
+	PM_LIST *i = pacman_pkg_getinfo(pkg, PM_PKG_GROUPS);
+	char *grp = pacman_list_getdata(i);
+	char *name = pacman_pkg_getinfo(pkg, PM_PKG_NAME);
 
 	if(strrcmp(grp, "-extra"))
 	{
@@ -91,7 +91,7 @@ int detect_priority(PM_PKG *pkg)
 		else
 			return(20);
 	}
-	fprintf(stderr, "possible invalid group '%s' for package '%s'\n", grp, (char*)alpm_pkg_getinfo(pkg, PM_PKG_NAME));
+	fprintf(stderr, "possible invalid group '%s' for package '%s'\n", grp, (char*)pacman_pkg_getinfo(pkg, PM_PKG_NAME));
 	return(0);
 }
 
@@ -108,10 +108,10 @@ int add_targets()
 	for (i=0; i<g_list_length(isopkgs); i++)
 	{
 		isopkg_t *isopkg = g_list_nth_data(isopkgs, i);
-		char *pkgname = alpm_pkg_getinfo(isopkg->pkg, PM_PKG_NAME);
-		if(alpm_trans_addtarget(pkgname))
+		char *pkgname = pacman_pkg_getinfo(isopkg->pkg, PM_PKG_NAME);
+		if(pacman_trans_addtarget(pkgname))
 		{
-			fprintf(stderr, "failed to add target '%s' (%s)\n", pkgname, alpm_strerror(pm_errno));
+			fprintf(stderr, "failed to add target '%s' (%s)\n", pkgname, pacman_strerror(pm_errno));
 			return(1);
 		}
 	}
@@ -197,8 +197,8 @@ int isogrp_strin(char *str)
 int isogrp_add(PM_PKG *pkg)
 {
 	int i;
-	PM_LIST *grps = alpm_pkg_getinfo(pkg, PM_PKG_GROUPS);
-	char *grp = alpm_list_getdata(grps);
+	PM_LIST *grps = pacman_pkg_getinfo(pkg, PM_PKG_GROUPS);
+	char *grp = pacman_list_getdata(grps);
 
 	if(isogrp_strin(grp))
 	{
@@ -207,8 +207,8 @@ int isogrp_add(PM_PKG *pkg)
 			isogrp_t *isogrp = g_list_nth_data(isogrps, i);
 			if(!strcmp(isogrp->name, grp))
 			{
-				isogrp->size += (long int)alpm_pkg_getinfo(pkg, PM_PKG_SIZE)/1024;
-				isogrp->usize += (long int)alpm_pkg_getinfo(pkg, PM_PKG_USIZE)/1024;
+				isogrp->size += (long int)pacman_pkg_getinfo(pkg, PM_PKG_SIZE)/1024;
+				isogrp->usize += (long int)pacman_pkg_getinfo(pkg, PM_PKG_USIZE)/1024;
 				break;
 			}
 		}
@@ -222,8 +222,8 @@ int isogrp_add(PM_PKG *pkg)
 			return(1);
 		}
 		isogrp->name = strdup(grp);
-		isogrp->size = (long int)alpm_pkg_getinfo(pkg, PM_PKG_SIZE)/1024;
-		isogrp->usize = (long int)alpm_pkg_getinfo(pkg, PM_PKG_USIZE)/1024;
+		isogrp->size = (long int)pacman_pkg_getinfo(pkg, PM_PKG_SIZE)/1024;
+		isogrp->usize = (long int)pacman_pkg_getinfo(pkg, PM_PKG_USIZE)/1024;
 		isogrps = g_list_append(isogrps, isogrp);
 	}
 	return(0);
@@ -288,12 +288,12 @@ int mkiso(volume_t *volume, int countonly, int stable)
 			iso_add(fp, "frugalware-%s/frugalware-current.fdb", volume->arch);
 	}
 
-	sorted = alpm_trans_getinfo(PM_TRANS_PACKAGES);
-	for(i = alpm_list_first(sorted); i; i = alpm_list_next(i))
+	sorted = pacman_trans_getinfo(PM_TRANS_PACKAGES);
+	for(i = pacman_list_first(sorted); i; i = pacman_list_next(i))
 	{
-		PM_SYNCPKG *sync = alpm_list_getdata(i);
-		PM_PKG *pkg = alpm_sync_getinfo(sync, PM_SYNC_PKG);
-		long int size = (long int)alpm_pkg_getinfo(pkg, PM_PKG_SIZE)/1024;
+		PM_SYNCPKG *sync = pacman_list_getdata(i);
+		PM_PKG *pkg = pacman_sync_getinfo(sync, PM_SYNC_PKG);
+		long int size = (long int)pacman_pkg_getinfo(pkg, PM_PKG_SIZE)/1024;
 		char *ptr;
 		if (total+size > volume->size - bootsize)
 		{
@@ -306,9 +306,9 @@ int mkiso(volume_t *volume, int countonly, int stable)
 			ptr = strdup("frugalware-%s/%s-%s-%s%s");
 			iso_add(fp, ptr,
 			volume->arch,
-			(char*)alpm_pkg_getinfo(pkg, PM_PKG_NAME),
-			(char*)alpm_pkg_getinfo(pkg, PM_PKG_VERSION),
-			(char*)alpm_pkg_getinfo(pkg, PM_PKG_ARCH),
+			(char*)pacman_pkg_getinfo(pkg, PM_PKG_NAME),
+			(char*)pacman_pkg_getinfo(pkg, PM_PKG_VERSION),
+			(char*)pacman_pkg_getinfo(pkg, PM_PKG_ARCH),
 			PM_EXT_PKG);
 			isogrp_add(pkg);
 		}
@@ -359,17 +359,17 @@ PM_DB *db_register(volume_t *volume, char *treename)
 	PM_DB *db;
 	char *ptr;
 
-	if(!(db = alpm_db_register(treename)))
+	if(!(db = pacman_db_register(treename)))
 	{
-		fprintf(stderr, "could not register '%s' database (%s)\n", treename, alpm_strerror(pm_errno));
+		fprintf(stderr, "could not register '%s' database (%s)\n", treename, pacman_strerror(pm_errno));
 		return(NULL);
 	}
 	ptr = g_strdup_printf("file://%s/frugalware-%s", fst_root, volume->arch);
-	alpm_db_setserver(db, ptr);
+	pacman_db_setserver(db, ptr);
 	free(ptr);
-	if(alpm_db_update(0, db) == -1)
+	if(pacman_db_update(0, db) == -1)
 	{
-		fprintf(stderr, "failed to update %s (%s)\n", treename, alpm_strerror(pm_errno));
+		fprintf(stderr, "failed to update %s (%s)\n", treename, pacman_strerror(pm_errno));
 		return(NULL);
 	}
 	return(db);
@@ -425,25 +425,25 @@ int prepare(volume_t *volume, char *tmproot, int countonly, int stable)
 	PM_LIST *i, *junk;
 	PM_DB *db_local, *db_sync;
 
-	if(alpm_initialize(tmproot) == -1)
-		fprintf(stderr, "failed to initilize alpm library (%s)\n", alpm_strerror(pm_errno));
-	alpm_set_option(PM_OPT_LOGCB, (long)cb_log);
-	alpm_set_option(PM_OPT_LOGMASK, (long)-1);
-	if((db_local = alpm_db_register("local"))==NULL)
-		fprintf(stderr, "could not register 'local' database (%s)\n", alpm_strerror(pm_errno));
+	if(pacman_initialize(tmproot) == -1)
+		fprintf(stderr, "failed to initilize pacman library (%s)\n", pacman_strerror(pm_errno));
+	pacman_set_option(PM_OPT_LOGCB, (long)cb_log);
+	pacman_set_option(PM_OPT_LOGMASK, (long)-1);
+	if((db_local = pacman_db_register("local"))==NULL)
+		fprintf(stderr, "could not register 'local' database (%s)\n", pacman_strerror(pm_errno));
 	if(stable)
 		db_sync = db_register(volume, "frugalware");
 	else
 		db_sync = db_register(volume, "frugalware-current");
 
-	if(alpm_trans_init(PM_TRANS_TYPE_SYNC, PM_TRANS_FLAG_NOCONFLICTS, NULL, NULL, NULL) == -1)
-		fprintf(stderr, "failed to init transaction (%s)\n", alpm_strerror(pm_errno));
+	if(pacman_trans_init(PM_TRANS_TYPE_SYNC, PM_TRANS_FLAG_NOCONFLICTS, NULL, NULL, NULL) == -1)
+		fprintf(stderr, "failed to init transaction (%s)\n", pacman_strerror(pm_errno));
 
 	if(strcmp(volume->media, "net"))
 	{
-		for(i=alpm_db_getpkgcache(db_sync); i; i=alpm_list_next(i))
+		for(i=pacman_db_getpkgcache(db_sync); i; i=pacman_list_next(i))
 		{
-			PM_PKG *pkg=alpm_list_getdata(i);
+			PM_PKG *pkg=pacman_list_getdata(i);
 			isopkg_t *isopkg;
 
 			if((isopkg = (isopkg_t *)malloc(sizeof(isopkg_t)))==NULL)
@@ -460,32 +460,32 @@ int prepare(volume_t *volume, char *tmproot, int countonly, int stable)
 	isopkgs = g_list_sort(isopkgs, sort_isopkgs);
 	add_targets();
 
-	if(alpm_trans_prepare(&junk) == -1)
+	if(pacman_trans_prepare(&junk) == -1)
 	{
-		fprintf(stderr, "failed to prepare transaction (%s)\n", alpm_strerror(pm_errno));
-		for(i = alpm_list_first(junk); i; i = alpm_list_next(i))
+		fprintf(stderr, "failed to prepare transaction (%s)\n", pacman_strerror(pm_errno));
+		for(i = pacman_list_first(junk); i; i = pacman_list_next(i))
 		{
-			PM_DEPMISS *miss = alpm_list_getdata(i);
+			PM_DEPMISS *miss = pacman_list_getdata(i);
 
-			printf(":: %s: %s %s", (char*)alpm_dep_getinfo(miss, PM_DEP_TARGET),
-				(int)alpm_dep_getinfo(miss, PM_DEP_TYPE) == PM_DEP_TYPE_DEPEND ? "requires" : "is required by",
-				(char*)alpm_dep_getinfo(miss, PM_DEP_NAME));
-			switch((int)alpm_dep_getinfo(miss, PM_DEP_MOD))
+			printf(":: %s: %s %s", (char*)pacman_dep_getinfo(miss, PM_DEP_TARGET),
+				(int)pacman_dep_getinfo(miss, PM_DEP_TYPE) == PM_DEP_TYPE_DEPEND ? "requires" : "is required by",
+				(char*)pacman_dep_getinfo(miss, PM_DEP_NAME));
+			switch((int)pacman_dep_getinfo(miss, PM_DEP_MOD))
 			{
-				case PM_DEP_MOD_EQ: printf("=%s\n", (char*)alpm_dep_getinfo(miss, PM_DEP_VERSION)); break;
-				case PM_DEP_MOD_GE: printf(">=%s\n", (char*)alpm_dep_getinfo(miss, PM_DEP_VERSION)); break;
-				case PM_DEP_MOD_LE: printf("<=%s\n", (char*)alpm_dep_getinfo(miss, PM_DEP_VERSION)); break;
+				case PM_DEP_MOD_EQ: printf("=%s\n", (char*)pacman_dep_getinfo(miss, PM_DEP_VERSION)); break;
+				case PM_DEP_MOD_GE: printf(">=%s\n", (char*)pacman_dep_getinfo(miss, PM_DEP_VERSION)); break;
+				case PM_DEP_MOD_LE: printf("<=%s\n", (char*)pacman_dep_getinfo(miss, PM_DEP_VERSION)); break;
 				default: printf("\n"); break;
 			}
 		}
-		alpm_list_free(junk);
-		alpm_trans_release();
+		pacman_list_free(junk);
+		pacman_trans_release();
 		return(1);
 	}
 
 	mkiso(volume, countonly, stable);
-	alpm_trans_release();
-	alpm_release();
+	pacman_trans_release();
+	pacman_release();
 	g_list_free(isopkgs);
 	isopkgs=NULL;
 	g_list_free(isogrps);
