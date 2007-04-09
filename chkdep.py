@@ -9,7 +9,7 @@ Options:
   -i ..., --ignore=...    ignore the given package (optional, useful when a
                           package links to itself)
   -m ..., --method=...    method to use to detect the deps (default: elf,
-                          possible values: elf)
+                          possible values: elf, python)
   -p ..., --package=...   name of the fpm to check
 
 You should at least use the -d or the -p option.
@@ -43,7 +43,6 @@ def rmdupdeps(deps):
 	return newdeps
 
 def detect_owner(lib):
-	#print "[DEBUG] detect_owner(%s)" % lib
 	if lib.find(fpmroot) == 0:
 		return
 	pkg = pacman.void_to_PM_PKG(pacman.list_getdata(pacman.pkg_getowners(lib)))
