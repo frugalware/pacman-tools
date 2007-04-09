@@ -52,7 +52,9 @@ class Checks:
 			if len(lib):
 				pkg = pacman.void_to_PM_PKG(pacman.list_getdata(pacman.pkg_getowners(lib)))
 				owner = pacman.void_to_char(pacman.pkg_getinfo(pkg, pacman.PKG_NAME))
-				if owner not in deps:
+				if not owner:
+					print "WARNING: No package found containing %s!" % lib
+				elif owner not in deps:
 					deps.append(owner)
 
 checks = Checks()
