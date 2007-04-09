@@ -15,6 +15,12 @@ Options:
 You should at least use the -d or the -p option.
 """
 
+__author__ = "Miklos Vajna <vmiklos@frugalware.org>"
+__version__ = "0.8.7"
+__date__ = "Tue, 10 Apr 2007 00:22:42 +0200"
+__copyright__ = "Copyright (c) 2007 Miklos Vajna"
+__license__ = "GPL"
+
 import tarfile, tempfile, shutil, os, stat, re, pacman, getopt, sys
 
 from modulefinder import ModuleFinder
@@ -93,7 +99,7 @@ method="elf"
 pkg = None
 
 try:
-	opts, args = getopt.getopt(sys.argv[1:], "d:p:i:m:", ["dir=", "package=", "ignore=", "method="])
+	opts, args = getopt.getopt(sys.argv[1:], "d:p:i:m:v", ["dir=", "package=", "ignore=", "method=", "version"])
 except getopt.GetoptError:
 	usage()
 	sys.exit(1)
@@ -107,6 +113,9 @@ for opt, arg in opts:
 		method = arg
 	if opt in ("-i", "--ignore"):
 		ignorepkgs.append(arg)
+	if opt in ("-v", "--version"):
+		print "chkdep.py %s" % __version__
+		sys.exit(0)
 
 if not dir and not pkg:
 	usage()
