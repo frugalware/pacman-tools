@@ -39,7 +39,7 @@ FINCDIR = $(shell source /usr/lib/frugalware/fwmakepkg; echo $$Fincdir)
 compile: chkperm genauthors apidocs
 	$(MAKE) -C mkiso
 	$(MAKE) -C repoman.d
-	chmod +x fwmirror pear-makefb
+	chmod +x fwmirror pear-makefb chkdep
 	help2man -n "mirrors Frugalware archives" -S Frugalware -N ./fwmirror |sed 's/\\(co/(c)/' >fwmirror.1
 	help2man -n "Writes FrugalBuild scripts for PHP PEAR/PECL packages" -S Frugalware -N ./pear-makefb \
 		|sed 's/\\(co/(c)/' >pear-makefb.1
@@ -47,6 +47,7 @@ compile: chkperm genauthors apidocs
 		>chkperm.1
 	chmod +x fblint
 	help2man -n "searches for common FrugalBuild problems" -S Frugalware -N ./fblint |sed 's/\\(co/(c)/' >fblint.1
+	help2man -n "Checks a package or directory for possible depends" -S Frugalware -N ./chkdep |sed 's/\\(co/(c)/' >chkdep.1
 
 install:
 	$(INSTALL) -d $(DESTDIR)$(bindir)
