@@ -114,7 +114,7 @@ for opt, arg in opts:
 	if opt in ("-i", "--ignore"):
 		ignorepkgs.append(arg)
 	if opt in ("-v", "--version"):
-		print "chkdep.py %s" % __version__
+		print "chkdep %s" % __version__
 		sys.exit(0)
 
 if not dir and not pkg:
