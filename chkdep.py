@@ -69,14 +69,16 @@ class Checks:
 		if not os.stat(file)[stat.ST_MODE] & stat.S_IXUSR:
 			return
 		sock = os.popen("ldd %s" % file)
-		lines = sock.readlines()
-		sock.close()
-		for i in lines:
+		while True:
+			i = sock.readline()
+			if not i:
+				break
 			if i.find("=>") == -1:
 				continue
 			lib = re.sub(r".* => (.*) \(.*", r"\1", i.strip())
 			if len(lib):
 				detect_owner(lib)
+		sock.close()
 
 checks = Checks()
 
