@@ -69,7 +69,9 @@ class Checks:
 		if not os.stat(file)[stat.ST_MODE] & stat.S_IXUSR:
 			return
 		sock = os.popen("ldd %s" % file)
-		for i in sock.readlines():
+		lines = sock.readlines()
+		sock.close()
+		for i in lines:
 			if i.find("=>") == -1:
 				continue
 			lib = re.sub(r".* => (.*) \(.*", r"\1", i.strip())
