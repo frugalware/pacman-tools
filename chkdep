@@ -9,7 +9,7 @@ Options:
   -i ..., --ignore=...    ignore the given package (optional, useful when a
                           package links to itself)
   -m ..., --method=...    method to use to detect the deps (default: elf,
-                          possible values: elf, python)
+                          possible values: elf, python, mono)
   -p ..., --package=...   name of the fpm to check
 
 You should at least use the -d or the -p option.
@@ -60,6 +60,7 @@ def detect_owner(lib):
 
 class Checks:
 	def python(self, file):
+		libs = []
 		mf = ModuleFinder()
 		try:
 			mf.run_script(file)
@@ -69,11 +70,13 @@ class Checks:
 		for key in mf.modules.keys():
 			file = mf.modules[key].__file__
 			if file:
-				detect_owner(file)
+				libs.append(file)
+		return libs
 
 	def elf(self, file):
 		if not os.stat(file)[stat.ST_MODE] & stat.S_IXUSR:
 			return
+		libs = []
 		sock = os.popen("ldd %s" % file)
 		while True:
 			i = sock.readline()
@@ -83,8 +86,37 @@ class Checks:
 				continue
 			lib = re.sub(r".* => (.*) \(.*", r"\1", i.strip())
 			if len(lib):
-				detect_owner(lib)
+				libs.append(lib)
 		sock.close()
+		return libs
+
+	def mono(self, file):
+		dlls = []
+		ret = []
+		sock = os.popen("monodis --assemblyref runme.exe")
+
+		while True:
+			i = sock.readline()
+			if not i:
+				break
+			if i.find("Name=") == -1:
+				continue
+			dll = i.strip().split('Name=')[1]
+			if dll not in dlls:
+				dlls.append(dll)
+		sock.close()
+
+		for i in dlls:
+			sock = os.popen('MONO_LOG_LEVEL="debug" mono --aot runme.exe')
+			while True:
+				j = sock.readline()
+				if not j:
+					break
+				if j.find(i) != -1:
+					break
+			sock.close()
+			ret.append((re.sub(r".*'(.*)'.*", r"\1", j.strip())))
+		return ret
 
 checks = Checks()
 
@@ -94,7 +126,6 @@ ignorepkgs = []
 deps = []
 
 dir = None
-allowedmethods = ("elf")
 method="elf"
 pkg = None
 
