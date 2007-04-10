@@ -6,11 +6,12 @@ Usage: chkdep [options]
 
 Options:
   -d ..., --dir=...       name od the dir to check
-  -i ..., --ignore=...    ignore the given package (optional, useful when a
+  -n ..., --name=...      ignore the given package (optional, useful when a
                           package links to itself)
   -m ..., --method=...    method to use to detect the deps (default: elf,
                           possible values: elf, python, mono, perl)
   -p ..., --package=...   name of the fpm to check
+  -i ...                  does nothing (for backward compat)
 
 You should at least use the -d or the -p option.
 """
@@ -149,7 +150,7 @@ method="elf"
 pkg = None
 
 try:
-	opts, args = getopt.getopt(sys.argv[1:], "d:p:i:m:v", ["dir=", "package=", "ignore=", "method=", "version"])
+	opts, args = getopt.getopt(sys.argv[1:], "d:p:n:m:vi", ["dir=", "package=", "ignore=", "method=", "version"])
 except getopt.GetoptError:
 	usage()
 	sys.exit(1)
@@ -161,7 +162,7 @@ for opt, arg in opts:
 		pkg = arg
 	if opt in ("-m", "--method"):
 		method = arg
-	if opt in ("-i", "--ignore"):
+	if opt in ("-n", "--name"):
 		ignorepkgs.append(arg)
 	if opt in ("-v", "--version"):
 		print "chkdep %s" % __version__
