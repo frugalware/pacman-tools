@@ -9,7 +9,7 @@ Options:
   -i ..., --ignore=...    ignore the given package (optional, useful when a
                           package links to itself)
   -m ..., --method=...    method to use to detect the deps (default: elf,
-                          possible values: elf, python, mono)
+                          possible values: elf, python, mono, perl)
   -p ..., --package=...   name of the fpm to check
 
 You should at least use the -d or the -p option.
@@ -116,6 +116,25 @@ class Checks:
 					break
 			sock.close()
 			ret.append((re.sub(r".*'(.*)'.*", r"\1", j.strip())))
+		return ret
+	def perl(self, file):
+		mods = []
+		ret = []
+		sock = open(file)
+		while True:
+			modules = []
+			i = sock.readline()
+			if not i:
+				break
+			if not re.match(r"^use [^ ]+::", i):
+				continue
+			lib = re.sub(r"^use ([^ ]+::[^ ]+)( |;).*", r"\1", i.strip())
+			mods.append(lib)
+		sock.close()
+		for i in mods:
+			sock = os.popen("perldoc -l %s" % i)
+			ret.append(sock.readline().strip())
+			sock.close()
 		return ret
 
 checks = Checks()
