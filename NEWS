@@ -1,5 +1,9 @@
 VERSION         DESCRIPTION
 -----------------------------------------------------------------------------
+0.8.9         - chkdep rewritten:
+                - use library calls instead of tar, find and pacman
+                - merged chkdep-py
+                - added mono and perl support
 0.8.8         - new scripts: chkdep-py, revdep-rebuild and pootle-update
               - bumppkg: i18n fix
               - ported to libpacman
