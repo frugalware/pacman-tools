@@ -75,7 +75,10 @@ class Checks:
 		return libs
 
 	def elf(self, file):
-		if not os.stat(file)[stat.ST_MODE] & stat.S_IXUSR:
+		try:
+			if not os.stat(file)[stat.ST_MODE] & stat.S_IXUSR:
+				return
+		except OSError:
 			return
 		libs = []
 		sock = os.popen("ldd %s" % file)
