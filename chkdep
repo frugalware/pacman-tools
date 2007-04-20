@@ -16,10 +16,10 @@ Options:
 You should at least use the -d or the -p option.
 """
 
-__author__ = "Miklos Vajna <vmiklos@frugalware.org>"
-__version__ = "0.8.7"
-__date__ = "Tue, 10 Apr 2007 00:22:42 +0200"
-__copyright__ = "Copyright (c) 2007 Miklos Vajna"
+__author__ = "Miklos Vajna <vmiklos@frugalware.org>, Marcus Habermehl <bmh1980de@yahoo.de>"
+__version__ = "0.8.8"
+__date__ = "Fri, 20 Apr 2007 21:43:12 +0200"
+__copyright__ = "Copyright (c) 2007 Miklos Vajna, Marcus Habermehl"
 __license__ = "GPL"
 
 import tarfile, tempfile, shutil, os, stat, re, pacman, getopt, sys
@@ -50,6 +50,8 @@ def rmdupdeps(deps):
 	return newdeps
 
 def detect_owner(lib):
+	if not len(lib):
+		return
 	if lib.find(fpmroot) == 0:
 		return
 	pkg = pacman.void_to_PM_PKG(pacman.list_getdata(pacman.pkg_getowners(lib)))
@@ -61,17 +63,42 @@ def detect_owner(lib):
 
 class Checks:
 	def python(self, file):
-		libs = []
-		mf = ModuleFinder()
-		try:
-			mf.run_script(file)
-		except:
+		ftype = os.popen("file -b %s" % file).read().rstrip()
+		if not "python script" in ftype and not file.endswith(".py"):
 			return
+		libs = []
+		modules = []
+		regex1 = r"import ([a-zA-Z0-9_\.]*)"
+		regex2 = r"from ([a-zA-Z0-9_\.]*) import"
+		fd = open(file, "r")
+		for line in fd.readlines():
+			module = str()
+			if re.match(regex1, line):
+				module = re.match(regex1, line).groups()[0].rstrip()
+			elif re.match(regex2, line):
+				module = re.match(regex2, line).groups()[0].rstrip()
+			else:
+				continue
+			if not module:
+				continue
+			if not module in libs:
+				modules.append(module)
+		fd.close()
 
-		for key in mf.modules.keys():
-			file = mf.modules[key].__file__
-			if file:
-				libs.append(file)
+		for module in modules:
+			mod_file = str()
+			mod_repl = module.replace(".", "/")
+			for path in sys.path:
+				if os.path.isfile("%s/%s.py" % (path, mod_repl)):
+					mod_file = "%s/%s.py" % (path, mod_repl)
+					break
+				elif os.path.isfile("%s/%s.so" % (path, mod_repl)):
+					mod_file = "%s/%s.so" % (path, mod_repl)
+					break
+				elif os.path.isfile("%s/%s/__init__.py" % (path, mod_repl)):
+					mod_file = "%s/%s/__init__.py" % (path, mod_repl)
+					break
+			libs.append(mod_file)
 		return libs
 
 	def elf(self, file):
