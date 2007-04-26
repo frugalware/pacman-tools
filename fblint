@@ -123,7 +123,7 @@ check "url" "[ ! -z \"$url\" ]"
 check "groups" "[ ! -z \"$groups\" ]"
 check "valid first group" "! echo $groups |grep -q -- - || echo $groups|grep -q -- -extra$"
 check "archs" "[ ! -z \"$archs\" ]"
-check "up2date" "[ ! -z \"$up2date\" ]"
+check "up2date" "[ ! -z \"`echo $up2date|sed 's/\$(/\\\\\$(/g'`\" ]"
 check "md5sums/sha1sums/signatures" "[ ${#md5sums[@]} -gt 0 -o ${#sha1sums[@]} -gt 0 -o ${#signatures[@]} -gt 0 ]"
 if [ ${#md5sums[@]} -gt 0 ]; then
 	check "right number of md5sums" "[ ${#md5sums[@]} -eq ${#source[@]} ]"
