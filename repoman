@@ -4,13 +4,15 @@
 # repoman for Frugalware
 # distributed under GPL License
 
+. /usr/lib/frugalware/fwmakepkg
+
 function usage()
 {
 	cat <<EOF
 Usage: `basename $0` [global options] [command] [command options]
 
 Commands:
-cl|changelog [repository/]category/package  Generate a Changelog file.
+cl|changelog [category/]package             Generate a Changelog file.
 c|clean package                             Delete a package.
 del|delete file                             Delete a file from FST.
 ls|list directory                           List a directory in FST.
@@ -105,9 +107,9 @@ split_group_pkg()
 		group=${1%/*}
 		pkg=${1#*/}
 	else
-		echo "Bad syntax!"
-		usage
-		exit 1
+		. FrugalBuild
+		group=$groups
+		pkg=$1
 	fi
 }
 

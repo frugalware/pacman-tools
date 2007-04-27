@@ -145,8 +145,10 @@ repoman cl base/perl
 
 .SH COMMANDS
 .TP
-.BI cl|changelog " [repository/]category/package"
+.BI cl|changelog " [category/]package"
 Generate a Changelog file from darcs patch comments.
+The category may be optional, but then a FrugalBuild must be supplied in the
+current directory to determine the category.
 .TP
 .BI c|clean " package"
 Wipes out a package from the package database (fdb).
