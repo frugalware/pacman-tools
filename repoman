@@ -62,34 +62,31 @@ delete()
 
 upload()
 {
-	if [ "$#" -le 0 ]; then
+	if [ "$#" -lt 2 ]; then
 		echo "Too few parameters!"
 		usage
 		exit 1
 	fi
 	check_servers
 	sudouser=$(eval "echo \$${reponame}_sudo")
-	[ -n "$sudouser" ] && sudo="sudo -u $sudouser"
-	if [ -z "$2" ]; then
-		dest="frugalware-`uname -m`"
-	else
-		# Strip leading / and any ..
-		dest=`echo $2 |sed 's|^/||;s|\.\./||g'`
-	fi
-	src=$1
-	name=`basename $src`
-	msg "Requesting a temporary file"
-	tmp=`ssh $host mktemp 2>/dev/null`
-	msg "Uploading file: $src (to $tmp)"
-	scp $src $host:$tmp
-	if echo "`sha1sum $src|sed 's/\(.*\)  .*/\1/'`  $tmp" |ssh $host sha1sum -c - >/dev/null 2>&1; then
-		msg "Copying to $dest"
-		ssh $host "chmod 644 $tmp; $sudo cp $tmp $path/$dest/$name && rm $tmp"
-	else
-		echo "The uploaded file is corrupted :-/"
-		ssh $host "rm $tmp"
-		exit 1
-	fi
+	# Strip leading / and any ..
+	dest=`echo ${@:$#} |sed 's|^/||;s|\.\./||g'`
+	for src in "${@:1:$#-1}"
+	do
+		name=`basename $src`
+		msg "Requesting a temporary file"
+		tmp=`ssh $host mktemp 2>/dev/null`
+		msg "Uploading file: $src (to $tmp)"
+		scp $src $host:$tmp
+		if echo "`sha1sum $src|sed 's/\(.*\)  .*/\1/'`  $tmp" |ssh $host sha1sum -c - >/dev/null 2>&1; then
+			msg "Copying to $dest"
+			ssh $host "chmod 644 $tmp; $sudo cp $tmp $path/$dest/$name && rm $tmp"
+		else
+			echo "The uploaded file is corrupted :-/"
+			ssh $host "rm $tmp"
+			exit 1
+		fi
+	done
 }
 
 list()
