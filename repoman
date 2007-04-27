@@ -11,7 +11,7 @@ Usage: `basename $0` [global options] [command] [command options]
 
 Commands:
 cl|changelog [repository/]category/package  Generate a Changelog file.
-c|clean [repository/]category/package  Delete a package.
+c|clean package                             Delete a package.
 del|delete file                             Delete a file from FST.
 ls|list directory                           List a directory in FST.
 up|upload source destination                Upload a file to FST.
@@ -113,14 +113,21 @@ split_group_pkgname()
 
 clean()
 {
-	msg "Cleaning up $1"
-	split_group_pkgname $1
 	check_servers
+	[ -z "$arch" ] && arch=`arch`
 	sudouser=$(eval "echo \$${reponame}_sudo")
 	[ -n "$sudouser" ] && sudo="sudo -u $sudouser"
 	fdb=$(eval "echo \$${reponame}_fdb")
 	[ -z "$fdb" ] && fdb="$reponame.fdb"
-	ssh $host "cd $path/frugalware-${arch:-`arch`} && arch=${arch:-`arch`} $sudo updatesync del $fdb $pkgname && genchangelog --clean $pkgname"
+	for i in $*
+	do
+		# drop the group/ prefix if any
+		i=${i#*/}
+		msg "Cleaning up $i"
+		ssh $host "cd $path/frugalware-$arch && \
+			arch=$arch $sudo updatesync del $fdb $i && \
+			genchangelog --clean $i"
+	done
 }
 
 changelog()
