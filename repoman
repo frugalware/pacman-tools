@@ -92,8 +92,11 @@ upload()
 list()
 {
 	check_servers
-	msg "Fetching contents of directory: $1"
-	ssh $host "ls $path/$1"
+	for i in $*
+	do
+		msg "Fetching contents of directory: $i"
+		ssh $host "ls $path/$i"
+	done
 }
 
 split_group_pkgname()
