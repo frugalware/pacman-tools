@@ -16,6 +16,7 @@ cl|changelog [category/]package             Generate a Changelog file.
 c|clean package                             Delete a package.
 del|delete file                             Delete a file from FST.
 ls|list directory                           List a directory in FST.
+rec|record [parameters]                     Records a pacakge.
 up|upload source destination                Upload a file to FST.
 
 Global options:
@@ -39,6 +40,21 @@ check_servers()
         else
                 die "The first server in the $reponame repo is read-only, please update the list of servers."
         fi
+}
+
+_get_root()
+{
+	local i=`pwd`
+	while true
+	do
+		if [ -e "$i/_darcs" ]; then
+			break
+		elif [ "$i" == "" ]; then
+			break
+		fi
+		i=`echo $i|sed 's|\(.*\)/.*|\1|'`
+	done
+	echo $i
 }
 
 delete()
@@ -158,6 +174,49 @@ if [ ! -e _darcs/rlock ]; then \
 else \
 	echo \"Couldn't get lock.\"; \
 fi"
+}
+
+_keypress()
+{
+	local old=$(stty -g)
+	stty -icanon
+	c=$(head -c1)
+	stty "$old"
+	echo $c
+}
+
+_do_record()
+{
+	root="`_get_root`"
+	echo -e "`LANG= LC_ALL= date +"%a %b %d %H:%M:%S %Z %Y"`
+`cat $root/_darcs/prefs/author`
+$pkgname-$pkgver-$pkgrel-$arch
+$@" | darcs rec -a --pipe
+}
+
+record()
+{
+	[ -z "$arch"] && arch=`arch`
+	echo -n "Checking FrugalBuild... "
+	if fblint &>/dev/null; then
+		echo "OK"
+	else
+		echo "Failed"
+		exit 1
+	fi
+	. FrugalBuild
+	if [ -n "$*" ]; then
+		_do_record $*
+	else
+		cmd="darcs record --edit-long-comment -m '$pkgname-$pkgver-$pkgrel-$arch' ."
+		echo $cmd
+		echo -n "Is this ok? [Y/n] "
+		c=`_keypress`
+		echo
+		if [[ "(y|Y)?" =~ "$c" ]]; then
+			eval $cmd
+		fi
+	fi
 }
 
 die()
@@ -348,6 +407,10 @@ while [ "$1" != "" ]; do
 		s|search)
 			shift 1
 			search $*
+		;;
+		rec|record)
+			shift 1
+			record $*
 		;;
 	esac
 	shift 1

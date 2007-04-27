@@ -108,6 +108,7 @@ do_build()
 	Fmessage "done, testing time!"
 }
 
+# this can be replaced with repoman rec soon
 do_record()
 {
 	source FrugalBuild || die "failed to source the FrugalBuild!"
