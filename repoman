@@ -102,8 +102,8 @@ list()
 split_group_pkgname()
 {
 	if echo $1 |grep -q '^[^/]\+/[^/]\+$'; then
-		group=`echo $1 |sed 's|\([^/]\+\)/[^/]\+|\1|'`
-		pkgname=`echo $1 |sed 's|[^/]\+/\([^/]\+\)|\1|'`
+		group=${1%/*}
+		pkgname=${1#*/}
 	else
 		echo "Bad syntax!"
 		usage
