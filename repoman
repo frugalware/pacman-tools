@@ -99,11 +99,11 @@ list()
 	done
 }
 
-split_group_pkgname()
+split_group_pkg()
 {
 	if echo $1 |grep -q '^[^/]\+/[^/]\+$'; then
 		group=${1%/*}
-		pkgname=${1#*/}
+		pkg=${1#*/}
 	else
 		echo "Bad syntax!"
 		usage
@@ -133,7 +133,7 @@ clean()
 changelog()
 {
 	msg "Generating Changelog for $1"
-	split_group_pkgname $1
+	split_group_pkg $1
 	check_servers
 	sudouser=$(eval "echo \$${reponame}_sudo")
 	[ -n "$sudouser" ] && sudo="sudo -u $sudouser"
@@ -149,9 +149,9 @@ changelog()
 if [ ! -e _darcs/rlock ]; then \
 	touch _darcs/rlock; \
 	cd frugalware-${arch:-`arch`}; \
-	arch=${arch:-`arch`} $sudo updatesync upd $fdb ../source/$group/$pkgname/FrugalBuild; \
+	arch=${arch:-`arch`} $sudo updatesync upd $fdb ../source/$group/$pkg/FrugalBuild; \
 	cd $path; rm _darcs/rlock; \
-	cd $path/source/$group/$pkgname; arch=${arch:-`arch`} $sudo genchangelog; \
+	cd $path/source/$group/$pkg; arch=${arch:-`arch`} $sudo genchangelog; \
 	$catcmd; \
 else \
 	echo \"Couldn't get lock.\"; \
