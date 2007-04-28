@@ -144,7 +144,6 @@ split_group_pkg()
 clean()
 {
 	check_servers
-	[ -z "$arch" ] && arch=`arch`
 	sudouser=$(eval "echo \$${reponame}_sudo")
 	[ -n "$sudouser" ] && sudo="sudo -u $sudouser"
 	fdb=$(eval "echo \$${reponame}_fdb")
@@ -178,10 +177,10 @@ changelog()
 	ssh $host "cd $path; \
 if [ ! -e _darcs/rlock ]; then \
 	touch _darcs/rlock; \
-	cd frugalware-${arch:-`arch`}; \
-	arch=${arch:-`arch`} $sudo updatesync upd $fdb ../source/$group/$pkg/FrugalBuild; \
+	cd frugalware-$arch; \
+	arch=$arch $sudo updatesync upd $fdb ../source/$group/$pkg/FrugalBuild; \
 	cd $path; rm _darcs/rlock; \
-	cd $path/source/$group/$pkg; arch=${arch:-`arch`} $sudo genchangelog; \
+	cd $path/source/$group/$pkg; arch=$arch $sudo genchangelog; \
 	$catcmd; \
 else \
 	echo \"Couldn't get lock.\"; \
@@ -221,7 +220,6 @@ $@" | darcs rec -a --pipe
 
 record()
 {
-	[ -z "$arch" ] && arch=`arch`
 	echo -n "Checking FrugalBuild... "
 	if fblint &>/dev/null; then
 		echo "OK"
@@ -287,7 +285,6 @@ fpmdel()
 
 push()
 {
-	[ -z "$arch" ] && arch=`arch`
 	dry_run record $*
 	srcdel
 
@@ -428,6 +425,7 @@ merge()
 
 # Initializating variables.
 version='0.3.0'
+[ -z "$arch" ] && arch=`uname -m`
 
 # Checking for darcs.
 which darcs >/dev/null 2>&1
