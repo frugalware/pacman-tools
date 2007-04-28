@@ -256,6 +256,27 @@ srcdel()
 	rm -f $srckeep
 }
 
+fpmdel()
+{
+	fpmkeep=$(mktemp)
+	fpmserver=$(mktemp)
+
+	for i in $pkgname ${subpkgs[@]}
+	do
+		echo $i-$pkgver-$pkgrel-$arch.fpm >> $fpmkeep
+		repoman ls frugalware-$arch 2>/dev/null |grep "$i-[^-]\+-[^-]\+-$arch.fpm" >> $fpmserver
+	done
+
+	for i in $(cat $fpmserver)
+	do
+		if ! grep -q $i $fpmkeep; then
+			delete frugalware-$arch/$i
+		fi
+	done
+
+	rm -f $fpmkeep $fpmserver
+}
+
 push()
 {
 	[ -z "$arch" ] && arch=`arch`
@@ -274,6 +295,8 @@ push()
 	do
 		upload $i frugalware-$arch/
 	done
+
+	fpmdel
 }
 
 die()
