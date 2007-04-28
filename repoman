@@ -222,6 +222,39 @@ record()
 	fi
 }
 
+srcdel()
+{
+	. FrugalBuild
+	srclocal=(${source[@]} ${signatures[@]})
+	srckeep=$(mktemp)
+	mydir=$(pwd|sed "s|$(_get_root)||")
+	srctodel=""
+
+	darcsdir="_darcs/pristine"
+	if ! repoman ls $darcsdir &>/dev/null; then
+		darcsdir="_darcs/current"
+	fi
+
+	repoman ls $darcsdir/$mydir 2>/dev/null >$srckeep
+
+	for i in $(repoman ls $mydir 2>/dev/null)
+	do
+		if ! grep -q $i $srckeep && [ "$i" != "Changelog" ]; then
+			if ! echo ${srclocal[@]} |grep -q $i; then
+				delete $mydir/$i
+			fi
+		fi
+	done
+
+	rm -f $srckeep
+}
+
+push()
+{
+	record $*
+	srcdel
+}
+
 die()
 {
 	echo -e "$0: $*"
@@ -414,6 +447,10 @@ while [ "$1" != "" ]; do
 		rec|record)
 			shift 1
 			record $*
+		;;
+		push)
+			shift 1
+			push
 		;;
 	esac
 	shift 1
