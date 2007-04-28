@@ -20,6 +20,7 @@ rec|record [parameters]                     Records a pacakge.
 up|upload source destination                Upload a file to FST.
 
 Global options:
+-k            Don't be interactive
 -v|--verbose  Give verbose output.
 -h|--help     Show this help screen.
 EOF
@@ -187,6 +188,19 @@ _keypress()
 	echo $c
 }
 
+ask()
+{
+	if [ -z "$noask" ]; then
+		echo $*
+		echo -n "Is this ok? [Y/n] "
+		c=`_keypress`
+		echo
+	fi
+	if [ -n "$noask" ] || [[ "(y|Y)?" =~ "$c" ]]; then
+		eval "$*"
+	fi
+}
+
 _do_record()
 {
 	root="`_get_root`"
@@ -211,14 +225,7 @@ record()
 		_do_record $*
 	else
 		darcs what -s .
-		cmd="darcs record --edit-long-comment -m '$pkgname-$pkgver-$pkgrel-$arch' ."
-		echo $cmd
-		echo -n "Is this ok? [Y/n] "
-		c=`_keypress`
-		echo
-		if [[ "(y|Y)?" =~ "$c" ]]; then
-			eval $cmd
-		fi
+		ask "darcs record --edit-long-comment -m '$pkgname-$pkgver-$pkgrel-$arch' ."
 	fi
 }
 
@@ -253,6 +260,8 @@ push()
 {
 	record $*
 	srcdel
+
+	ask "darcs push --match 'name $pkgname'"
 }
 
 die()
@@ -405,6 +414,9 @@ while [ "$1" != "" ]; do
 		-t|--tree)
 			shift 1
 			reponame=$1
+		;;
+		-k)
+			noask=1
 		;;
 		-*)
 			echo "Wrong parameter!"
