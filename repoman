@@ -96,6 +96,7 @@ upload()
 	fi
 	check_servers
 	sudouser=$(eval "echo \$${reponame}_sudo")
+	[ -n "$sudouser" ] && sudo="sudo -u $sudouser"
 	# Strip leading / and any ..
 	dest=`echo ${@:$#} |sed 's|^/||;s|\.\./||g'`
 	for src in "${@:1:$#-1}"
