@@ -1,5 +1,10 @@
 VERSION         DESCRIPTION
 -----------------------------------------------------------------------------
+0.9.0         - integrated rf features to repoman:
+                - "rf -R" becomes "repoman rec"
+                - "rf [-k] -f *.fpm" becomes "repoman [-k] push"
+              - ckkdep: speed up the python backend, ignore broken symlinks
+              - fblint: fixed to work properly without a network connection
 0.8.9         - chkdep rewritten:
                 - use library calls instead of tar, find and pacman
                 - merged chkdep-py
