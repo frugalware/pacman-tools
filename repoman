@@ -4,8 +4,6 @@
 # repoman for Frugalware
 # distributed under GPL License
 
-. /usr/lib/frugalware/fwmakepkg
-
 function usage()
 {
 	cat <<EOF
@@ -135,7 +133,6 @@ split_group_pkg()
 		group=${1%/*}
 		pkg=${1#*/}
 	else
-		. FrugalBuild
 		group=$groups
 		pkg=$1
 	fi
@@ -227,7 +224,6 @@ record()
 		echo "Failed"
 		exit 1
 	fi
-	. FrugalBuild
 	if [ -n "$*" ]; then
 		_do_record $*
 	else
@@ -238,7 +234,6 @@ record()
 
 srcdel()
 {
-	. FrugalBuild
 	srclocal=(${source[@]} ${signatures[@]})
 	srckeep=$(mktemp)
 	mydir=$(pwd|sed "s|$(_get_root)||")
@@ -422,6 +417,11 @@ merge()
 
 [ -e /etc/repoman.conf ] && . /etc/repoman.conf || \
 	die "Can't find /etc/repoman.conf!"
+
+[ -e /usr/lib/frugalware/fwmakepkg ] && . /usr/lib/frugalware/fwmakepkg || \
+	die "Can't find /usr/lib/frugalware/fwmakepkg!"
+
+[ -e FrugalBuild ] && . FrugalBuild
 
 # Initializating variables.
 version='0.3.0'
