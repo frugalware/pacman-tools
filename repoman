@@ -114,7 +114,9 @@ list()
 	do
 		msg "Fetching contents of directory: $i"
 		ssh $host "ls $path/$i"
+		ret=$?
 	done
+	exit $ret
 }
 
 split_group_pkg()
