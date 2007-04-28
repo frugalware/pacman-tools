@@ -261,7 +261,13 @@ push()
 	record $*
 	srcdel
 
-	ask "darcs push --match 'name $pkgname'"
+	cmd="darcs push --match 'name $pkgname'"
+	if [ -n "$noask" ]; then
+		cmd="$cmd -a"
+	fi
+	ask $cmd
+
+	# here we _could_ upload the new sources but that'll be done by changelog()
 }
 
 die()
