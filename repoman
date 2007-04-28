@@ -20,6 +20,7 @@ rec|record [parameters]                     Records a pacakge.
 up|upload source destination                Upload a file to FST.
 
 Global options:
+-d|--dry-run  Don't actually run the commands.
 -k            Don't be interactive
 -v|--verbose  Give verbose output.
 -h|--help     Show this help screen.
@@ -31,6 +32,14 @@ msg()
 	echo -e "\033[1;32m==>\033[1;0m \033[1;1m$1\033[1;0m" >&2
 }
 
+dry_run()
+{
+	if [ -z "$dryrun" ]; then
+		eval "$*"
+	else
+		echo $*
+	fi
+}
 
 check_servers()
 {
@@ -247,7 +256,7 @@ srcdel()
 	do
 		if ! grep -q $i $srckeep && [ "$i" != "Changelog" ]; then
 			if ! echo ${srclocal[@]} |grep -q $i; then
-				delete $mydir/$i
+				dry_run delete $mydir/$i
 			fi
 		fi
 	done
@@ -269,7 +278,7 @@ fpmdel()
 	for i in $(cat $fpmserver)
 	do
 		if ! grep -q $i $fpmkeep; then
-			delete frugalware-$arch/$i
+			dry_run delete frugalware-$arch/$i
 		fi
 	done
 
@@ -279,24 +288,24 @@ fpmdel()
 push()
 {
 	[ -z "$arch" ] && arch=`arch`
-	record $*
+	dry_run record $*
 	srcdel
 
 	cmd="darcs push --match 'name $pkgname'"
 	if [ -n "$noask" ]; then
 		cmd="$cmd -a"
 	fi
-	ask $cmd
+	dry_run "$cmd"
 
 	# here we _could_ upload the new sources but that'll be done by changelog()
 
 	for i in *-$arch.fpm
 	do
-		upload $i frugalware-$arch/
+		dry_run upload $i frugalware-$arch/
 	done
 
 	fpmdel
-	changelog $groups/$pkgname
+	dry_run changelog $groups/$pkgname
 }
 
 die()
@@ -452,6 +461,9 @@ while [ "$1" != "" ]; do
 		;;
 		-k)
 			noask=1
+		;;
+		-d|--dry-run)
+			dryrun=1
 		;;
 		-*)
 			echo "Wrong parameter!"
