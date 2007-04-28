@@ -22,8 +22,8 @@ Run it from the packages darcs directory.
 
 =item B<-H>
 
-runs a FrugalBuild checking, before recording.
-Can be overridden, with actions -RCPUL
+    runs a FrugalBuild checking, before recording.
+    Can be overridden, with actions -RCPUL
 
 =item B<-R>
 
@@ -127,13 +127,13 @@ Can be overridden, with actions -RCPUL
 
 =head2 0.6
 
-Release as stable
-darcs and -k bugfix
-new getopts method - but still not good enough!
-fblint check
-nobuild option handling
-use of 'repoman ls'
-more little bugfixes
+    Release as stable
+    darcs and -k bugfix
+    new getopts method - but still not good enough!
+    fblint check
+    nobuild option handling
+    use of 'repoman ls'
+    more little bugfixes
 
 =head2 0.5
 
