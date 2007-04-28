@@ -208,6 +208,7 @@ record()
 	if [ -n "$*" ]; then
 		_do_record $*
 	else
+		darcs what -s .
 		cmd="darcs record --edit-long-comment -m '$pkgname-$pkgver-$pkgrel-$arch' ."
 		echo $cmd
 		echo -n "Is this ok? [Y/n] "
