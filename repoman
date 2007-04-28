@@ -212,7 +212,7 @@ $@" | darcs rec -a --pipe
 
 record()
 {
-	[ -z "$arch"] && arch=`arch`
+	[ -z "$arch" ] && arch=`arch`
 	echo -n "Checking FrugalBuild... "
 	if fblint &>/dev/null; then
 		echo "OK"
@@ -258,6 +258,7 @@ srcdel()
 
 push()
 {
+	[ -z "$arch" ] && arch=`arch`
 	record $*
 	srcdel
 
@@ -268,6 +269,11 @@ push()
 	ask $cmd
 
 	# here we _could_ upload the new sources but that'll be done by changelog()
+
+	for i in *-$arch.fpm
+	do
+		upload $i frugalware-$arch/
+	done
 }
 
 die()
