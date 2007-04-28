@@ -296,6 +296,7 @@ push()
 	done
 
 	fpmdel
+	changelog $groups/$pkgname
 }
 
 die()
