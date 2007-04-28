@@ -101,7 +101,7 @@ do
 		[ -d $logdir ] || mkdir -p $logdir
 		mv *.log *.log.exitcode $logdir
 	fi
-	[ "$ret" == "0" ] && rf -v $tree -CPUL -k -f *fpm >>$mlogfile 2>&1
+	[ "$ret" == "0" ] && repoman -t $tree -k push >>$mlogfile 2>&1
 	cd $CWD
 	i=$(($i+1))
 
