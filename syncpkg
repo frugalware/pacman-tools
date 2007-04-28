@@ -91,9 +91,8 @@ do
 	rm -f *fpm *.log
 	log "making package: $pkg"
 	echo "$pkg" >/tmp/sync.pkg
-	# -R and -L can be removed after Frugalware-0.6
-	sudo makepkg -t $tree -RC >>$mlogfile 2>&1
-	sudo makepkg -t $tree -RLuck >>$mlogfile 2>&1
+	sudo makepkg -t $tree -C >>$mlogfile 2>&1
+	sudo makepkg -t $tree -uck >>$mlogfile 2>&1
 	ret=$?
 	log "finished making package $pkg with exit code $ret"
 	rm /tmp/sync.pkg
