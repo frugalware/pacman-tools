@@ -16,6 +16,7 @@ del|delete file                             Delete a file from FST.
 ls|list directory                           List a directory in FST.
 rec|record [parameters]                     Records a pacakge.
 up|upload source destination                Upload a file to FST.
+push [record parameters]                    Pushes a pacakge.
 
 Global options:
 -d|--dry-run  Don't actually run the commands.
@@ -278,9 +279,8 @@ fpmdel()
 	rm -f $fpmkeep $fpmserver
 }
 
-push()
+sync()
 {
-	dry_run record $*
 	srcdel
 
 	cmd="darcs push --match 'name $pkgname'"
@@ -298,6 +298,12 @@ push()
 
 	fpmdel
 	dry_run changelog $groups/$pkgname
+}
+
+push()
+{
+	dry_run record $*
+	sync
 }
 
 die()
@@ -507,7 +513,11 @@ while [ "$1" != "" ]; do
 		;;
 		push)
 			shift 1
-			push
+			push $*
+		;;
+		sync)
+			shift 1
+			sync $*
 		;;
 	esac
 	shift 1
