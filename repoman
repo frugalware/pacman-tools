@@ -235,7 +235,6 @@ srcdel()
 	srclocal=(${source[@]} ${signatures[@]})
 	srckeep=$(mktemp)
 	mydir=$(pwd|sed "s|$(_get_root)||")
-	srctodel=""
 
 	darcsdir="_darcs/pristine"
 	if ! repoman ls $darcsdir &>/dev/null; then
