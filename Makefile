@@ -48,7 +48,6 @@ compile: chkperm genauthors apidocs
 	chmod +x fblint
 	help2man -n "searches for common FrugalBuild problems" -S Frugalware -N ./fblint |sed 's/\\(co/(c)/' >fblint.1
 	help2man -n "Checks a package or directory for possible depends" -S Frugalware -N ./chkdep |sed 's/\\(co/(c)/' >chkdep.1
-	pod2man rf rf.1
 
 install:
 	$(INSTALL) -d $(DESTDIR)$(bindir)
@@ -73,8 +72,6 @@ install:
 	$(INSTALL) chkdep $(DESTDIR)$(bindir)/chkdep
 	$(INSTALL) -m644 chkdep.1 $(DESTDIR)$(man1dir)
 	$(INSTALL) pud $(DESTDIR)$(bindir)
-	$(INSTALL) rf $(DESTDIR)$(bindir)
-	$(INSTALL) -m644 rf.1 $(DESTDIR)$(man1dir)
 	$(INSTALL) genchangelog $(DESTDIR)$(bindir)
 	$(INSTALL) repoman $(DESTDIR)$(bindir)
 	$(INSTALL) -m644 repoman.1 $(DESTDIR)$(man1dir)
