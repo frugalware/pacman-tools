@@ -267,7 +267,7 @@ fpmdel()
 	for i in $pkgname ${subpkgs[@]}
 	do
 		echo $i-$pkgver-$pkgrel-$arch.fpm >> $fpmkeep
-		repoman ls frugalware-$arch 2>/dev/null |grep "$i-[^-]\+-[^-]\+-$arch.fpm" >> $fpmserver
+		repoman ls frugalware-$arch 2>/dev/null |grep "^$i-[^-]\+-[^-]\+-$arch.fpm" >> $fpmserver
 	done
 
 	for i in $(cat $fpmserver)
