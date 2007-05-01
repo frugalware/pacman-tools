@@ -241,13 +241,13 @@ srcdel()
 	mydir=$(pwd|sed "s|$(_get_root)||")
 
 	darcsdir="_darcs/pristine"
-	if ! repoman ls $darcsdir &>/dev/null; then
+	if ! $0 -t $reponame ls $darcsdir &>/dev/null; then
 		darcsdir="_darcs/current"
 	fi
 
-	repoman ls $darcsdir/$mydir 2>/dev/null >$srckeep
+	$0 -t $reponame ls $darcsdir/$mydir 2>/dev/null >$srckeep
 
-	for i in $(repoman ls $mydir 2>/dev/null)
+	for i in $($0 -t $reponame ls $mydir 2>/dev/null)
 	do
 		if ! grep -q $i $srckeep && [ "$i" != "Changelog" ]; then
 			if ! echo ${srclocal[@]} |grep -q $i; then
@@ -267,7 +267,7 @@ fpmdel()
 	for i in $pkgname ${subpkgs[@]}
 	do
 		echo $i-$pkgver-$pkgrel-$arch.fpm >> $fpmkeep
-		repoman ls frugalware-$arch 2>/dev/null |grep "^$i-[^-]\+-[^-]\+-$arch.fpm" >> $fpmserver
+		$0 -t $reponame ls frugalware-$arch 2>/dev/null |grep "^$i-[^-]\+-[^-]\+-$arch.fpm" >> $fpmserver
 	done
 
 	for i in $(cat $fpmserver)
