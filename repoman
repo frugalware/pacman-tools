@@ -425,10 +425,11 @@ merge()
 [ -e /etc/repoman.conf ] && . /etc/repoman.conf || \
 	die "Can't find /etc/repoman.conf!"
 
-[ -e /usr/lib/frugalware/fwmakepkg ] && . /usr/lib/frugalware/fwmakepkg || \
-	die "Can't find /usr/lib/frugalware/fwmakepkg!"
-
-[ -e FrugalBuild ] && . FrugalBuild
+if [ -e FrugalBuild ]; then
+	[ -e /usr/lib/frugalware/fwmakepkg ] && . /usr/lib/frugalware/fwmakepkg || \
+		die "Can't find /usr/lib/frugalware/fwmakepkg!"
+	. FrugalBuild
+fi
 
 # Initializating variables.
 version='0.3.0'
