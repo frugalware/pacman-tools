@@ -297,6 +297,12 @@ sync()
 		dry_run upload $i frugalware-$arch/
 	done
 
+	buildlog="$pkgname-$pkgver-$pkgrel-$arch.log"
+	if [ -f $buildlog ]; then
+		dry_run bzip2 $buildlog
+		dry_run upload $buildlog.bz2 source/$groups/$pkgname/
+	fi
+
 	fpmdel
 	dry_run changelog $groups/$pkgname
 }
