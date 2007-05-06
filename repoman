@@ -284,7 +284,8 @@ sync()
 {
 	srcdel
 
-	cmd="darcs push --match 'name $pkgname'"
+	modpkgname=$(echo $pkgname | sed 's/\+/\\+/g')
+	cmd="darcs push --match 'name $modpkgname'"
 	if [ -n "$noask" ]; then
 		cmd="$cmd -a"
 	fi
