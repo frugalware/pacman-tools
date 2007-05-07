@@ -6,6 +6,7 @@ cd $1
 
 echo -n "downloading new pots... "
 rsync rsync://rsync.frugalware.org/pub/other/setup/setup/po/setup.pot setup/templates/setup.pot
+rsync rsync://rsync.frugalware.org/pub/other/fwlive/po/fwlive.pot fwlive/templates/fwlive.pot
 rsync rsync://rsync.frugalware.org/pub/frugalware/frugalware-current/docs/po/docs.pot docs/templates/docs.pot
 rsync rsync://rsync.frugalware.org/pub/other/homepage-ng/frugalware/po/homepage.pot homepage/templates/homepage.pot
 rsync rsync://rsync.frugalware.org/pub/other/pacman-g2/pacman-g2/src/pacman-g2/po/pacman-g2.pot pacman/templates/pacman-g2.pot
