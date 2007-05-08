@@ -306,12 +306,23 @@ sync()
 
 	fpmdel
 	dry_run changelog $groups/$pkgname
+	if [ "$1" == "-c" ]; then
+		rm -rvf *-$arch.fpm
+		rm -v *.log
+		rm -rf src
+	fi
 }
 
 push()
 {
+	if [ "$1" == "--clean" -o "$1" == "-c" ]; then
+		clean="-c"
+		shift 1
+	else
+		clean=""
+	fi
 	dry_run record $*
-	sync
+	sync $clean
 }
 
 die()
