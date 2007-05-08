@@ -308,7 +308,7 @@ sync()
 	dry_run changelog $groups/$pkgname
 	if [ "$1" == "-c" ]; then
 		rm -rvf *-$arch.fpm
-		rm -v *.log
+		rm -vf *.log.bz2
 		rm -rf src
 	fi
 }
