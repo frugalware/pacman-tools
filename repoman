@@ -299,8 +299,8 @@ sync()
 	done
 
 	buildlog="$pkgname-$pkgver-$pkgrel-$arch.log"
-	if [ -f $buildlog ]; then
-		dry_run bzip2 $buildlog
+	if [ -f $buildlog -o -f $buildlog.bz2 ]; then
+		[ -f $buildlog ] && dry_run bzip2 $buildlog
 		dry_run upload $buildlog.bz2 source/$groups/$pkgname/
 	fi
 
