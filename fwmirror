@@ -12,7 +12,7 @@ usage()
 	to mirror. If you want to mirror the sources, too then use the special
 	'source' arch."
 	echo "  -d <directory>   Destination directory."
-	echo "  -h | --help      This help."
+	echo "  --help      This help."
 	echo "  -s <server>      The mirror server you want to use"
 	echo "  -v <versions>    Coma separated list of versions you want to
 	mirror. You can use explicit versions and aliases
@@ -81,26 +81,33 @@ while [ "$#" -ne "0" ]; do
 			echo "warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE."
 			exit 0
 			;;
-		-*)
-			while getopts "a:d:hs:v:l:n:" opt
-			do
-				case $opt in
-					a) parse_coma "$OPTARG" myarchs ;;
-					d) dir="$OPTARG" ;;
-					h)
-						usage
-						exit 0
-						;;
-					s) server="$OPTARG" ;;
-					v) parse_coma "$OPTARG" versions ;;
-					l) login="$OPTARG" ;;
-					n) name="$OPTARG" ;;
-					*)
-						usage
-						exit 1
-						;;
-				esac
-			done
+		-a)
+			parse_coma $2 myarchs
+			shift 1
+			;;
+		-d)
+			dir="$2"
+			shift 1
+			;;
+		-s)
+			server="$2"
+			shift 1
+			;;
+		-v)
+			parse_coma "$2" versions
+			shift 1
+			;;
+		-l)
+			login="$2"
+			shift 1
+			;;
+		-n)
+			name="$2"
+			shift 1
+			;;
+		*)
+			usage
+			exit 1
 			;;
 	esac
 	shift 1
