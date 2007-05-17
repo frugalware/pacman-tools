@@ -250,7 +250,16 @@ _is_log()
 
 srcdel()
 {
-	srclocal=(${source[@]} ${signatures[@]})
+	for i in ${Farchs[@]} $arch
+	do
+		export CARCH=$i
+		unset pkgver source
+		for j in `set|grep ^_F_|sed 's/\(=.*\| ()\)//'`; do unset $j; done
+		export startdir=`pwd`
+		. FrugalBuild
+		srclocal=(${srclocal[@]} ${source[@]})
+	done
+	srclocal=(${srclocal[@]} ${signatures[@]})
 	srckeep=$(mktemp)
 	mydir=$(pwd|sed "s|$(_get_root)||")
 
@@ -460,6 +469,8 @@ merge()
 if [ -e FrugalBuild ]; then
 	[ -e /usr/lib/frugalware/fwmakepkg ] && . /usr/lib/frugalware/fwmakepkg || \
 		die "Can't find /usr/lib/frugalware/fwmakepkg!"
+	[ -e /etc/makepkg.conf ] && . /etc/makepkg.conf || \
+		die "Can't find /etc/makepkg.conf!"
 	. FrugalBuild
 fi
 
