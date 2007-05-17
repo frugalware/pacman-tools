@@ -234,6 +234,20 @@ record()
 	fi
 }
 
+# returns true if the file is a build log for some other arch (we should not remove them)
+_is_log()
+{
+	local i
+	for i in ${Farchs[@]}
+	do
+		[ $i = $arch ] && continue
+		if echo $1 |grep -q "$i\.log\.bz2$"; then
+			return 0
+		fi
+	done
+	return 1
+}
+
 srcdel()
 {
 	srclocal=(${source[@]} ${signatures[@]})
@@ -249,7 +263,7 @@ srcdel()
 
 	for i in $($0 -t $reponame ls $mydir 2>/dev/null)
 	do
-		if ! grep -q $i $srckeep && [ "$i" != "Changelog" ]; then
+		if ! grep -q $i $srckeep && ! _is_log $i && [ "$i" != "Changelog" ]; then
 			if ! echo ${srclocal[@]} |grep -q $i; then
 				dry_run delete $mydir/$i
 			fi
