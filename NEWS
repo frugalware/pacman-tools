@@ -1,5 +1,10 @@
 VERSION         DESCRIPTION
 -----------------------------------------------------------------------------
+0.9.2         - syncpkgd: avoid recording anything
+              - repoman:
+                - now uploads a compressed buildlog if possible
+                - no longer removes other archs' arch-specific sources
+              - fwmirror: --foo=bar-style rsync options are now handled
 0.9.1         - repoman:
                 - bugfix for "repoman upd fails for the first time"
                 - bugfix for repoman push if -t is used
