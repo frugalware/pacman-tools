@@ -238,7 +238,7 @@ record()
 _is_log()
 {
 	local i
-	for i in ${Farchs[@]}
+	for i in ${archs[@]}
 	do
 		[ $i = $arch ] && continue
 		if echo $1 |grep -q "$i\.log\.bz2$"; then
@@ -250,7 +250,7 @@ _is_log()
 
 srcdel()
 {
-	for i in ${Farchs[@]} $arch
+	for i in ${archs[@]} $arch
 	do
 		export CARCH=$i
 		unset pkgver source
