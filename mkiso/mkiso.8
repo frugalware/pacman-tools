@@ -37,30 +37,15 @@ In this example we create a netinstall iso, so leave only the following entry:
 .fi
 
 .TP
-Now we need a few base files:
+Now we need to create a minimal mirror. we can exclude the source (_darcs and source dir) and we can ignore the fpms for the netinstall:
 
 NOTE: feel free to choose a different rsync mirror from /etc/repoman.conf!
 
-$ rsync -avP rsync://ftp5.frugalware.org/packages/frugalware/pub/frugalware/frugalware-current/AUTHORS ./
-
-$ rsync -avP rsync://ftp5.frugalware.org/packages/frugalware/pub/frugalware/frugalware-current/ChangeLog.txt ./
-
-$ rsync -avP rsync://ftp5.frugalware.org/packages/frugalware/pub/frugalware/frugalware-current/LICENSE ./
-
-.TP
-We need documentation:
-
-$ rsync -avP rsync://ftp5.frugalware.org/packages/frugalware/pub/frugalware/frugalware-current/docs ./
-
-.TP
-Then the kernel and the initrd:
-
-$ rsync -avP rsync://ftp5.frugalware.org/packages/frugalware/pub/frugalware/frugalware-current/boot .
-
-.TP
-Finally the packages and package databases. For the netinstall we can ignore the fpms:
-
-$ rsync -avP rsync://ftp5.frugalware.org/packages/frugalware/pub/frugalware/frugalware-current/frugalware-i686 ./ --exclude '*fpm'
+.nf
+$ fwmirror -s rsync://ftp5.frugalware.org/packages/frugalware/pub/frugalware/ \\
+	-v current -a i686,source -d . -- -vP --delete --exclude /_darcs/ --exclude \\
+	/source/ --exclude '*fpm'
+.fi
 
 .TP
 Ok, we have the necessary files, let's make the iso!
