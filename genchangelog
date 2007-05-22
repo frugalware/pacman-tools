@@ -54,7 +54,11 @@ fi
 cd ../../../frugalware-$arch
 if [ -e ../tools/fpm2db ]; then
 echo -n "updating the mysql2 database... "
-../tools/fpm2db -f $pkgname-$pkgver-$pkgrel-$arch.fpm
+if [ ! "`check_option NOBUILD`" ]; then
+	../tools/fpm2db -f $pkgname-$pkgver-$pkgrel-$arch.fpm
+else
+	../tools/fpm2db -f $pkgname-$pkgver-$pkgrel-$arch.fpm -g $groups
+fi
 
 if [ ! -z "$subpkgs" ]; then
 	i=0
