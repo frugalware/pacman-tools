@@ -153,7 +153,7 @@ clean()
 		i=${i#*/}
 		msg "Cleaning up $i"
 		ssh $host "cd $path/frugalware-$arch && \
-			arch=$arch $sudo updatesync del $fdb $i && \
+			echo ${options[@]} | grep -q nobuild || arch=$arch $sudo updatesync del $fdb $i && \
 			genchangelog --clean $i"
 	done
 }
