@@ -318,13 +318,13 @@ sync()
 
 	for i in *-$arch.fpm
 	do
-		dry_run upload $i frugalware-$arch/
+		echo ${options[@]} | grep -q nobuild || dry_run upload $i frugalware-$arch/
 	done
 
 	buildlog="$pkgname-$pkgver-$pkgrel-$arch.log"
 	if [ -f $buildlog -o -f $buildlog.bz2 ]; then
 		[ -f $buildlog ] && dry_run bzip2 $buildlog
-		dry_run upload $buildlog.bz2 source/$groups/$pkgname/
+		echo ${options[@]} | grep -q nobuild || dry_run upload $buildlog.bz2 source/$groups/$pkgname/
 	fi
 
 	fpmdel
