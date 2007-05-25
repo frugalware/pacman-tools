@@ -88,7 +88,7 @@ do
 
 	CWD=`pwd`
 	cd `find source -maxdepth 2 -type d -name $pkg`
-	rm -f *fpm *.log
+	rm -f *fpm *.log *.log.bz2
 	log "making package: $pkg"
 	echo "$pkg" >/tmp/sync.pkg
 	sudo makepkg -t $tree -C >>$mlogfile 2>&1
@@ -99,7 +99,8 @@ do
 	if [ -e *.log ]; then
 		echo $ret >`ls *.log`.exitcode
 		[ -d $logdir ] || mkdir -p $logdir
-		mv *.log *.log.exitcode $logdir
+		cp *.log $logdir
+		mv *.log.exitcode $logdir
 	fi
 	[ "$ret" == "0" ] && repoman -t $tree -k sync >>$mlogfile 2>&1
 	cd $CWD
