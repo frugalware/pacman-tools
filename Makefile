@@ -36,7 +36,7 @@ sysconfdir = /etc
 docdir = /usr/share/doc/pacman-tools-$(VERSION)
 FINCDIR = $(shell source /usr/lib/frugalware/fwmakepkg; echo $$Fincdir)
 
-compile: chkperm genauthors apidocs
+compile: chkperm genauthors apidocs fwmakepkg.3
 	$(MAKE) -C mkiso
 	$(MAKE) -C repoman.d
 	chmod +x fwmirror pear-makefb chkdep
@@ -107,7 +107,7 @@ install:
 	$(INSTALL) -m644 apidocs/*.3 $(DESTDIR)$(man3dir)
 
 clean:
-	rm -rf chkperm genauthors apidocs
+	rm -rf chkperm genauthors apidocs fwmakepkg.3
 	$(MAKE) -C mkiso clean
 
 dist:
@@ -125,3 +125,7 @@ release:
 apidocs:
 	cp -a $(FINCDIR) apidocs
 	make -C apidocs
+
+fwmakepkg.3: apidocs fwmakepkg.3.in
+	cat fwmakepkg.3.in > fwmakepkg.3
+	ls apidocs/*.sh|sed 's|apidocs/||;$$!s/\(.*\)$$/.BR \1 (3),/;$$s/\(.*\)$$/.BR \1 (3)/' >> fwmakepkg.3

@@ -1,0 +1,8 @@
+.TH fwmakepkg 3 "26 May 2007" "Frugalware 0.7" ""
+.SH NAME
+fwmakepkg \- Collection of macros used in Frugalware buildscripts
+.SH SYNOPSIS
+This manpage refers to all schemas which can be Fincluded in a FrugalBuild.
+.SH "REPORTING BUGS"
+Please report bugs to the <http://bugs.frugalware.org/> bug tracking system.
+.SH "SEE ALSO"
