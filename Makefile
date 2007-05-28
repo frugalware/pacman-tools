@@ -105,6 +105,7 @@ install:
 	$(INSTALL) -m644 mkiso/mkiso.8 $(DESTDIR)$(man8dir)
 	$(INSTALL) -m644 mkiso/volumes.xml $(DESTDIR)$(docdir)/volumes.xml
 	$(INSTALL) -m644 apidocs/*.3 $(DESTDIR)$(man3dir)
+	$(INSTALL) -m644 fwmakepkg.3 $(DESTDIR)$(man3dir)
 
 clean:
 	rm -rf chkperm genauthors apidocs fwmakepkg.3
