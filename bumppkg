@@ -116,7 +116,7 @@ do_record()
 	echo -e "`LANG= LC_ALL= date +"%a %b %d %H:%M:%S %Z %Y"`
 `cat $root/_darcs/prefs/author`
 $pkgname-$pkgver-$pkgrel-$CARCH
-$@" | darcs rec -a --pipe
+$@" | darcs rec -a --pipe .
 }
 
 USE_COLOR="y"
