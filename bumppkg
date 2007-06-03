@@ -123,11 +123,6 @@ USE_COLOR="y"
 . /usr/lib/frugalware/fwmakepkg
 . /etc/makepkg.conf
 
-if [ "$1" == "--record-only" ]; then
-	do_record "$2"
-	exit 0
-fi
-
 if [ "$1" == "--rebuild" ]; then
 	shift 1
 	source FrugalBuild || die "failed to source the FrugalBuild!"
