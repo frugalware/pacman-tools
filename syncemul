@@ -10,6 +10,8 @@ darcs pull -a
 for i in `chkworld |grep ^Checking |sed 's|.*/\(.*\)-[^-]*\.\.\..*|\1|'`
 do
 	cd $i
-	bumppkg --record "version bump" --push
+	bumppkg
+	repoman rec "version bump"
+	repoman -k push
 	cd ..
 done
