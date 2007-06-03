@@ -137,7 +137,7 @@ if [ "$1" == "--rebuild" ]; then
 		do_record "$1"
 		shift 1
 	fi
-	if [ "$1" == "--rf" ]; then
+	if [ "$1" == "--push" ]; then
 		repoman -k push
 	fi
 	exit 0

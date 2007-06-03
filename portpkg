@@ -25,9 +25,9 @@ if ! ls *fpm &>/dev/null; then
 	sudo makepkg -cuk || die "build failed"
 fi
 
-if [ "$1" == "--rf" ]; then
+if [ "$1" == "--push" ]; then
 	bumppkg --record-only "added `uname -m` to archs()" || die "failed to record the patch"
 	rf -k -f *fpm
 else
-	die "now run '$0 --rf' to record and push your changes"
+	die "now run '$0 --push' to record and push your changes"
 fi
