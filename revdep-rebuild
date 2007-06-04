@@ -1,12 +1,12 @@
 #!/bin/bash
 
 unset LANG LC_ALL
+[ -e /etc/repoman.conf ] && . /etc/repoman.conf
+[ -e ~/.repoman.conf ] && . ~/.repoman.conf
 
 _go_getroot ()
 {
-    [ -e /etc/repoman.conf ] && . /etc/repoman.conf;
-    [ -e ~/.repoman.conf ] && . ~/.repoman.conf;
-    echo $fst_root/$repos
+    echo $fst_root/$tree
 }
 go ()
 {
@@ -20,15 +20,28 @@ die()
 }
 
 id=$1
+shift
 
-[ -z "$id" ] && die "usage: $0 <package id>"
+[ -z "$id" ] && die "usage: $0 <package id> [-t tree] [--other]"
+
+tree=$repos
+if [ "$1" == "-t" ]; then
+	tree=$2
+	shift 2
+fi
+
+method="Exact"
+if [ "$1" == "--other" ]; then
+	method="Other"
+	shift 2
+fi
 
 pkg=$(lynx -dump http://frugalware.org/packages/$id |grep 'Name:'|sed 's/.*]//')
 ver=$(lynx -dump http://frugalware.org/packages/$id |grep 'Version:'|sed 's/.*Version: //')
-revdeps=$(lynx -source -dump http://frugalware.org/packages/$id|grep "Exact reverse depends:"|sed 's|<a href="[^"]*">\([^<]*\)</a>|\1|g;s|.*<td>\(.*\)</td>.*|\1|')
+revdeps=$(lynx -source -dump http://frugalware.org/packages/$id|grep "$method reverse depends:"|sed 's|<a href="[^"]*">\([^<]*\)</a>|\1|g;s|.*<td>\(.*\)</td>.*|\1|')
 count=$(echo $revdeps|sed 's/ /\n/g'|wc -l)
 
-echo "Rebuilding $count packages for $pkg-$ver"
+echo "Rebuilding $count packages in -$tree for $pkg-$ver"
 echo
 echo "Targets: $revdeps"
 echo "Press ENTER to continue"
@@ -38,7 +51,7 @@ log=`mktemp`
 for i in $revdeps
 do
 	go $i
-	bumppkg --rebuild "rebuilt with $pkg-$ver" --push || echo $i >>$log
+	bumppkg -t $tree --rebuild "rebuilt with $pkg-$ver" --push || echo $i >>$log
 done
 cat $log
 rm $log
