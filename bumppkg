@@ -2,7 +2,7 @@
 # 
 #   bumppkg
 #  
-#   Copyright (c) 2006 by Miklos Vajna <vmiklos@frugalware.org>
+#   Copyright (c) 2006-2007 by Miklos Vajna <vmiklos@frugalware.org>
 #  
 #   This program is free software; you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -104,7 +104,7 @@ src_download()
 
 do_build()
 {
-	sudo makepkg -c$1 || die "build failed!"
+	sudo makepkg -t $1 -c$2 || die "build failed!"
 	Fmessage "done, testing time!"
 }
 
@@ -112,17 +112,23 @@ USE_COLOR="y"
 . /usr/lib/frugalware/fwmakepkg
 . /etc/makepkg.conf
 
+tree=$repos
+if [ "$1" == "-t" ]; then
+	tree=$2
+	shift 2
+fi
+
 if [ "$1" == "--rebuild" ]; then
 	shift 1
 	source FrugalBuild || die "failed to source the FrugalBuild!"
-	update_pkgrel $(($pkgrel+1))
-	do_build u
+	update_pkgrel $(echo $pkgrel|sed 's/[0-9]\+$//')$(($(echo $pkgrel|sed 's/.*[^0-9]\([0-9]\+\)$/\1/')+1))
+	do_build $tree u
 	if [ -n "$1" ]; then
-		repman rec "$1"
+		repoman rec "$1"
 		shift 1
 	fi
 	if [ "$1" == "--push" ]; then
-		repoman -k push
+		repoman -t $tree -k push
 	fi
 	exit 0
 fi
@@ -132,7 +138,7 @@ update_pkgver
 update_pkgrel
 src_cleanup
 src_download
-do_build
+do_build $tree
 if [ "$1" == "--push" ]; then
-	repoman -k push
+	repoman -t $tree -k push
 fi
