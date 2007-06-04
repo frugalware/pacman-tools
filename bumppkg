@@ -92,10 +92,10 @@ update_pkgver()
 
 src_download()
 {
-	Fmessage "running makepkg -dG"
-	makepkg -dG
+	Fmessage "running makepkg -G"
+	makepkg -G -t $1
 	if [ $? != 0 ]; then
-		die "failed to run makepkg -dG"
+		die "failed to run makepkg -G"
 	fi
 
 	Fmessage "cleaning up the duplicated source files"
@@ -137,7 +137,7 @@ check_complex
 update_pkgver
 update_pkgrel
 src_cleanup
-src_download
+src_download $tree
 do_build $tree
 if [ "$1" == "--push" ]; then
 	repoman -t $tree -k push
