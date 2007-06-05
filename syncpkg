@@ -102,7 +102,7 @@ do
 		cp *.log $logdir
 		mv *.log.exitcode $logdir
 	fi
-	[ "$ret" == "0" ] && repoman -t $tree -k sync >>$mlogfile 2>&1
+	[ "$ret" == "0" ] && repoman -t $tree -k sync -c >>$mlogfile 2>&1
 	cd $CWD
 	i=$(($i+1))
 
