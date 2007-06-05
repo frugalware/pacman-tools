@@ -43,6 +43,9 @@ dry_run()
 check_servers()
 {
 	server=$(eval "echo \$${reponame}_servers")
+	if [ -f "$fst_root/$reponame/_darcs/prefs/defaultrepo" ]; then
+		server="`cat $fst_root/$reponame/_darcs/prefs/defaultrepo`"
+	fi
         if echo $server |grep -q :; then
                 host=${server%:*}
                 path=${server#*:}
