@@ -305,7 +305,7 @@ fpmdel()
 
 sync()
 {
-	srcdel
+	ls *-i686.fpm &>/dev/null && srcdel
 
 	modpkgname=$(echo $pkgname | sed 's/\+/\\+/g')
 	cmd="darcs push --match 'name $modpkgname'"
@@ -316,10 +316,12 @@ sync()
 
 	# here we _could_ upload the new sources but that'll be done by changelog()
 
-	for i in *-$arch.fpm
-	do
-		echo ${options[@]} | grep -q nobuild || dry_run upload $i frugalware-$arch/
-	done
+	if ls *-i686.fpm &>/dev/null; then
+		for i in *-$arch.fpm
+		do
+			echo ${options[@]} | grep -q nobuild || dry_run upload $i frugalware-$arch/
+		done
+	fi
 
 	buildlog="$pkgname-$pkgver-$pkgrel-$arch.log"
 	if [ -f $buildlog -o -f $buildlog.bz2 ]; then
@@ -327,7 +329,7 @@ sync()
 		echo ${options[@]} | grep -q nobuild || dry_run upload $buildlog.bz2 source/$groups/$pkgname/
 	fi
 
-	fpmdel
+	ls *-i686.fpm &>/dev/null && fpmdel
 	dry_run changelog $groups/$pkgname
 	if [ "$1" == "-c" ]; then
 		rm -rvf *-$arch.fpm
