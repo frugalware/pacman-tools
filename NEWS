@@ -1,5 +1,10 @@
 VERSION         DESCRIPTION
 -----------------------------------------------------------------------------
+0.9.4         - install fwmakepkg manpage
+              - bumppkg: new -t tree option
+              - revdep-rebuild: new -t tree and --other options
+	      - repoman: don't delete/upload sources/fpms in there is no fpm in
+	        the current dir
 0.9.3         - mkiso: improved manpage
               - repoman push: support for options=('nobuild')
               - genchangelog: support for options=('nobuild')
