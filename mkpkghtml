@@ -1,0 +1,41 @@
+#!/bin/bash
+
+die()
+{
+	echo $0: $@
+	exit 1
+}
+
+myver="0.9.5"
+
+if [ "$1" == "--help" ]; then
+	echo "mkpkghtml is a small script to generate pkgname.html from a"
+	echo "README.Frugalware. It's handy to check for syntax errors and see the result"
+	echo "before you push a README.Frugalware."
+	exit 0
+elif [ "$1" == "--version" ]; then
+	echo "mkpkghtml (pacman-tools) $myver"
+	echo
+	echo "Copyright (c) 2007 by Miklos Vajna <vmiklos@frugalware.org>"
+	echo "This is free software; see the source for copying conditions.  There is NO"
+	echo "warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE."
+	exit 0
+fi
+
+. /usr/lib/frugalware/fwmakepkg || "can't find fwmakepkg"
+. FrugalBuild || "can't find FrugalBuild"
+[ -f README.Frugalware ] || "can't find FrugalBuild"
+
+[ -f $pkgname.txt ] && "$pkgname.txt alrady exists, won't overwrite"
+
+cat > $pkgname.txt << EOF
+= Packages
+
+== $pkgname
+
+EOF
+
+cat README.Frugalware >> $pkgname.txt
+
+asciidoc $pkgname.txt
+rm $pkgname.txt

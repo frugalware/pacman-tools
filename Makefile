@@ -48,6 +48,7 @@ compile: chkperm genauthors apidocs fwmakepkg.3
 	chmod +x fblint
 	help2man -n "searches for common FrugalBuild problems" -S Frugalware -N ./fblint |sed 's/\\(co/(c)/' >fblint.1
 	help2man -n "Checks a package or directory for possible depends" -S Frugalware -N ./chkdep |sed 's/\\(co/(c)/' >chkdep.1
+	help2man -n "Converts a README.Frugalware to HTML" -S Frugalware -N ./mkpkghtml |sed 's/\\(co/(c)/' >mkpkghtml.1
 
 install:
 	$(INSTALL) -d $(DESTDIR)$(bindir)
@@ -71,6 +72,8 @@ install:
 	$(INSTALL) -m644 chkworld.1 $(DESTDIR)$(man1dir)
 	$(INSTALL) chkdep $(DESTDIR)$(bindir)/chkdep
 	$(INSTALL) -m644 chkdep.1 $(DESTDIR)$(man1dir)
+	$(INSTALL) mkpkghtml $(DESTDIR)$(bindir)/mkpkghtml
+	$(INSTALL) -m644 mkpkghtml.1 $(DESTDIR)$(man1dir)
 	$(INSTALL) pud $(DESTDIR)$(bindir)
 	$(INSTALL) genchangelog $(DESTDIR)$(bindir)
 	$(INSTALL) repoman $(DESTDIR)$(bindir)
