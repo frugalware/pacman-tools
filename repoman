@@ -180,7 +180,11 @@ changelog()
 if [ ! -e _darcs/rlock ]; then \
 	touch _darcs/rlock; \
 	cd frugalware-$arch; \
-	echo ${options[@]} | grep -q nobuild || arch=$arch $sudo updatesync upd $fdb ../source/$group/$pkg/FrugalBuild; \
+	if [ ! -e '$fdb' ]; then \
+		echo ${options[@]} | grep -q nobuild || arch=$arch $sudo gensync ../source/$group/$pkg $fdb; \
+	else \
+		echo ${options[@]} | grep -q nobuild || arch=$arch $sudo updatesync upd $fdb ../source/$group/$pkg/FrugalBuild; \
+	fi; \
 	cd $path; rm _darcs/rlock; \
 	cd $path/source/$group/$pkg; arch=$arch $sudo genchangelog; \
 	$catcmd; \
