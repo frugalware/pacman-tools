@@ -31,9 +31,17 @@ if [ ! -e Changelog ] || [ `stat -c %Y Changelog` -lt `stat -c %Y FrugalBuild` ]
 	echo "done."
 fi
 
-CWD=`pwd`
-
 CARCH=$arch source FrugalBuild || die "errors parsing the FrugalBuild"
+
+if [ -e README.Frugalware ]; then
+	if [ ! -e $pkgname.html ] || [ `stat -c %Y $pkgname.html` -lt `stat -c %Y README.Frugalware` ]; then
+		echo -n "updating $pkgname.html... "
+		mkpkghtml
+		echo "done."
+	fi
+fi
+
+CWD=`pwd`
 
 . /etc/makepkg.conf
 
