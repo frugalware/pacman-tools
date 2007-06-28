@@ -23,6 +23,7 @@ rsync rsync://rsync.frugalware.org/pub/other/frugalwareutils/frugalwareutils/set
 rsync rsync://rsync.frugalware.org/pub/other/frugalwareutils/frugalwareutils/timeconfig/po/timeconfig.pot frugalwareutils/templates/timeconfig.pot
 rsync rsync://rsync.frugalware.org/pub/other/frugalwareutils/frugalwareutils/xconfig/po/xconfig.pot frugalwareutils/templates/xconfig.pot
 rsync rsync://rsync.frugalware.org/pub/other/frugalwareutils/frugalwareutils/xwmconfig/po/xwmconfig.pot frugalwareutils/templates/xwmconfig.pot
+rsync rsync://rsync.frugalware.org/pub/other/fw-control-center/fw-control-center/gnetconfig/po/gnetconfig.pot fw-control-center/templates/gnetconfig.pot
 echo "done."
 
 for i in *
