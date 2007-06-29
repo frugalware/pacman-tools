@@ -27,7 +27,7 @@ cat >$OUT <<EOH
 # List deps for all packages.  When each rule is processed,
 # it prints its target.
 EOH
-IN=$(find . -name FrugalBuild | grep -v '_darcs')
+IN=$(find . -name FrugalBuild | grep -v '\(_darcs\|\.git\)')
 for kulso in $IN
 do
 	echo "Working on $kulso"
