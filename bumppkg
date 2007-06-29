@@ -38,7 +38,14 @@ check_complex()
 
 get_root()
 {
-	local i=`pwd`
+	local i
+	i=`git rev-parse --git-dir 2>/dev/null`
+	if [ -n "$i" ]; then
+		echo `dirname $i`
+		_scm=git
+		return
+	fi
+	i=`pwd`
 	while true
 	do
 		if [ -e "$i/_darcs" ]; then
@@ -49,14 +56,21 @@ get_root()
 		i=`echo $i|sed 's|\(.*\)/.*|\1|'`
 	done
 	echo $i
+	_scm=darcs
 }
 
 src_cleanup()
 {
-	local root i workdir
-
 	Fmessage "cleaning up old source files"
 	root="`get_root`"
+	if [ "$_scm" = "git" ]; then
+		for i in `git status .|sed '1,/Untracked files:/d;/^\(#[^\t].\|^[^#]\)/d;s/^#\t\?//'`
+		do
+			rm -rfv $root/$i
+		done
+	else
+	local root i workdir
+
 	workdir=`pwd|sed "s|$root||"`
 	rootlist=`mktemp`
 	worklist=`mktemp`
@@ -71,6 +85,7 @@ src_cleanup()
 		rm -v $i
 	done
 	rm $rootlist $worklist
+	fi
 }
 
 update_pkgrel()
