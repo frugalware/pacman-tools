@@ -45,7 +45,12 @@ check()
 get_root()
 {
 	local i
-
+	i=`git rev-parse --git-dir 2>/dev/null`
+	if [ -n "$i" ]; then
+		echo `dirname $i`
+		_scm=git
+		return
+	fi
 	i=`pwd`
 	while true
 	do
@@ -56,7 +61,8 @@ get_root()
 		fi
 		i=`echo $i|sed 's|\(.*\)/.*|\1|'`
 	done
-	basename $i
+	echo $i
+	_scm=darcs
 }
 
 if [ "$1" = "--version" ]; then
