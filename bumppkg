@@ -64,10 +64,7 @@ src_cleanup()
 	Fmessage "cleaning up old source files"
 	root="`get_root`"
 	if [ "$_scm" = "git" ]; then
-		for i in `git status .|sed '1,/Untracked files:/d;/^\(#[^\t].\|^[^#]\)/d;s/^#\t\?//'`
-		do
-			rm -rfv $root/$i
-		done
+		git clean .
 	else
 	local root i workdir
 

@@ -291,10 +291,7 @@ _is_log()
 
 srcdel()
 {
-	if [ "$F_makepkg_scm" = "git" ]; then
-		echo "srcdel() not yet supported" # FIXME
-		return
-	fi
+	mydir=$(pwd|sed "s|$(get_root)||")
 	for i in ${archs[@]} $arch
 	do
 		export CARCH=$i
@@ -305,8 +302,16 @@ srcdel()
 		srclocal=(${srclocal[@]} ${source[@]})
 	done
 	srclocal=(${srclocal[@]} ${signatures[@]})
+	if [ "$F_makepkg_scm" = "git" ]; then
+		check_servers
+		for i in $(ssh $host "cd $path/$mydir; git clean -n ."|sed 's/.* remove //')
+		do
+			if ! echo ${srclocal[@]} |grep -q $i && ! _is_log $i && [ "$i" != "Changelog" ]; then
+				dry_run delete $mydir/$i
+			fi
+		done
+	else
 	srckeep=$(mktemp)
-	mydir=$(pwd|sed "s|$(_get_root)||")
 
 	darcsdir="_darcs/pristine"
 	if ! $0 -t $reponame ls $darcsdir &>/dev/null; then
@@ -325,6 +330,7 @@ srcdel()
 	done
 
 	rm -f $srckeep
+	fi
 }
 
 fpmdel()
