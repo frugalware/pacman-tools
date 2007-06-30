@@ -1,11 +1,17 @@
 #!/bin/bash
 
+. /usr/lib/frugalware/fwmakepkg
+
 if [ "`pwd|sed 's|.*/\(.*\)|\1|'`" != "emul-extra" ]; then
 	echo "where are you?"
 	exit 1
 fi
 
-darcs pull -a
+if [ "$_F_makepkg_scm" = "git" ]; then
+	git pull
+else
+	darcs pull -a
+fi
 
 for i in `chkworld |grep ^Checking |sed 's|.*/\(.*\)-[^-]*\.\.\..*|\1|'`
 do
