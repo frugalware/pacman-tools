@@ -76,6 +76,8 @@ install:
 	$(INSTALL) -m644 mkpkghtml.1 $(DESTDIR)$(man1dir)
 	$(INSTALL) pud $(DESTDIR)$(bindir)
 	$(INSTALL) genchangelog $(DESTDIR)$(bindir)
+	$(INSTALL) darcs-git.py $(DESTDIR)$(bindir)/darcs-git
+	ln -s darcs-git $(DESTDIR)$(bindir)/dg
 	$(INSTALL) repoman $(DESTDIR)$(bindir)
 	$(INSTALL) -m644 repoman.1 $(DESTDIR)$(man1dir)
 	$(INSTALL) -m644 repoman.conf $(DESTDIR)$(sysconfdir)
