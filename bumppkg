@@ -39,12 +39,10 @@ check_complex()
 get_root()
 {
 	local i
-	i=`git rev-parse --git-dir 2>/dev/null`
-	if [ -n "$i" ]; then
+	if [ "$F_makepkg_scm" = "git" ]; then
+		i=`git rev-parse --git-dir 2>/dev/null`
 		echo `dirname $i`
-		_scm=git
-		return
-	fi
+	else
 	i=`pwd`
 	while true
 	do
@@ -56,14 +54,14 @@ get_root()
 		i=`echo $i|sed 's|\(.*\)/.*|\1|'`
 	done
 	echo $i
-	_scm=darcs
+	fi
 }
 
 src_cleanup()
 {
 	Fmessage "cleaning up old source files"
 	root="`get_root`"
-	if [ "$_scm" = "git" ]; then
+	if [ "$F_makepkg_scm" = "git" ]; then
 		git clean .
 	else
 	local root i workdir
