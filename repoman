@@ -414,7 +414,9 @@ die()
 update()
 {
 	if [ ! "`type -p rsync`" ]; then
-		die "The rsync program is missing. Please install it with pacman -S rsync."
+		die "The rsync program is missing. Please install it with pacman-g2 -S rsync."
+	elif [ ! "`type -p git`" ]; then
+		die "The git program is missing. Please install it with pacman-g2 -S git."
 	fi
 	for i in ${repos[@]}
 	do
@@ -433,21 +435,28 @@ update()
 		for j in ${servers[@]}
 		do
 			echo "warning: this operation can take minutes, please be patient"
-			if [ "$F_makepkg_scm" = "git" ]; then
-				echo "update() not yet supported" # FIXME
-				echo "failed."
-				break
+			# check for scm
+			if rsync -q $j/.git 2>/dev/null; then
+				if [ -d $fst_root/$i ]; then
+					cmd="cd $i && git pull"
+				else
+					cmd="git clone $j/.git $i"
+				fi
+			elif rsync -q $j/_darcs 2>/dev/null; then
+				cmd="rsync -azvP $j/_darcs/current/ $i"
 			else
-			server="$j/_darcs/current/"
-			mkdir -p $fst_root/$i
-			cd $fst_root/$i
+				echo "This server ($j) does not support git nor darcs."
+				continue
+			fi
+			mkdir -p $fst_root
+			cd $fst_root
 			if [ "$verbose" != 1 ]; then
 				echo -n "$i... "
-				rsync -azq $server ./
+				eval $cmd &>/dev/null
 				ret=$?
 			else
 				echo "$i..."
-				rsync -azvP $server ./
+				eval $cmd
 				ret=$?
 			fi
 			if [ $ret != 0 ]; then
@@ -455,7 +464,6 @@ update()
 			else
 				echo "done."
 				break
-			fi
 			fi
 		done
 	done
