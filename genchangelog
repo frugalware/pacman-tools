@@ -65,7 +65,7 @@ if [ ! "`check_option NOMIRROR`" -a ! "`check_option NOBUILD`" ]; then
 fi
 
 cd ../../../frugalware-$arch
-if [ -e ../tools/fpm2db ]; then
+if [ -x ../tools/fpm2db ]; then
 echo -n "updating the mysql2 database... "
 if [ ! "`check_option NOBUILD`" ]; then
 	../tools/fpm2db -f $pkgname-$pkgver-$pkgrel-$arch.fpm
