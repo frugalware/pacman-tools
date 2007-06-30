@@ -43,7 +43,7 @@ dry_run()
 check_servers()
 {
 	server=$(eval "echo \$${reponame}_servers")
-	if [ "$_F_makepkg_scm" = "git" ]; then
+	if [ "$F_makepkg_scm" = "git" ]; then
 		_server=`GIT_DIR=$fst_root/$reponame/.git git config --get remote.origin.url 2>/dev/null`
 		if echo $_server |grep -q :[^/]; then
 			server=$_server
@@ -64,7 +64,7 @@ check_servers()
 get_root()
 {
 	local i
-	if [ "$_F_makepkg_scm" = "git" ]; then
+	if [ "$F_makepkg_scm" = "git" ]; then
 		i=`git rev-parse --git-dir 2>/dev/null`
 		echo `dirname $i`
 	else
@@ -84,7 +84,7 @@ get_root()
 
 _set_lockname()
 {
-	if [ "$_F_makepkg_scm" = "git" ]; then
+	if [ "$F_makepkg_scm" = "git" ]; then
 		lock=".git/lock"
 	else
 		lock="_darcs/lock"
@@ -241,7 +241,7 @@ ask()
 
 _do_record()
 {
-	if [ "$_F_makepkg_scm" = "git" ]; then
+	if [ "$F_makepkg_scm" = "git" ]; then
 		echo -e "$pkgname-$pkgver-$pkgrel-$arch
 $@" | git commit -a -F - .
 	else
@@ -265,7 +265,7 @@ record()
 	if [ -n "$*" ]; then
 		_do_record $*
 	else
-		if [ "$_F_makepkg_scm" = "git" ]; then
+		if [ "$F_makepkg_scm" = "git" ]; then
 			dg what -s .
 			ask "dg record --edit-long-comment -m '$pkgname-$pkgver-$pkgrel-$arch' ."
 		else
@@ -291,7 +291,7 @@ _is_log()
 
 srcdel()
 {
-	if [ "$_F_makepkg_scm" = "git" ]; then
+	if [ "$F_makepkg_scm" = "git" ]; then
 		echo "srcdel() not yet supported" # FIXME
 		return
 	fi
@@ -353,7 +353,7 @@ sync()
 	ls *-$arch.fpm &>/dev/null && srcdel
 
 	modpkgname=$(echo $pkgname | sed 's/\+/\\+/g')
-	if [ "$_F_makepkg_scm" = "git" ]; then
+	if [ "$F_makepkg_scm" = "git" ]; then
 		cmd="dg push"
 	else
 		cmd="darcs push --match 'name $modpkgname'"
@@ -427,7 +427,7 @@ update()
 		for j in ${servers[@]}
 		do
 			echo "warning: this operation can take minutes, please be patient"
-			if [ "$_F_makepkg_scm" = "git" ]; then
+			if [ "$F_makepkg_scm" = "git" ]; then
 				echo "update() not yet supported" # FIXME
 				echo "failed."
 				break
@@ -535,7 +535,7 @@ fi
 version='0.3.0'
 [ -z "$arch" ] && arch=`uname -m`
 
-if [ "$_F_makepkg_scm" = "git" ]; then
+if [ "$F_makepkg_scm" = "git" ]; then
 # Checking for git.
 which git >/dev/null 2>&1
 if [ $? != 0 ]; then

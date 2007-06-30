@@ -7,7 +7,7 @@ if [ "`pwd|sed 's|.*/\(.*\)|\1|'`" != "emul-extra" ]; then
 	exit 1
 fi
 
-if [ "$_F_makepkg_scm" = "git" ]; then
+if [ "$F_makepkg_scm" = "git" ]; then
 	git pull
 else
 	darcs pull -a
