@@ -21,7 +21,7 @@ usage()
 	echo
 	echo "The following options are for developers and they're ignored when
 	the source is not mirrored:"
-	echo "  -l <login>       You login, used for generating
+	echo "  -l <login>       Your login, used for generating
 	_darcs/prefs/author and _darcs/prefs/defaultrepo."
 	echo "  -n <name>        Your name, used when generating
 	_darcs/prefs/author after mirroring is finished."
