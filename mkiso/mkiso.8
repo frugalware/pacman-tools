@@ -37,14 +37,14 @@ In this example we create a netinstall iso, so leave only the following entry:
 .fi
 
 .TP
-Now we need to create a minimal mirror. we can exclude the source (_darcs and source dir) and we can ignore the fpms for the netinstall:
+Now we need to create a minimal mirror. we can exclude the source (.git/_darcs and source dir) and we can ignore the fpms for the netinstall:
 
 NOTE: feel free to choose a different rsync mirror from /etc/repoman.conf!
 
 .nf
 $ fwmirror -s rsync://ftp5.frugalware.org/packages/frugalware/pub/frugalware/ \\
-	-v current -a i686,source -d . -- -vP --delete --exclude /_darcs/ --exclude \\
-	/source/ --exclude '*fpm'
+	-v current -a i686,source -d . -- -vP --delete --exclude /_darcs/ \\
+	--exclude /.git/ --exclude /source/ --exclude '*fpm'
 .fi
 
 .TP
@@ -68,7 +68,7 @@ Source Tree with the fst_root tag. Other optional tags include out_dir
 .SH HACKING
 
 Probably the most changing part is the initrd and the kernel. You can generate
-them from the 'setup' darcs repo.
+them from the 'setup' repo.
 
 .SH OPTIONS
 .TP
@@ -92,5 +92,5 @@ Written by Miklos Vajna.
 .SH "REPORTING BUGS"
 Please report bugs to http://bugs.frugalware.org/.
 .SH "SEE ALSO"
-.BR darcs (1),
+.BR setup (1),
 .BR pacman (8)
