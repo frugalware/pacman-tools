@@ -43,10 +43,17 @@ dry_run()
 check_servers()
 {
 	server=$(eval "echo \$${reponame}_servers")
-	if [ -f "$fst_root/$reponame/_darcs/prefs/defaultrepo" ]; then
-		server="`cat $fst_root/$reponame/_darcs/prefs/defaultrepo`"
+	if [ "$_F_makepkg_scm" = "git" ]; then
+		_server=`GIT_DIR=$fst_root/$reponame/.git git config --get remote.origin.url 2>/dev/null`
+		if echo $_server |grep -q :[^/]; then
+			server=$_server
+		fi
+	else
+		if [ -f "$fst_root/$reponame/_darcs/prefs/defaultrepo" ]; then
+			server="`cat $fst_root/$reponame/_darcs/prefs/defaultrepo`"
+		fi
 	fi
-        if echo $server |grep -q :; then
+        if echo $server |grep -q :[^/]; then
                 host=${server%:*}
                 path=${server#*:}
         else
@@ -54,9 +61,14 @@ check_servers()
         fi
 }
 
-_get_root()
+get_root()
 {
-	local i=`pwd`
+	local i
+	if [ "$_F_makepkg_scm" = "git" ]; then
+		i=`git rev-parse --git-dir 2>/dev/null`
+		echo `dirname $i`
+	else
+	i=`pwd`
 	while true
 	do
 		if [ -e "$i/_darcs" ]; then
@@ -67,6 +79,16 @@ _get_root()
 		i=`echo $i|sed 's|\(.*\)/.*|\1|'`
 	done
 	echo $i
+	fi
+}
+
+_set_lockname()
+{
+	if [ "$_F_makepkg_scm" = "git" ]; then
+		lock=".git/lock"
+	else
+		lock="_darcs/lock"
+	fi
 }
 
 delete()
@@ -86,7 +108,8 @@ delete()
 	for i in $files
 	do
 		msg "Deleting file(s): $i"
-		ssh $host "cd $path; if [ ! -e _darcs/lock ]; then $sudo rm $rmopts $path/$i; else echo \"Couldn't get lock.\"; fi"
+		_set_lockname
+		ssh $host "cd $path; if [ ! -e $lock ]; then $sudo rm $rmopts $path/$i; else echo \"Couldn't get lock.\"; fi"
 	done
 }
 
@@ -176,16 +199,17 @@ changelog()
 		# just a workaround for the "syntax error near unexpected token `;'" bug
 		catcmd="echo -n \"\""
 	fi
+	_set_lockname
 	ssh $host "cd $path; \
-if [ ! -e _darcs/rlock ]; then \
-	touch _darcs/rlock; \
+if [ ! -e $lock ]; then \
+	touch $lock; \
 	cd frugalware-$arch; \
 	if [ ! -e '$fdb' ]; then \
 		echo ${options[@]} | grep -q nobuild || arch=$arch $sudo gensync ../source/$group/$pkg $fdb; \
 	else \
 		echo ${options[@]} | grep -q nobuild || arch=$arch $sudo updatesync upd $fdb ../source/$group/$pkg/FrugalBuild; \
 	fi; \
-	cd $path; rm _darcs/rlock; \
+	cd $path; rm $lock; \
 	cd $path/source/$group/$pkg; arch=$arch $sudo genchangelog; \
 	$catcmd; \
 else \
@@ -217,11 +241,16 @@ ask()
 
 _do_record()
 {
+	if [ "$_F_makepkg_scm" = "git" ]; then
+		echo -e "$pkgname-$pkgver-$pkgrel-$arch
+$@" | git commit -a -F - .
+	else
 	root="`_get_root`"
 	echo -e "`LANG= LC_ALL= date +"%a %b %d %H:%M:%S %Z %Y"`
 `cat $root/_darcs/prefs/author`
 $pkgname-$pkgver-$pkgrel-$arch
 $@" | darcs rec -a --pipe .
+	fi
 }
 
 record()
@@ -236,8 +265,13 @@ record()
 	if [ -n "$*" ]; then
 		_do_record $*
 	else
-		darcs what -s .
-		ask "darcs record --edit-long-comment -m '$pkgname-$pkgver-$pkgrel-$arch' ."
+		if [ "$_F_makepkg_scm" = "git" ]; then
+			dg what -s .
+			ask "dg record --edit-long-comment -m '$pkgname-$pkgver-$pkgrel-$arch' ."
+		else
+			darcs what -s .
+			ask "darcs record --edit-long-comment -m '$pkgname-$pkgver-$pkgrel-$arch' ."
+		fi
 	fi
 }
 
@@ -315,7 +349,11 @@ sync()
 	ls *-$arch.fpm &>/dev/null && srcdel
 
 	modpkgname=$(echo $pkgname | sed 's/\+/\\+/g')
-	cmd="darcs push --match 'name $modpkgname'"
+	if [ "$_F_makepkg_scm" = "git" ]; then
+		cmd="dg push"
+	else
+		cmd="darcs push --match 'name $modpkgname'"
+	fi
 	if [ -n "$noask" ]; then
 		cmd="$cmd -a"
 	fi
@@ -487,11 +525,20 @@ fi
 version='0.3.0'
 [ -z "$arch" ] && arch=`uname -m`
 
+if [ "$_F_makepkg_scm" = "git" ]; then
+# Checking for git.
+which git >/dev/null 2>&1
+if [ $? != 0 ]; then
+	echo "ERROR: Can't find git. You can install it with pacman-g2 -S git."
+	exit 1
+fi
+else
 # Checking for darcs.
 which darcs >/dev/null 2>&1
 if [ $? != 0 ]; then
-	echo "ERROR: Can't find darcs. You can install it with pacman -S darcs."
+	echo "ERROR: Can't find darcs. You can install it with pacman-g2 -S darcs."
 	exit 1
+fi
 fi
 
 # Pharsing parameters.
