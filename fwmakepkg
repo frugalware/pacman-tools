@@ -21,6 +21,11 @@ Finclude ()
 {
 	if [ "$startdir" = `pwd` ]; then
 		local i
+		i=`git rev-parse --git-dir 2>/dev/null`
+		if [ -n "$i" ]; then
+			i=`dirname $i`
+			_F_makepkg_scm=git
+		else
 		i=`pwd`
 		while true
 		do
@@ -31,6 +36,8 @@ Finclude ()
 			fi
 			i=${i%/*}
 		done
+		_F_makepkg_scm=darcs
+		fi
 		if [ "$i" -a -d "$i"/source/include ]; then
 			Fincdir=$i/source/include
 		elif [ -d /var/tmp/fst/include ]; then
