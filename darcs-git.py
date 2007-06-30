@@ -1,5 +1,11 @@
 #!/usr/bin/env python
 
+__author__ = "Miklos Vajna <vmiklos@frugalware.org>"
+__version__ = "0.7"
+__date__ = "Sun, 01 Jul 2007 01:19:06 +0200"
+__copyright__ = "Copyright (c) 2007 Miklos Vajna"
+__license__ = "GPL"
+
 import sys, tty, termios, os, re, getopt
 
 class File:
@@ -679,7 +685,7 @@ def main(argv):
 	def usage(ret):
 		print """Usage: darcs-git COMMAND ...
 
-A darcs-like interface for git with ~22 commands. (Git has ~144.)
+A darcs-like interface for git with ~20 commands. (Git has ~140.)
 
 The meaning of the letters are the following:
   A             Alias.
@@ -693,6 +699,7 @@ The meaning of the letters are the following:
                 Example: darcs-git put is not supported.
 
 Commands:
+
   W help          Display help for darcs or a single commands.
 Changing and querying the working copy:
   W add           Add one or more new files or directories.
@@ -734,8 +741,17 @@ Administrating repositories:
   N repair        Repair the corrupted repository.
 """
 		sys.exit(ret)
-	if len(sys.argv) == 1 or sys.argv[1] == "-h":
+	def version():
+		print """darcs-git (pacman-tools) %s
+
+Copyright (c) 2007 by Miklos Vajna <vmiklos@frugalware.org>
+This is free software; see the source for copying conditions.  There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR \
+PURPOSE.""" % __version__
+	if len(sys.argv) == 1 or sys.argv[1] in ["-h", "--help"]:
 		usage(0)
+	if sys.argv[1] in ["-v", "--version"]:
+		version()
 	else:
 		# this will exit if no root found
 		if sys.argv[1] not in ["init", "get"]:
