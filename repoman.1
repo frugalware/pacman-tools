@@ -1,91 +1,106 @@
-.TH "REPOMAN" "1" "January 2007" "Frugalware 0.6" "pacman-tools"
+.TH "REPOMAN" "1" "June 2007" "Frugalware 0.7" "pacman-tools"
 .SH NAME
 repoman \- Frugalware's program to maintain/build packages via ssh/rsync
 .SH SYNOPSIS
 \fBrepoman\fR [\fIglobal options\fR] [\fIcommand\fR] [\fIcommand options\fR]
 .SH DESCRIPTION
 .BR repoman
-is meant for Frugalware developers to upload or delete source
-tarballs, fpm packages and generate changelogs.
+is meant for Frugalware developers to upload, delete or register source
+tarballs or fpm packages.
 
 Also it's a tool for users to automatically build and install packages on the
 target host.
-.br
-Note: \fBrepoman\fR only runs \fIinside\fR a darcs repository.
+
+.SH INSTALLING PACKAGES
+.BR Note:
+This section is for users. If you're a developer, just skip it.
+
+Here is a reference comparing pacman-g2 and repoman
+
+.nf
+pacman-g2 -Sy		repoman upd
+pacman-g2 -S pkg	repoman merge pkg
+pacman-g2 -Ss foo	repoman search foo
+.fi
+
 .SH USAGE
+.BR Note:
+This section is for developers. If you're a user, just skip it.
+
 A typical package update should be done as follows:
 
 .TP
 0) Configure repoman:
 
-echo 'current_servers=("vmiklos@darcs.frugalware.org:/home/ftp/pub/frugalware/frugalware-current")' > ~/.repoman.conf
+.nf
+echo 'current_servers=("foo@git.frugalware.org:/home/ftp/pub/frugalware/\\
+frugalware-current")' > ~/.repoman.conf
+echo 'fst_root=~/git' >> ~/.repoman.conf
+.fi
 
-echo 'fst_root=~/darcs' >> ~/.repoman.conf
+Replace foo with your nick and make sure about you have the git tree in
+~/git/current.
 
-Replace my nick (vmiklos) with your nick and make sure about you have the darcs tree in ~/darcs/current.
-
-If you want to use more than one (conflicting, ie.: current and stable) trees, then please add the <reponame>_pushonly=y option to each repo except one. Example: if the host system is -current and you want to enabled current and stable, then add stable_pushonly="y" to your config.
+If you want to use more than one (conflicting, ie.: current and stable) trees,
+then please add the <reponame>_pushonly=y option to each repo except one.
+Example: if the host system is -current and you want to enabled current and
+stable, then add stable_pushonly="y" to your config.
 
 .TP
 1) Get the repo and set defaults.
 
-.BR Note:
-We recommend you to use a mirror server and the --partial option!
-
 Example for the first time:
 
-darcs get --partial http://ftp5.frugalware.org/packages/frugalware/pub/frugalware/frugalware-current/
+.nf
+git clone foo@git.frugalware.org:/home/ftp/pub/frugalware/frugalware-current \\
+current
+.fi
 
-Example for the pacman-tools repo:
+( Example for the pacman-tools repo:
 
-darcs get --partial http://ftp5.frugalware.org/packages/frugalware/pub/other/pacman-tools/pacman-tools
-
-mv frugalware-current current
+git clone foo@git.frugalware.org:/home/ftp/pub/other/pacman-tools/pacman-tools )
 
 cd current
 
-echo "yourname <email@addr.ess>" > _darcs/prefs/author
+git config user.name yourname
+git config user.email email@addr.ess
 
-echo 'username@darcs.frugalware.org:/home/ftp/pub/frugalware/frugalware-current' > _darcs/prefs/defaultrepo
+git config remote.origin.receivepack "sudo -u foo git-receive-pack"
 
-Or, for the pacman-tools repo:
-
-echo 'username@darcs.frugalware.org:/home/ftp/pub/other/pacman-tools/pacman-tools' > _darcs/prefs/defaultrepo
-
-echo 'push apply-as vmiklos' >> _darcs/prefs/defaults
-
-Note: Here do not substituate my nick (vmiklos) with you nick!
+Here you sould substituate foo with the nick of the repo owner, current vmiklos.
 
 .TP
 2) Update the repo.
 
-If you already got the repo a simple 'darcs pull' should be enough.
+If you already got the repo a simple 'git pull' should be enough.
 
 .TP
 3) Make changes and build the package.
 
 Now time to edit the FrugalBuild and make changes.
 
-If you would like to add new file(s) to the source, run this:
+Build the package with 'sudo makepkg -c'.
 
-darcs add glibc.install
+Then if you would like to add new file(s) to the source, run this:
+
+git add glibc.install
 
 To remove file(s) from the source, run this:
 
-rm at-3.1.8r11-makefile.patch
+git rm at-3.1.8r11-makefile.patch
 
 Or if you would like to rename a file in the source, run this:
 
-darcs mv glibc-2.5-foo.patch glibc-2.5-bar.patch
-
-Then build the packages with 'sudo makepkg -c'.
+git mv glibc-2.5-foo.patch glibc-2.5-bar.patch
 
 .TP
 4) Recording the changes.
 
-Simply run 'darcs record'.
+Simply run 'git commit'.
 
-When recording the patch (if this is a package upgrade), its name must be $pkgname-$pkgver-$pkgrel-$arch (when answering to 'What is the patch name?').
+When recording the patch (if this is a package upgrade), the first line must be
+$pkgname-$pkgver-$pkgrel-$arch. You can use repoman rec which will fill in this
+first line automatically for you.
 
 For example:
 
@@ -103,7 +118,7 @@ repoman del source/base/readline/readline-5.0.tar.gz
 .TP
 6) Push the FrugalBuild/.install/etc patch.
 
-Here you only have to do a simple 'darcs push'.
+Here you only have to do a simple 'git push'.
 
 This command uploads the changes you made locally to the server.
 
@@ -119,7 +134,9 @@ repoman up zsh-4.2.5.tar.bz2 /source/apps/zsh/
 repoman up zsh-doc-4.2.5.tar.bz2 /source/apps/zsh/
 
 NOTE: if the original mirror is fast, then just skip this step and repoman cl
-(see later) will download the sources for you.
+(see later) will download the sources for you. If the mirror is slower than
+your upload bandwidth then it worth to upload it now or you'll have to wait
+till the server downloads it!
 
 .TP
 8) Upload the new fpm package:
@@ -136,17 +153,35 @@ For example:
 repoman del frugalware-i686/glibc-2.5-1-i686.fpm
 
 .TP
-10) Generate a Changelog, update the .fdb and sql database and download the
-missing sources:
+10) Generate a Changelog, update the .fdb and sql database, download the
+missing sources and update documentation:
 
 For example:
 
-repoman cl base/perl
+repoman cl perl
+
+.TP
+11) Once you understand this procedure, you can do all this at once:
+
+For example:
+
+repoman -k push
+
+Will be interactive only in case there is some unrecorded change.
+
+Usuall I (vmiklos) use the following:
+
+.nf
+repoman rec
+repoman -k push
+.fi
+
+But you should not use repoman push till you don't understand what it does!
 
 .SH COMMANDS
 .TP
 .BI cl|changelog " [category/]package"
-Generate a Changelog file from darcs patch comments.
+Generate a Changelog file from git log.
 The category may be optional, but then a FrugalBuild must be supplied in the
 current directory to determine the category.
 .TP
@@ -173,8 +208,8 @@ to the pacman-g2 package cache.
 
 .TP
 .BI rec|record " [parameters]"
-A frontend to darcs record. If parameters are given then it won't be
-interactive and the parameters are appended to the history as a long comment.
+A frontend to git commit. If parameters are given then it won't be interactive
+and the parameters are appended to the history as a long comment.
 
 .TP
 .BI up|upload " source destination"
@@ -221,5 +256,5 @@ Written by Miklos Vajna and Laszlo Dvornik.
 .SH "REPORTING BUGS"
 Please report bugs to the <http://bugs.frugalware.org/> bug tracking system.
 .SH "SEE ALSO"
-.BR darcs (1),
+.BR git (7),
 .BR pacman-g2 (8)
