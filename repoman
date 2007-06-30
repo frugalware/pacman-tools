@@ -45,7 +45,7 @@ check_servers()
 	server=$(eval "echo \$${reponame}_servers")
 	if [ "$F_makepkg_scm" = "git" ]; then
 		_server=`GIT_DIR=$fst_root/$reponame/.git git config --get remote.origin.url 2>/dev/null`
-		if echo $_server |grep -q :[^/]; then
+		if echo $_server |grep -q :/[^/]; then
 			server=$_server
 		fi
 	else
@@ -53,7 +53,7 @@ check_servers()
 			server="`cat $fst_root/$reponame/_darcs/prefs/defaultrepo`"
 		fi
 	fi
-        if echo $server |grep -q :[^/]; then
+        if echo $server |grep -q :/[^/]; then
                 host=${server%:*}
                 path=${server#*:}
         else
