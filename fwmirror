@@ -19,13 +19,6 @@ usage()
 	(current,testing,stable), too."
 	echo "  --version        fwmirror version."
 	echo
-	echo "The following options are for developers and they're ignored when
-	the source is not mirrored:"
-	echo "  -l <login>       Your login, used for generating
-	_darcs/prefs/author and _darcs/prefs/defaultrepo."
-	echo "  -n <name>        Your name, used when generating
-	_darcs/prefs/author after mirroring is finished."
-	echo
 	echo "About rsync options:"
 	echo "If you run fwmirror from cron, then probably you'll want to add"
 	echo "'-q', if you're running it interactively, then most users need"
@@ -133,17 +126,11 @@ done
 
 # exclude source if not requested
 if ! in_array source ${myarchs[@]}; then
-	rsync_opts="$rsync_opts --exclude /source/ --exclude /_darcs/"
+	rsync_opts="$rsync_opts --exclude /source/ --exclude /_darcs/ --exclude /.git/"
 fi
 
 # the funny part
 for i in "${versions[@]}"
 do
 	rsync -ay $rsync_opts "$server/frugalware-$i/" "$dir/frugalware-$i"
-	if in_array source ${myarchs[@]}; then
-		echo "$name <$login@frugalware.org>" \
-			>"$dir/frugalware-$i/_darcs/prefs/author"
-		echo "$login@darcs.frugalware.org:/home/ftp/pub/frugalware/frugalware-$i" \
-			>"$dir/frugalware-$i/_darcs/prefs/defaultrepo"
-	fi
 done
