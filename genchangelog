@@ -26,8 +26,13 @@ CHROOT=1
 . /usr/lib/frugalware/fwmakepkg
 
 if [ ! -e Changelog ] || [ `stat -c %Y Changelog` -lt `stat -c %Y FrugalBuild` ]; then
-	echo -n "running darcs changes... "
-	darcs changes FrugalBuild > Changelog
+	if [ "$_F_makepkg_scm" = "git" ]; then
+		echo -n "running git log... "
+		git log -M FrugalBuild > Changelog
+	else
+		echo -n "running darcs changes... "
+		darcs changes FrugalBuild > Changelog
+	fi
 	echo "done."
 fi
 
