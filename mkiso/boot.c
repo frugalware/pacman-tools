@@ -58,9 +58,3 @@ int boot_size(char *root, char *kernel, char *initrd)
 	ret += buf.st_size/1024;
 	return(ret);
 }
-
-/*int main()
-{
-	printf("%d\n",
-		boot_size("/home/vmiklos/darcs/frugalware-current", "boot/vmlinuz-2.6.16-fw5-i686", "boot/initrd-i686.img.gz"));
-}*/
