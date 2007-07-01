@@ -64,7 +64,7 @@ src_cleanup()
 	if [ "$F_makepkg_scm" = "git" ]; then
 		git clean .
 	else
-	local root i workdir
+	local i workdir
 
 	workdir=`pwd|sed "s|$root||"`
 	rootlist=`mktemp`
