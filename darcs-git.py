@@ -503,6 +503,7 @@ Options:
 		options.gitopts = " ".join(argv[optind:])
 	if options.help:
 		usage(0)
+	os.system("git fetch")
 	sock = os.popen("git log origin/master..master --no-merges 2>&1")
 	lines = sock.readlines()
 	ret = sock.close()
