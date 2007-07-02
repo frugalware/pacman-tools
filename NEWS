@@ -1,5 +1,9 @@
 VERSION         DESCRIPTION
 -----------------------------------------------------------------------------
+0.9.5         - mkpkghtml: new script
+              - repoman cl no longer requires an existing fdb
+              - repoman push fixed on x86_64
+              - git support
 0.9.4         - install fwmakepkg manpage
               - bumppkg: new -t tree option
               - revdep-rebuild: new -t tree and --other options
