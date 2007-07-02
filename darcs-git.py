@@ -89,6 +89,17 @@ git-config diff.color auto"""
 		sys.exit(0)
 	return lines
 
+def merge_check():
+	ret = False
+	sock = os.popen("git diff")
+	lines = sock.readlines()
+	sock.close()
+	for i in lines:
+		if i.startswith("diff --cc "):
+			ret = True
+			break
+	return ret
+
 def scan_dir(files=""):
 	ret = []
 	lines = get_diff(files)
@@ -250,7 +261,11 @@ Options:
 		else:
 			print "No changes!"
 			sys.exit(0)
-	if first:
+	merge = False
+	if merge_check():
+		print "This is a merge, can't cherry-pick for this commit."
+		merge = True
+	if first or merge:
 		status = Files([])
 	else:
 		# we need the overall status too, to exclude new files if necessary
@@ -258,7 +273,7 @@ Options:
 		status = scan_dir(options.files)
 		if not options.all:
 			status.hunks = askhunks(status.hunks)
-	if first or status.hunks:
+	if first or merge or status.hunks:
 		if not options.name:
 			options.name = ask("What is the patch name?", str)
 	else:
@@ -279,7 +294,7 @@ Options:
 	# in darcs, it was possible to simply rm a file and then record a
 	# patch. support this
 	os.system("git ls-files -z --deleted | git update-index -z --remove --stdin")
-	if first or options.all:
+	if first or merge or options.all:
 		os.system("git commit -a -m '%s' %s %s" % (options.name, options.edit, options.files))
 		sys.exit(0)
 	for i in status.hunks:
