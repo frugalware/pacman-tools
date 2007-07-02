@@ -519,7 +519,9 @@ Options:
 			if ret in ("n", "q"):
 				sys.exit(0)
 			print "Invalid response, try again!"
-	os.system("git push %s" % options.gitopts)
+	ret = os.system("git push %s" % options.gitopts)
+	if ret:
+		sys.exit(1)
 
 def pull(argv):
 	def usage(ret):
