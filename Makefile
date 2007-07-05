@@ -118,15 +118,18 @@ clean:
 	$(MAKE) -C mkiso clean
 
 dist:
-	darcs changes >_darcs/current/Changelog
-	darcs dist -d pacman-tools-$(VERSION)
+	git-archive --format=tar --prefix=pacman-tools-$(VERSION)/ HEAD > pacman-tools-$(VERSION).tar
+	mkdir -p pacman-tools-$(VERSION)
+	git log > pacman-tools-$(VERSION)/Changelog
+	tar rf pacman-tools-$(VERSION).tar pacman-tools-$(VERSION)/Changelog
+	rm -rf pacman-tools-$(VERSION)
+	gzip -f -9 pacman-tools-$(VERSION).tar
 	gpg --comment "See http://ftp.frugalware.org/pub/README.GPG for info" \
 		-ba -u 20F55619 pacman-tools-$(VERSION).tar.gz
 	mv pacman-tools-$(VERSION).tar.gz{,.asc} ../
-	rm _darcs/current/Changelog
 
 release:
-	darcs tag --checkpoint $(VERSION)
+	git tag $(VERSION)
 	$(MAKE) dist
 
 apidocs:
