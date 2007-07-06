@@ -57,7 +57,7 @@ else
 	tree=$1
 fi
 
-if ssh genesis.frugalware.org ls /home/ftp/pub/frugalware/frugalware-$tree/.git &>/dev/null
+if ssh genesis.frugalware.org ls /home/ftp/pub/frugalware/frugalware-$tree/.git &>/dev/null; then
 	scm=git
 else
 	scm=darcs
