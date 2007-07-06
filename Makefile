@@ -36,15 +36,13 @@ sysconfdir = /etc
 docdir = /usr/share/doc/pacman-tools-$(VERSION)
 FINCDIR = $(shell source /usr/lib/frugalware/fwmakepkg; echo $$Fincdir)
 
-compile: chkperm genauthors apidocs fwmakepkg.3
+compile: genauthors apidocs fwmakepkg.3
 	$(MAKE) -C mkiso
 	$(MAKE) -C repoman.d
 	chmod +x fwmirror pear-makefb chkdep darcs-git.py
 	help2man -n "mirrors Frugalware archives" -S Frugalware -N ./fwmirror |sed 's/\\(co/(c)/' >fwmirror.1
 	help2man -n "Writes FrugalBuild scripts for PHP PEAR/PECL packages" -S Frugalware -N ./pear-makefb \
 		|sed 's/\\(co/(c)/' >pear-makefb.1
-	help2man -n "controls upload rights for Frugalware packages" -S Frugalware -N ./chkperm |sed 's/\\(co/(c)/' \
-		>chkperm.1
 	chmod +x fblint
 	help2man -n "searches for common FrugalBuild problems" -S Frugalware -N ./fblint |sed 's/\\(co/(c)/' >fblint.1
 	help2man -n "Checks a package or directory for possible depends" -S Frugalware -N ./chkdep |sed 's/\\(co/(c)/' >chkdep.1
@@ -97,7 +95,6 @@ install:
 	$(INSTALL) etcconfig.py $(DESTDIR)$(sbindir)/etcconfig
 	$(INSTALL) rpm2fpm $(DESTDIR)$(bindir)/rpm2fpm
 	$(INSTALL) fwcpan $(DESTDIR)$(bindir)/fwcpan
-	$(INSTALL) chkperm $(DESTDIR)$(bindir)/chkperm
 	$(INSTALL) genauthors $(DESTDIR)$(bindir)/genauthors
 	$(INSTALL) fblint $(DESTDIR)$(bindir)/fblint
 	$(INSTALL) pootle-update $(DESTDIR)$(bindir)/pootle-update
@@ -106,7 +103,6 @@ install:
 	$(INSTALL) -m644 fwmirror.1 $(DESTDIR)$(man1dir)
 	$(INSTALL) pear-makefb $(DESTDIR)$(bindir)/pear-makefb
 	$(INSTALL) -m644 pear-makefb.1 $(DESTDIR)$(man1dir)
-	$(INSTALL) -m644 chkperm.1 $(DESTDIR)$(man1dir)
 	$(INSTALL) -m644 fblint.1 $(DESTDIR)$(man1dir)
 	$(INSTALL) -m644 mkiso/mkiso.8 $(DESTDIR)$(man8dir)
 	$(INSTALL) -m644 mkiso/volumes.xml $(DESTDIR)$(docdir)/volumes.xml
@@ -114,7 +110,7 @@ install:
 	$(INSTALL) -m644 fwmakepkg.3 $(DESTDIR)$(man3dir)
 
 clean:
-	rm -rf chkperm genauthors apidocs fwmakepkg.3
+	rm -rf genauthors apidocs fwmakepkg.3
 	$(MAKE) -C mkiso clean
 
 dist:
