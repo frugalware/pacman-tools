@@ -360,13 +360,15 @@ sync()
 	ls *-$arch.fpm &>/dev/null && srcdel
 
 	modpkgname=$(echo $pkgname | sed 's/\+/\\+/g')
-	if [ "$F_makepkg_scm" = "git" ]; then
-		cmd="dg push"
-	else
-		cmd="darcs push --match 'name $modpkgname'"
-	fi
 	if [ -n "$noask" ]; then
-		cmd="$cmd -a"
+		opts="-a"
+	else
+		opts=""
+	fi
+	if [ "$F_makepkg_scm" = "git" ]; then
+		cmd="dg pull $opts; git diff|grep -q -- 'diff --cc' && die 'detected conflicts'; dg push $opts"
+	else
+		cmd="darcs push --match 'name $modpkgname' $opts"
 	fi
 	dry_run "$cmd" || die "push failed"
 
