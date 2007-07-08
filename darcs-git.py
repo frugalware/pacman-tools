@@ -389,6 +389,7 @@ Options:
 		else:
 			print "Ok, if you don't want to revert anything, that's fine!"
 		sys.exit(0)
+	os.chdir(os.path.split(get_root())[0])
 	for i in status.hunks:
 		p = []
 		if i.picked == True:
