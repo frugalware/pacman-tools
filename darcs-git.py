@@ -314,7 +314,7 @@ Options:
 				newlist.append(diff2filename(lines[0]))
 	for i in newlist:
 		os.system("git reset HEAD %s" % i)
-	os.system("git commit -m '%s' %s" % (options.name, options.edit))
+	os.system("git commit -m '%s' %s %s" % (options.name, options.edit, options.files))
 	# readd the uncommitted new files
 	for i in newlist:
 		os.system("git add %s" % i)
