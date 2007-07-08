@@ -305,7 +305,7 @@ srcdel()
 	srclocal=(${srclocal[@]} ${signatures[@]})
 	if [ "$F_makepkg_scm" = "git" ]; then
 		check_servers
-		for i in $(ssh $host "cd $path/$mydir; git clean -n ."|sed 's/.* remove //')
+		for i in $(ssh $host "cd $path/$mydir; git clean -n -x ."|sed 's/.* remove //')
 		do
 			if ! echo ${srclocal[@]} |grep -q $i && ! _is_log $i && [ "$i" != "Changelog" ]; then
 				dry_run delete $mydir/$i

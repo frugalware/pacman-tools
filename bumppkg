@@ -62,7 +62,7 @@ src_cleanup()
 	Fmessage "cleaning up old source files"
 	root="`get_root`"
 	if [ "$F_makepkg_scm" = "git" ]; then
-		git clean .
+		git clean -x .
 	else
 	local i workdir
 
