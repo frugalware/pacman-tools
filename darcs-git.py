@@ -313,6 +313,12 @@ Options:
 			lines = i.text.split("\n")
 			if "--- /dev/null" in lines:
 				newlist.append(diff2filename(lines[0]))
+		else:
+			lines = i.text.split("\n")
+			if "--- /dev/null" in lines:
+				# this is a newly added file but maybe it has
+				# been updated since add. add it again
+				os.system("git add %s" % diff2filename(lines[0]))
 	for i in newlist:
 		os.system("git reset HEAD %s" % i)
 	os.system("""git commit -m "%s" %s %s""" %
