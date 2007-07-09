@@ -380,7 +380,10 @@ Options:
 		print "There are no changes to revert!"
 		sys.exit(0)
 	if options.all:
-		os.system("git checkout %s" % options.files)
+		if(len(options.files)):
+			os.system("git checkout %s" % options.files)
+		else:
+			os.system("git checkout -f")
 		print "Finished reverting."
 		sys.exit(0)
 	status = scan_dir(options.files)
