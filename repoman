@@ -17,6 +17,7 @@ ls|list directory                           List a directory in FST.
 rec|record [parameters]                     Records a pacakge.
 up|upload source destination                Upload a file to FST.
 push [record parameters]                    Pushes a pacakge.
+fpmmerge repo                               Merges fpms from an other repo.
 
 Global options:
 -d|--dry-run  Don't actually run the commands.
@@ -141,6 +142,29 @@ upload()
 			ssh $host "rm $tmp"
 			exit 1
 		fi
+	done
+}
+
+fpmmerge()
+{
+	if [ -z "$1" ]; then
+		echo "fpmmerge needs a parameter! (a repo name to pull in fpms from)"
+		usage
+		exit 1
+	fi
+	check_servers
+	sudouser=$(eval "echo \$${reponame}_sudo")
+	[ -n "$sudouser" ] && sudo="sudo -u $sudouser"
+	srcurl=$(eval "echo \$$1_servers")
+	if [ -z "$srcurl" ]; then
+		die "so such repo!"
+	fi
+	ssh $host "cd $path/frugalware-$arch && $sudo rsync -avP $srcurl/frugalware-$arch/*.fpm ./"
+	# now run repoman cl for each
+	for i in `$0 -t $1 ls /frugalware-$arch/ 2>/dev/null|sed 's/-[^-]\+-[^-]\+-[^-]\+$//'`
+	do
+		cd `git rev-parse --git-dir`/../source/*/$i 2>/dev/null || continue
+		$0 -t $reponame cl $i
 	done
 }
 
@@ -622,6 +646,10 @@ while [ "$1" != "" ]; do
 		m|merge)
 			shift 1
 			merge $*
+		;;
+		fpmmerge)
+			shift 1
+			fpmmerge $*
 		;;
 		up|upload)
 			shift 1
