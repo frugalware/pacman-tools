@@ -116,7 +116,7 @@ clean:
 dist:
 	git-archive --format=tar --prefix=pacman-tools-$(VERSION)/ HEAD > pacman-tools-$(VERSION).tar
 	mkdir -p pacman-tools-$(VERSION)
-	git log > pacman-tools-$(VERSION)/Changelog
+	git log --no-merges |git name-rev --tags --stdin > pacman-tools-$(VERSION)/Changelog
 	tar rf pacman-tools-$(VERSION).tar pacman-tools-$(VERSION)/Changelog
 	rm -rf pacman-tools-$(VERSION)
 	gzip -f -9 pacman-tools-$(VERSION).tar
