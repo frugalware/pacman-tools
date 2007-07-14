@@ -1,5 +1,11 @@
 VERSION         DESCRIPTION
 -----------------------------------------------------------------------------
+0.9.6         - syncpkg: a typo rendered it unusable
+              - repoman push now pulls before push
+	      - repoman now removes junk files even if they are in gitignore
+              - darcs-git: handle commit names containing ' or "
+	      - repoman: new experimental fpmmerge subcommand, needs more
+	        testing
 0.9.5         - mkpkghtml: new script
               - repoman cl no longer requires an existing fdb
               - repoman push fixed on x86_64
