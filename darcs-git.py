@@ -291,6 +291,9 @@ Options:
 			if ret == "q":
 				sys.exit(0)
 			print "Invalid response, try again!"
+	root = os.path.split(get_root())[0]
+	if len(root):
+		os.chdir(root)
 	# in darcs, it was possible to simply rm a file and then record a
 	# patch. support this
 	os.system("git ls-files -z --deleted | git update-index -z --remove --stdin")
