@@ -462,9 +462,13 @@ update()
 		for j in ${servers[@]}
 		do
 			echo "warning: this operation can take minutes, please be patient"
+			# support upgraders
+			if [ -d $fst_root/$i -a ! -d $fst_root/$i/.git ]; then
+				rm -rf $fst_root/$i
+			fi
 			# check for scm
 			if rsync -q $j/.git 2>/dev/null; then
-				if [ -d $fst_root/$i ]; then
+				if [ -d $fst_root/$i/.git ]; then
 					cmd="cd $i && git pull"
 				else
 					cmd="git clone $j/.git $i"
