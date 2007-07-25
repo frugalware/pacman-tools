@@ -60,12 +60,12 @@ current
 
 git clone foo@git.frugalware.org:/home/ftp/pub/other/pacman-tools/pacman-tools )
 
+.nf
 cd current
-
 git config user.name yourname
 git config user.email email@addr.ess
-
 git config remote.origin.receivepack "sudo -u foo git-receive-pack"
+.fi
 
 Here you should substitute foo with the nick of the repo owner, currently vmiklos.
 
