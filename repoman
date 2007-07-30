@@ -159,7 +159,9 @@ fpmmerge()
 	if [ -z "$srcurl" ]; then
 		die "so such repo!"
 	fi
-	ssh $host "cd $path/frugalware-$arch && $sudo rsync -avP $srcurl/frugalware-$arch/*.fpm ./"
+	if ! ssh $host "cd $path/frugalware-$arch && $sudo rsync -avP `echo $srcurl|sed 's/^.*@//'`/frugalware-$arch/*.fpm ./"; then
+		die "rsync failed! :/"
+	fi
 	# now run repoman cl for each
 	for i in `$0 -t $1 ls /frugalware-$arch/ 2>/dev/null|sed 's/-[^-]\+-[^-]\+-[^-]\+$//'`
 	do
