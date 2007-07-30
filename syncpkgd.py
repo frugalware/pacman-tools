@@ -28,6 +28,21 @@ class Actions:
 			return
 		return self.__request_build(pkg)
 
+	def __request_pkg(self, arch):
+		for i in self.tobuild:
+			if re.match(".*-%s$" % arch, i):
+				self.tobuild.remove(i)
+				return i
+		return ""
+	
+	def request_pkg(self, login, password, arch):
+		"""request a package to build. it's primitive, if the client
+		does not request a build after a build failure, the original
+		request will be lost"""
+		if not self.__login(login, password):
+			return
+		return self.__request_pkg(arch)
+
 	def __get_todo(self, arch=None):
 		if not arch:
 			return self.tobuild
