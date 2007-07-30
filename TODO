@@ -1,0 +1,6 @@
+- logging (date, who, what pkg, what action)
+- storing of build logs (date, log, exit code)
+- git hook to add builds
+- client _daemon_
+- web interface
+- cron job to clean up old build/daemon logs
