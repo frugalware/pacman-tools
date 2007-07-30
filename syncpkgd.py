@@ -113,7 +113,6 @@ class Syncpkgd:
 				sys.exit(0)
 		server = SimpleXMLRPCServer(('',1873))
 		server.register_instance(Actions())
-		# TODO: dump todo list once the api is stable
 		server.serve_forever()
 
 if __name__ == "__main__":

@@ -4,3 +4,4 @@
 - client _daemon_
 - web interface
 - cron job to clean up old build/daemon logs
+- pickle the list of to-be-built pkgs on exit
