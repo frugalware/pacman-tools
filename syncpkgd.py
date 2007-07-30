@@ -15,19 +15,18 @@ class Actions:
 				return True
 		return False
 
-	def __request_build(self, pkg, arch):
-		p = "%s-%s" % (pkg, arch)
-		if p in self.tobuild:
+	def __request_build(self, pkg):
+		if pkg in self.tobuild:
 			return False
 		else:
-			self.tobuild.append(p)
+			self.tobuild.append(pkg)
 			return True
 	
-	def request_build(self, login, password, pkg, arch):
+	def request_build(self, login, password, pkg):
 		"""add a package to build. be careful, currently no way to undo it"""
 		if not self.__login(login, password):
 			return
-		return self.__request_build(pkg, arch)
+		return self.__request_build(pkg)
 
 	def __get_todo(self, arch=None):
 		if not arch:
