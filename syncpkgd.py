@@ -1,10 +1,11 @@
-import sys, getopt, os, pwd, sha, time, base64
+import sys, getopt, os, pwd, sha, time, base64, re
 from SimpleXMLRPCServer import SimpleXMLRPCServer
 from config import config
 
 class Actions:
 	def __init__(self):
 		self.lags = {}
+		self.tobuild = []
 
 	def __login(self, login, password):
 		if login in config.passes.keys() and \
@@ -14,6 +15,36 @@ class Actions:
 				return True
 		return False
 
+	def __request_build(self, pkg, arch):
+		p = "%s-%s" % (pkg, arch)
+		if p in self.tobuild:
+			return False
+		else:
+			self.tobuild.append(p)
+			return True
+	
+	def request_build(self, login, password, pkg, arch):
+		"""add a package to build. be careful, currently no way to undo it"""
+		if not self.__login(login, password):
+			return
+		return self.__request_build(pkg, arch)
+
+	def __get_todo(self, arch=None):
+		if not arch:
+			return self.tobuild
+		else:
+			ret = []
+			for i in self.tobuild:
+				if re.match(".*-%s$" % arch, i):
+					ret.append(i)
+			return ret
+	
+	def get_todo(self, login, password, arch=None):
+		"""what's to be done? query function"""
+		if not self.__login(login, password):
+			return
+		return self.__get_todo(arch)
+
 	def __who(self):
 		ret = []
 		for k, v in self.lags.items():
@@ -22,6 +53,7 @@ class Actions:
 		return ret
 	
 	def who(self, login, password):
+		"""who is online? query function"""
 		if not self.__login(login, password):
 			return
 		return self.__who()
@@ -67,6 +99,7 @@ class Syncpkgd:
 				sys.exit(0)
 		server = SimpleXMLRPCServer(('',1873))
 		server.register_instance(Actions())
+		# TODO: dump todo list once the api is stable
 		server.serve_forever()
 
 if __name__ == "__main__":

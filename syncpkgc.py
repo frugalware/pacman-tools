@@ -1,4 +1,6 @@
 import xmlrpclib
-testsvr = xmlrpclib.Server("http://localhost:1873")
+syncd = xmlrpclib.Server("http://localhost:1873")
 
-print testsvr.who("user", "pass")
+print syncd.request_build("user", "pass", "pkg", "i686")
+print syncd.request_build("user", "pass", "pkg", "x86_64")
+print syncd.get_todo("user", "pass")
