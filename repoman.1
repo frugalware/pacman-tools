@@ -178,6 +178,132 @@ repoman -k push
 
 But you should not use repoman push till you don't understand what it does!
 
+.SH WIP REPOS
+
+1) Introduction
+
+WIP stands for "Work In Progress". Such repos are used usually only for a few
+days or weeks, if you except that a package upgrade will break several others,
+then it's good to create a WIP repo, and merge when you fixed all the revdeps.
+
+2) Before you begin
+
+If the repo you use for your work already exists, it may need some work:
+
+* Remove the already merged fpms manually. This usually means all fpms.
+
+* Remove the obsolete entries from the fdb, or just remove the file if no fpms left in the repo.
+
+3) The How
+
+Choose a name. It should not have to be too meaningful, using anything other
+than a-z 0-9 and underscore may or may not work. For "flac 1.1.3" I have used
+flac113.
+
+First, clone current to your personal directory on genesis:
+
+.nf
+cd /home/ftp/pub/other/people/nick
+git clone /home/ftp/pub/frugalware/frugalware-current
+mv frugalware-current flac113
+mkdir flac113/frugalware-$arch
+.fi
+
+You \fBneed\fP hooks. You have two choices. If you want the standard required +
+cia + mailing list combo, then:
+
+.nf
+ln -sf /home/ftp/pub/other/git-hooks/git-hooks.py .git/hooks/post-receive
+.fi
+
+Otherwise just do:
+
+.nf
+echo "unset GIT_DIR; cd ..; git checkout -f" > .git/hooks/post-receive
+.fi
+
+Then
+
+.nf
+chmod +x .git/hooks/post-receive
+.fi
+
+This is necessary to update the working directory after a push, so that repoman
+cl will see the updated FrugalBuild.
+
+To workaround a git bug:
+
+.nf
+rm -rf .git/refs/remotes
+.fi
+
+Also edit .git/config and remove the section named 'origin'.
+
+Okay now you can git clone your repo to localhost:
+
+.nf
+git clone nick@git.frugalware.org:/home/ftp/pub/other/people/nick/flac113
+.fi
+
+Now you have to configure repoman and pacman-g2.
+
+Just append your ~/.repoman.conf:
+
+.nf
+repos=(${repos[@]} 'flac113')
+flac113_servers=("nick@git.frugalware.org:/home/ftp/pub/other/people/nick/flac113")
+.fi
+
+And create a file named /etc/pacman.d/flac113:
+
+.nf
+[flac113]
+Server = http://ftp.frugalware.org/pub/other/people/nick/flac113/frugalware-$arch/
+.fi
+
+Building a package will be a bit more complicated than sudo makepkg -c, so
+let's create an alias:
+
+.nf
+alias flacbuild='sudo makepkg -t flac113,current -c'
+.fi
+
+Then you can build with:
+
+.nf
+flacbuild
+.fi
+
+You can record using:
+
+.nf
+repoman rec
+.fi
+
+and push with:
+
+.nf
+repoman -t flac113 -k push
+.fi
+
+4) Merge
+
+Once you are ready, go to ~/git/current (make sure you don't have anything to
+push!) and
+
+.nf
+git pull nick@git.frugalware.org:/home/ftp/pub/other/people/nick/flac113
+.fi
+
+This will merge your WIP repo to your local current repo. If there are
+conflicts, resolve them.
+
+Push your changes:
+ git push
+
+Finally you need to transfer the fpms from your repo and run a repoman cl for each package:
+ repoman fpmmerge flac113
+
 .SH COMMANDS
 .TP
 .BI cl|changelog " [category/]package"
