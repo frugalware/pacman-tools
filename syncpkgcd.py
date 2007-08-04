@@ -56,6 +56,9 @@ class Syncpkgcd:
 				except socket.error:
 					self.sleep("can't connect to server")
 					continue
+				except xmlrpclib.ProtocolError:
+					self.sleep("can't connect to proxy")
+					continue
 				if not len(pkg):
 					self.sleep("no package to build")
 					continue
