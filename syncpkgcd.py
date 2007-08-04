@@ -1,4 +1,4 @@
-import xmlrpclib, time, os, getopt, sys
+import xmlrpclib, time, os, getopt, sys, socket
 from cconfig import config
 
 server = xmlrpclib.Server(config.server_url)
@@ -51,12 +51,15 @@ class Syncpkgcd:
 		# main loop
 		try:
 			while True:
-				pkg = server.request_pkg(config.server_user, config.server_pass, os.uname()[-1])
+				try:
+					pkg = server.request_pkg(config.server_user, config.server_pass, os.uname()[-1])
+				except socket.error:
+					self.sleep("can't connect to server")
+					continue
 				if not len(pkg):
-					self.log("", "no package to building, sleeping for %d seconds" % config.sleep)
-					time.sleep(config.sleep)
-				else:
-					self.build(pkg)
+					self.sleep("no package to build")
+					continue
+				self.build(pkg)
 		except KeyboardInterrupt:
 			# TODO: abort the current build properly
 			self.save()
@@ -76,6 +79,10 @@ class Syncpkgcd:
 	def save(self):
 		self.log("", "client shutting down")
 		self.logsock.close()
+
+	def sleep(self, reason):
+		self.log("", "%s, sleeping for %d seconds" % (reason, config.sleep))
+		time.sleep(config.sleep)
 
 if __name__ == "__main__":
 	options = Options()
