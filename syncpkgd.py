@@ -1,6 +1,6 @@
 import sys, getopt, os, pwd, sha, time, base64, re, pickle
 from SimpleXMLRPCServer import SimpleXMLRPCServer
-from config import config
+from dconfig import config
 
 class Actions:
 	def __init__(self, options):
