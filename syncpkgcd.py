@@ -44,22 +44,38 @@ class Syncpkgcd:
 				except:
 					pass
 				sys.exit(0)
+		# log
+		self.logsock = open(options.logfile, "a")
+		self.log("", "client started")
+
+		# main loop
 		try:
 			while True:
 				pkg = server.request_pkg(config.server_user, config.server_pass, os.uname()[-1])
 				if not len(pkg):
-					print "no pkg to build, sleeping"
+					self.log("", "no package to building, sleeping for %d seconds" % config.sleep)
 					time.sleep(config.sleep)
 				else:
 					self.build(pkg)
 		except KeyboardInterrupt:
 			# TODO: abort the current build properly
+			self.save()
 			return
 
 	def build(self, pkg):
-		print "simulating pkg build..."
+		self.log(pkg, "starting build")
 		# FIXME
 		time.sleep(5)
+		# TODO: exit code
+		self.log(pkg, "starting finished")
+
+	def log(self, pkg, action):
+		self.logsock.write("%s\n" % "; ".join([time.ctime(), pkg, action]))
+		self.logsock.flush()
+	
+	def save(self):
+		self.log("", "client shutting down")
+		self.logsock.close()
 
 if __name__ == "__main__":
 	options = Options()
