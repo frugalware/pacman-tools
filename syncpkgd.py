@@ -162,8 +162,8 @@ if __name__ == "__main__":
 			options.log = arg
 		elif opt in ("-p", "--pidfile"):
 			options.pidfile = arg
-		elif opt in ("-s", "--statefile"):
-			options.statefile = arg
+		elif opt in ("-s", "--statusfile"):
+			options.statusfile = arg
 		elif opt in ("-u", "--uid"):
 			options.uid = arg
 	if options.help:
