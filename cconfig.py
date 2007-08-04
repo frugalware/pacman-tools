@@ -3,4 +3,5 @@ class config:
 	server_user = "user"
 	server_pass = "pass"
 
-	sleep = 300 # in seconds
+	# FIXME should be 300 after on production systems
+	sleep = 5 # in seconds
