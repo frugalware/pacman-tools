@@ -501,7 +501,8 @@ Options:
 		options.files = " ".join(argv[optind:])
 	if options.help:
 		usage(0)
-	return os.system("git log -M --abbrev-commit --abbrev=7 %s %s %s %s" % (options.last, options.logopts, options.files, options.tags))
+	return os.system(" ".join(['git log -M --abbrev-commit --abbrev=7',
+		options.last, options.logopts, options.files, options.tags]))
 
 def push(argv):
 	def usage(ret):
