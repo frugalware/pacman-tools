@@ -69,7 +69,17 @@ class Syncpkgcd:
 			return
 
 	def build(self, pkg):
+		# maybe later support protocolls (the first item) other than git?
+		tree = pkg.split('/')[2]
+		pkgarr = pkg.split('/')[3].split('-')
+		pkgname = "-".join(pkgarr[:-3])
+		pkgver = "-".join(pkgarr[-3:-1])
+		arch = pkgarr[-1]
 		self.log(pkg, "starting build")
+		sock = os.popen(". ~/.repoman.conf; echo $fst_root; echo $%s_servers" % tree)
+		buf = sock.readlines()
+		sock.close()
+		self.log(pkg, "tree = %s, pkgname = %s, pkgver = %s, arch = %s" % (tree, pkgname, pkgver, arch))
 		time.sleep(5)
 		self.log(pkg, "build finished")
 
