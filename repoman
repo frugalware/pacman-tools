@@ -205,8 +205,8 @@ clean()
 		# drop the group/ prefix if any
 		i=${i#*/}
 		msg "Cleaning up $i"
-		ssh $host "cd $path/frugalware-$arch && \
-			echo ${options[@]} | grep -q nobuild || arch=$arch $sudo updatesync del $fdb $i && \
+		ssh $host "`declare -f _check_nobuild`; cd $path/frugalware-$arch && \
+			_check_nobuild || arch=$arch $sudo updatesync del $fdb $i && \
 			genchangelog --clean $i"
 	done
 }
@@ -227,14 +227,15 @@ changelog()
 		catcmd="echo -n \"\""
 	fi
 	_set_lockname
-	ssh $host "cd $path; \
+	ssh $host "`declare -f _check_nobuild`; \
+cd $path; \
 if [ ! -e $lock ]; then \
 	touch $lock; \
 	cd frugalware-$arch; \
 	if [ ! -e '$fdb' ]; then \
-		echo ${options[@]} | grep -q nobuild || arch=$arch $sudo gensync ../source/$group/$pkg $fdb; \
+		_check_nobuild || arch=$arch $sudo gensync ../source/$group/$pkg $fdb; \
 	else \
-		echo ${options[@]} | grep -q nobuild || arch=$arch $sudo updatesync upd $fdb ../source/$group/$pkg/FrugalBuild; \
+		_check_nobuild || arch=$arch $sudo updatesync upd $fdb ../source/$group/$pkg/FrugalBuild; \
 	fi; \
 	cd $path; rm $lock; \
 	cd $path/source/$group/$pkg; arch=$arch $sudo genchangelog; \
@@ -263,6 +264,20 @@ ask()
 	fi
 	if [ -n "$noask" ] || [[ "(y|Y)?" =~ "$c" ]]; then
 		eval "$*"
+	fi
+}
+
+_check_nobuild()
+{
+	# trick: we require subpkgs not to be set. this is because this way:
+	# 1) kde-i18n and such pkgs (only the main pkg is a nobuild one) is
+	# recgnized as a normal pkg
+	# 2) opera and friends (where we use nobuild is there because of
+	# license issues) will be recognized as a nobuild one
+	if echo ${options[@]} | grep -q nobuild && [ -z "$subpkgs" ]; then
+		return 0
+	else
+		return 1
 	fi
 }
 
@@ -388,7 +403,7 @@ sync()
 	if ls *-$arch.fpm &>/dev/null; then
 		for i in *-$arch.fpm
 		do
-			echo ${options[@]} | grep -q nobuild || dry_run upload $i frugalware-$arch/
+			_check_nobuild || dry_run upload $i frugalware-$arch/
 		done
 	fi
 
@@ -410,7 +425,7 @@ sync()
 	buildlog="$pkgname-$pkgver-$pkgrel-$arch.log"
 	if [ -f $buildlog -o -f $buildlog.bz2 ]; then
 		[ -f $buildlog ] && dry_run bzip2 $buildlog
-		echo ${options[@]} | grep -q nobuild || dry_run upload $buildlog.bz2 source/$groups/$pkgname/
+		_check_nobuild || dry_run upload $buildlog.bz2 source/$groups/$pkgname/
 	fi
 
 	ls *-$arch.fpm &>/dev/null && fpmdel
