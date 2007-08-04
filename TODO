@@ -4,3 +4,4 @@
 - git hook to add builds
 - web interface
 - cron job to clean up old build logs
+- properly stop the build on client SIGINT

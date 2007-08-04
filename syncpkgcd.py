@@ -61,7 +61,7 @@ class Syncpkgcd:
 					continue
 				self.build(pkg)
 		except KeyboardInterrupt:
-			# TODO: abort the current build properly
+			# here we could abort the current build properly
 			self.save()
 			return
 
@@ -69,7 +69,7 @@ class Syncpkgcd:
 		self.log(pkg, "starting build")
 		# FIXME
 		time.sleep(5)
-		# TODO: exit code
+		# FIXME: exit code
 		self.log(pkg, "build finished")
 
 	def log(self, pkg, action):
