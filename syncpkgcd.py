@@ -70,7 +70,7 @@ class Syncpkgcd:
 		# FIXME
 		time.sleep(5)
 		# TODO: exit code
-		self.log(pkg, "starting finished")
+		self.log(pkg, "build finished")
 
 	def log(self, pkg, action):
 		self.logsock.write("%s\n" % "; ".join([time.ctime(), pkg, action]))
