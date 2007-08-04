@@ -1,4 +1,4 @@
-import sys, getopt, os, pwd, sha, time, base64, re
+import sys, getopt, os, pwd, sha, time, base64, re, pickle
 from SimpleXMLRPCServer import SimpleXMLRPCServer
 from config import config
 
@@ -8,6 +8,7 @@ class Actions:
 		self.tobuild = []
 		self.options = options
 		self.logsock = open(self.options.logfile, "a")
+		self.__log("server", "", "server started")
 
 	def __log(self, user, pkg, action):
 		self.logsock.write("%s\n" % "; ".join([time.ctime(), user, pkg, action]))
@@ -19,6 +20,13 @@ class Actions:
 					self.lags[login] = time.time()
 				return True
 		return False
+
+	def save(self):
+		self.__log("server", "", "server shutting down")
+		self.logsock.close()
+		sock = open(self.options.statusfile, "w")
+		pickle.dump(self.tobuild, sock)
+		sock.close()
 
 	def __request_build(self, pkg):
 		if pkg in self.tobuild:
@@ -85,6 +93,7 @@ class Options:
 	def __init__(self):
 		self.daemon = False
 		self.pidfile = "syncpkgd.pid"
+		self.statusfile = "syncpkgd.status"
 		self.logfile = "syncpkgd.log"
 		self.help = False
 		self.uid = False
@@ -96,6 +105,7 @@ Options:
 	-d	--daemon	run as daemon in the background
 	-l	--logfile	set the logfile (default: syncpkgd.log)
 	-p	--pidfile	set the pidfile (default: syncpkgd.pid)
+	-s	--statusfile	set the statusfile (default: syncpkgd.status)
 	-u	--uid		set the daemon's user id"""
 		sys.exit(ret)
 
@@ -123,13 +133,18 @@ class Syncpkgd:
 					pass
 				sys.exit(0)
 		server = SimpleXMLRPCServer(('',1873))
-		server.register_instance(Actions(options))
-		server.serve_forever()
+		actions = Actions(options)
+		server.register_instance(actions)
+		try:
+			server.serve_forever()
+		except KeyboardInterrupt:
+			actions.save()
+			return
 
 if __name__ == "__main__":
 	options = Options()
 	try:
-		opts, args = getopt.getopt(sys.argv[1:], "dhl:p:u:", ["daemon", "help", "logfile=", "pidfile=", "uid="])
+		opts, args = getopt.getopt(sys.argv[1:], "dhl:p:s:u:", ["daemon", "help", "logfile=", "pidfile=", "statusfile=", "uid="])
 	except getopt.GetoptError:
 		options.usage(1)
 	for opt, arg in opts:
@@ -141,6 +156,8 @@ if __name__ == "__main__":
 			options.log = arg
 		elif opt in ("-p", "--pidfile"):
 			options.pidfile = arg
+		elif opt in ("-s", "--statefile"):
+			options.statefile = arg
 		elif opt in ("-u", "--uid"):
 			options.uid = arg
 	if options.help:
