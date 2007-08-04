@@ -18,6 +18,7 @@ class Actions:
 
 	def __log(self, user, pkg, action):
 		self.logsock.write("%s\n" % "; ".join([time.ctime(), user, pkg, action]))
+		self.logsock.flush()
 
 	def __login(self, login, password):
 		if login in config.passes.keys() and \
