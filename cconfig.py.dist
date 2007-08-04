@@ -1,7 +1,9 @@
 class config:
 	server_url = "http://localhost:1873"
-	server_user = "factory"
-	server_pass = "pass"
+	server_user = "user"
+	server_pass = "pass" # change this
 
-	# FIXME should be 300 after on production systems
-	sleep = 5 # in seconds
+	# wait X seconds if no package to build
+	sleep = 300
+
+# vim: ft=python
