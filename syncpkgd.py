@@ -9,6 +9,12 @@ class Actions:
 		self.options = options
 		self.logsock = open(self.options.logfile, "a")
 		self.__log("server", "", "server started")
+		try:
+			sock = open(self.options.statusfile)
+			self.tobuild = pickle.load(sock)
+			sock.close()
+		except IOError:
+			pass
 
 	def __log(self, user, pkg, action):
 		self.logsock.write("%s\n" % "; ".join([time.ctime(), user, pkg, action]))
