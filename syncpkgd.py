@@ -3,9 +3,14 @@ from SimpleXMLRPCServer import SimpleXMLRPCServer
 from config import config
 
 class Actions:
-	def __init__(self):
+	def __init__(self, options):
 		self.lags = {}
 		self.tobuild = []
+		self.options = options
+		self.logsock = open(self.options.logfile, "a")
+
+	def __log(self, user, pkg, action):
+		self.logsock.write("%s\n" % "; ".join([time.ctime(), user, pkg, action]))
 
 	def __login(self, login, password):
 		if login in config.passes.keys() and \
@@ -26,6 +31,7 @@ class Actions:
 		"""add a package to build. be careful, currently no way to undo it"""
 		if not self.__login(login, password):
 			return
+		self.__log(login, pkg, "package accepted by the server")
 		return self.__request_build(pkg)
 
 	def __request_pkg(self, arch):
@@ -41,7 +47,10 @@ class Actions:
 		request will be lost"""
 		if not self.__login(login, password):
 			return
-		return self.__request_pkg(arch)
+		pkg = self.__request_pkg(arch)
+		if len(pkg):
+			self.__log(login, pkg, "package accepted by a client")
+		return pkg
 
 	def __get_todo(self, arch=None):
 		if not arch:
@@ -76,6 +85,7 @@ class Options:
 	def __init__(self):
 		self.daemon = False
 		self.pidfile = "syncpkgd.pid"
+		self.logfile = "syncpkgd.log"
 		self.help = False
 		self.uid = False
 	def usage(self, ret):
@@ -84,6 +94,7 @@ syncpkgd is a daemon that accepts requests from syncpkg clients.
 
 Options:
 	-d	--daemon	run as daemon in the background
+	-l	--logfile	set the logfile (default: syncpkgd.log)
 	-p	--pidfile	set the pidfile (default: syncpkgd.pid)
 	-u	--uid		set the daemon's user id"""
 		sys.exit(ret)
@@ -112,13 +123,13 @@ class Syncpkgd:
 					pass
 				sys.exit(0)
 		server = SimpleXMLRPCServer(('',1873))
-		server.register_instance(Actions())
+		server.register_instance(Actions(options))
 		server.serve_forever()
 
 if __name__ == "__main__":
 	options = Options()
 	try:
-		opts, args = getopt.getopt(sys.argv[1:], "dhp:u:", ["daemon", "help", "pidfile=", "uid="])
+		opts, args = getopt.getopt(sys.argv[1:], "dhl:p:u:", ["daemon", "help", "logfile=", "pidfile=", "uid="])
 	except getopt.GetoptError:
 		options.usage(1)
 	for opt, arg in opts:
@@ -126,6 +137,8 @@ if __name__ == "__main__":
 			options.daemon = True
 		elif opt in ("-h", "--help"):
 			options.help = True
+		elif opt in ("-l", "--logfile"):
+			options.log = arg
 		elif opt in ("-p", "--pidfile"):
 			options.pidfile = arg
 		elif opt in ("-u", "--uid"):
