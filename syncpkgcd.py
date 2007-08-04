@@ -67,9 +67,7 @@ class Syncpkgcd:
 
 	def build(self, pkg):
 		self.log(pkg, "starting build")
-		# FIXME
 		time.sleep(5)
-		# FIXME: exit code
 		self.log(pkg, "build finished")
 
 	def log(self, pkg, action):
