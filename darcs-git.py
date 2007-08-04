@@ -501,7 +501,7 @@ Options:
 		options.files = " ".join(argv[optind:])
 	if options.help:
 		usage(0)
-	return os.system("git log -M %s %s %s %s" % (options.last, options.logopts, options.files, options.tags))
+	return os.system("git log -M --abbrev-commit --abbrev=7 %s %s %s %s" % (options.last, options.logopts, options.files, options.tags))
 
 def push(argv):
 	def usage(ret):
@@ -792,7 +792,8 @@ PURPOSE.""" % __version__
 		# this will exit if no root found
 		if sys.argv[1] not in ["init", "get"]:
 			get_root()
-		os.environ['GIT_PAGER'] = 'cat'
+		if sys.argv[1][:4] != "chan":
+			os.environ['GIT_PAGER'] = 'cat'
 		if sys.argv[1][:3] == "rec":
 			record(argv[1:])
 		elif sys.argv[1][:3] == "rev":
