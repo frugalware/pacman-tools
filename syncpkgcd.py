@@ -111,7 +111,17 @@ class Syncpkgcd:
 				self.log(pkg, "failed to get the repo")
 				return
 		self.go(pkgname)
-		self.system("git clean -x -d")
+		if scm == "git":
+			self.system("git clean -x -d")
+		elif scm == "darcs":
+			junk = []
+			junk.append(glob.glob("*.fpm"))
+			junk.append(glob.glob("*.log"))
+			junk.append(glob.glob("*.log.bz2"))
+			for i in junk:
+				os.unlink(junk)
+		self.system("sudo makepkg -t %s -C" % tree)
+		self.system("sudo makepkg -t %s -cu" % tree)
 		self.log(pkg, "build finished")
 
 	def log(self, pkg, action):
