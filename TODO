@@ -5,7 +5,7 @@
     - check if mail addresses are all in authors.xml
 - git hook to add builds
 - web interface
-- cron job to clean up old build logs (server & client)
+- cron job to clean up old build logs (server)
 - properly stop the build on client SIGINT
 - log the exceptions
 - store the last sent pkg to a client
