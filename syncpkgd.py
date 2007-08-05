@@ -54,6 +54,7 @@ class Actions:
 		if not self.__login(login, password):
 			return
 		self.__log(login, pkg, "package build finished with exit code %s" % exitcode)
+		return True
 
 	def __request_pkg(self, arch):
 		for i in self.tobuild:
