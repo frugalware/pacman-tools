@@ -1,5 +1,10 @@
 VERSION         DESCRIPTION
 -----------------------------------------------------------------------------
+0.9.7         - dg: various minor fixes
+              - repoman: warnings fixes
+              - repoman.1: documented fpmmerge subcommand
+	      - repoman: support for having only the main pkg set as nobuild
+	        (ie not the subpkgs)
 0.9.6         - syncpkg: a typo rendered it unusable
               - repoman push now pulls before push
 	      - repoman now removes junk files even if they are in gitignore
