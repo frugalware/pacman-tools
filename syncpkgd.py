@@ -49,6 +49,22 @@ class Actions:
 		self.__log(login, pkg, "package accepted by the server")
 		return self.__request_build(pkg)
 
+	def report_result(self, login, password, pkg, exitcode, log=None):
+		"""report the build result of a package"""
+		if not self.__login(login, password):
+			return
+		self.__log(login, pkg, "package build finished with exit code %s" % exitcode)
+		if log:
+			path = os.path.join(self.options.clientlogs, login)
+			try:
+				os.stat(path)
+			except OSError:
+				os.makedirs(path)
+			sock = open(os.path.join(path, "%s.log" % pkg.split('/')[-1]), "w")
+			sock.write(base64.decodestring(log))
+			sock.close()
+		return True
+
 	def __request_pkg(self, arch):
 		for i in self.tobuild:
 			if re.match(".*-%s$" % arch, i):
@@ -98,6 +114,7 @@ class Actions:
 
 class Options:
 	def __init__(self):
+		self.clientlogs = "clientlogs"
 		self.daemon = False
 		self.pidfile = "syncpkgd.pid"
 		self.statusfile = "syncpkgd.status"
@@ -109,6 +126,8 @@ class Options:
 syncpkgd is a daemon that accepts requests from syncpkg clients.
 
 Options:
+	-c      --clientlogs    set the dir to place failed build logs
+	                        (default: clientlogs)
 	-d	--daemon	run as daemon in the background
 	-l	--logfile	set the logfile (default: syncpkgd.log)
 	-p	--pidfile	set the pidfile (default: syncpkgd.pid)
@@ -151,11 +170,15 @@ class Syncpkgd:
 if __name__ == "__main__":
 	options = Options()
 	try:
-		opts, args = getopt.getopt(sys.argv[1:], "dhl:p:s:u:", ["daemon", "help", "logfile=", "pidfile=", "statusfile=", "uid="])
+		opts, args = getopt.getopt(sys.argv[1:], "c:dhl:p:s:u:",
+			["clientlogs=", "daemon", "help", "logfile=",
+				"pidfile=", "statusfile=", "uid="])
 	except getopt.GetoptError:
 		options.usage(1)
 	for opt, arg in opts:
-		if opt in ("-d", "--daemon"):
+		if opt in ("-c", "--clientlogs"):
+			options.clientlogs = arg
+		elif opt in ("-d", "--daemon"):
 			options.daemon = True
 		elif opt in ("-h", "--help"):
 			options.help = True
