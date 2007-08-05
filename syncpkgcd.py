@@ -121,7 +121,10 @@ class Syncpkgcd:
 			for i in junk:
 				os.unlink(junk)
 		self.system("sudo makepkg -t %s -C" % tree)
-		self.system("sudo makepkg -t %s -cu" % tree)
+		if self.system("sudo makepkg -t %s -cu" % tree):
+			self.log(pkg, "makepkg failed")
+			return
+		self.system("repoman -t %s -k sync" % tree)
 		self.log(pkg, "build finished")
 
 	def log(self, pkg, action):
