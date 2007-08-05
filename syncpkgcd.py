@@ -77,14 +77,12 @@ class Syncpkgcd:
 		pkgname = "-".join(pkgarr[:-3])
 		pkgver = "-".join(pkgarr[-3:-1])
 		arch = pkgarr[-1]
-		#self.log(pkg, "scm = %s, tree = %s, pkgname = %s, pkgver = %s, arch = %s" % (scm, tree, pkgname, pkgver, arch))
 		self.log(pkg, "starting build")
 		sock = os.popen(". ~/.repoman.conf; echo $fst_root; echo $%s_servers" % tree)
 		buf = sock.readlines()
 		sock.close()
 		fst_root = buf[0].strip()
 		server = buf[1].strip()
-		#self.log(pkg, "fst_root = %s, server = %s" % (fst_root, server))
 		try:
 			os.stat(fst_root)
 		except OSError:
@@ -112,7 +110,7 @@ class Syncpkgcd:
 			except OSError:
 				self.log(pkg, "failed to get the repo")
 				return
-		time.sleep(5)
+		self.go(pkgname)
 		self.log(pkg, "build finished")
 
 	def log(self, pkg, action):
@@ -123,6 +121,13 @@ class Syncpkgcd:
 		logfile = "syncpkgcd-%s.log" % time.strftime("%Y%m%d", time.localtime())
 		return os.system("%s >> %s 2>&1" % (cmd, logfile))
 	
+	def go(self, pkgname):
+		for root, dirs, files in os.walk("."):
+			for dir in dirs:
+				if dir == pkgname:
+					os.chdir(os.path.join(root, dir))
+					return
+		raise Exception("can't find package '%s'")
 	def save(self):
 		self.log("", "client shutting down")
 		self.logsock.close()
