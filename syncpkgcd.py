@@ -1,4 +1,4 @@
-import xmlrpclib, time, os, getopt, sys, socket, glob
+import xmlrpclib, time, os, getopt, sys, socket, glob, base64
 from cconfig import config
 
 server = xmlrpclib.Server(config.server_url)
@@ -123,7 +123,9 @@ class Syncpkgcd:
 		self.system("sudo makepkg -t %s -C" % tree)
 		if self.system("sudo makepkg -t %s -cu" % tree):
 			self.log(pkg, "makepkg failed")
-			server.report_result(config.server_user, config.server_pass, pkg, 1)
+			sock.open("%s.log" % pkg.split('/')[-1])
+			server.report_result(config.server_user, config.server_pass, pkg, 1, base64.encodestring(sock.read()))
+			sock.close()
 			return
 		self.system("repoman -t %s -k sync" % tree)
 		self.log(pkg, "build finished")
