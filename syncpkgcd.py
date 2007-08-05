@@ -70,12 +70,13 @@ class Syncpkgcd:
 
 	def build(self, pkg):
 		# maybe later support protocolls (the first item) other than git?
+		scm = pkg.split('/')[0][:-1]
 		tree = pkg.split('/')[2]
 		pkgarr = pkg.split('/')[3].split('-')
 		pkgname = "-".join(pkgarr[:-3])
 		pkgver = "-".join(pkgarr[-3:-1])
 		arch = pkgarr[-1]
-		#self.log(pkg, "tree = %s, pkgname = %s, pkgver = %s, arch = %s" % (tree, pkgname, pkgver, arch))
+		#self.log(pkg, "scm = %s, tree = %s, pkgname = %s, pkgver = %s, arch = %s" % (scm, tree, pkgname, pkgver, arch))
 		self.log(pkg, "starting build")
 		sock = os.popen(". ~/.repoman.conf; echo $fst_root; echo $%s_servers" % tree)
 		buf = sock.readlines()
@@ -87,6 +88,27 @@ class Syncpkgcd:
 			os.stat(fst_root)
 		except OSError:
 			os.makedirs(fst_root)
+		os.chdir(fst_root)
+		if scm not in ["git", "darcs"]:
+			self.log(pkg, "unkown scm, aborting")
+			return
+		try:
+			os.stat(tree)
+			os.chdir(tree)
+			if scm == "git":
+				os.system("git pull &>/dev/null;git checkout -f &>/dev/null")
+			elif scm == "darcs":
+				os.system("darcs pull -a &>/dev/null; darcs revert -a &>/dev/null")
+		except OSError:
+			if scm == "git":
+				os.system("git clone %s %s &>/dev/null" % (server, tree))
+			elif scm == "darcs":
+				os.system("darcs get --partial &>/dev/null" % (server, tree))
+			try:
+				os.chdir(tree)
+			except OSError:
+				self.log(pkg, "failed to get the repo")
+				return
 		time.sleep(5)
 		self.log(pkg, "build finished")
 
