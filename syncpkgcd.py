@@ -1,4 +1,4 @@
-import xmlrpclib, time, os, getopt, sys, socket
+import xmlrpclib, time, os, getopt, sys, socket, glob
 from cconfig import config
 
 server = xmlrpclib.Server(config.server_url)
@@ -111,6 +111,7 @@ class Syncpkgcd:
 				self.log(pkg, "failed to get the repo")
 				return
 		self.go(pkgname)
+		self.system("git clean -x -d")
 		self.log(pkg, "build finished")
 
 	def log(self, pkg, action):
