@@ -7,3 +7,4 @@
 - web interface
 - cron job to clean up old build logs (server & client)
 - properly stop the build on client SIGINT
+- log the exceptions
