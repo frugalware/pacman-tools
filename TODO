@@ -1,4 +1,4 @@
-- feedback from the client to the daemon (exit code, log)
+- feedback from the client to the daemon (log)
   - mail the m8r if failed
     - check if mail addresses are all in authors.xml
 - git hook to add builds

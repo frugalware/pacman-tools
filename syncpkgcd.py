@@ -63,13 +63,13 @@ class Syncpkgcd:
 				if not len(pkg):
 					self.sleep("no package to build")
 					continue
-				self.build(pkg)
+				self.build(server, pkg)
 		except KeyboardInterrupt:
 			# here we could abort the current build properly
 			self.save()
 			return
 
-	def build(self, pkg):
+	def build(self, server, pkg):
 		# maybe later support protocolls (the first item) other than git?
 		scm = pkg.split('/')[0][:-1]
 		tree = pkg.split('/')[2]
@@ -123,9 +123,11 @@ class Syncpkgcd:
 		self.system("sudo makepkg -t %s -C" % tree)
 		if self.system("sudo makepkg -t %s -cu" % tree):
 			self.log(pkg, "makepkg failed")
+			server.report_result(pkg, 1)
 			return
 		self.system("repoman -t %s -k sync" % tree)
 		self.log(pkg, "build finished")
+		server.report_result(pkg, 0)
 
 	def log(self, pkg, action):
 		self.logsock.write("%s\n" % "; ".join([time.ctime(), pkg, action]))
