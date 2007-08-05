@@ -63,13 +63,13 @@ class Syncpkgcd:
 				if not len(pkg):
 					self.sleep("no package to build")
 					continue
-				self.build(server, pkg)
+				self.build(pkg)
 		except KeyboardInterrupt:
 			# here we could abort the current build properly
 			self.save()
 			return
 
-	def build(self, server, pkg):
+	def build(self, pkg):
 		# maybe later support protocolls (the first item) other than git?
 		scm = pkg.split('/')[0][:-1]
 		tree = pkg.split('/')[2]
@@ -82,7 +82,7 @@ class Syncpkgcd:
 		buf = sock.readlines()
 		sock.close()
 		fst_root = buf[0].strip()
-		server = buf[1].strip()
+		url = buf[1].strip()
 		try:
 			os.stat(fst_root)
 		except OSError:
@@ -102,9 +102,9 @@ class Syncpkgcd:
 				self.system("darcs revert -a")
 		except OSError:
 			if scm == "git":
-				self.system("git clone %s %s" % (server, tree))
+				self.system("git clone %s %s" % (url, tree))
 			elif scm == "darcs":
-				self.system("darcs get --partial" % (server, tree))
+				self.system("darcs get --partial" % (url, tree))
 			try:
 				os.chdir(tree)
 			except OSError:
@@ -123,11 +123,11 @@ class Syncpkgcd:
 		self.system("sudo makepkg -t %s -C" % tree)
 		if self.system("sudo makepkg -t %s -cu" % tree):
 			self.log(pkg, "makepkg failed")
-			server.report_result(pkg, 1)
+			server.report_result(config.server_user, config.server_pass, pkg, 1)
 			return
 		self.system("repoman -t %s -k sync" % tree)
 		self.log(pkg, "build finished")
-		server.report_result(pkg, 0)
+		server.report_result(config.server_user, config.server_pass, pkg, 0)
 
 	def log(self, pkg, action):
 		self.logsock.write("%s\n" % "; ".join([time.ctime(), pkg, action]))
