@@ -24,6 +24,7 @@ Options:
 
 class Syncpkgcd:
 	def __init__(self, options):
+		self.options = options
 		if os.getuid() == 0 and options.uid:
 			try:
 				os.setuid(int(options.uid))
@@ -96,14 +97,16 @@ class Syncpkgcd:
 			os.stat(tree)
 			os.chdir(tree)
 			if scm == "git":
-				os.system("git pull &>/dev/null;git checkout -f &>/dev/null")
+				self.system("git pull")
+				self.system("git checkout -f")
 			elif scm == "darcs":
-				os.system("darcs pull -a &>/dev/null; darcs revert -a &>/dev/null")
+				self.system("darcs pull -a")
+				self.system("darcs revert -a")
 		except OSError:
 			if scm == "git":
-				os.system("git clone %s %s &>/dev/null" % (server, tree))
+				self.system("git clone %s %s" % (server, tree))
 			elif scm == "darcs":
-				os.system("darcs get --partial &>/dev/null" % (server, tree))
+				self.system("darcs get --partial" % (server, tree))
 			try:
 				os.chdir(tree)
 			except OSError:
@@ -115,6 +118,10 @@ class Syncpkgcd:
 	def log(self, pkg, action):
 		self.logsock.write("%s\n" % "; ".join([time.ctime(), pkg, action]))
 		self.logsock.flush()
+	
+	def system(self, cmd):
+		logfile = "syncpkgcd-%s.log" % time.strftime("%Y%m%d", time.localtime())
+		return os.system("%s >> %s 2>&1" % (cmd, logfile))
 	
 	def save(self):
 		self.log("", "client shutting down")
