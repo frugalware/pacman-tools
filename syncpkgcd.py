@@ -75,11 +75,18 @@ class Syncpkgcd:
 		pkgname = "-".join(pkgarr[:-3])
 		pkgver = "-".join(pkgarr[-3:-1])
 		arch = pkgarr[-1]
+		#self.log(pkg, "tree = %s, pkgname = %s, pkgver = %s, arch = %s" % (tree, pkgname, pkgver, arch))
 		self.log(pkg, "starting build")
 		sock = os.popen(". ~/.repoman.conf; echo $fst_root; echo $%s_servers" % tree)
 		buf = sock.readlines()
 		sock.close()
-		self.log(pkg, "tree = %s, pkgname = %s, pkgver = %s, arch = %s" % (tree, pkgname, pkgver, arch))
+		fst_root = buf[0].strip()
+		server = buf[1].strip()
+		#self.log(pkg, "fst_root = %s, server = %s" % (fst_root, server))
+		try:
+			os.stat(fst_root)
+		except OSError:
+			os.makedirs(fst_root)
 		time.sleep(5)
 		self.log(pkg, "build finished")
 
