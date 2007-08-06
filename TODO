@@ -1,4 +1,3 @@
-- init scripts
 - tests for not-yet-built pkgs with timestamps (like "3 days ago")
 - mail the m8r if failed
   - check if mail addresses are all in authors.xml
