@@ -476,6 +476,7 @@ Options:
 			self.logopts = ""
 			self.help = False
 			self.tags = ""
+			self.abbrev = "--abbrev-commit --abbrev=7"
 			self.files = ""
 	options = Options()
 
@@ -494,6 +495,7 @@ Options:
 			options.logopts = "-p"
 		elif opt in ("-t", "--tags"):
 			options.tags = "| git name-rev --tags --stdin"
+			options.abbrev = ""
 		elif opt in ("-h", "--help"):
 			options.help = True
 		optind += 1
@@ -501,8 +503,8 @@ Options:
 		options.files = " ".join(argv[optind:])
 	if options.help:
 		usage(0)
-	return os.system(" ".join(['git log -M --abbrev-commit --abbrev=7',
-		options.last, options.logopts, options.files, options.tags]))
+	return os.system(" ".join(['git log -M',
+		options.last, options.logopts, options.files, options.tags, options.abbrev]))
 
 def push(argv):
 	def usage(ret):
