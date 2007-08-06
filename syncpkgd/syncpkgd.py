@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import sys, getopt, os, pwd, sha, time, base64, re, pickle
 sys.path.append("/etc/syncpkgd")
 from SimpleXMLRPCServer import SimpleXMLRPCServer
@@ -184,7 +186,7 @@ if __name__ == "__main__":
 		elif opt in ("-h", "--help"):
 			options.help = True
 		elif opt in ("-l", "--logfile"):
-			options.log = arg
+			options.logfile = arg
 		elif opt in ("-p", "--pidfile"):
 			options.pidfile = arg
 		elif opt in ("-s", "--statusfile"):
