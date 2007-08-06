@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import xmlrpclib, time, os, getopt, sys, socket, glob, base64
 sys.path.append("/etc/syncpkgcd")
 from cconfig import config
