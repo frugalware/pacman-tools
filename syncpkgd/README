@@ -1,0 +1,13 @@
+What works:
+
+- you can add a pkg
+
+- you can request a pkg for a given arch
+
+Requirements for clients:
+- Ports:
+  - no incoming ports required
+  - outgoing: ssh, http
+  - +smtp if external mail server used (see client config)
+- repoman.conf: configured repos for the expected trees
+- ssh keys: should be set up for password-less communication
