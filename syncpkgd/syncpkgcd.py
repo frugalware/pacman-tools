@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import xmlrpclib, time, os, getopt, sys, socket, glob, base64
+import xmlrpclib, time, os, getopt, sys, socket, glob, base64, pwd
 sys.path.append("/etc/syncpkgcd")
 from cconfig import config
 
@@ -169,7 +169,7 @@ if __name__ == "__main__":
 		elif opt in ("-h", "--help"):
 			options.help = True
 		elif opt in ("-l", "--logfile"):
-			options.log = arg
+			options.logfile = arg
 		elif opt in ("-p", "--pidfile"):
 			options.pidfile = arg
 		elif opt in ("-u", "--uid"):
