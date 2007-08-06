@@ -60,13 +60,7 @@ install:
 	$(INSTALL) -d $(DESTDIR)$(sysconfdir)/repoman.d
 	$(INSTALL) -d $(DESTDIR)$(docdir)
 	$(INSTALL) -d $(DESTDIR)/home/syncpkgd
-	$(INSTALL) -d $(DESTDIR)/etc/rc.d
-	for i in $(LANGS); do \
-		mkdir -p $(DESTDIR)/lib/initscripts/messages/`echo $$i|sed 's/.*-\(.*\).po/\1/'`/LC_MESSAGES/; \
-	done
 	chown syncpkgd:daemon $(DESTDIR)/home/syncpkgd
-	$(INSTALL) -d $(DESTDIR)/var/log/syncpkg
-	chown syncpkgd:daemon $(DESTDIR)/var/log/syncpkg
 	$(INSTALL) chkworld $(DESTDIR)$(bindir)/chkworld
 	$(INSTALL) -m644 chkworld.1 $(DESTDIR)$(man1dir)
 	$(INSTALL) chkdep $(DESTDIR)$(bindir)/chkdep
@@ -82,13 +76,6 @@ install:
 	$(INSTALL) -m644 repoman.conf $(DESTDIR)$(sysconfdir)
 	$(INSTALL) -m644 repoman.d/current $(DESTDIR)$(sysconfdir)/repoman.d/current
 	$(INSTALL) -m644 repoman.d/stable $(DESTDIR)$(sysconfdir)/repoman.d/stable
-	$(INSTALL) syncpkg $(DESTDIR)$(bindir)
-	$(INSTALL) -m644 syncpkg.conf $(DESTDIR)$(sysconfdir)
-	$(INSTALL) syncpkgd $(DESTDIR)$(sbindir)
-	$(INSTALL) rc.syncpkgd $(DESTDIR)/etc/rc.d
-	for i in $(LANGS); do \
-		msgfmt -c --statistics -o $(DESTDIR)/lib/initscripts/messages/`echo $$i|sed 's/.*-\(.*\).po/\1/'`/LC_MESSAGES/syncpkgd.mo rc.syncpkgd-$$i; \
-	done
 	$(INSTALL) fwmakepkg $(DESTDIR)$(libdir)
 	$(INSTALL) movepkg $(DESTDIR)$(bindir)
 	$(INSTALL) pacman-source $(DESTDIR)$(bindir)
