@@ -108,7 +108,7 @@ install:
 	$(INSTALL) -m644 mkiso/volumes.xml $(DESTDIR)$(docdir)/volumes.xml
 	$(INSTALL) -m644 apidocs/*.3 $(DESTDIR)$(man3dir)
 	$(INSTALL) -m644 fwmakepkg.3 $(DESTDIR)$(man3dir)
-	make -C syncpkgd DESTDIR=$(DESTDIR)
+	make -C syncpkgd DESTDIR=$(DESTDIR) install
 
 clean:
 	rm -rf genauthors apidocs fwmakepkg.3
