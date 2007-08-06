@@ -81,7 +81,7 @@ class Syncpkgcd:
 		pkgver = "-".join(pkgarr[-3:-1])
 		arch = pkgarr[-1]
 		self.log(pkg, "starting build")
-		sock = os.popen(". ~/.repoman.conf; echo $fst_root; echo $%s_servers" % tree)
+		sock = os.popen("export HOME=/home/syncpkgd; . ~/.repoman.conf; echo $fst_root; echo $%s_servers" % tree)
 		buf = sock.readlines()
 		sock.close()
 		fst_root = buf[0].strip()
@@ -126,7 +126,7 @@ class Syncpkgcd:
 		self.system("sudo makepkg -t %s -C" % tree)
 		if self.system("sudo makepkg -t %s -cu" % tree):
 			self.log(pkg, "makepkg failed")
-			sock.open("%s.log" % pkg.split('/')[-1])
+			sock = open("%s.log" % pkg.split('/')[-1])
 			server.report_result(config.server_user, config.server_pass, pkg, 1, base64.encodestring(sock.read()))
 			sock.close()
 			return
@@ -140,7 +140,7 @@ class Syncpkgcd:
 	
 	def system(self, cmd):
 		logfile = "syncpkgcd-%s.log" % time.strftime("%Y%m%d", time.localtime())
-		return os.system("%s >> %s 2>&1" % (cmd, logfile))
+		return os.system("export HOME=/home/syncpkgd; %s >> %s 2>&1" % (cmd, logfile))
 	
 	def go(self, pkgname):
 		for root, dirs, files in os.walk("."):
