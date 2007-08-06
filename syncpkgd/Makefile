@@ -1,8 +1,8 @@
 install:
 	mkdir -p  $(DESTDIR)/etc/syncpkgcd
-	install -g 2 -u 12 -m600 cconfig.py $(DESTDIR)/etc/syncpkgcd/cconfig.py
+	install -g 2 -o 12 -m600 cconfig.py $(DESTDIR)/etc/syncpkgcd/cconfig.py
 	mkdir -p  $(DESTDIR)/etc/syncpkgd
-	install -g 2 -u 12 -m600 dconfig.py $(DESTDIR)/etc/syncpkgd/dconfig.py
+	install -g 2 -o 12 -m600 dconfig.py $(DESTDIR)/etc/syncpkgd/dconfig.py
 	mkdir -p  $(DESTDIR)/etc/rc.d
 	install rc.syncpkgcd $(DESTDIR)/etc/rc.d/rc.syncpkgcd
 	install rc.syncpkgd $(DESTDIR)/etc/rc.d/rc.syncpkgd
