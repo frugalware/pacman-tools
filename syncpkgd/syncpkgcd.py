@@ -1,4 +1,5 @@
 import xmlrpclib, time, os, getopt, sys, socket, glob, base64
+sys.path.append("/etc/syncpkgcd")
 from cconfig import config
 
 server = xmlrpclib.Server(config.server_url)

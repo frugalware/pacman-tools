@@ -1,4 +1,5 @@
 import sys, getopt, os, pwd, sha, time, base64, re, pickle
+sys.path.append("/etc/syncpkgd")
 from SimpleXMLRPCServer import SimpleXMLRPCServer
 from dconfig import config
 
