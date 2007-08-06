@@ -18,6 +18,8 @@ class Actions:
 			sock.close()
 		except IOError:
 			pass
+		except EOFError:
+			pass
 
 	def __log(self, user, pkg, action):
 		self.logsock.write("%s\n" % "; ".join([time.ctime(), user, pkg, action]))
