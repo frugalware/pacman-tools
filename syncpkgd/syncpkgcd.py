@@ -118,11 +118,11 @@ class Syncpkgcd:
 			self.system("git clean -x -d")
 		elif scm == "darcs":
 			junk = []
-			junk.append(glob.glob("*.fpm"))
-			junk.append(glob.glob("*.log"))
-			junk.append(glob.glob("*.log.bz2"))
+			junk.extend(glob.glob("*.fpm"))
+			junk.extend(glob.glob("*.log"))
+			junk.extend(glob.glob("*.log.bz2"))
 			for i in junk:
-				os.unlink(junk)
+				os.unlink(i)
 		self.system("sudo makepkg -t %s -C" % tree)
 		if self.system("sudo makepkg -t %s -cu" % tree):
 			self.log(pkg, "makepkg failed")
@@ -145,6 +145,8 @@ class Syncpkgcd:
 	def go(self, pkgname):
 		for root, dirs, files in os.walk("."):
 			for dir in dirs:
+				if "_darcs" in root:
+					continue
 				if dir == pkgname:
 					os.chdir(os.path.join(root, dir))
 					return
