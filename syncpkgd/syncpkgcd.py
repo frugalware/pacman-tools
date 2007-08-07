@@ -107,7 +107,7 @@ class Syncpkgcd:
 			if scm == "git":
 				self.system("git clone %s %s" % (url, tree))
 			elif scm == "darcs":
-				self.system("darcs get --partial" % (url, tree))
+				self.system("darcs get --partial %s %s" % (url, tree))
 			try:
 				os.chdir(tree)
 			except OSError:
