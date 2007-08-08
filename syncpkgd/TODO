@@ -1,7 +1,5 @@
-- tests for not-yet-built pkgs with timestamps (like "3 days ago")
 - mail the m8r if failed
   - check if mail addresses are all in authors.xml
-- web interface
 - cron job to clean up old build logs (server)
 - properly stop the build on client SIGINT
 - log the exceptions
