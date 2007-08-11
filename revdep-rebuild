@@ -22,7 +22,7 @@ die()
 id=$1
 shift
 
-[ -z "$id" ] && die "usage: $0 <package id> [-t tree] [--other]"
+[ -z "$id" ] && die "usage: $0 <package id> [-t tree] [--other] [--nobuild]"
 
 tree=$repos
 if [ "$1" == "-t" ]; then
@@ -33,7 +33,19 @@ fi
 method="Exact"
 if [ "$1" == "--other" ]; then
 	method="Other"
-	shift 2
+	shift
+fi
+
+nobuild=
+if [ "$1" == "--nobuild" ]; then
+	shift
+	nobuild="--nobuild"
+fi
+
+push=
+if [ "$1" != "--nopush" ]; then
+	shift
+	push="--push"
 fi
 
 pkg=$(lynx -dump http://frugalware.org/packages/$id |grep 'Name:'|sed 's/.*]//')
@@ -50,8 +62,8 @@ read junk
 log=`mktemp`
 for i in $revdeps
 do
-	go $i
-	bumppkg -t $tree --rebuild "rebuilt with $pkg-$ver" --push || echo $i >>$log
+	go ${i%%_module*}
+	bumppkg -t $tree --rebuild $nobuild "rebuilt with $pkg-$ver" $push || echo $i >>$log
 done
 cat $log
 rm $log
