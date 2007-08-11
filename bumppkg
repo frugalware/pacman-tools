@@ -132,7 +132,11 @@ if [ "$1" == "--rebuild" ]; then
 	shift 1
 	source FrugalBuild || die "failed to source the FrugalBuild!"
 	update_pkgrel $(echo $pkgrel|sed 's/[0-9]\+$//')$(($(echo $pkgrel|sed 's/.*[^0-9]\([0-9]\+\)$/\1/')+1))
-	do_build $tree u
+	if [ "$1" != "--nobuild" ]; then
+		do_build $tree u
+	else
+		shift 1
+	fi
 	if [ -n "$1" ]; then
 		repoman rec "$1"
 		shift 1
