@@ -53,8 +53,12 @@ class Actions:
 		"""add a package to build. be careful, currently no way to undo it"""
 		if not self.__login(login, password):
 			return
-		self.__log(login, pkg, "package accepted by the server")
-		return self.__request_build(pkg)
+		if self.__request_build(pkg):
+			self.__log(login, pkg, "package accepted by the server")
+			return True
+		else:
+			self.__log(login, pkg, "package rejected by the server")
+			return False
 
 	def report_result(self, login, password, pkg, exitcode, log=None):
 		"""report the build result of a package"""
