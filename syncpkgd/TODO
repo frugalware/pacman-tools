@@ -3,8 +3,6 @@ important:
 - handle SIGTERM just like SIGINT
 
 it would be nice to have:
-- mail the m8r if failed
-  - check if mail addresses are all in authors.xml
-- cron job to clean up old build logs (server)
+- mail the author of a patch if failed
 - properly stop the build on client SIGINT
 - store the last sent pkg to a client
