@@ -1,6 +1,5 @@
 important:
 - log the exceptions
-- handle SIGTERM just like SIGINT
 
 it would be nice to have:
 - mail the author of a patch if failed

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import sys, getopt, os, pwd, sha, time, base64, re, pickle
+import sys, getopt, os, pwd, sha, time, base64, re, pickle, signal
 sys.path.append("/etc/syncpkgd")
 from SimpleXMLRPCServer import SimpleXMLRPCServer
 from dconfig import config
@@ -143,6 +143,9 @@ Options:
 
 class Syncpkgd:
 	def __init__(self, options):
+		def on_sigterm(num, frame):
+			raise KeyboardInterrupt
+		signal.signal(signal.SIGTERM, on_sigterm)
 		if os.getuid() == 0 and options.uid:
 			try:
 				os.setuid(int(options.uid))

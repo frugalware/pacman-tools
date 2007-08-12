@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import xmlrpclib, time, os, getopt, sys, socket, glob, base64, pwd
+import xmlrpclib, time, os, getopt, sys, socket, glob, base64, pwd, signal
 sys.path.append("/etc/syncpkgcd")
 from cconfig import config
 
@@ -28,6 +28,9 @@ Options:
 class Syncpkgcd:
 	def __init__(self, options):
 		self.options = options
+		def on_sigterm(num, frame):
+			raise KeyboardInterrupt
+		signal.signal(signal.SIGTERM, on_sigterm)
 		if os.getuid() == 0 and options.uid:
 			try:
 				os.setuid(int(options.uid))
