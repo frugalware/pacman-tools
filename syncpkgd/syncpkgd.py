@@ -67,7 +67,7 @@ class Actions:
 				os.stat(path)
 			except OSError:
 				os.makedirs(path)
-			sock = open(os.path.join(path, "%s.log" % pkg.split('/')[-1]), "w")
+			sock = open(os.path.join(path, "%s.log" % pkg.split('/')[-1]), "a")
 			sock.write(base64.decodestring(log))
 			sock.close()
 		return True
