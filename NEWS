@@ -1,5 +1,9 @@
 VERSION         DESCRIPTION
 -----------------------------------------------------------------------------
+0.9.8         - syncpkgd: rewrite to support multiple clients
+              - syncpkgcd: new client daemon for syncpkgd
+              - revdep-rebuild, bumppkg: new --nobuild switch
+              - dg: fix for chan -t
 0.9.7         - dg: various minor fixes
               - repoman: warnings fixes
               - repoman.1: documented fpmmerge subcommand
