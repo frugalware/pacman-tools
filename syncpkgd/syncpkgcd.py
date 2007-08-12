@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import xmlrpclib, time, os, getopt, sys, socket, glob, base64, pwd, signal
+import traceback
 sys.path.append("/etc/syncpkgcd")
 from cconfig import config
 
@@ -74,6 +75,8 @@ class Syncpkgcd:
 			# here we could abort the current build properly
 			self.save()
 			return
+		except Exception:
+			self.log_exception()
 
 	def build(self, pkg):
 		# maybe later support protocolls (the first item) other than git?
@@ -161,6 +164,14 @@ class Syncpkgcd:
 	def sleep(self, reason):
 		self.log("", "%s, sleeping for %d seconds" % (reason, config.sleep))
 		time.sleep(config.sleep)
+	
+	def log_exception(self):
+		type, value, tb = sys.exc_info()
+		stype = str(type).split("'")[1]
+		self.log("", "Traceback (most recent call last):")
+		self.log("", "".join(traceback.format_tb(tb)).strip())
+		self.log("", "%s: %s" % (stype, value))
+		self.save()
 
 if __name__ == "__main__":
 	options = Options()
