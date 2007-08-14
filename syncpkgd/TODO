@@ -1,3 +1,4 @@
 it would be nice to have:
-- properly stop the build on client SIGINT
+- properly stop the build on client stop
 - store the last sent pkg to a client
+- api for deleting items from the queue
