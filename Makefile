@@ -110,11 +110,11 @@ dist:
 	gzip -f -9 pacman-tools-$(VERSION).tar
 	gpg --comment "See http://ftp.frugalware.org/pub/README.GPG for info" \
 		-ba -u 20F55619 pacman-tools-$(VERSION).tar.gz
-	mv pacman-tools-$(VERSION).tar.gz{,.asc} ../
 
 release:
 	git tag $(VERSION)
 	$(MAKE) dist
+	mv pacman-tools-$(VERSION).tar.gz{,.asc} ../
 
 apidocs:
 	cp -a $(FINCDIR) apidocs
