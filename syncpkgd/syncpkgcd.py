@@ -139,10 +139,12 @@ class Syncpkgcd:
 			except IOError:
 				buf = "No log available."
 			server.report_result(config.server_user, config.server_pass, pkg, 1, base64.encodestring(buf))
+			self.system("git clean -x -d")
 			return
 		self.system("repoman -t %s -k sync" % tree)
 		self.log(pkg, "build finished")
 		server.report_result(config.server_user, config.server_pass, pkg, 0)
+		self.system("git clean -x -d")
 
 	def log(self, pkg, action):
 		self.logsock.write("%s\n" % "; ".join([time.ctime(), pkg, action]))
