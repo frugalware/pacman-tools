@@ -1,4 +1,3 @@
 it would be nice to have:
-- mail the author of a patch if failed
 - properly stop the build on client SIGINT
 - store the last sent pkg to a client

@@ -71,6 +71,30 @@ class Actions:
 				os.unlink(os.path.join(path, "%s.log" % pkg.split('/')[3]))
 			except OSError:
 				pass
+		else:
+			# mail the devel about this
+			import smtplib
+			fro = "Syncpkgd <noreply@frugalware.org>"
+			to = pkg.split('/')[4]
+			title = "%s failed to build %s" % (login, pkg.split('/')[3])
+			msg = "From: %s \nTo: %s\nSubject: %s\n\n" \
+					% (fro, to, title)
+			msg += """Hello,
+
+The syncpkg client daemon running at '%s' failed to build '%s' for you.
+The build log is available at:
+
+http://frugalware.org/buildlogs/%s/%s.log
+
+If you think syncpkgd should try to build again (ie. you know that a missing
+dependency is now available), then issue the following command:
+
+ssh genesis.frugalware.org "syncpkgdctl '%s'"
+
+- Syncpkgd""" % (login, pkg.split('/')[3], login, pkg.split('/')[3], pkg)
+			s = smtplib.SMTP('localhost')
+			s.sendmail(fro, to, msg)
+			s.quit()
 		if log:
 			try:
 				os.stat(path)
