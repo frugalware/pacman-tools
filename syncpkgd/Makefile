@@ -9,7 +9,7 @@ install:
 	install rc.syncpkgd $(DESTDIR)/etc/rc.d/rc.syncpkgd
 	mkdir -p  $(DESTDIR)/usr/bin
 	install syncpkgcd.py $(DESTDIR)/usr/bin/syncpkgcd
-	install syncpkgcdctl.py $(DESTDIR)/usr/bin/syncpkgcdctl
+	install syncpkgdctl.py $(DESTDIR)/usr/bin/syncpkgdctl
 	install syncpkgd.py $(DESTDIR)/usr/bin/syncpkgd
 	mkdir -p $(DESTDIR)/var/log/syncpkgd/clientlogs
 	chown 12:2 $(DESTDIR)/var/log/syncpkgd/clientlogs
