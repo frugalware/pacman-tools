@@ -132,9 +132,13 @@ class Syncpkgcd:
 		self.system("sudo makepkg -t %s -C" % tree)
 		if self.system("sudo makepkg -t %s -cu" % tree):
 			self.log(pkg, "makepkg failed")
-			sock = open("%s.log" % pkg.split('/')[3])
-			server.report_result(config.server_user, config.server_pass, pkg, 1, base64.encodestring(sock.read()))
-			sock.close()
+			try:
+				sock = open("%s.log" % pkg.split('/')[3])
+				buf = sock.read()
+				sock.close()
+			except IOError:
+				buf = "No log available."
+			server.report_result(config.server_user, config.server_pass, pkg, 1, base64.encodestring(buf))
 			return
 		self.system("repoman -t %s -k sync" % tree)
 		self.log(pkg, "build finished")
