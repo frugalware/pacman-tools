@@ -68,7 +68,7 @@ class Actions:
 		path = os.path.join(self.options.clientlogs, login)
 		if int(exitcode) == 0:
 			try:
-				os.unlink(os.path.join(path, "%s.log" % pkg.split('/')[-1]))
+				os.unlink(os.path.join(path, "%s.log" % pkg.split('/')[3]))
 			except OSError:
 				pass
 		if log:
@@ -76,7 +76,7 @@ class Actions:
 				os.stat(path)
 			except OSError:
 				os.makedirs(path)
-			sock = open(os.path.join(path, "%s.log" % pkg.split('/')[-1]), "a")
+			sock = open(os.path.join(path, "%s.log" % pkg.split('/')[3]), "a")
 			sock.write(base64.decodestring(log))
 			sock.close()
 		return True
