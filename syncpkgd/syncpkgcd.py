@@ -132,7 +132,7 @@ class Syncpkgcd:
 		self.system("sudo makepkg -t %s -C" % tree)
 		if self.system("sudo makepkg -t %s -cu" % tree):
 			self.log(pkg, "makepkg failed")
-			sock = open("%s.log" % pkg.split('/')[-1])
+			sock = open("%s.log" % pkg.split('/')[3])
 			server.report_result(config.server_user, config.server_pass, pkg, 1, base64.encodestring(sock.read()))
 			sock.close()
 			return
