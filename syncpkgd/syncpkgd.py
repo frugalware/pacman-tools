@@ -65,8 +65,13 @@ class Actions:
 		if not self.__login(login, password):
 			return
 		self.__log(login, pkg, "package build finished with exit code %s" % exitcode)
+		path = os.path.join(self.options.clientlogs, login)
+		if int(exitcode) == 0:
+			try:
+				os.unlink(os.path.join(path, "%s.log" % pkg.split('/')[-1]))
+			except OSError:
+				pass
 		if log:
-			path = os.path.join(self.options.clientlogs, login)
 			try:
 				os.stat(path)
 			except OSError:
