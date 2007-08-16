@@ -159,6 +159,8 @@ class Syncpkgcd:
 			for dir in dirs:
 				if "_darcs" in root:
 					continue
+				if ".git" in root:
+					continue
 				if dir == pkgname:
 					os.chdir(os.path.join(root, dir))
 					return
