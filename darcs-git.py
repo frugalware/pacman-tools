@@ -490,7 +490,7 @@ Options:
 			options.last = "-%s" % arg
 			optind += 1
 		elif opt in ("-s", "--summary"):
-			options.logopts = "--name-status"
+			options.logopts = "-r --name-status"
 		elif opt in ("-v", "--verbose"):
 			options.logopts = "-p"
 		elif opt in ("-t", "--tags"):
