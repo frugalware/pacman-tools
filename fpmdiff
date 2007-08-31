@@ -1,0 +1,10 @@
+#!/bin/bash
+
+old=`mktemp`
+new=`mktemp`
+
+pacman-g2 -Ql -p $1|sed 's/^[^ ]\+ //' > $old
+pacman-g2 -Ql -p $2|sed 's/^[^ ]\+ //' > $new
+
+diff -u $old $new
+rm -f $old $new
