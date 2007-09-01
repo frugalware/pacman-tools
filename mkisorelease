@@ -16,7 +16,7 @@ dosplit()
 	done
 }
 
-mkiso=mkiso.libalpm
+mkiso=mkiso
 xml=volumes.xml
 
 sed -i "s|<media>[a-z]\+</media>|<media>net</media>|" $xml
