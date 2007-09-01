@@ -1,0 +1,27 @@
+#!/bin/sh
+
+# initial attempt to do a fully automated update of the -iso dir for a release
+# this script can do the net, cd* and dvd* images for one arch atm
+
+dosplit()
+{
+	sed -i "s|<media>[a-z]\+</media>|<media>$1</media>|" $xml
+	sed -i 's|<!-- \(<serial>.*</serial>\) -->$|\1|' $xml
+	sed -i "s|<serial>[0-9]\+</serial>|<serial>1</serial>|" $xml
+	num=`$mkiso -c|grep "expected volume number"|sed 's/.*: //'`
+	for i in `seq 1 $num`
+	do
+		sed -i "s|<serial>[0-9]\+</serial>|<serial>$i</serial>|" $xml
+		$mkiso
+	done
+}
+
+mkiso=mkiso.libalpm
+xml=volumes.xml
+
+sed -i "s|<media>[a-z]\+</media>|<media>net</media>|" $xml
+sed -i 's|\(<serial>.*</serial>\)$|<!-- \1 -->|' $xml
+$mkiso
+
+dosplit cd
+dosplit dvd
