@@ -14,10 +14,10 @@ cl|changelog [category/]package             Generate a Changelog file.
 c|clean package                             Delete a package.
 del|delete file                             Delete a file from FST.
 ls|list directory                           List a directory in FST.
-rec|record [parameters]                     Records a pacakge.
+rec|record [parameters]                     Record a package.
 up|upload source destination                Upload a file to FST.
-push [record parameters]                    Pushes a pacakge.
-fpmmerge repo                               Merges fpms from an other repo.
+push [record parameters]                    Push a package.
+fpmmerge repo                               Merge fpms from another repo.
 
 Global options:
 -d|--dry-run  Don't actually run the commands.
