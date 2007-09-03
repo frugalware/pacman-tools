@@ -47,7 +47,7 @@ get_root()
 	local i
 	i=`git rev-parse --git-dir 2>/dev/null`
 	if [ -n "$i" ]; then
-		echo `dirname $i`
+		echo $(basename $(dirname $i))
 		_scm=git
 		return
 	fi
@@ -170,7 +170,7 @@ if [ ! -z "$subpkgs" ]; then
 	check "right number of suboptions" "[ \"${#suboptions[@]}\" = 0 ] || [ \"${#suboptions[@]}\" = \"${#subpkgs[@]}\" ]"
 fi
 
-if [ "`get_root`" = "frugalware-stable" ]; then
+if [ "`get_root`" = "stable" ]; then
 	check "unchanged pkgrel" "echo $pkgrel | grep -q '\(siwenna\|terminus\)'"
 fi
 
