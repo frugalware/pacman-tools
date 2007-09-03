@@ -132,7 +132,14 @@ check "valid first group" "! echo $groups |grep -q -- - || echo $groups|grep -q 
 check "valid options()" "[ -z \"$(echo ${options[@]}|tr ' ' '\n' |grep -v '\(nodocs\|nostrip\|force\|nobuild\|nofakeroot\|scriptlet\|stick\|devel\)')\" ]"
 check "archs" "[ ! -z \"$archs\" ]"
 check "up2date" "[ ! -z \"`echo $up2date|sed 's/\$(/\\\\\$(/g'`\" ]"
-check "md5sums/sha1sums/signatures" "[ ${#md5sums[@]} -gt 0 -o ${#sha1sums[@]} -gt 0 -o ${#signatures[@]} -gt 0 ]"
+_fblint_have_remote_source=n
+for i in ${source[@]}
+do
+	echo $i|grep -q :// && _fblint_have_remote_source=y
+done
+if [ "$_fblint_have_remote_source" = "y" ]; then
+	check "md5sums/sha1sums/signatures" "[ ${#md5sums[@]} -gt 0 -o ${#sha1sums[@]} -gt 0 -o ${#signatures[@]} -gt 0 ]"
+fi
 if [ ${#md5sums[@]} -gt 0 ]; then
 	check "right number of md5sums" "[ ${#md5sums[@]} -eq ${#source[@]} ]"
 fi
