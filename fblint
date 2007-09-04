@@ -128,8 +128,7 @@ check "pkgdesc" "[ ! -z \"$pkgdesc\" ]"
 check "url" "[ ! -z \"$url\" ]"
 check "groups" "[ ! -z \"$groups\" ]"
 check "valid first group" "! echo $groups |grep -q -- - || echo $groups|grep -q -- -extra$"
-# allowing 'devel' here is a bit tricky, as it's not documented but we use it actually, ie in OOo's FB
-check "valid options()" "[ -z \"$(echo ${options[@]}|tr ' ' '\n' |grep -v '\(nodocs\|nostrip\|force\|nobuild\|nofakeroot\|scriptlet\|stick\|devel\)')\" ]"
+check "valid options()" "[ -z \"$(echo ${options[@]}|tr ' ' '\n' |grep -v '\(nodocs\|nostrip\|force\|nobuild\|nofakeroot\|scriptlet\|stick\)')\" ]"
 check "archs" "[ ! -z \"$archs\" ]"
 check "up2date" "[ ! -z \"`echo $up2date|sed 's/\$(/\\\\\$(/g'`\" ]"
 _fblint_have_remote_source=n
