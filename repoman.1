@@ -23,6 +23,14 @@ pacman-g2 -S pkg	repoman merge pkg
 pacman-g2 -Ss foo	repoman search foo
 .fi
 
+There is a possibility to alter the result of the merge without editing the
+buildscript for some packages. To build the development version of a package,
+type:
+
+.nf
+USE_DEVEL=y repoman merge pkg
+.fi
+
 .SH USAGE
 .BR Note:
 This section is for developers. If you're a user, just skip it.
