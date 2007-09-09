@@ -538,7 +538,6 @@ Options:
 		options.gitopts = " ".join(argv[optind:])
 	if options.help:
 		usage(0)
-	os.system("git fetch")
 	sock = os.popen("git log origin/master..master --no-merges 2>&1")
 	lines = sock.readlines()
 	ret = sock.close()
@@ -555,6 +554,7 @@ Options:
 				sys.exit(0)
 			print "Invalid response, try again!"
 	ret = os.system("git push %s" % options.gitopts)
+	os.system("git fetch")
 	if ret:
 		sys.exit(1)
 
