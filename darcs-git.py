@@ -453,7 +453,7 @@ Options:
 		options.files = " ".join(argv[optind:])
 	if options.help:
 		usage(0)
-	ret = os.system("git diff HEAD -M --exit-code %s %s" % (options.summary, options.files))
+	ret = os.system("git diff HEAD -M -C --find-copies-harder --exit-code %s %s" % (options.summary, options.files))
 	if not ret:
 		print "No changes!"
 
