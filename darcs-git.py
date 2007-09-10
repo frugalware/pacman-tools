@@ -622,6 +622,22 @@ Options:
 		usage(0)
 	return os.system("git clone %s" % " ".join(argv))
 
+def tag(argv):
+	def usage(ret):
+		print """Usage: darcs-git tag [OPTION]... [TAGNAME]
+Tag the contents of the repository with a version name.
+Use "darcs-git help tag" for more information.
+
+Options:
+  -h  --help                         shows brief description of command and its arguments"""
+		sys.exit(ret)
+	if len(argv) and argv[0] in ("-h", "--help"):
+		usage(0)
+	ret = 0
+	ret += os.system("echo 'TAG %s' |git update-ref HEAD `git commit-tree HEAD^{tree} -p HEAD`" % argv[0])
+	ret += os.system("git tag %s" % argv[0])
+	return ret
+
 def rollback(argv):
 	def usage(ret):
 		print """Usage: darcs-git rollback [OPTION]... <COMMIT-HASH>
@@ -755,7 +771,7 @@ Copying changes between the working copy and the repository:
   N amend-record  Replace a patch with a better version before it leaves your repository.
   N resolve       Mark any conflicts to the working copy for manual resolution.
 Direct modification of the repository:
-  W tag           Tag the contents of the repository with a version name.
+  Y tag           Tag the contents of the repository with a version name.
   N setpref       Set a value for a preference (test, predist, ...).
   A rollback      Record an inverse patch without changing the working directory.
 Querying the repository:
@@ -812,6 +828,8 @@ PURPOSE.""" % __version__
 			pull(argv[1:])
 		elif sys.argv[1] == "get":
 			get(argv[1:])
+		elif sys.argv[1] == "tag":
+			tag(argv[1:])
 		elif sys.argv[1][:4] == "roll":
 			rollback(argv[1:])
 		elif sys.argv[1][:5] == "unrec":
