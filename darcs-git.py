@@ -554,9 +554,10 @@ Options:
 				sys.exit(0)
 			print "Invalid response, try again!"
 	ret = os.system("git push %s" % options.gitopts)
-	os.system("git fetch")
 	if ret:
 		sys.exit(1)
+	else:
+		os.system("git fetch")
 
 def pull(argv):
 	def usage(ret):
