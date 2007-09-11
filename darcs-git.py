@@ -12,7 +12,6 @@ class File:
 	def __init__(self):
 		self.header = None
 		self.hunks = []
-		self.new = False
 
 class FileHunk:
 	def __init__(self, hunk, picked=False):
@@ -124,12 +123,8 @@ def scan_dir(files=""):
 			file = File()
 			inheader = True
 			header.append(i)
-		elif i.startswith("+++") or i.startswith("index "):
+		elif i.startswith("+++") or i.startswith("---") or i.startswith("index "):
 			header.append(i)
-		elif i.startswith("---"):
-			header.append(i)
-			if i == "--- /dev/null\n":
-				file.new = True
 		elif i.startswith("@@") or i.startswith("GIT binary patch"):
 			if i.startswith("GIT binary patch"):
 				binary = True
