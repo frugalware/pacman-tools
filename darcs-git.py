@@ -124,7 +124,7 @@ def scan_dir(files=""):
 			file = File()
 			inheader = True
 			header.append(i)
-		elif i.startswith("+++"):
+		elif i.startswith("+++") or i.startswith("index "):
 			header.append(i)
 		elif i.startswith("---"):
 			header.append(i)
@@ -318,11 +318,21 @@ Options:
 	for i in allstatus.hunks:
 		if not status.ispicked(i):
 			lines = i.text.split("\n")
-			if "--- /dev/null" in lines:
+			new = False
+			for j in lines:
+				if j.startswith("index 0000000"):
+					new = True
+					break
+			if new:
 				newlist.append(diff2filename(lines[0]))
 		else:
 			lines = i.text.split("\n")
-			if "--- /dev/null" in lines:
+			new = False
+			for j in lines:
+				if j.startswith("index 0000000"):
+					new = True
+					break
+			if new:
 				# this is a newly added file but maybe it has
 				# been updated since add. add it again
 				os.system("git add %s" % diff2filename(lines[0]))
@@ -420,7 +430,12 @@ Options:
 	# we need git reset too if we revert deleted files
 	for i in status.hunks:
 		lines = i.text.split("\n")
-		if "+++ /dev/null" in lines:
+		new = False
+		for j in lines:
+			if j.startswith("index 0000000"):
+				new = True
+				break
+		if new:
 			os.system("git reset HEAD %s >/dev/null" % diff2filename(lines[0]))
 	revert_stale()
 	print "Finished reverting."
