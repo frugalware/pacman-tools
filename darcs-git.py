@@ -77,7 +77,7 @@ def get_root():
 	return root
 
 def get_diff(files = ""):
-	sock = os.popen("git diff HEAD %s" % files)
+	sock = os.popen("git diff HEAD --binary %s" % files)
 	lines = sock.readlines()
 	sock.close()
 	if len(lines) and lines[0].startswith("[1m"):
@@ -109,10 +109,12 @@ def scan_dir(files=""):
 	header = []
 	hunk = []
 	file = None
+	binary = False
 	for i in lines:
 		if i.startswith("#"):
 			continue
 		elif i.startswith("diff"):
+			binary = False
 			if inhunk:
 				file.hunks.append("".join(hunk))
 				hunk = []
@@ -128,7 +130,9 @@ def scan_dir(files=""):
 			header.append(i)
 			if i == "--- /dev/null\n":
 				file.new = True
-		elif i.startswith("@@"):
+		elif i.startswith("@@") or i.startswith("GIT binary patch"):
+			if i.startswith("GIT binary patch"):
+				binary = True
 			if inheader:
 				inheader = False
 				file.header = "".join(header)
@@ -138,7 +142,7 @@ def scan_dir(files=""):
 				hunk = []
 			inhunk = True
 			hunk.append(i)
-		elif i[0] == "+" or i[0] == "-" or i[0] == " ":
+		elif i[0] == "+" or i[0] == "-" or i[0] == " " or binary:
 			if inhunk:
 				hunk.append(i)
 			else:
