@@ -123,7 +123,7 @@ def scan_dir(files=""):
 			file = File()
 			inheader = True
 			header.append(i)
-		elif i.startswith("+++") or i.startswith("---") or i.startswith("index "):
+		elif i.startswith("+++ ") or i.startswith("--- ") or i.startswith("index "):
 			header.append(i)
 		elif i.startswith("@@") or i.startswith("GIT binary patch"):
 			if i.startswith("GIT binary patch"):
