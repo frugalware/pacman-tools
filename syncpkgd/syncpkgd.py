@@ -41,7 +41,8 @@ class Actions:
 		sock.close()
 
 	def __request_build(self, pkg):
-		if not re.search("^(git|darcs)://(current|stable)/.+-[^-]+-[^-]+-[^-]+/.+ <.+>$", pkg):
+		# this regex is not too nice, but at least works
+		if not re.search("^(git|darcs)://[A-Za-z][A-Za-z0-9_]+/.+-[^-]+-[^-]+-[^-]+/.+ <.+>$", pkg):
 			raise Exception("invalid uri")
 		if pkg in self.tobuild:
 			return False
