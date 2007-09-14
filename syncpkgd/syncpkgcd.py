@@ -129,8 +129,14 @@ class Syncpkgcd:
 			junk.extend(glob.glob("*.log.bz2"))
 			for i in junk:
 				os.unlink(i)
-		self.system("sudo makepkg -t %s -C" % tree)
-		if self.system("sudo makepkg -t %s -cu" % tree):
+		# FIXME: hardcoding this is a bit ugly, but well, this probably
+		# won't change in the near future
+		if tree not in ('current', 'stable'):
+			makepkg_tree = "%s,current" % tree
+		else:
+			makepkg_tree = tree
+		self.system("sudo makepkg -t %s -C" % makepkg_tree)
+		if self.system("sudo makepkg -t %s -cu" % makepkg_tree):
 			self.log(pkg, "makepkg failed")
 			try:
 				sock = open("%s.log" % pkg.split('/')[3])
