@@ -494,6 +494,7 @@ update()
 				cmd="rsync -azvP $j/_darcs/current/ $i"
 			else
 				echo "This server ($j) does not support git nor darcs."
+				echo "HINT: if you are upgrading from a previous version of Frugalware, try running 'rm -rf /var/fst/' and 'repoman upd'."
 				continue
 			fi
 			mkdir -p $fst_root

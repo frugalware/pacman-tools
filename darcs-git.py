@@ -571,6 +571,7 @@ Options:
 	if ret:
 		sys.exit(1)
 	else:
+		os.system("git push --tags")
 		os.system("git fetch")
 
 def pull(argv):
@@ -649,7 +650,7 @@ Options:
 		usage(0)
 	ret = 0
 	ret += os.system("echo 'TAG %s' |git update-ref HEAD `git commit-tree HEAD^{tree} -p HEAD`" % argv[0])
-	ret += os.system("git tag %s" % argv[0])
+	ret += os.system("git tag -a -m 'tagged %s' %s" % (argv[0], argv[0]))
 	return ret
 
 def rollback(argv):

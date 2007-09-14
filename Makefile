@@ -16,7 +16,7 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 #
 
-VERSION = 0.9.8
+VERSION = 0.9.9
 
 LANGS = hu pl
 
@@ -110,7 +110,7 @@ dist:
 	gzip -f -9 pacman-tools-$(VERSION).tar
 
 release:
-	git tag $(VERSION)
+	dg tag $(VERSION)
 	$(MAKE) dist
 	gpg --comment "See http://ftp.frugalware.org/pub/README.GPG for info" \
 		-ba -u 20F55619 pacman-tools-$(VERSION).tar.gz

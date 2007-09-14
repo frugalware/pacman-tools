@@ -1,5 +1,11 @@
 VERSION         DESCRIPTION
 -----------------------------------------------------------------------------
+0.9.9         - dg: support for binary files, new tag subcommand
+              - repoman: the USE_* variables are now documented
+	      - mkisorelease: new script to generate all iso images for a given
+	        release
+              - syncpkgdctl: new script to control syncpkgd
+              - revdep-rebuild now has a --sed option
 0.9.8         - syncpkgd: rewrite to support multiple clients
               - syncpkgcd: new client daemon for syncpkgd
               - revdep-rebuild, bumppkg: new --nobuild switch
