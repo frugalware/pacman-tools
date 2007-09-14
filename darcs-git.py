@@ -246,7 +246,7 @@ Options:
 		usage(0)
 	root = get_root()
 	first = False
-	if emptydir(os.path.join(root, "refs", "heads")):
+	if os.system("git rev-parse --verify HEAD >/dev/null 2>&1"):
 		first = True
 		sock = os.popen("git status")
 		lines = sock.readlines()
