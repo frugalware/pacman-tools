@@ -6,7 +6,7 @@ chkworld - Compares FrugalBuild's up2date and pkgver informations
    
 =head1 SYNOPSIS
     
-chkdep [options]
+chkworld [options]
     
 =head1 DESCRIPTION
 
