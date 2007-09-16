@@ -206,7 +206,7 @@ our $VERSION = "0.9";
 #my %opts;
 #getopts('svcmhet:d:b:', \%opts);
 
-my ($sort, $devel,$html,$time,$error,$verbose,$color,$help,@bl,@dirs);
+my ($sort,$devel,$html,$time,$error,$verbose,$color,$help,@bl,@dirs);
 
 GetOptions(
     's|sort' => \$sort, 'd|devel:s' => \$devel, 'm|html' => \$html,
