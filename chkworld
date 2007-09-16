@@ -164,7 +164,7 @@ sub init_chk { #generate the iterator
     
     return sub {
 	$input{preoutput}->();
-	for $dev (keys %m8rs){
+	for $dev (sort m8r_sort keys(%m8rs)){
 	    find sub{
 		if (/^FrugalBuild\z/){
 		    do {goto OUT if $File::Find::dir =~ /$blacklist[$_]/} for 0..scalar @blacklist-1;
@@ -198,6 +198,9 @@ sub init_chk { #generate the iterator
     }
 }
 
+sub m8r_sort {
+	return lc($a) cmp lc($b);
+}
 
 package main;
 
