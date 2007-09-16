@@ -155,6 +155,8 @@ sub init_chk { #generate the iterator
 		do {next if $File::Find::dir =~ /$blacklist[$_]/} for 0..scalar @blacklist-1;
 		my $buildscript = contents $_;
 		my ($m8r) = $buildscript =~ /^# Maintainer: (.*?) </m;
+		$m8r =~ s/^\s+//;
+                $m8r =~ s/\s+$//;
 		$m8rs{$m8r}++;
 	    }
 	}, @{$input{dirs}};
@@ -168,6 +170,8 @@ sub init_chk { #generate the iterator
 		    do {goto OUT if $File::Find::dir =~ /$blacklist[$_]/} for 0..scalar @blacklist-1;
 		    my $buildscript = contents $_;
 		    ($m8r) = $buildscript =~ /^# Maintainer: (.*?) </m;
+		    $m8r =~ s/^\s+//;
+                    $m8r =~ s/\s+$//;
 		    do {next unless $m8r =~ /\Q$dev\E/i } if $input{devel} || $input{sort};
 		    ($pkgname) = qx'source /usr/lib/frugalware/fwmakepkg;source ./FrugalBuild; echo -n $pkgname';
 		    ($pkgver) = qx'source /usr/lib/frugalware/fwmakepkg;source ./FrugalBuild; echo -n $pkgver';
