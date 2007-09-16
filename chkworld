@@ -76,6 +76,7 @@ License v2.
 package Chkworld;
 
 require 5.8.8;
+use sort "_quicksort";
 use warnings;
 no warnings qw( uninitialized );
 use File::Find;
