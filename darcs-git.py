@@ -639,7 +639,7 @@ Options:
 
 def tag(argv):
 	def usage(ret):
-		print """Usage: darcs-git tag [OPTION]... [TAGNAME]
+		print """Usage: darcs-git tag [PROJECTNAME] <VERSION>
 Tag the contents of the repository with a version name.
 Use "darcs-git help tag" for more information.
 
@@ -649,8 +649,12 @@ Options:
 	if len(argv) and argv[0] in ("-h", "--help"):
 		usage(0)
 	ret = 0
-	ret += os.system("echo 'TAG %s' |git update-ref HEAD `git commit-tree HEAD^{tree} -p HEAD`" % argv[0])
-	ret += os.system("git tag -a -m '%s %s' %s" % (os.path.abspath(get_root()).split(os.sep)[-2], argv[0], argv[0]))
+	ret += os.system("echo 'TAG %s' |git update-ref HEAD `git commit-tree HEAD^{tree} -p HEAD`" % argv[-1])
+	if len(argv) > 1:
+		msg = " ".join(argv[:2])
+	else:
+		msg = argv[0]
+	ret += os.system("git tag -a -m '%s' %s" % (msg, argv[-1]))
 	return ret
 
 def rollback(argv):
