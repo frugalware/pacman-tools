@@ -419,7 +419,7 @@ Options:
 		p = []
 		if i.picked == True:
 			p.append(i.text)
-		sock = os.popen("patch -p1 -R >/dev/null", "w")
+		sock = os.popen("git apply -R >/dev/null", "w")
 		sock.write("".join(p))
 		sock.close()
 	# we need git reset too if we revert deleted files
