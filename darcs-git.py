@@ -604,6 +604,8 @@ Options:
 		optind += 1
 	if optind < len(argv):
 		options.gitopts = " ".join(argv[optind:])
+	else:
+		options.gitopts = "origin"
 	if options.help:
 		usage(0)
 	os.system("git fetch")
@@ -622,7 +624,7 @@ Options:
 			if ret in ("n", "q"):
 				sys.exit(0)
 			print "Invalid response, try again!"
-	os.system("git pull %s" % options.gitopts)
+	os.system("git rebase %s" % options.gitopts)
 
 def get(argv):
 	def usage(ret):
