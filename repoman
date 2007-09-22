@@ -432,9 +432,13 @@ sync()
 	ls *-$arch.fpm &>/dev/null && fpmdel
 	dry_run changelog $groups/$pkgname
 	if [ "$1" == "-c" ]; then
-		rm -rvf *-$arch.fpm
-		rm -vf *.log.bz2
-		rm -rf src
+		if [ "$F_makepkg_scm" = "git" ]; then
+			git clean -x -d
+		else
+			rm -rvf *-$arch.fpm
+			rm -vf *.log.bz2
+			rm -rf src
+		fi
 	fi
 }
 
