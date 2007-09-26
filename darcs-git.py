@@ -75,6 +75,13 @@ def get_root():
 		sys.exit(0)
 	return root
 
+def get_branch():
+	sock = os.popen("git symbolic-ref HEAD")
+	branch = sock.read().strip()[11:]
+	if sock.close():
+		sys.exit(0)
+	return branch
+
 def get_diff(files = ""):
 	sock = os.popen("git diff HEAD --binary %s" % files)
 	lines = sock.readlines()
@@ -552,7 +559,8 @@ Options:
 		options.gitopts = " ".join(argv[optind:])
 	if options.help:
 		usage(0)
-	sock = os.popen("git log origin/master..master --no-merges 2>&1")
+	branch = get_branch()
+	sock = os.popen("git log origin/%s..%s --no-merges 2>&1" % (branch, branch))
 	lines = sock.readlines()
 	ret = sock.close()
 	if not len(lines):
@@ -609,7 +617,8 @@ Options:
 	if options.help:
 		usage(0)
 	os.system("git fetch")
-	sock = os.popen("git log master..origin/master --no-merges 2>&1")
+	branch = get_branch()
+	sock = os.popen("git log %s..origin/%s --no-merges 2>&1" % (branch, branch))
 	lines = sock.readlines()
 	ret = sock.close()
 	if not len(lines):
