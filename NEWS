@@ -1,5 +1,11 @@
 VERSION         DESCRIPTION
 -----------------------------------------------------------------------------
+1.0.0         - dg push now pushes tags, too
+              - dg pull now uses fetch + rebase instead of pull
+              - dg rec: support for packed refs (git gc v1.5.3 uses them)
+              - syncpkgcd now supports WIP repos
+              - chkworld: various fixes
+              - repoman no longer tries to run updatesync for nobuild pkgs
 0.9.9         - dg: support for binary files, new tag subcommand
               - repoman: the USE_* variables are now documented
 	      - mkisorelease: new script to generate all iso images for a given
