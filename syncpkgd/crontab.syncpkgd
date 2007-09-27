@@ -1,1 +1,1 @@
-40 4 * * * find /var/log/syncpkgd/clientlogs/ -mtime +7 -exec rm -rf {} \;
+40 4 * * * find /var/log/syncpkgd/clientlogs/ -type f -mtime +7 -exec rm -f {} \;
