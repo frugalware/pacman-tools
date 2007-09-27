@@ -110,7 +110,7 @@ dist:
 	gzip -f -9 pacman-tools-$(VERSION).tar
 
 release:
-	dg tag $(VERSION)
+	git tag -l |grep -q $(VERSION) || dg tag $(VERSION)
 	$(MAKE) dist
 	gpg --comment "See http://ftp.frugalware.org/pub/README.GPG for info" \
 		-ba -u 20F55619 pacman-tools-$(VERSION).tar.gz
