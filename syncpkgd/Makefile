@@ -11,6 +11,7 @@ install:
 	install syncpkgcd.py $(DESTDIR)/usr/bin/syncpkgcd
 	install syncpkgdctl.py $(DESTDIR)/usr/bin/syncpkgdctl
 	install syncpkgd.py $(DESTDIR)/usr/bin/syncpkgd
+	install syncpkg-shell $(DESTDIR)/usr/bin/syncpkg-shell
 	mkdir -p $(DESTDIR)/var/log/syncpkgd/clientlogs
 	chown 12:2 $(DESTDIR)/var/log/syncpkgd/clientlogs
 	mkdir -p $(DESTDIR)/var/log/syncpkgd

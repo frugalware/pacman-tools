@@ -1,0 +1,5 @@
+#!/bin/sh
+
+export uploader="syncpkgd+$1"
+
+eval $SSH_ORIGINAL_COMMAND
