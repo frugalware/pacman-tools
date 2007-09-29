@@ -129,6 +129,9 @@ fwmakepkg.3: apidocs fwmakepkg.3.in
 	cat fwmakepkg.3.in > fwmakepkg.3
 	ls apidocs/*.sh|sed 's|apidocs/||;$$!s/\(.*\)$$/.BR \1 (3),/;$$s/\(.*\)$$/.BR \1 (3)/' >> fwmakepkg.3
 
+%.html: %.txt
+	asciidoc $^
+
 %.xml: %.txt
 	asciidoc -d manpage -b docbook $^
 	sed -i '/<!DOCTYPE/s|\("http[^"].*"\)|"file://$(XML_PATH)/docbookx.dtd"|' $^
