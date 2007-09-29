@@ -68,7 +68,6 @@ install:
 	$(INSTALL) chkdep $(DESTDIR)$(bindir)/chkdep
 	$(INSTALL) mkpkghtml $(DESTDIR)$(bindir)/mkpkghtml
 	$(INSTALL) -m644 mkpkghtml.1 $(DESTDIR)$(man1dir)
-	$(INSTALL) pud $(DESTDIR)$(bindir)
 	$(INSTALL) genchangelog $(DESTDIR)$(bindir)
 	$(INSTALL) darcs-git.py $(DESTDIR)$(bindir)/darcs-git
 	ln -s darcs-git $(DESTDIR)$(bindir)/dg
