@@ -1,0 +1,76 @@
+= syncpkgcd(1)
+
+== NAME
+
+syncpkgcd - a client daemon that fetches requests from a syncpkg daemon
+
+== SYNOPSIS
+
+syncpkgcd [options]
+
+== OPTIONS
+
+-d, --daemon::
+	Run as daemon in the background.
+
+-l, --logfile::
+	Set the logfile (default: syncpkgcd.log).
+
+-p, --pidfile::
+	Set the pidfile (default: syncpkgcd.pid).
+
+-u	--uid::
+	Set the daemon's user id.
+
+== DESCRIPTION
+
+To set up syncpkgcd, you need the followings.
+
+* First, check your firewall: outgoing connections to `genesis.frugalware.org`
+should be allowed on ports 22 and 80.
+
+* Second, you need to edit the server_url, server_user and server_pass variables
+in /etc/syncpkgcd/cconfig.py.
+
+* Now switch to the syncpkgd user, using:
+
+----
+# su - syncpkgd
+----
+
+* Generate an ssh key with no passphrase, using:
+
+----
+$ ssh-keygen -t dsa
+----
+
+NOTE: The `\~/.ssh/id_dsa.pub` file should be appended to `\~/.ssh/authorized_keys` on
+the server with a `command="syncpkg-shell <nick>" ` prefix.
+
+* Add the followings to your `\~/.repoman.conf`:
+
+----
+repos=('stable' 'current')
+stable_servers=("syncpkgd@darcs.frugalware.org:/home/ftp/pub/frugalware/frugalware-stable")
+current_servers=("syncpkgd@git.frugalware.org:/home/ftp/pub/frugalware/frugalware-current")
+fst_root=~/repos
+----
+
+* Now login to darcs.frugalware.org and git.frugalware.org manually so that the
+fingerprint of the servers will be added to the `\~/.ssh/known_hosts` file.
+
+* You need to create the <fst_root> directory:
+
+----
+$ mkdir -p ~/repos
+----
+
+* And now you can enable and start syncpkgcd:
+
+----
+# service syncpkgcd add
+# service syncpkgcd start
+----
+
+NOTE: You may want to check `/var/log/syncpkgcd.log` to see if everything works as
+expected.

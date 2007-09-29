@@ -36,7 +36,7 @@ sysconfdir = /etc
 docdir = /usr/share/doc/pacman-tools-$(VERSION)
 FINCDIR = $(shell source /usr/lib/frugalware/fwmakepkg; echo $$Fincdir)
 XML_PATH = /usr/share/sgml/docbook/dtd/xml-dtd-4.2
-DOCS = $(wildcard *.txt)
+DOCS = $(wildcard *.txt) $(wildcard syncpkgd/*.txt)
 
 compile: genauthors apidocs fwmakepkg.3 docs
 	$(MAKE) -C mkiso

@@ -15,16 +15,8 @@ class Options:
 		self.help = False
 		self.uid = False
 	def usage(self, ret):
-		print """Usage: syncpkgcd [OPTION]...
-syncpkgcd is a client daemon that fetches requests from a syncpkg daemon.
-
-Options:
-	-d	--daemon	run as daemon in the background
-	-l	--logfile	set the logfile (default: syncpkgcd.log)
-	-p	--pidfile	set the pidfile (default: syncpkgcd.pid)
-	-u	--uid		set the daemon's user id"""
+		os.system("man syncpkgcd")
 		sys.exit(ret)
-
 
 class Syncpkgcd:
 	def __init__(self, options):
