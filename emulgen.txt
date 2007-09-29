@@ -1,0 +1,17 @@
+= emulgen(1)
+
+== NAME
+
+emulgen - generate a FrugalBuild for emulation of i686 on x86_64
+
+== SYNOPSIS
+
+emulgen <pkgname>
+
+== OPTIONS
+
+--help::
+	Display this manpage.
+
+--version::
+	Display the package version.

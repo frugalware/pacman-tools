@@ -5,14 +5,19 @@
 
 unset LANG LC_ALL
 
-if [ -z "$1" ]; then
-	echo "usage: $0 <pkgname>"
-	exit 1
+if [ "$1" == "-h" -o "$1" == "--help" ]; then
+	man emulgen
+	exit $?
+fi
+
+if [ "$1" == "-v" -o "$1" == "--version" ]; then
+	pacman-g2 -Q pacman-tools
+	exit $?
 fi
 
 pkgname=$1
 
-if ! pacman -Q $1 &>/dev/null; then
+if ! pacman-g2 -Q $1 &>/dev/null; then
 	echo "package '$1' is not installed, you should create the FrugalBuild"
 	echo "manually :-/"
 	exit 1
