@@ -35,6 +35,7 @@ man8dir = /usr/share/man/man8
 sysconfdir = /etc
 docdir = /usr/share/doc/pacman-tools-$(VERSION)
 FINCDIR = $(shell source /usr/lib/frugalware/fwmakepkg; echo $$Fincdir)
+XML_PATH = /usr/share/sgml/docbook/dtd/xml-dtd-4.2
 
 compile: genauthors apidocs fwmakepkg.3
 	$(MAKE) -C mkiso
@@ -123,3 +124,11 @@ apidocs:
 fwmakepkg.3: apidocs fwmakepkg.3.in
 	cat fwmakepkg.3.in > fwmakepkg.3
 	ls apidocs/*.sh|sed 's|apidocs/||;$$!s/\(.*\)$$/.BR \1 (3),/;$$s/\(.*\)$$/.BR \1 (3)/' >> fwmakepkg.3
+
+%.xml: %.txt
+	asciidoc -d manpage -b docbook $(basename $@).txt
+sed -i '/<!DOCTYPE/s|\("http[^"].*"\)|"file://$(XML_PATH)/docbookx.dtd"|' $@
+
+%.1: %.xml
+	xsltproc --nonet --path $(XML_PATH) /etc/asciidoc/docbook-xsl/manpage.xsl $(basename $@).xml
+	sed -i 's/\\(bu/*/' $@
