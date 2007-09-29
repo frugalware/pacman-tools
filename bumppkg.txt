@@ -1,0 +1,31 @@
+= bumppkg(1)
+
+== NAME
+
+bumppkg - update a package to a newer version
+
+== SYNOPSIS
+
+bumppkg [options]
+
+== OPTIONS
+
+--help::
+	Display this manpage.
+
+--nobuild::
+	When --rebuild is used, do not actually perform the build so that
+	syncpkgd can later build it.
+
+--push::
+	Push the changes righter after committing locally.
+
+--rebuild::
+	Don't bump to a newer version, but increment the package release and
+	rebuild the package.
+
+-t <tree>::
+	Specify a tree different to the default.
+
+--version::
+	Display the package version.
