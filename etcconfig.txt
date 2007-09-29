@@ -1,0 +1,26 @@
+= bumppkg(1)
+
+== NAME
+
+etcconfig - searches for configuration files waiting for merge
+
+== SYNOPSIS
+
+etcconfig [options]
+
+== OPTIONS
+
+--help::
+	Display this manpage.
+
+--version::
+	Display the package version.
+
+== AUTHORS
+
+Written by Vilmos Katona <shrift@linuxforum.hu>.
+
+== COPYRIGHT
+
+etcconfig may be copied and modified under the terms of the GNU General Public
+License.

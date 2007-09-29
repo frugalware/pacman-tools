@@ -39,6 +39,13 @@ def checkedit():
 	        else:
 			continue
 
+if len(sys.argv) > 1:
+	if sys.argv[1] in ('-v', '--version'):
+		print "etcconfig 0.1 (pacman-tools)"
+		sys.exit()
+	elif sys.argv[1] in ('-h', '--help'):
+		os.system("man etcconfig")
+		sys.exit()
 
 checkroot()
 checkedit()
