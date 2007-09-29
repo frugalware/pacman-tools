@@ -1,0 +1,26 @@
+= fpmdiff(1)
+
+== NAME
+
+fpmdiff - compare contents of Frugalware packages
+
+== SYNOPSIS
+
+fpmdiff [options] <fpm1> <fpm2>
+
+== OPTIONS
+
+--help::
+	Display this manpage.
+
+--version::
+	Display the package version.
+
+== DESCRIPTION
+
+fpmdiff runs pacman-g2 -Ql for two packages and compares the two output. This
+can be quite handy when you split packages.
+
+For example you first build with --disable-kde, then with --enable-kde and
+you'll see what new files have been installed: those files can be splitted to a
+separate -kde subpackage.

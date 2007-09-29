@@ -1,5 +1,15 @@
 #!/bin/bash
 
+if [ "$1" == "-h" -o "$1" == "--help" ]; then
+	man fpmdiff
+	exit $?
+fi
+
+if [ "$1" == "-v" -o "$1" == "--version" ]; then
+	pacman-g2 -Q pacman-tools
+	exit $?
+fi
+
 old=`mktemp`
 new=`mktemp`
 
