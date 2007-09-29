@@ -64,7 +64,6 @@ install:
 	$(INSTALL) -d $(DESTDIR)/home/syncpkgd
 	chown syncpkgd:daemon $(DESTDIR)/home/syncpkgd
 	$(INSTALL) chkworld $(DESTDIR)$(bindir)/chkworld
-	$(INSTALL) -m644 chkworld.1 $(DESTDIR)$(man1dir)
 	$(INSTALL) chkdep $(DESTDIR)$(bindir)/chkdep
 	$(INSTALL) mkpkghtml $(DESTDIR)$(bindir)/mkpkghtml
 	$(INSTALL) -m644 mkpkghtml.1 $(DESTDIR)$(man1dir)
