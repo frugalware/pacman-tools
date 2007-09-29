@@ -130,9 +130,9 @@ fwmakepkg.3: apidocs fwmakepkg.3.in
 	ls apidocs/*.sh|sed 's|apidocs/||;$$!s/\(.*\)$$/.BR \1 (3),/;$$s/\(.*\)$$/.BR \1 (3)/' >> fwmakepkg.3
 
 %.xml: %.txt
-	asciidoc -d manpage -b docbook $(basename $@).txt
-sed -i '/<!DOCTYPE/s|\("http[^"].*"\)|"file://$(XML_PATH)/docbookx.dtd"|' $@
+	asciidoc -d manpage -b docbook $^
+	sed -i '/<!DOCTYPE/s|\("http[^"].*"\)|"file://$(XML_PATH)/docbookx.dtd"|' $^
 
 %.1: %.xml
-	xsltproc --nonet --path $(XML_PATH) /etc/asciidoc/docbook-xsl/manpage.xsl $(basename $@).xml
+	xsltproc -o $@ --nonet --path $(XML_PATH) /etc/asciidoc/docbook-xsl/manpage.xsl $^ 
 	sed -i 's/\\(bu/*/' $@
