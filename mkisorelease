@@ -16,6 +16,16 @@ dosplit()
 	done
 }
 
+if [ "$1" == "-h" -o "$1" == "--help" ]; then
+	man mkisorelease
+	exit $?
+fi
+
+if [ "$1" == "-v" -o "$1" == "--version" ]; then
+	pacman-g2 -Q pacman-tools
+	exit $?
+fi
+
 mkiso=mkiso
 xml=volumes.xml
 
