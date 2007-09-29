@@ -13,6 +13,7 @@ dosplit()
 	do
 		sed -i "s|<serial>[0-9]\+</serial>|<serial>$i</serial>|" $xml
 		$mkiso
+		rm -rf /tmp/mkiso_*
 	done
 }
 
