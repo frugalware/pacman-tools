@@ -36,8 +36,9 @@ sysconfdir = /etc
 docdir = /usr/share/doc/pacman-tools-$(VERSION)
 FINCDIR = $(shell source /usr/lib/frugalware/fwmakepkg; echo $$Fincdir)
 XML_PATH = /usr/share/sgml/docbook/dtd/xml-dtd-4.2
+DOCS = $(wildcard *.txt)
 
-compile: genauthors apidocs fwmakepkg.3
+compile: genauthors apidocs fwmakepkg.3 docs
 	$(MAKE) -C mkiso
 	$(MAKE) -C repoman.d
 	chmod +x fwmirror pear-makefb chkdep darcs-git.py
@@ -50,11 +51,14 @@ compile: genauthors apidocs fwmakepkg.3
 	help2man -n "Converts a README.Frugalware to HTML" -S Frugalware -N ./mkpkghtml |sed 's/\\(co/(c)/' >mkpkghtml.1
 	help2man -n "A darcs-like interface for git" -S Frugalware -N ./darcs-git.py |sed 's/\\(co/(c)/' >darcs-git.1
 
+docs: $(subst .txt,.1,$(DOCS))
+
 install:
 	$(INSTALL) -d $(DESTDIR)$(bindir)
 	$(INSTALL) -d $(DESTDIR)$(sbindir)
 	$(INSTALL) -d $(DESTDIR)$(libdir)
 	$(INSTALL) -d $(DESTDIR)$(man1dir)
+	$(INSTALL) -m644 $(subst .txt,.1,$(DOCS)) $(DESTDIR)$(man1dir)
 	$(INSTALL) -d $(DESTDIR)$(man3dir)
 	$(INSTALL) -d $(DESTDIR)$(man8dir)
 	$(INSTALL) -d $(DESTDIR)$(sysconfdir)
