@@ -1,0 +1,52 @@
+= mkisorelease(1)
+
+== NAME
+
+mkisorelease - generates all net, cd* and dvd* iso images for a release
+
+== SYNOPSIS
+
+mkisorelease [options]
+
+== OPTIONS
+
+--help::
+	Display this manpage.
+
+--version::
+	Display the package version.
+
+== DESCRIPTION
+
+This script is an initial attempt to do a fully automated update of the -iso
+directory for a Frugalware release. It can do the net, cd* and dvd* images for
+one arch at the moment.
+
+Here is how it can be used:
+
+----
+$ cp /usr/share/doc/pacman-tools-*/volumes.xml ./
+----
+
+Edit `volumes.xml`, at least the version field. You can even remove it and then
+a timestamp will be used.
+
+When you're done, you can type
+
+----
+$ mkisorelease
+----
+
+to generate the isos.
+
+Here is a list of what is _not_ updated at the moment:
+
+* usb installer
+
+* tftp image
+
+* fwlive iso (it takes a lot of time)
+
+* the `.ls-Ral` files
+
+* the `SHA1SUM` file
