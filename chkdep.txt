@@ -1,0 +1,34 @@
+= chkdep(1)
+
+== NAME
+
+chkdep - checks a package or directory for possible depends
+
+== SYNOPSIS
+
+chkdep [ -d | -p ] <path> [options]
+
+== OPTIONS
+
+-d, --dir <dir>::
+	Name of the directory to check.
+
+-h, --help::
+	Display this manpage.
+
+-n, --name <package>::
+	Ignore the given package (optional, useful when a package links to
+	itself).
+
+-m, --method <name>::
+	Method to use to detect the dependencies (default: `elf`, possible values: `elf`,
+	`python`, `mono` and `perl`).
+
+-p, --package <path>::
+	Name of the FPM package to check.
+
+-i::
+	Does nothing (for backward compatibility).
+
+-v, --version::
+	Display the package version.
