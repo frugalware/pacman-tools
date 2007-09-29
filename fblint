@@ -75,12 +75,7 @@ if [ "$1" = "--version" ]; then
 fi
 
 if [ "$1" = "--help" ]; then
-	echo "usage: $0 [--help] | [--version] | [-q] [-v] [-p]"
-	echo "       -q		quiet mode, exit with error if at least one test failed"
-	echo "       -v		verbose node, output the passed tests, too"
-	echo "       -p		buildscript [./FrugalBuild]"
-	echo "       --help	this help"
-	echo "       --version	version information"
+	man fblint
 	exit 0
 fi
 

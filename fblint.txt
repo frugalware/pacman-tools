@@ -1,0 +1,26 @@
+= fblint(1)
+
+== NAME
+
+fblint - validates FrugalBuild scripts
+
+== SYNOPSIS
+
+fblint [--help] | [--version] | [-q] [-v] [-p]
+
+== OPTIONS
+
+--help::
+	Display this manpage.
+
+-p <path>::
+	Path to the buildscript (default: FrugalBuild).
+
+-q::
+	Quiet mode, exit with error if at least one test failed.
+
+-v::
+	Verbose node, output the passed tests, too.
+
+--version::
+	Display the package version.
