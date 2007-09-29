@@ -41,11 +41,9 @@ DOCS = $(wildcard *.txt) $(wildcard syncpkgd/*.txt)
 compile: genauthors apidocs fwmakepkg.3 docs
 	$(MAKE) -C mkiso
 	$(MAKE) -C repoman.d
-	chmod +x fwmirror pear-makefb chkdep darcs-git.py
 	help2man -n "mirrors Frugalware archives" -S Frugalware -N ./fwmirror |sed 's/\\(co/(c)/' >fwmirror.1
 	help2man -n "Writes FrugalBuild scripts for PHP PEAR/PECL packages" -S Frugalware -N ./pear-makefb \
 		|sed 's/\\(co/(c)/' >pear-makefb.1
-	chmod +x fblint
 	help2man -n "searches for common FrugalBuild problems" -S Frugalware -N ./fblint |sed 's/\\(co/(c)/' >fblint.1
 	help2man -n "Checks a package or directory for possible depends" -S Frugalware -N ./chkdep |sed 's/\\(co/(c)/' >chkdep.1
 	help2man -n "Converts a README.Frugalware to HTML" -S Frugalware -N ./mkpkghtml |sed 's/\\(co/(c)/' >mkpkghtml.1
