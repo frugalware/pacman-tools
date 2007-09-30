@@ -1,0 +1,23 @@
+= mkpkghtml(1)
+
+== NAME
+
+mkpkghtml - Converts a README.Frugalware to HTML
+
+== SYNOPSIS
+
+mkpkghtml [options]
+
+== OPTIONS
+
+--help::
+	Display this manpage.
+
+--version::
+	Display the package version.
+
+== DESCRIPTION
+
+'mkpkghtml' is a small script to generate pkgname.html from a
+README.Frugalware. It's handy to check for syntax errors and see the result
+before you push such a document.

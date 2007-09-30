@@ -9,9 +9,7 @@ die()
 myver="0.9.5"
 
 if [ "$1" == "--help" ]; then
-	echo "mkpkghtml is a small script to generate pkgname.html from a"
-	echo "README.Frugalware. It's handy to check for syntax errors and see the result"
-	echo "before you push a README.Frugalware."
+	man mkpkghtml
 	exit 0
 elif [ "$1" == "--version" ]; then
 	echo "mkpkghtml (pacman-tools) $myver"

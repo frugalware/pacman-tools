@@ -37,20 +37,20 @@ docdir = /usr/share/doc/pacman-tools-$(VERSION)
 FINCDIR = $(shell source /usr/lib/frugalware/fwmakepkg; echo $$Fincdir)
 XML_PATH = /usr/share/sgml/docbook/dtd/xml-dtd-4.2
 DOCS = $(wildcard *.txt) $(wildcard syncpkgd/*.txt)
+MANS = $(subst .txt,.1,$(DOCS))
 
 compile: genauthors apidocs docs
 	$(MAKE) -C mkiso
 	$(MAKE) -C repoman.d
-	help2man -n "Converts a README.Frugalware to HTML" -S Frugalware -N ./mkpkghtml |sed 's/\\(co/(c)/' >mkpkghtml.1
 
-docs: $(subst .txt,.1,$(DOCS))
+docs: $(MANS)
 
 install: compile
 	$(INSTALL) -d $(DESTDIR)$(bindir)
 	$(INSTALL) -d $(DESTDIR)$(sbindir)
 	$(INSTALL) -d $(DESTDIR)$(libdir)
 	$(INSTALL) -d $(DESTDIR)$(man1dir)
-	$(INSTALL) -m644 $(subst .txt,.1,$(DOCS)) $(DESTDIR)$(man1dir)
+	$(INSTALL) -m644 $(MANS) $(DESTDIR)$(man1dir)
 	$(INSTALL) -d $(DESTDIR)$(man3dir)
 	$(INSTALL) -d $(DESTDIR)$(man8dir)
 	$(INSTALL) -d $(DESTDIR)$(sysconfdir)
@@ -61,12 +61,10 @@ install: compile
 	$(INSTALL) chkworld $(DESTDIR)$(bindir)/chkworld
 	$(INSTALL) chkdep $(DESTDIR)$(bindir)/chkdep
 	$(INSTALL) mkpkghtml $(DESTDIR)$(bindir)/mkpkghtml
-	$(INSTALL) -m644 mkpkghtml.1 $(DESTDIR)$(man1dir)
 	$(INSTALL) genchangelog $(DESTDIR)$(bindir)
 	$(INSTALL) darcs-git.py $(DESTDIR)$(bindir)/darcs-git
 	ln -s darcs-git $(DESTDIR)$(bindir)/dg
 	$(INSTALL) repoman $(DESTDIR)$(bindir)
-	$(INSTALL) -m644 repoman.1 $(DESTDIR)$(man1dir)
 	$(INSTALL) -m644 repoman.conf $(DESTDIR)$(sysconfdir)
 	$(INSTALL) -m644 repoman.d/current $(DESTDIR)$(sysconfdir)/repoman.d/current
 	$(INSTALL) -m644 repoman.d/stable $(DESTDIR)$(sysconfdir)/repoman.d/stable
@@ -79,17 +77,14 @@ install: compile
 	$(INSTALL) pootle-update $(DESTDIR)$(bindir)/pootle-update
 	$(INSTALL) mkiso/mkiso $(DESTDIR)$(bindir)/mkiso
 	$(INSTALL) fwmirror $(DESTDIR)$(bindir)/fwmirror
-	$(INSTALL) -m644 fwmirror.1 $(DESTDIR)$(man1dir)
 	$(INSTALL) pear-makefb $(DESTDIR)$(bindir)/pear-makefb
-	$(INSTALL) -m644 pear-makefb.1 $(DESTDIR)$(man1dir)
-	$(INSTALL) -m644 fblint.1 $(DESTDIR)$(man1dir)
 	$(INSTALL) -m644 mkiso/mkiso.8 $(DESTDIR)$(man8dir)
 	$(INSTALL) -m644 mkiso/volumes.xml $(DESTDIR)$(docdir)/volumes.xml
 	$(INSTALL) -m644 apidocs/*.3 $(DESTDIR)$(man3dir)
 	make -C syncpkgd DESTDIR=$(DESTDIR) install
 
 clean:
-	rm -rf genauthors apidocs $(subst .txt,.1,$(DOCS))
+	rm -rf genauthors apidocs $(MANS)
 	$(MAKE) -C mkiso clean
 
 dist:
