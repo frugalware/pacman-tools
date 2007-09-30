@@ -48,7 +48,7 @@ compile: genauthors apidocs docs
 
 docs: $(subst .txt,.1,$(DOCS))
 
-install:
+install: compile
 	$(INSTALL) -d $(DESTDIR)$(bindir)
 	$(INSTALL) -d $(DESTDIR)$(sbindir)
 	$(INSTALL) -d $(DESTDIR)$(libdir)
