@@ -4,27 +4,9 @@
 # repoman for Frugalware
 # distributed under GPL License
 
-function usage()
+usage()
 {
-	cat <<EOF
-Usage: `basename $0` [global options] [command] [command options]
-
-Commands:
-cl|changelog [category/]package             Generate a Changelog file.
-c|clean package                             Delete a package.
-del|delete file                             Delete a file from FST.
-ls|list directory                           List a directory in FST.
-rec|record [parameters]                     Record a package.
-up|upload source destination                Upload a file to FST.
-push [record parameters]                    Push a package.
-fpmmerge repo                               Merge fpms from another repo.
-
-Global options:
--d|--dry-run  Don't actually run the commands.
--k            Don't be interactive
--v|--verbose  Give verbose output.
--h|--help     Show this help screen.
-EOF
+	man repoman
 }
 
 msg()
@@ -600,7 +582,7 @@ if [ -e FrugalBuild ]; then
 fi
 
 # Initializating variables.
-version='0.3.0'
+version='0.3.1'
 [ -z "$arch" ] && arch=`uname -m`
 
 if [ "$F_makepkg_scm" = "git" ]; then
@@ -637,6 +619,10 @@ while [ "$1" != "" ]; do
 		;;
 		-v|--verbose)
 			 verbose=1
+		;;
+		--version)
+			echo repoman $version
+			exit 0
 		;;
 		-t|--tree)
 			shift 1
