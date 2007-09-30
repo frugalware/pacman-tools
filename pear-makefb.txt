@@ -1,0 +1,20 @@
+= pear-makefb(1)
+
+== NAME
+
+pear-makefb - Writes FrugalBuild scripts for PHP PEAR/PECL packages
+
+== SYNOPSIS
+
+pear-makefb [<packagename>] [<options>]
+
+== OPTIONS
+
+--help::
+	Display this manpage.
+
+--pecl::
+	Use this option when <packagename> is a PECL package, not a PEAR one.
+
+--version::
+	Display the package version.
