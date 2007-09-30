@@ -73,7 +73,7 @@ install: compile
 	$(INSTALL) -m644 repoman.conf $(DESTDIR)$(sysconfdir)
 	$(INSTALL) -m644 repoman.d/current $(DESTDIR)$(sysconfdir)/repoman.d/current
 	$(INSTALL) -m644 repoman.d/stable $(DESTDIR)$(sysconfdir)/repoman.d/stable
-	$(INSTALL) fwmakepkg $(DESTDIR)$(libdir)
+	$(INSTALL) lib/fwmakepkg $(DESTDIR)$(libdir)
 	$(INSTALL) etcconfig.py $(DESTDIR)$(sbindir)/etcconfig
 	$(INSTALL) rpm2fpm $(DESTDIR)$(bindir)/rpm2fpm
 	$(INSTALL) fwcpan $(DESTDIR)$(bindir)/fwcpan
