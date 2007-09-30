@@ -38,7 +38,7 @@ FINCDIR = $(shell source /usr/lib/frugalware/fwmakepkg; echo $$Fincdir)
 XML_PATH = /usr/share/sgml/docbook/dtd/xml-dtd-4.2
 DOCS = $(wildcard *.txt) $(wildcard syncpkgd/*.txt)
 
-compile: genauthors apidocs fwmakepkg.3 docs
+compile: genauthors apidocs docs
 	$(MAKE) -C mkiso
 	$(MAKE) -C repoman.d
 	help2man -n "mirrors Frugalware archives" -S Frugalware -N ./fwmirror |sed 's/\\(co/(c)/' >fwmirror.1
@@ -89,11 +89,10 @@ install:
 	$(INSTALL) -m644 mkiso/mkiso.8 $(DESTDIR)$(man8dir)
 	$(INSTALL) -m644 mkiso/volumes.xml $(DESTDIR)$(docdir)/volumes.xml
 	$(INSTALL) -m644 apidocs/*.3 $(DESTDIR)$(man3dir)
-	$(INSTALL) -m644 fwmakepkg.3 $(DESTDIR)$(man3dir)
 	make -C syncpkgd DESTDIR=$(DESTDIR) install
 
 clean:
-	rm -rf genauthors apidocs fwmakepkg.3 *.1
+	rm -rf genauthors apidocs *.1
 	$(MAKE) -C mkiso clean
 
 dist:
@@ -114,10 +113,6 @@ release:
 apidocs:
 	cp -a $(FINCDIR) apidocs
 	make -C apidocs
-
-fwmakepkg.3: apidocs fwmakepkg.3.in
-	cat fwmakepkg.3.in > fwmakepkg.3
-	ls apidocs/*.sh|sed 's|apidocs/||;$$!s/\(.*\)$$/.BR \1 (3),/;$$s/\(.*\)$$/.BR \1 (3)/' >> fwmakepkg.3
 
 %.html: %.txt
 	asciidoc $^
