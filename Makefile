@@ -92,7 +92,7 @@ install: compile
 	make -C syncpkgd DESTDIR=$(DESTDIR) install
 
 clean:
-	rm -rf genauthors apidocs *.1
+	rm -rf genauthors apidocs $(subst .txt,.1,$(DOCS))
 	$(MAKE) -C mkiso clean
 
 dist:
