@@ -1,0 +1,34 @@
+= fwcpan(1)
+
+== NAME
+
+fwcpan - generate FrugalBuild script for a Perl CPAN module
+
+== SYNOPSIS
+
+fwcpan [options] [<module>]
+
+== OPTIONS
+
+--help::
+	Display this manpage.
+
+-i, --install::
+	Build and install the package after creating the FrugalBuild.
+
+--version::
+	Display the package version.
+
+The optional <module> parameter is needed unless you use -v or -i.
+
+Example:
+
+----
+$ fwcpan io::zlib
+----
+
+or
+
+----
+# fwcpan -i io::string
+----

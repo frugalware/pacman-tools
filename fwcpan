@@ -57,10 +57,14 @@ get_deps()
 	echo ")"
 }
 
-if [ "$1" = "-h" -o "$1" = "--help" ]; then
-	echo "usage: $0 [-i|--install] [module]"
-	echo "usage: $0 -h|--help"
-	exit 0
+if [ "$1" == "-h" -o "$1" == "--help" ]; then
+	man fwcpan
+	exit $?
+fi
+
+if [ "$1" == "-v" -o "$1" == "--version" ]; then
+	pacman-g2 -Q pacman-tools
+	exit $?
 fi
 
 if [ "$1" = "-i" -o "$1" = "--install" ]; then
