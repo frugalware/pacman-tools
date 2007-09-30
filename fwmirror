@@ -1,7 +1,6 @@
 #!/bin/bash
 
 myver="0.7.9"
-archs=('i686' 'x86_64' 'ppc')
 
 usage()
 {
@@ -117,7 +116,7 @@ rsync_opts="$*"
 [ "`type -p rsync`" ] || die "Can't find rsync! Please install it with 'pacman -S rsync'!"
 
 # exclude the non-requested archs
-for i in "${archs[@]}"
+for i in "${Farchs[@]}"
 do
 	if ! in_array $i ${myarchs[@]}; then
 		rsync_opts="$rsync_opts --exclude /frugalware-$i/"
