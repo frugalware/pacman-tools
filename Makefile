@@ -95,7 +95,7 @@ install:
 	make -C syncpkgd DESTDIR=$(DESTDIR) install
 
 clean:
-	rm -rf genauthors apidocs fwmakepkg.3
+	rm -rf genauthors apidocs fwmakepkg.3 *.1
 	$(MAKE) -C mkiso clean
 
 dist:
