@@ -20,43 +20,6 @@
 #   USA.
 #
 
-get_deps()
-{
-	local indep i name ver
-	echo -n "depends=("
-	indep=0
-	cat $1|while IFS= read i
-	do
-		if [ $indep = 1 ]; then
-			echo "$i"|grep -q '},' && break
-			echo "$i"
-		else
-			echo "$i"|grep -q PREREQ_PM && indep=1
-		fi
-	done |sed 's/\W*\W*\([^\W]*\)\W*#.*/\1/'|while read name junk ver
-	do
-		[ -z "$name" ] && continue
-		name="perl-`echo $name|sed "s/::/-/g;s/'//g"|tr [A-Z] [a-z]`"
-		ver=`echo $ver|sed "s/'//g;s/$//;s/,$//"`
-		if [ "$ver" = "0" ]; then
-			if [ "$first" != 1 ]; then
-				first=1
-				echo -n "'$name'"
-			else
-				echo -n " '$name'"
-			fi
-		else
-			if [ "$first" != 1 ]; then
-				first=1
-				echo -n "'$name>=$ver'"
-			else
-				echo -n " '$name>=$ver'"
-			fi
-		fi
-	done
-	echo ")"
-}
-
 if [ "$1" == "-h" -o "$1" == "--help" ]; then
 	man fwcpan
 	exit $?
@@ -113,6 +76,9 @@ sha1sum=`cat $srcdump|sha1sum |sed 's/  -$//'`
 makedump=`mktemp`
 tar xOzf $srcdump $modname-$pkgver/Makefile.PL >$makedump 2>/dev/null
 
+# TODO: depends(). though this is not so problematic: the build will properly
+# abort on any missing depend
+
 cat << EOF > FrugalBuild
 # Compiling Time: 0.1 SBU
 # Maintainer: Zsolt Szalai <xbit@frugalware.org>
@@ -121,7 +87,6 @@ _F_perl_name=$modname
 _F_perl_author=$modauthor
 pkgver=$pkgver
 pkgdesc="$pkgdesc"
-`get_deps $makedump`
 archs=('`uname -m`')
 Finclude perl
 sha1sums=('$sha1sum')
