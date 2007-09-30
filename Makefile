@@ -18,8 +18,6 @@
 
 VERSION = 1.0.0
 
-LANGS = hu pl
-
 CFLAGS ?= -Wall -Werror -g -O2 -pipe
 CFLAGS += $(shell pkg-config --cflags libxml-2.0)
 LDFLAGS += $(shell pkg-config --libs libxml-2.0)
