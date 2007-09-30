@@ -1,0 +1,42 @@
+= fwmirror(1)
+
+== NAME
+
+fwmirror - mirrors Frugalware archives
+
+== SYNOPSIS
+
+fwmirror [options] -- [rsync options]
+
+== OPTIONS
+
+-a <archs>::
+	Coma separated list of architectures you want to mirror. If you want to
+	mirror the sources, too then use the special 'source' arch.
+
+-d <directory>::
+	Destination directory.
+
+--help::
+	This help.
+
+-s <server>::
+	The mirror server you want to use.
+
+-v <versions>::
+	Coma separated list of versions you want to mirror. You can use
+	explicit versions and aliases (current,testing,stable), too.
+
+--version::
+	'fwmirror' version.
+
+== DESCRIPTION
+
+About rsync options: If you run 'fwmirror' from 'crond', then probably you'll want to add '-q', if you're running it interactively, then most users need '-vP'.
+
+Example:
+
+----
+$ fwmirror -s rsync://rsync.frugalware.org/pub/frugalware/ \
+	-v current -a i686,source -d /home/ftp/pub/frugalware/ -- -vP
+----

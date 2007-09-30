@@ -4,28 +4,7 @@ myver="0.7.9"
 
 usage()
 {
-	echo "Usage: $0 [options] -- [rsync options]"
-	echo
-	echo "Options:"
-	echo "  -a <archs>       Coma separated list of architectures you want
-	to mirror. If you want to mirror the sources, too then use the special
-	'source' arch."
-	echo "  -d <directory>   Destination directory."
-	echo "  --help      This help."
-	echo "  -s <server>      The mirror server you want to use"
-	echo "  -v <versions>    Coma separated list of versions you want to
-	mirror. You can use explicit versions and aliases
-	(current,testing,stable), too."
-	echo "  --version        fwmirror version."
-	echo
-	echo "About rsync options:"
-	echo "If you run fwmirror from cron, then probably you'll want to add"
-	echo "'-q', if you're running it interactively, then most users need"
-	echo "'-vP'."
-	echo
-	echo "A real example:"
-	echo "fwmirror -s rsync://rsync.frugalware.org/pub/frugalware/ \\"
-	echo "-v current -a i686,source -d /home/ftp/pub/frugalware/ -- -vP"
+	man fwmirror
 }
 
 die()
