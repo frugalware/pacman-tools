@@ -41,7 +41,6 @@ DOCS = $(wildcard *.txt) $(wildcard syncpkgd/*.txt)
 compile: genauthors apidocs docs
 	$(MAKE) -C mkiso
 	$(MAKE) -C repoman.d
-	help2man -n "mirrors Frugalware archives" -S Frugalware -N ./fwmirror |sed 's/\\(co/(c)/' >fwmirror.1
 	help2man -n "Writes FrugalBuild scripts for PHP PEAR/PECL packages" -S Frugalware -N ./pear-makefb \
 		|sed 's/\\(co/(c)/' >pear-makefb.1
 	help2man -n "Converts a README.Frugalware to HTML" -S Frugalware -N ./mkpkghtml |sed 's/\\(co/(c)/' >mkpkghtml.1
