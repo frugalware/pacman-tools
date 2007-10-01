@@ -93,7 +93,7 @@ int main(int argc, char **argv)
 
 	if(argc <= 1)
 	{
-		printf("Usage: %s /path/to/authors.xml \n", argv[0]);
+		system("man genauthors");
 		return(1);
 	}
 
