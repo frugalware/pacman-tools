@@ -27,6 +27,9 @@ chkdep [ -d | -p ] <path> [options]
 -p, --package <path>::
 	Name of the FPM package to check.
 
+-q, --quiet::
+	Don't display any warning.
+
 -i::
 	Does nothing (for backward compatibility).
 
