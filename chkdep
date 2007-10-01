@@ -42,7 +42,7 @@ def detect_owner(lib):
 	pkg = pacman.void_to_PM_PKG(pacman.list_getdata(pacman.pkg_getowners(lib)))
 	owner = pacman.void_to_char(pacman.pkg_getinfo(pkg, pacman.PKG_NAME))
 	if not owner and not quiet:
-		print "WARNING: No package found containing %s!" % lib
+		print >>sys.stderr, "WARNING: No package found containing %s!" % lib
 	elif owner not in deps:
 		deps.append(owner)
 
@@ -101,6 +101,9 @@ class Checks:
 			if i.find("=>") == -1:
 				continue
 			lib = re.sub(r".* => (.*) \(.*", r"\1", i.strip())
+			if ' ' in lib:
+				# not all the deps are installed
+				lib = lib.split(' ')[0]
 			if len(lib):
 				libs.append(lib)
 		sock.close()
