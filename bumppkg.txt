@@ -18,7 +18,7 @@ bumppkg [options]
 	syncpkgd can later build it.
 
 --push::
-	Push the changes righter after committing locally.
+	Push the changes right after committing locally.
 
 --rebuild::
 	Don't bump to a newer version, but increment the package release and

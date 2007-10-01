@@ -1,0 +1,37 @@
+= revdep-rebuild(1)
+
+== NAME
+
+revdep-rebuild - rebuilds reverse depends of a given package
+
+== SYNOPSIS
+
+revdep-rebuild [<package id>] [options]
+
+== OPTIONS
+
+-t <tree>::
+	Build in a chroot different to the default one.
+
+--other::
+	Rebuild other (ie not exact) reverse depends. Useful on sover bumps for
+	libraries.
+
+--nobuild::
+	Do not actually perform the build so that syncpkgd can later build it.
+
+--nopush::
+	Don't push the changes right after committing locally.
+
+--sed <expression>::
+	Use 'sed' to update the FrugalBuilds before build.
+
+== DESCRIPTION
+
+For example, to rebuild packages for `parted-1.8.8`:
+
+----
+revdep-rebuild 429 --other --sed "s|'parted[^']*'|'parted>=1.8.8'|"
+----
+
+You can get the id of a package from the http://frugalware.org/packages page.

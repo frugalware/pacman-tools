@@ -22,7 +22,10 @@ die()
 id=$1
 shift
 
-[ -z "$id" ] && die "usage: $0 <package id> [-t tree] [--other] [--nobuild] [--sed <expression>]"
+if [ -z "$id" ]; then
+	man revdep-rebuild
+	exit $?
+fi
 
 tree=$repos
 if [ "$1" == "-t" ]; then
