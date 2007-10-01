@@ -250,7 +250,7 @@ Otherwise just do:
 $ echo "unset GIT_DIR; cd ..; git checkout -f" > .git/hooks/post-receive
 ----
 
-Then
+Then (in case you chose the second way)
 
 ----
 $ chmod +x .git/hooks/post-receive
@@ -280,6 +280,14 @@ And create a file named /etc/pacman.d/flac113:
 [flac113]
 Server = http://ftp.frugalware.org/pub/other/people/nick/flac113/frugalware-$arch/
 ----
+
+Then add
+
+----
+Include = /etc/pacman.d/flac113
+----
+
+to your `/etc/pacman.conf` _before_ any other includes.
 
 Building a package will be a bit more complicated than 'sudo makepkg -c', so
 let's create an alias:
