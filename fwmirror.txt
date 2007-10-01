@@ -11,8 +11,8 @@ fwmirror [options] -- [rsync options]
 == OPTIONS
 
 -a <archs>::
-	Coma separated list of architectures you want to mirror. If you want to
-	mirror the sources, too then use the special 'source' arch.
+	Comma separated list of architectures you want to mirror. If you want to
+	mirror the sources too, then use the special 'source' arch.
 
 -d <directory>::
 	Destination directory.
@@ -24,7 +24,7 @@ fwmirror [options] -- [rsync options]
 	The mirror server you want to use.
 
 -v <versions>::
-	Coma separated list of versions you want to mirror. You can use
+	Comma separated list of versions you want to mirror. You can use
 	explicit versions and aliases (current,testing,stable), too.
 
 --version::
