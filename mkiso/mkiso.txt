@@ -1,0 +1,106 @@
+= mkiso(1)
+
+== NAME
+
+mkiso - Frugalware's program to generate ISO9660 images
+
+== SYNOPSIS
+
+mkiso [options]
+
+== DESCRIPTION
+
+'mkiso' is meant for anyone who wants to generate (custom) iso images from the
+Frugalware Source Tree.
+
+== USAGE
+
+A typical iso generation should be done as follows:
+
+Create a working directory:
+
+----
+$ mkdir -p ~/iso
+$ cd ~/iso
+----
+
+Copy the descriptor xml template to there:
+
+----
+$ cp /usr/share/doc/pacman-tools-*/volumes.xml ./
+----
+
+Change the fst_root to something like:
+
+----
+<fst_root>/home/john/iso</fst_root>
+----
+
+In this example we create a netinstall iso, so leave only the following entry:
+
+----
+<volume>
+	<arch>i686</arch>
+	<media>net</media>
+</volume>
+----
+
+Now we need to create a minimal mirror. we can exclude the source (.git/_darcs
+and source dir) and we can ignore the fpms for the netinstall:
+
+----
+$ fwmirror -s rsync://ftp5.frugalware.org/packages/frugalware/pub/frugalware/ \
+	-v current -a i686,source -d . -- -vP --delete --exclude /_darcs/ \
+	--exclude /.git/ --exclude /source/ --exclude '*fpm'
+----
+
+NOTE: feel free to choose a different rsync mirror from `/etc/repoman.conf`!
+
+Ok, we have the necessary files, let's make the iso!
+
+----
+$ mkiso
+----
+
+== THE XML FILE
+
+In the xml file primarily you should define the required volumes. The media
+type of the volume is required at least. The media can be "net", "cd", or
+"dvd". The "net" will not contain any fpm packages. The only difference between
+"cd" and "dvd" is the default size. You can define the arch, which defaults to
+the machine hardware name. For a cd or dvd a serial tag is required, 1 or the
+1st cd and so on. You can define a custom cd/dvd size with the size tag.
+
+After defining the volumes, you must supply the root of the Frugalware Source
+Tree with the fst_root tag. Other optional tags include out_dir [defaults to
+fst_root], version [timestamp] and codename [-current].
+
+== HACKING
+
+Probably the most changing part is the initrd and the kernel. You can generate them from the 'setup' repo.
+
+== OPTIONS
+
+-h, --help::
+	Show the help screen.
+
+-c, --count::
+	Do not generate the isos, just print out the number of required isos
+	for the given size.
+
+-s, --stable::
+	Assume that the given repo is a -stable one, so that there will be a
+	'frugalware.fdb' under the 'frugalware-<arch>' directory, not a
+	'frugalware-current.fdb'.
+
+-f, --file <volumes.xml>::
+	By default, 'mkiso' searches for the file named 'volumes.xml'. If you
+	want a different one, then just specify it.
+
+== REPORTING BUGS
+
+Please report bugs to http://bugs.frugalware.org/.
+
+== SEE ALSO
+
+*setup*(1), *pacman-g2*(8)

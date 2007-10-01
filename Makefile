@@ -34,7 +34,7 @@ sysconfdir = /etc
 docdir = /usr/share/doc/pacman-tools-$(VERSION)
 FINCDIR = $(shell source /usr/lib/frugalware/fwmakepkg; echo $$Fincdir)
 XML_PATH = /usr/share/sgml/docbook/dtd/xml-dtd-4.2
-DOCS = $(wildcard *.txt) $(wildcard syncpkgd/*.txt)
+DOCS = $(wildcard *.txt) $(wildcard syncpkgd/*.txt) $(wildcard mkiso/*.txt)
 MANS = $(subst .txt,.1,$(DOCS))
 
 PROGRAMS = bumppkg chkdep chkworld emulgen fblint fpmdiff fwcpan fwmirror \
@@ -69,7 +69,6 @@ install: compile
 	$(INSTALL) lib/fwmakepkg $(DESTDIR)$(libdir)
 	$(INSTALL) etcconfig.py $(DESTDIR)$(sbindir)/etcconfig
 	$(INSTALL) mkiso/mkiso $(DESTDIR)$(bindir)/mkiso
-	$(INSTALL) -m644 mkiso/mkiso.8 $(DESTDIR)$(man8dir)
 	$(INSTALL) -m644 mkiso/volumes.xml $(DESTDIR)$(docdir)/volumes.xml
 	$(INSTALL) -m644 apidocs/*.3 $(DESTDIR)$(man3dir)
 	make -C syncpkgd DESTDIR=$(DESTDIR) install
