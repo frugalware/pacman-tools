@@ -1,0 +1,27 @@
+= genchangelog(1)
+
+== NAME
+
+genchangelog - updates Changelogs for Frugalware packages
+
+== SYNOPSIS
+
+genchangelog [options]
+
+== OPTIONS
+
+--clean <package>::
+	Remove package from the SQL database.
+
+== DESCRIPTION
+
+'genchangelog' performs several tasks once a binary package is on the server
+and the buildscript is updated, too:
+
+* updates the Changelog file
+
+* updates pkgname.html if a README.Frugalware is available
+
+* downloads missing source files
+
+* updates the SQL database
