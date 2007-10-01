@@ -1,0 +1,26 @@
+= syncemul(1)
+
+== NAME
+
+syncemul - updates existing packages for emulation of i686 on x86_64
+
+== SYNOPSIS
+
+syncemul [options]
+
+== OPTIONS
+
+--help::
+	Display this manpage.
+
+--version::
+	Display the package version.
+
+== DESCRIPTION
+
+You should use this script, like:
+
+----
+$ cd /path/to/source/emul-extra
+$ syncemul
+----

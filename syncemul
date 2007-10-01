@@ -2,6 +2,16 @@
 
 . /usr/lib/frugalware/fwmakepkg
 
+if [ "$1" == "-h" -o "$1" == "--help" ]; then
+	man syncemul
+	exit $?
+fi
+
+if [ "$1" == "-v" -o "$1" == "--version" ]; then
+	pacman-g2 -Q pacman-tools
+	exit $?
+fi
+
 if [ "`pwd|sed 's|.*/\(.*\)|\1|'`" != "emul-extra" ]; then
 	echo "where are you?"
 	exit 1
