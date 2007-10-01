@@ -1,0 +1,18 @@
+= syncpkg-shell(1)
+
+== NAME
+
+syncpkg-shell - modified shell for syncpkg client users
+
+== SYNOPSIS
+
+syncpkg-shell <username>
+
+== DESCRIPTION
+
+'syncpkg-shell' modifies the 'uploader' environment variable, then evaluates
+the command, specified in the 'SSH_ORIGINAL_COMMAND' environment variable.
+
+== SEE ALSO
+
+*syncpkgcd*(1)
