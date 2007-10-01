@@ -51,12 +51,12 @@ $ echo 'current_servers=("<nick>@git.frugalware.org:/home/ftp/pub/frugalware/fru
 $ echo 'fst_root=~/git' >> ~/.repoman.conf
 ----
 
-Replace <nick> with your nick and make sure about you will have the git tree in
+Replace <nick> with your nick and make sure that you have the git tree in
 \~/git/current.
 
 If you want to use more than one (conflicting, ie.: current and stable) trees,
 then please add the <reponame>_pushonly=y option to each repo except one.
-Example: if the host system is -current and you want to enabled current and
+Example: if the host system is -current and you want to enable current and
 stable, then add stable_pushonly="y" to your config.
 
 === Getting the repo
@@ -68,7 +68,7 @@ $ cd ~/git
 $ git clone <nick>@git.frugalware.org:/home/ftp/pub/frugalware/frugalware-current current
 ----
 
-Getting other git repos are similar. Example for the pacman-tools repo:
+Getting other git repos is similar. For example, to get the pacman-tools repo, type:
 
 ----
 $ git clone <nick>@git.frugalware.org:/home/ftp/pub/other/pacman-tools/pacman-tools
@@ -88,7 +88,7 @@ vmiklos.
 
 === Updating the repo
 
-If you already got the repo a simple 'git pull' should be enough.
+If you already got the repo, a simple 'git pull' should be enough.
 
 === Making changes and building the package
 
@@ -140,7 +140,7 @@ $ repoman del source/base/readline/readline-5.0.tar.g
 
 Here you only have to do a simple 'git push'.
 
-This command uploads the changes you made locally to the server.
+This command uploads the changes you made locally, to the server.
 
 === Upload the new source package(s)
 
@@ -220,7 +220,7 @@ If the repo you use for your work already exists, it may need some work:
 * Remove the already merged fpms manually. This usually means all fpms.
 
 * Remove the obsolete entries from the fdb, or just remove the file if no fpms
-  left in the repo.
+  are left in the repo.
 
 === The How
 
@@ -412,7 +412,7 @@ rec|record [commit message]::
 s|search [regexp]::
 
 	To be used by users. Search in those FrugalBuilds which are only available in
-	source form. If the optional regexp parameter omitted, it will list all
+	source form. If the optional regexp parameter is omitted, it will list all
 	source-only packages.
 
 sync::
