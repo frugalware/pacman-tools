@@ -1,0 +1,22 @@
+= syncpkgdctl(1)
+
+== NAME
+
+syncpkgdctl - controller client for the package synchronization daemon
+
+== SYNOPSIS
+
+syncpkgdctl [<url>]
+
+== DESCTIPTION
+
+If you want to add a new package, just pass its url as a parameter, ie.:
+
+----
+$ syncpkgdctl 'git://current/frugalwareutils-0.7.4-2-x86_64/VMiklos <vmiklos@frugalware.org>'
+----
+
+(The address is used to notify you in case the build fails. Please use your
+address only.)
+
+If no parameters are passed then the current build queue is displayed.
