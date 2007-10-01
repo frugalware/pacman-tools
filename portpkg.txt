@@ -14,4 +14,4 @@ portpkg [options]
 	Push the package after a successful build.
 
 --silentpush::
-	Just modify the buildscript, let syncpkgd to build the binary package.
+	Just modify the buildscript and let syncpkgd build the binary package.
