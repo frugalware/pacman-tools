@@ -30,8 +30,7 @@ if [ "$1" == "--push" -o "$1" == "--silentpush" ]; then
 	if [ "$1" == "--push" ]; then
 		repoman -k push
 	else
-		git pull
-		git push
+		dg pull -a && git push
 	fi
 else
 	die "now run '$0 --push' to record and push your changes"

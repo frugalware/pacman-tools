@@ -1,0 +1,17 @@
+= portpkg(1)
+
+== NAME
+
+portpkg - port a package to a new architecture
+
+== SYNOPSIS
+
+portpkg [options]
+
+== OPTIONS
+
+--push::
+	Push the package after a successful build.
+
+--silentpush::
+	Just modify the buildscript, let syncpkgd to build the binary package.
