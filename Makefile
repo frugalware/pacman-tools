@@ -37,7 +37,11 @@ XML_PATH = /usr/share/sgml/docbook/dtd/xml-dtd-4.2
 DOCS = $(wildcard *.txt) $(wildcard syncpkgd/*.txt)
 MANS = $(subst .txt,.1,$(DOCS))
 
-compile: genauthors apidocs docs
+PROGRAMS = bumppkg chkdep chkworld emulgen fblint fpmdiff fwcpan fwmirror \
+	genauthors genchangelog mkisorelease mkpkghtml pear-makefb pootle-update \
+	portpkg repoman revdep-rebuild rpm2fpm syncemul
+
+compile: $(PROGRAMS) apidocs docs
 	$(MAKE) -C mkiso
 	$(MAKE) -C repoman.d
 
@@ -48,7 +52,6 @@ install: compile
 	$(INSTALL) -d $(DESTDIR)$(sbindir)
 	$(INSTALL) -d $(DESTDIR)$(libdir)
 	$(INSTALL) -d $(DESTDIR)$(man1dir)
-	$(INSTALL) -m644 $(MANS) $(DESTDIR)$(man1dir)
 	$(INSTALL) -d $(DESTDIR)$(man3dir)
 	$(INSTALL) -d $(DESTDIR)$(man8dir)
 	$(INSTALL) -d $(DESTDIR)$(sysconfdir)
@@ -56,26 +59,16 @@ install: compile
 	$(INSTALL) -d $(DESTDIR)$(docdir)
 	$(INSTALL) -d $(DESTDIR)/home/syncpkgd
 	chown syncpkgd:daemon $(DESTDIR)/home/syncpkgd
-	$(INSTALL) chkworld $(DESTDIR)$(bindir)/chkworld
-	$(INSTALL) chkdep $(DESTDIR)$(bindir)/chkdep
-	$(INSTALL) mkpkghtml $(DESTDIR)$(bindir)/mkpkghtml
-	$(INSTALL) genchangelog $(DESTDIR)$(bindir)
+	$(INSTALL) -m755 $(PROGRAMS) $(DESTDIR)$(bindir)
+	$(INSTALL) -m644 $(MANS) $(DESTDIR)$(man1dir)
 	$(INSTALL) darcs-git.py $(DESTDIR)$(bindir)/darcs-git
 	ln -s darcs-git $(DESTDIR)$(bindir)/dg
-	$(INSTALL) repoman $(DESTDIR)$(bindir)
 	$(INSTALL) -m644 repoman.conf $(DESTDIR)$(sysconfdir)
 	$(INSTALL) -m644 repoman.d/current $(DESTDIR)$(sysconfdir)/repoman.d/current
 	$(INSTALL) -m644 repoman.d/stable $(DESTDIR)$(sysconfdir)/repoman.d/stable
 	$(INSTALL) lib/fwmakepkg $(DESTDIR)$(libdir)
 	$(INSTALL) etcconfig.py $(DESTDIR)$(sbindir)/etcconfig
-	$(INSTALL) rpm2fpm $(DESTDIR)$(bindir)/rpm2fpm
-	$(INSTALL) fwcpan $(DESTDIR)$(bindir)/fwcpan
-	$(INSTALL) genauthors $(DESTDIR)$(bindir)/genauthors
-	$(INSTALL) fblint $(DESTDIR)$(bindir)/fblint
-	$(INSTALL) pootle-update $(DESTDIR)$(bindir)/pootle-update
 	$(INSTALL) mkiso/mkiso $(DESTDIR)$(bindir)/mkiso
-	$(INSTALL) fwmirror $(DESTDIR)$(bindir)/fwmirror
-	$(INSTALL) pear-makefb $(DESTDIR)$(bindir)/pear-makefb
 	$(INSTALL) -m644 mkiso/mkiso.8 $(DESTDIR)$(man8dir)
 	$(INSTALL) -m644 mkiso/volumes.xml $(DESTDIR)$(docdir)/volumes.xml
 	$(INSTALL) -m644 apidocs/*.3 $(DESTDIR)$(man3dir)
