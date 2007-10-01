@@ -1,5 +1,15 @@
 #!/bin/bash
 
+if [ "$1" == "-h" -o "$1" == "--help" ]; then
+	man pootle-update
+	exit $?
+fi
+
+if [ "$1" == "-v" -o "$1" == "--version" ]; then
+	pacman-g2 -Q pacman-tools
+	exit $?
+fi
+
 cd $1
 
 # FIXME: hard-wiring such a list to here is very ugly

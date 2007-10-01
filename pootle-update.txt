@@ -1,0 +1,23 @@
+= pootle-update(1)
+
+== NAME
+
+pootle-update - updates local pot templates from a server
+
+== SYNOPSIS
+
+pootle-update [options | <path>]
+
+== OPTIONS
+
+--help::
+	Display this manpage.
+
+--version::
+	Display the package version.
+
+== DESCRIPTION
+
+If no options used, the <path> parameter is required.
+
+Example: /usr/lib/python2.5/site-packages/Pootle/po
