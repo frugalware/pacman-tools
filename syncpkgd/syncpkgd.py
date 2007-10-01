@@ -163,17 +163,7 @@ class Options:
 		self.help = False
 		self.uid = False
 	def usage(self, ret):
-		print """Usage: syncpkgd [OPTION]...
-syncpkgd is a daemon that accepts requests from syncpkg clients.
-
-Options:
-	-c      --clientlogs    set the dir to place failed build logs
-	                        (default: clientlogs)
-	-d	--daemon	run as daemon in the background
-	-l	--logfile	set the logfile (default: syncpkgd.log)
-	-p	--pidfile	set the pidfile (default: syncpkgd.pid)
-	-s	--statusfile	set the statusfile (default: syncpkgd.status)
-	-u	--uid		set the daemon's user id"""
+		os.system("man syncpkgd")
 		sys.exit(ret)
 
 

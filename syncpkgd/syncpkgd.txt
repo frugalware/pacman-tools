@@ -1,0 +1,29 @@
+= syncpkgd(1)
+
+== NAME
+
+syncpkgd - a daemon that accepts requests from syncpkg clients
+
+== SYNOPSIS
+
+syncpkgd [options]
+
+== OPTIONS
+
+-c, --clientlogs <directory>::
+	set the dir to place failed build logs (default: clientlogs)
+
+-d, --daemon::
+	run as daemon in the background
+
+-l, --logfile <path>::
+	set the logfile (default: syncpkgd.log)
+
+-p, --pidfile <path>::
+	set the pidfile (default: syncpkgd.pid)
+
+-s, --statusfile <path>::
+	set the statusfile (default: syncpkgd.status)
+
+-u, --uid <username>::
+	set the daemon's user id
