@@ -35,6 +35,7 @@ rsync rsync://rsync.frugalware.org/pub/other/frugalwareutils/frugalwareutils/xco
 rsync rsync://rsync.frugalware.org/pub/other/frugalwareutils/frugalwareutils/xwmconfig/po/xwmconfig.pot frugalwareutils/templates/xwmconfig.pot
 rsync rsync://rsync.frugalware.org/pub/other/fw-control-center/fw-control-center/gnetconfig/po/gnetconfig.pot fwcontrolcenter/templates/gnetconfig.pot
 rsync rsync://rsync.frugalware.org/pub/other/fw-control-center/fw-control-center/gnetconfig-mcs-plugin/po/gnetconfig-mcs-plugin.pot fwcontrolcenter/templates/gnetconfig-mcs-plugin.pot
+rsync rsync://rsync.frugalware.org/pub/other/fw-control-center/fw-control-center/gfpm-mcs-plugin/po/gfpm-mcs-plugin.pot fwcontrolcenter/templates/gfpm-mcs-plugin.pot
 rsync rsync://rsync.frugalware.org/pub/other/gfpm/gfpm/po/gfpm.pot gfpm/templates/gfpm.pot
 echo "done."
 
