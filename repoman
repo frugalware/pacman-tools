@@ -113,7 +113,7 @@ upload()
 	do
 		name=`basename $src`
 		msg "Requesting a temporary file"
-		tmp=`ssh $host mktemp 2>/dev/null`
+		tmp=`ssh $host mktemp -p ~ 2>/dev/null`
 		msg "Uploading file: $src (to $tmp)"
 		scp $src $host:$tmp
 		if echo "`sha1sum $src|sed 's/\(.*\)  .*/\1/'`  $tmp" |ssh $host sha1sum -c - >/dev/null 2>&1; then
