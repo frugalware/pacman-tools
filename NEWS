@@ -1,5 +1,9 @@
 VERSION         DESCRIPTION
 -----------------------------------------------------------------------------
+1.0.1         - converted documentation to asciidoc
+              - added several new manpage, now every command have to have one
+              - new command: syncpkg-shell
+              - minor bugfix in repoman
 1.0.0         - dg push now pushes tags, too
               - dg pull now uses fetch + rebase instead of pull
               - dg rec: support for packed refs (git gc v1.5.3 uses them)
