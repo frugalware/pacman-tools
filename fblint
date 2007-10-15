@@ -172,7 +172,7 @@ if [ ! -z "$subpkgs" ]; then
 fi
 
 if [ "`get_root`" = "stable" ]; then
-	check "unchanged pkgrel" "echo $pkgrel | grep -q '\(siwenna\|terminus\)'"
+	check "unchanged pkgrel" "echo $pkgrel | grep -q '\(siwenna\|terminus\|sayshell\)'"
 fi
 
 [ "$_fblint_verbose" ] && echo "done: $_fblint_done, failed $_fblint_failed"
