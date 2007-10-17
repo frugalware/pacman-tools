@@ -68,7 +68,7 @@ get_root()
 
 _set_lockname()
 {
-	if [ "$F_makepkg_scm" = "git" ]; then
+	if [ -z "$F_makepkg_scm" -o "$F_makepkg_scm" = "git" ]; then
 		lock=".git/lock"
 	else
 		lock="_darcs/lock"
