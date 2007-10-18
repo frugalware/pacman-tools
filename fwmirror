@@ -2,6 +2,8 @@
 
 myver="0.7.9"
 
+. /usr/lib/frugalware/fwmakepkg
+
 usage()
 {
 	man fwmirror
