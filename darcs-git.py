@@ -580,7 +580,6 @@ Options:
 		sys.exit(1)
 	else:
 		os.system("git push --tags")
-		os.system("git fetch")
 
 def pull(argv):
 	def usage(ret):
