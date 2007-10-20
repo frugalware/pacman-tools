@@ -700,6 +700,14 @@ Options:
 			sys.exit(0)
 		print "Invalid response, try again!"
 	os.system("git reset --soft HEAD^ %s" % " ".join(argv))
+	sock = os.popen("git diff --cached --name-status")
+	files = sock.readlines()
+	sock.close()
+	for i in files:
+		status, name = i.split("\t")
+		if status != "M":
+			files.remove(i)
+	os.system("git reset HEAD %s >/dev/null" % " ".join([i.split("\t")[1].strip() for i in files]))
 	print "Finished unrecording."
 
 def unpull(argv):
