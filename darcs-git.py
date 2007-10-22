@@ -340,8 +340,8 @@ Options:
 				os.system("git add %s" % diff2filename(lines[0]))
 	for i in newlist:
 		os.system("git reset HEAD %s" % i)
-	os.system("""git commit -m "%s" %s""" %
-			(options.name.replace('"', r'\"'), options.edit))
+	os.system("""git commit -m '%s' %s""" %
+			(options.name.replace("'", """'"'"'"""), options.edit))
 	# readd the uncommitted new files
 	for i in newlist:
 		os.system("git add %s" % i)
