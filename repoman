@@ -397,7 +397,7 @@ sync()
 		opts=""
 	fi
 	if [ "$F_makepkg_scm" = "git" ]; then
-		cmd="dg pull $opts; git diff|grep -q -- 'diff --cc' && die 'detected conflicts'; dg push $opts"
+		cmd="dg pull $opts || die 'dg pull failed: try dg stash; dg pull; dg stash apply; dg stash clear'; git diff|grep -q -- 'diff --cc' && die 'detected conflicts'; dg push $opts"
 	else
 		cmd="darcs push --match 'name $modpkgname' $opts"
 	fi
