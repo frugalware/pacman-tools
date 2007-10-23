@@ -632,7 +632,7 @@ Options:
 			if ret in ("n", "q"):
 				sys.exit(0)
 			print "Invalid response, try again!"
-	os.system("git rebase %s" % options.gitopts)
+	sys.exit(os.system("git rebase %s" % options.gitopts))
 
 def get(argv):
 	def usage(ret):
