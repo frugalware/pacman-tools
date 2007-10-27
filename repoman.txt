@@ -326,13 +326,8 @@ $ git pull nick@git.frugalware.org:/home/ftp/pub/other/people/nick/flac113
 This will merge your WIP repo to your local current repo. If there are
 conflicts, resolve them.
 
-Push your changes:
-
-----
-$ git push
-----
-
-Finally you need to transfer the fpms from your repo and run a repoman cl for each package:
+Push your changes and transfer the fpms from your repo and run a repoman cl for
+each package:
 
 ----
 $ repoman fpmmerge flac113

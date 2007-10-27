@@ -144,7 +144,11 @@ fpmmerge()
 	if ! ssh $host "cd $path/frugalware-$arch && $sudo rsync -avP `echo $srcurl|sed 's/^.*@//'`/frugalware-$arch/*.fpm ./"; then
 		die "rsync failed! :/"
 	fi
-	# now run repoman cl for each
+	# now push
+	dg pull -a || die 'dg pull failed: try dg stash; dg pull; dg stash apply; dg stash clear'
+	git diff|grep -q -- 'diff --cc' && die 'detected conflicts'
+	dg push -a
+	# finally run repoman cl for each
 	for i in `$0 -t $1 ls /frugalware-$arch/ 2>/dev/null|sed 's/-[^-]\+-[^-]\+-[^-]\+$//'`
 	do
 		cd `git rev-parse --git-dir`/../source/*/$i 2>/dev/null || continue
