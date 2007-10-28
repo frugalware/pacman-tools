@@ -588,7 +588,7 @@ fi
 # Initializating variables.
 version='0.3.1'
 [ -z "$arch" ] && arch=`uname -m`
-mktemp="mktemp -p ~"
+mktemp="mktemp -p $HOME"
 
 if [ "$F_makepkg_scm" = "git" ]; then
 # Checking for git.
