@@ -1,5 +1,10 @@
 VERSION         DESCRIPTION
 -----------------------------------------------------------------------------
+1.0.2         - fblint now requires at least an empty depends() array
+              - dg: fixes and speedups for record, unrecord and pull
+              - repoman push now gives more usable error messages
+	      - repoman fpmmerge now prevents syncpkgd from building
+	        unnecessary packages
 1.0.1         - converted documentation to asciidoc
               - added several new manpage, now every command have to have one
               - new command: syncpkg-shell
