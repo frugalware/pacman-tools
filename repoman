@@ -113,7 +113,7 @@ upload()
 	do
 		name=`basename $src`
 		msg "Requesting a temporary file"
-		tmp=`ssh $host $mktemp 2>/dev/null`
+		tmp=`ssh $host $mktemp_remote 2>/dev/null`
 		msg "Uploading file: $src (to $tmp)"
 		scp $src $host:$tmp
 		if echo "`sha1sum $src|sed 's/\(.*\)  .*/\1/'`  $tmp" |ssh $host sha1sum -c - >/dev/null 2>&1; then
@@ -340,7 +340,7 @@ srcdel()
 			fi
 		done
 	else
-	srckeep=$($mktemp)
+	srckeep=$($mktemp_local)
 
 	darcsdir="_darcs/pristine"
 	if ! $0 -t $reponame ls $darcsdir &>/dev/null; then
@@ -364,8 +364,8 @@ srcdel()
 
 fpmdel()
 {
-	fpmkeep=$($mktemp)
-	fpmserver=$($mktemp)
+	fpmkeep=$($mktemp_local)
+	fpmserver=$($mktemp_local)
 
 	for i in $pkgname ${subpkgs[@]}
 	do
@@ -588,7 +588,12 @@ fi
 # Initializating variables.
 version='0.3.1'
 [ -z "$arch" ] && arch=`uname -m`
-mktemp="mktemp -p $HOME"
+if [ -n "$REMOTEHOME" ]; then
+	mktemp_remote="mktemp -p $REMOTEHOME"
+else
+	mktemp_remote="mktemp -p $HOME"
+fi
+mktemp_local="mktemp -p $HOME"
 
 if [ "$F_makepkg_scm" = "git" ]; then
 # Checking for git.
