@@ -11,6 +11,7 @@ strip_url()
 	echo $1 | sed 's|^.*://.*/||g'
 }
 [ -z "$arch" ] && arch=`arch`
+[ -z "$uploader" ] && uploader=`echo $HOME|sed 's|.*/\(.*\)$|\1|'`
 
 echo $* |grep -q -- --check && exit 0
 
