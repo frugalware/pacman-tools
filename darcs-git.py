@@ -632,8 +632,16 @@ Options:
 			if ret in ("n", "q"):
 				sys.exit(0)
 			print "Invalid response, try again!"
+	if os.system("git diff-index --quiet --cached HEAD && git diff-files --quiet") != 0:
+		changes = True
+		if os.system("git stash") != 0:
+			sys.exit(1)
+	else:
+		changes = False
 	if os.system("git rebase %s" % options.gitopts) != 0:
 		sys.exit(1)
+	if changes and os.system("git stash apply --index && sed -i '$d' `git rev-parse --show-cdup`.git/logs/refs/stash") != 0:
+			sys.exit(1)
 
 def get(argv):
 	def usage(ret):
