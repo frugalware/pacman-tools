@@ -145,7 +145,7 @@ fpmmerge()
 		die "rsync failed! :/"
 	fi
 	# now push
-	dg pull -a || die 'dg pull failed: try dg stash; dg pull; dg stash apply; dg stash clear'
+	dg pull -a || die 'dg pull failed'
 	git diff|grep -q -- 'diff --cc' && die 'detected conflicts'
 	dg push -a
 	# finally run repoman cl for each
@@ -401,7 +401,7 @@ sync()
 		opts=""
 	fi
 	if [ "$F_makepkg_scm" = "git" ]; then
-		cmd="dg pull $opts || die 'dg pull failed: try dg stash; dg pull; dg stash apply; dg stash clear'; git diff|grep -q -- 'diff --cc' && die 'detected conflicts'; dg push $opts"
+		cmd="dg pull $opts || (git diff|grep -q -- 'diff --cc' && echo 'detected conflicts'; die 'dg pull failed'); dg push $opts"
 	else
 		cmd="darcs push --match 'name $modpkgname' $opts"
 	fi
