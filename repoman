@@ -80,7 +80,11 @@ delete()
 	local i files rmopts host
 	check_servers
 	sudouser=$(eval "echo \$${reponame}_sudo")
-	[ -n "$sudouser" ] && sudo="sudo -u $sudouser"
+	if [ -n "$sudouser" ]; then
+		sudo_cmd="$sudo_env -u $sudouser"
+	else
+		sudo_cmd=""
+	fi
 	# Strip leading / and any ..
 	for i in $*
 	do
@@ -93,7 +97,7 @@ delete()
 	do
 		msg "Deleting file(s): $i"
 		_set_lockname
-		ssh $host "cd $path; if [ ! -e $lock ]; then $sudo rm $rmopts $path/$i; else echo \"Couldn't get lock.\"; fi"
+		ssh $host "cd $path; if [ ! -e $lock ]; then $sudo_cmd rm $rmopts $path/$i; else echo \"Couldn't get lock.\"; fi"
 	done
 }
 
@@ -106,7 +110,11 @@ upload()
 	fi
 	check_servers
 	sudouser=$(eval "echo \$${reponame}_sudo")
-	[ -n "$sudouser" ] && sudo="sudo -u $sudouser"
+	if [ -n "$sudouser" ]; then
+		sudo_cmd="$sudo_env -u $sudouser"
+	else
+		sudo_cmd=""
+	fi
 	# Strip leading / and any ..
 	dest=`echo ${@:$#} |sed 's|^/||;s|\.\./||g'`
 	for src in "${@:1:$#-1}"
@@ -118,7 +126,7 @@ upload()
 		scp $src $host:$tmp
 		if echo "`sha1sum $src|sed 's/\(.*\)  .*/\1/'`  $tmp" |ssh $host sha1sum -c - >/dev/null 2>&1; then
 			msg "Copying to $dest"
-			ssh $host "chmod 644 $tmp; $sudo cp $tmp $path/$dest/$name && rm $tmp"
+			ssh $host "chmod 644 $tmp; $sudo_cmd cp $tmp $path/$dest/$name && rm $tmp"
 		else
 			echo "The uploaded file is corrupted :-/"
 			ssh $host "rm $tmp"
@@ -136,12 +144,16 @@ fpmmerge()
 	fi
 	check_servers
 	sudouser=$(eval "echo \$${reponame}_sudo")
-	[ -n "$sudouser" ] && sudo="sudo -u $sudouser"
+	if [ -n "$sudouser" ]; then
+		sudo_cmd="$sudo_env -u $sudouser"
+	else
+		sudo_cmd=""
+	fi
 	srcurl=$(eval "echo \$$1_servers")
 	if [ -z "$srcurl" ]; then
 		die "so such repo!"
 	fi
-	if ! ssh $host "cd $path/frugalware-$arch && $sudo rsync -avP `echo $srcurl|sed 's/^.*@//'`/frugalware-$arch/*.fpm ./"; then
+	if ! ssh $host "cd $path/frugalware-$arch && $sudo_cmd rsync -avP `echo $srcurl|sed 's/^.*@//'`/frugalware-$arch/*.fpm ./"; then
 		die "rsync failed! :/"
 	fi
 	# now push
@@ -183,7 +195,11 @@ clean()
 {
 	check_servers
 	sudouser=$(eval "echo \$${reponame}_sudo")
-	[ -n "$sudouser" ] && sudo="sudo -u $sudouser"
+	if [ -n "$sudouser" ]; then
+		sudo_cmd="$sudo_env -u $sudouser"
+	else
+		sudo_cmd=""
+	fi
 	fdb=$(eval "echo \$${reponame}_fdb")
 	[ -z "$fdb" ] && fdb="$reponame.fdb"
 	for i in $*
@@ -192,7 +208,7 @@ clean()
 		i=${i#*/}
 		msg "Cleaning up $i"
 		ssh $host "`declare -f _check_nobuild`; cd $path/frugalware-$arch && \
-			_check_nobuild || arch=$arch $sudo updatesync del $fdb $i && \
+			_check_nobuild || arch=$arch $sudo_cmd updatesync del $fdb $i && \
 			genchangelog --clean $i"
 	done
 }
@@ -203,7 +219,11 @@ changelog()
 	split_group_pkg $1
 	check_servers
 	sudouser=$(eval "echo \$${reponame}_sudo")
-	[ -n "$sudouser" ] && sudo="sudo -u $sudouser"
+	if [ -n "$sudouser" ]; then
+		sudo_cmd="$sudo_env -u $sudouser"
+	else
+		sudo_cmd=""
+	fi
 	fdb=$(eval "echo \$${reponame}_fdb")
 	[ -z "$fdb" ] && fdb="$reponame.fdb"
 	if [ "$verbose" == 1 ]; then
@@ -220,12 +240,12 @@ if [ ! -e $lock ]; then \
 	touch $lock; \
 	cd frugalware-$arch; \
 	if [ ! -e '$fdb' ]; then \
-		_check_nobuild || arch=$arch $sudo gensync ../source/$group/$pkg $fdb; \
+		_check_nobuild || arch=$arch $sudo_cmd gensync ../source/$group/$pkg $fdb; \
 	else \
-		_check_nobuild || arch=$arch $sudo updatesync upd $fdb ../source/$group/$pkg/FrugalBuild; \
+		_check_nobuild || arch=$arch $sudo_cmd updatesync upd $fdb ../source/$group/$pkg/FrugalBuild; \
 	fi; \
 	cd $path; rm $lock; \
-	cd $path/source/$group/$pkg; arch=$arch $sudo genchangelog; \
+	cd $path/source/$group/$pkg; arch=$arch $sudo_cmd genchangelog; \
 	$catcmd; \
 else \
 	echo \"Couldn't get lock.\"; \
@@ -594,6 +614,7 @@ else
 	mktemp_remote="mktemp -p $HOME"
 fi
 mktemp_local="mktemp -p $HOME"
+sudo_env="sudo -E"
 
 if [ "$F_makepkg_scm" = "git" ]; then
 # Checking for git.
