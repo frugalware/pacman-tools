@@ -33,7 +33,6 @@ man8dir = /usr/share/man/man8
 sysconfdir = /etc
 docdir = /usr/share/doc/pacman-tools-$(VERSION)
 FINCDIR = $(shell source /usr/lib/frugalware/fwmakepkg; echo $$Fincdir)
-XML_PATH = /usr/share/sgml/docbook/dtd/xml-dtd-4.2
 DOCS = $(wildcard *.txt) $(wildcard syncpkgd/*.txt) $(wildcard mkiso/*.txt)
 MANS = $(subst .txt,.1,$(DOCS))
 
@@ -99,10 +98,5 @@ apidocs:
 %.html: %.txt
 	asciidoc $^
 
-%.xml: %.txt
-	asciidoc -d manpage -b docbook $^
-	sed -i '/<!DOCTYPE/s|\("http[^"].*"\)|"file://$(XML_PATH)/docbookx.dtd"|' $^
-
-%.1: %.xml
-	xsltproc -o $@ --nonet --path $(XML_PATH) /etc/asciidoc/docbook-xsl/manpage.xsl $^ 
-	sed -i 's/\\(bu/*/' $@
+%.1: %.txt
+	a2x -d manpage -f manpage $^
