@@ -99,4 +99,4 @@ apidocs:
 	asciidoc $^
 
 %.1: %.txt
-	a2x -d manpage -f manpage $^
+	a2x -f manpage $^
