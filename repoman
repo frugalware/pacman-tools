@@ -122,7 +122,7 @@ upload()
 		name=`basename $src`
 		msg "Requesting a temporary file"
 		tmp=`ssh $host $mktemp_remote 2>/dev/null`
-		if [ -z "$temp" ]; then
+		if [ -z "$tmp" ]; then
 			echo "Failed to get a temporary file :-/"
 			exit 1
 		fi
