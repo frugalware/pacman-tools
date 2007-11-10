@@ -111,7 +111,9 @@ class Syncpkgcd:
 			except OSError:
 				self.log(pkg, "failed to get the repo")
 				return
-		self.go(pkgname)
+		if not self.go(pkgname):
+			server.report_result(config.server_user, config.server_pass, pkg, 1, base64.encodestring("No such package."))
+			return
 		if scm == "git":
 			self.system("git clean -x -d")
 		elif scm == "darcs":
@@ -167,8 +169,8 @@ class Syncpkgcd:
 					continue
 				if dir == pkgname:
 					os.chdir(os.path.join(root, dir))
-					return
-		raise Exception("can't find package '%s'")
+					return True
+		raise False
 	def save(self):
 		self.log("", "client shutting down")
 		self.logsock.close()
