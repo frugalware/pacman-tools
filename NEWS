@@ -1,5 +1,13 @@
 VERSION         DESCRIPTION
 -----------------------------------------------------------------------------
+1.0.3         - repoman handles again the case when you have different HOME
+                path on localost/server
+              - genchangelog: file renames are now detected in changelogs
+	      - repoman: support for newer sudo version (where -E is needed to
+	        inherit env vars)
+	      - syncpkgd no longer dies if it tries to build a not existing
+	        package or it's not possible to report the result of a build
+              - dg allows pulling to a dirty working directory
 1.0.2         - fblint now requires at least an empty depends() array
               - dg: fixes and speedups for record, unrecord and pull
               - repoman push now gives more usable error messages
