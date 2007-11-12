@@ -573,11 +573,11 @@ Options:
 			if ret == "y":
 				break
 			if ret in ("n", "q"):
-				sys.exit(0)
+				return(0)
 			print "Invalid response, try again!"
 	ret = os.system("git push %s" % options.gitopts)
 	if ret:
-		sys.exit(1)
+		return(1)
 	else:
 		os.system("git push --tags")
 
@@ -630,18 +630,18 @@ Options:
 			if ret == "y":
 				break
 			if ret in ("n", "q"):
-				sys.exit(0)
+				return(0)
 			print "Invalid response, try again!"
 	if os.system("git diff-index --quiet --cached HEAD && git diff-files --quiet") != 0:
 		changes = True
 		if os.system("git stash") != 0:
-			sys.exit(1)
+			return(1)
 	else:
 		changes = False
 	if os.system("git rebase %s" % options.gitopts) != 0:
-		sys.exit(1)
+		return(1)
 	if changes and os.system("git stash apply --index && sed -i '$d' `git rev-parse --show-cdup`.git/logs/refs/stash") != 0:
-			sys.exit(1)
+			return(1)
 
 def get(argv):
 	def usage(ret):
@@ -805,35 +805,38 @@ PURPOSE.""" % __version__
 		if sys.argv[1][:4] != "chan":
 			os.environ['GIT_PAGER'] = 'cat'
 		if sys.argv[1][:3] == "rec":
-			record(argv[1:])
+			return record(argv[1:])
 		elif sys.argv[1][:3] == "rev":
-			revert(argv[1:])
+			return revert(argv[1:])
 		elif sys.argv[1][:4] == "what":
-			whatsnew(argv[1:])
+			return whatsnew(argv[1:])
 		elif sys.argv[1][:4] == "chan":
-			changes(argv[1:])
+			return changes(argv[1:])
 		elif sys.argv[1] == "push":
-			push(argv[1:])
+			return push(argv[1:])
 		elif sys.argv[1] == "pull":
-			pull(argv[1:])
+			return pull(argv[1:])
 		elif sys.argv[1] == "get":
-			get(argv[1:])
+			return get(argv[1:])
 		elif sys.argv[1] == "tag":
-			tag(argv[1:])
+			return tag(argv[1:])
 		elif sys.argv[1][:4] == "roll":
-			rollback(argv[1:])
+			return rollback(argv[1:])
 		elif sys.argv[1][:5] == "unrec":
-			unrecord(argv[1:])
+			return unrecord(argv[1:])
 		elif sys.argv[1] == "unpull":
-			unpull(argv[1:])
+			return unpull(argv[1:])
 		elif sys.argv[1][:3] == "opt":
-			optimize(argv[1:])
+			return optimize(argv[1:])
 		elif sys.argv[1] == "check":
-			check(argv[1:])
+			return check(argv[1:])
 		elif sys.argv[1][:5] == "track":
-			trackdown(argv[1:])
+			return trackdown(argv[1:])
 		else:
-			os.system("git %s" % " ".join(argv))
+			return os.system("git %s" % " ".join(argv))
 
 if __name__ == "__main__":
-	main(sys.argv[1:])
+	if main(sys.argv[1:]) != 0:
+		sys.exit(1)
+	else:
+		sys.exit(0)
