@@ -577,9 +577,12 @@ Options:
 			print "Invalid response, try again!"
 	ret = os.system("git push %s" % options.gitopts)
 	if ret:
-		return(1)
-	else:
-		os.system("git push --tags")
+		ret = pull(['-a'])
+		if not ret:
+			ret = os.system("git push %s" % options.gitopts)
+			if ret:
+				return(1)
+	os.system("git push --tags")
 
 def pull(argv):
 	def usage(ret):
