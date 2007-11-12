@@ -161,8 +161,6 @@ fpmmerge()
 		die "rsync failed! :/"
 	fi
 	# now push
-	dg pull -a || die 'dg pull failed'
-	git diff|grep -q -- 'diff --cc' && die 'detected conflicts'
 	dg push -a
 	# finally run repoman cl for each
 	for i in `$0 -t $1 ls /frugalware-$arch/ 2>/dev/null|sed 's/-[^-]\+-[^-]\+-[^-]\+$//'`
@@ -425,7 +423,7 @@ sync()
 		opts=""
 	fi
 	if [ "$F_makepkg_scm" = "git" ]; then
-		cmd="dg pull $opts || (git diff|grep -q -- 'diff --cc' && echo 'detected conflicts'; die 'dg pull failed'); dg push $opts"
+		cmd="dg push $opts"
 	else
 		cmd="darcs push --match 'name $modpkgname' $opts"
 	fi
