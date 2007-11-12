@@ -565,7 +565,7 @@ Options:
 	ret = sock.close()
 	if not len(lines):
 		print "No recorded local changes to push!"
-		return
+		return 0
 	print "".join(lines)
 	if not options.all:
 		while True:
@@ -625,7 +625,7 @@ Options:
 	ret = sock.close()
 	if not len(lines):
 		print "No remote changes to pull!"
-		return
+		return 0
 	print "".join(lines)
 	if not options.all:
 		while True:
