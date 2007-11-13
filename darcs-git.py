@@ -583,6 +583,7 @@ Options:
 			if ret:
 				return(1)
 	os.system("git push --tags")
+	return(0)
 
 def pull(argv):
 	def usage(ret):
