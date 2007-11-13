@@ -22,6 +22,11 @@
 #define CD_SIZE 655360
 #define DVD_SIZE 4360350
 
+#define PRINTF(fmt, args...) do { \
+	printf(fmt, ##args); \
+	fflush(stdout); \
+} while(0)
+
 typedef struct __volume_t
 {
 	char *arch;

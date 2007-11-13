@@ -359,6 +359,7 @@ PM_DB *db_register(volume_t *volume, char *treename)
 	PM_DB *db;
 	char *ptr;
 
+	PRINTF("registering database %s...", treename);
 	if(!(db = pacman_db_register(treename)))
 	{
 		fprintf(stderr, "could not register '%s' database (%s)\n", treename, pacman_strerror(pm_errno));
@@ -372,6 +373,7 @@ PM_DB *db_register(volume_t *volume, char *treename)
 		fprintf(stderr, "failed to update %s (%s)\n", treename, pacman_strerror(pm_errno));
 		return(NULL);
 	}
+	PRINTF(" done.\n");
 	return(db);
 }
 
@@ -460,6 +462,7 @@ int prepare(volume_t *volume, char *tmproot, int countonly, int stable)
 	isopkgs = g_list_sort(isopkgs, sort_isopkgs);
 	add_targets();
 
+	PRINTF("preparing the transaction...");
 	if(pacman_trans_prepare(&junk) == -1)
 	{
 		fprintf(stderr, "failed to prepare transaction (%s)\n", pacman_strerror(pm_errno));
@@ -482,6 +485,7 @@ int prepare(volume_t *volume, char *tmproot, int countonly, int stable)
 		pacman_trans_release();
 		return(1);
 	}
+	PRINTF(" done.\n");
 
 	mkiso(volume, countonly, stable);
 	pacman_trans_release();
@@ -554,7 +558,9 @@ int main(int argc, char **argv)
 		if(prepare(g_list_nth_data(volumes, i), tmproot, countonly, stable))
 			break;
 
+	PRINTF("cleaning up...");
 	rmrf(tmproot);
+	PRINTF(" done.\n");
 	free(fst_root);
 	free(fst_ver);
 	free(fst_codename);
