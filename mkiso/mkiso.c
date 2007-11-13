@@ -428,7 +428,7 @@ int prepare(volume_t *volume, char *tmproot, int countonly, int stable)
 	if(pacman_initialize(tmproot) == -1)
 		fprintf(stderr, "failed to initilize pacman library (%s)\n", pacman_strerror(pm_errno));
 	pacman_set_option(PM_OPT_LOGCB, (long)cb_log);
-	pacman_set_option(PM_OPT_LOGMASK, (long)-1);
+	pacman_set_option(PM_OPT_LOGMASK, (long)PM_LOG_WARNING);
 	if((db_local = pacman_db_register("local"))==NULL)
 		fprintf(stderr, "could not register 'local' database (%s)\n", pacman_strerror(pm_errno));
 	if(stable)
