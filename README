@@ -1,0 +1,59 @@
+= Tools for Pacman-G2
+Miklos Vajna <vmiklos@frugalware.org>
+
+== Summary
+
+`pacman-tools` is a collection of handy scripts around `pacman-g2` to build and
+maintain packages. The first stable Frugalware that shipped `pacman-tools` was
+0.2 (Aurora).
+
+== Requirements
+
+These scripts are written in `bash`, `python` and `perl`, so you will need
+those interpreters to use all of them. Additionally the following libraries are
+required to use `mkiso`, the `ISO9660` install image generation tool:
+
+* libpacman
+* glib2
+* libxml2
+
+You need to have `asciidoc` installed, if you want to build the documentation.
+
+== How to set it up
+
+The usual
+
+----
+$ ./configure
+$ make
+# make install
+----
+
+will work as expected.
+
+To get the latest source using git:
+
+----
+$ git clone git://git.frugalware.org/pub/other/pacman-tools/pacman-tools
+----
+
+== I would like to have support for ...
+
+If something does not work, then please report the issue to the
+http://bugs.frugalware.org/[bug tracking system].
+
+== Known bugs
+
+* None at this time.
+
+== Thanks
+
+for the following people:
+
+* Marcus Habermehl, for contributing `rpm2fpm`
+* Vilmos Katona, for contributing `etcconfig`
+* Bence Nagy, for the initial implementation of the `fwmakepkg` macro system
+* Zsolt Szalai, for contributing `chkworld`, the no longer used `pud` and `rf`
+  scripts and the initial implementation of `chkdep`
+
+// vim: ft=asciidoc
