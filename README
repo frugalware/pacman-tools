@@ -7,6 +7,11 @@ Miklos Vajna <vmiklos@frugalware.org>
 maintain packages. The first stable Frugalware that shipped `pacman-tools` was
 0.2 (Aurora).
 
+== Release Notes
+
+Please see the link:pacman-tools/NEWS[NEWS file] for information about what
+user-visible changes are introduced in a given release.
+
 == Requirements
 
 These scripts are written in `bash`, `python` and `perl`, so you will need
