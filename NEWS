@@ -1,5 +1,10 @@
 VERSION         DESCRIPTION
 -----------------------------------------------------------------------------
+1.0.4         - darcs-git: push now automatically tries to pull if necessary
+	      - mkiso: output only the necessary informations, not all the
+	        debug info received from libpacman
+              - darcs-git: support remotes other than origin
+              - added a README
 1.0.3         - repoman handles again the case when you have different HOME
                 path on localost/server
               - genchangelog: file renames are now detected in changelogs
