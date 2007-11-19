@@ -557,10 +557,12 @@ Options:
 		optind += 1
 	if optind < len(argv):
 		options.gitopts = " ".join(argv[optind:])
+	else:
+		options.gitopts = "origin"
 	if options.help:
 		usage(0)
 	branch = get_branch()
-	sock = os.popen("git log origin/%s..%s --no-merges 2>&1" % (branch, branch))
+	sock = os.popen("git log %s/%s..%s --no-merges 2>&1" % (options.gitopts, branch, branch))
 	lines = sock.readlines()
 	ret = sock.close()
 	if not len(lines):
@@ -582,7 +584,7 @@ Options:
 			ret = os.system("git push %s" % options.gitopts)
 			if ret:
 				return(1)
-	os.system("git push --tags")
+	os.system("git push --tags %s" % options.gitopts)
 	return(0)
 
 def pull(argv):
@@ -619,9 +621,9 @@ Options:
 		options.gitopts = "origin"
 	if options.help:
 		usage(0)
-	os.system("git fetch")
+	os.system("git fetch %s" % options.gitopts)
 	branch = get_branch()
-	sock = os.popen("git log %s..origin/%s --no-merges 2>&1" % (branch, branch))
+	sock = os.popen("git log %s..%s/%s --no-merges 2>&1" % (branch, options.gitopts, branch))
 	lines = sock.readlines()
 	ret = sock.close()
 	if not len(lines):
