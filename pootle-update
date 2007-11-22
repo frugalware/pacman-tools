@@ -34,6 +34,7 @@ rsync rsync://rsync.frugalware.org/pub/other/frugalwareutils/frugalwareutils/set
 rsync rsync://rsync.frugalware.org/pub/other/frugalwareutils/frugalwareutils/timeconfig/po/timeconfig.pot frugalwareutils/templates/timeconfig.pot
 rsync rsync://rsync.frugalware.org/pub/other/frugalwareutils/frugalwareutils/xconfig/po/xconfig.pot frugalwareutils/templates/xconfig.pot
 rsync rsync://rsync.frugalware.org/pub/other/frugalwareutils/frugalwareutils/xwmconfig/po/xwmconfig.pot frugalwareutils/templates/xwmconfig.pot
+rsync rsync://rsync.frugalware.org/pub/other/frugalwareutils/frugalwareutils/doc/po/mans.pot frugalwareutils/templates/mans.pot
 rsync rsync://rsync.frugalware.org/pub/other/fw-control-center/fw-control-center/gnetconfig/po/gnetconfig.pot fwcontrolcenter/templates/gnetconfig.pot
 rsync rsync://rsync.frugalware.org/pub/other/fw-control-center/fw-control-center/gnetconfig-mcs-plugin/po/gnetconfig-mcs-plugin.pot fwcontrolcenter/templates/gnetconfig-mcs-plugin.pot
 rsync rsync://rsync.frugalware.org/pub/other/fun/fun/po/fun.pot fun/templates/fun.pot
