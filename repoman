@@ -567,12 +567,11 @@ merge()
 	do
 		missing="$missing `pacman -Sg $i |grep -v '^\w'` "
 	done
-	missdep=`pacman-g2 -T $missing`
-	ret=$?
-	if [ "$ret" != "0" ]; then
+	missdep=`pacman-g2 -T $missing| sed 's|.\+: ||'`
+	if [ -n "$missdep" ]; then
 		echo "failed"
 		echo "Use the following command to install the missing packages:"
-		echo "pacman-g2 -S `echo $missdep| sed 's|.\+: ||g;s|=.*$||;s|>.*$||;s|<.*$||'`"
+		echo "pacman-g2 -S `echo $missdep| sed 's|=.*$||;s|>.*$||;s|<.*$||'`"
 		exit 1
 	else
 		echo "done"
