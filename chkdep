@@ -25,12 +25,15 @@ def rmdupdeps(deps):
 			while j:
 				dep = pacman.void_to_char(pacman.list_getdata(j)).split("<")[0].split(">")[0].split("=")[0]
 				if dep not in depdeps:
+					print "%s will be ignored if found, as %s already depends on it." % (dep, pkgname)
 					depdeps.append(dep)
 				j = pacman.list_next(j)
 		i = pacman.list_next(i)
 	for i in deps:
 		if i not in depdeps and i not in ignorepkgs:
 			newdeps.append(i)
+		elif i in depdeps:
+			print "Ignoring %s as it is already a dependency of some other dependency." % i
 	return newdeps
 
 def detect_owner(lib):
