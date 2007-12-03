@@ -33,5 +33,8 @@ chkdep [ -d | -p ] <path> [options]
 -i::
 	Does nothing (for backward compatibility).
 
+-t, --trace::
+	More verbose output about what chkdep does.
+
 -v, --version::
 	Display the package version.

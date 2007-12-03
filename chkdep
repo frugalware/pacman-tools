@@ -44,6 +44,8 @@ def detect_owner(lib):
 	if not owner and not quiet:
 		print >>sys.stderr, "WARNING: No package found containing %s!" % lib
 	elif owner not in deps:
+		if trace:
+			print "%s is an owner for %s" % (owner, lib)
 		deps.append(owner)
 
 class Checks:
@@ -167,9 +169,10 @@ dir = None
 method="elf"
 pkg = None
 quiet = False
+trace = True
 
 try:
-	opts, args = getopt.getopt(sys.argv[1:], "d:p:qn:m:vi", ["dir=", "package=", "quiet", "ignore=", "method=", "version"])
+	opts, args = getopt.getopt(sys.argv[1:], "d:p:qn:m:tvi", ["dir=", "package=", "quiet", "ignore=", "method=", "trace", "version"])
 except getopt.GetoptError:
 	usage()
 	sys.exit(1)
@@ -185,6 +188,8 @@ for opt, arg in opts:
 		method = arg
 	if opt in ("-n", "--name"):
 		ignorepkgs.append(arg)
+	if opt in ("-t", "--trace"):
+		trace = True
 	if opt in ("-v", "--version"):
 		print "chkdep %s" % __version__
 		sys.exit(0)
@@ -214,6 +219,8 @@ for root, dirs, files in os.walk(fpmroot):
 		if ret:
 			for i in ret:
 				if i not in depfiles:
+					if trace:
+						print "Found %s as a new dependency file." % i
 					depfiles.append(i)
 for i in depfiles:
 	detect_owner(i)
@@ -221,5 +228,7 @@ for i in depfiles:
 if pkg:
 	shutil.rmtree(fpmroot)
 
+if trace:
+	print "Dependencies before dependency cleanup: depends=('" + "' '".join(deps) + "')"
 deps = rmdupdeps(deps)
 print "depends=('" + "' '".join(deps) + "')"
