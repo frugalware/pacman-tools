@@ -212,7 +212,7 @@ for root, dirs, files in os.walk(fpmroot):
 	for file in files:
 		ret = checker(os.path.join(root, file))
 		if ret:
-			for i in checker(os.path.join(root, file)):
+			for i in ret:
 				if i not in depfiles:
 					depfiles.append(i)
 for i in depfiles:
