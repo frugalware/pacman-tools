@@ -173,7 +173,7 @@ dir = None
 method="elf"
 pkg = None
 quiet = False
-trace = True
+trace = False
 
 try:
 	opts, args = getopt.getopt(sys.argv[1:], "d:p:qn:m:tvi", ["dir=", "package=", "quiet", "ignore=", "method=", "trace", "version"])
