@@ -85,3 +85,24 @@ fi
 
 echo "done."
 fi
+
+if [ -x ../tools/fpm2irc ]; then
+	echo -n "sending irc notifications... "
+	if [ ! "`check_option NOBUILD`" ]; then
+		../tools/fpm2irc -f $pkgname-$pkgver-$pkgrel-$arch.fpm
+	else
+		../tools/fpm2irc -f $pkgname-$pkgver-$pkgrel-$arch.fpm -g $groups
+	fi
+
+	if [ ! -z "$subpkgs" ]; then
+		i=0
+		for subpkg in "${subpkgs[@]}"
+		do
+			cd $CWD
+			cd ../../../frugalware-$arch
+			../tools/fpm2irc -f $subpkg-$pkgver-$pkgrel-$arch.fpm -g $groups
+		done
+	fi
+
+	echo "done."
+fi
