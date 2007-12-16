@@ -100,7 +100,7 @@ class Checks:
 		except OSError:
 			return
 		libs = []
-		sock = os.popen("ldd %s" % file)
+		sock = os.popen("ldd %s 2>%s" % (file, os.devnull))
 		while True:
 			i = sock.readline()
 			if not i:
