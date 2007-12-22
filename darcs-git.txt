@@ -63,7 +63,7 @@ Direct modification of the repository:
 
 ----
 Y tag           Tag the contents of the repository with a version name.
-N setpref       Set a value for a preference (test, predist, ...).
+A setpref       Set a value for a preference (test, predist, ...).
 A rollback      Record an inverse patch without changing the working directory.
 ----
 

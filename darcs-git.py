@@ -692,6 +692,19 @@ Options:
 		usage(0)
 	return os.system("git clone %s" % " ".join(argv))
 
+def setpref(argv):
+	def usage(ret):
+		print """Usage: darcs-git setpref [OPTION]...
+Set a value for a preference.
+Use "darcs-git help config" for more information.
+
+Options:
+  -h  --help                         shows brief description of command and its arguments"""
+		sys.exit(ret)
+	if len(argv) and argv[0] in ("-h", "--help"):
+		usage(0)
+	return os.system("git config %s" % " ".join(argv))
+
 def tag(argv):
 	def usage(ret):
 		print """Usage: darcs-git tag [PROJECTNAME] <VERSION>
@@ -854,6 +867,8 @@ PURPOSE.""" % __version__
 			return pull(argv[1:])
 		elif sys.argv[1] == "send":
 			return send(argv[1:])
+		elif sys.argv[1] == "setpref":
+			return setpref(argv[1:])
 		elif sys.argv[1] == "get":
 			return get(argv[1:])
 		elif sys.argv[1] == "tag":
