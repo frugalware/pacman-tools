@@ -649,6 +649,36 @@ Options:
 	if changes and os.system("git stash apply --index && sed -i '$d' `git rev-parse --show-cdup`.git/logs/refs/stash") != 0:
 			return(1)
 
+def send(argv):
+	def usage(ret):
+		print """Usage: darcs-git send [OPTION]... <PATCHES>
+Send by email a bundle of one or more patches.
+
+The recommended work is:
+
+	1) darcs-git config sendemail.to foo@bar.com
+	   This is the address of the maintainer and you have to run this
+	   command only once.
+	2) darcs-git format-patch
+	   Optionally you can now edit the patches to add custom headers like
+	   Cc and In-Reply-To ones.
+	3) darcs-git send *.patch
+
+Use "darcs-git help send-email" for more information.
+
+Options:
+  -h  --help                         shows brief description of command and its arguments"""
+		sys.exit(ret)
+	if len(argv) and argv[0] in ("-h", "--help"):
+		usage(0)
+	sock = os.popen("git config user.name")
+	author = sock.readline().strip()
+	sock.close()
+	sock = os.popen("git config user.email")
+	author += " <%s>" % sock.readline().strip()
+	sock.close()
+	return os.system("""git send-email --envelope-sender "%s" --from "%s" %s""" % (author, author, " ".join(argv)))
+
 def get(argv):
 	def usage(ret):
 		print """Usage: darcs-git get [OPTION]... <REPOSITORY> [<DIRECTORY>]
@@ -822,6 +852,8 @@ PURPOSE.""" % __version__
 			return push(argv[1:])
 		elif sys.argv[1] == "pull":
 			return pull(argv[1:])
+		elif sys.argv[1] == "send":
+			return send(argv[1:])
 		elif sys.argv[1] == "get":
 			return get(argv[1:])
 		elif sys.argv[1] == "tag":
