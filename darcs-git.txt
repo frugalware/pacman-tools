@@ -75,7 +75,7 @@ Y changes       Gives a changelog-style summary of the repository history.
 W annotate      Display which patch last modified something.
 N dist          Create a distribution tarball.
 A trackdown     Locate the most recent version lacking an error.
-N query         Query information which is stored by darcs.
+Y query         Query information which is stored by darcs.
 ----
 
 Copying patches between repositories with working copy update:

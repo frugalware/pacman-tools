@@ -806,6 +806,29 @@ Options:
 	print "Chleaning up..."
 	os.system("git gc")
 
+def query(argv):
+	def usage(ret):
+		print """Usage: darcs-git query SUBCOMMAND ...
+Query information which is stored by darcs.
+
+Subcommands:
+
+  manifest      List version-controlled files in the working copy.
+  tags          List all tags in the repository.
+
+Options:
+  -h         --help                shows brief description of command and its arguments"""
+		sys.exit(ret)
+	if len(argv) and argv[0] in ("-h", "--help"):
+		usage(0)
+	if len(argv) and argv[0] == "manifest":
+		return os.system("git ls-files")
+	elif len(argv) and argv[0] == "tags":
+		return os.system("git tag -l")
+	else:
+		print "Invalid subcommand!"
+		usage(1)
+
 def check(argv):
 	def usage(ret):
 		print """Usage: darcs-git check [OPTION]...
@@ -883,6 +906,8 @@ PURPOSE.""" % __version__
 			return optimize(argv[1:])
 		elif sys.argv[1] == "check":
 			return check(argv[1:])
+		elif sys.argv[1] == "query":
+			return query(argv[1:])
 		elif sys.argv[1][:5] == "track":
 			return trackdown(argv[1:])
 		else:
