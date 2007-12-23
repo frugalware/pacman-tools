@@ -54,7 +54,7 @@ Copying changes between the working copy and the repository:
 ----
 Y record        Save changes in the working copy to the repository as a patch.
 A unrecord      Remove recorded patches without changing the working copy.
-N amend-record  Replace a patch with a better version before it leaves your
+Y amend-record  Replace a patch with a better version before it leaves your
                 repository.
 N resolve       Mark any conflicts to the working copy for manual resolution.
 ----

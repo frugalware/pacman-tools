@@ -207,7 +207,7 @@ h or ?: show this help""" % { 'action': action }
 def diff2filename(diff):
 	return re.sub(r".* a/([^ ]+) .*", r"\1", diff)
 
-def record(argv):
+def record(argv, amend=False):
 	def usage(ret):
 		print """Usage: darcs-git record [OPTION]... [FILE or DIRECTORY]...
 Save changes in the unstaged index to the current branch as a commit.
@@ -221,13 +221,17 @@ Options:
 		sys.exit(ret)
 
 	class Options:
-		def __init__(self):
+		def __init__(self, amend):
 			self.name = None
 			self.all = None
 			self.edit = None
 			self.help = False
 			self.files = ""
-	options = Options()
+			if amend:
+				self.amend = "--amend"
+			else:
+				self.amend = ""
+	options = Options(amend)
 
 	try:
 		opts, args = getopt.getopt(argv, "m:aesh", ["commit-name=", "all", "edit-long-comment", "skip-long-comment", "help"])
@@ -304,8 +308,8 @@ Options:
 	# patch. support this
 	os.system("git ls-files -z --deleted | git update-index -z --remove --stdin")
 	if first or merge or options.all:
-		os.system("""git commit -a -m "%s" %s %s""" %
-				(options.name.replace('"', r'\"'), options.edit, options.files))
+		os.system("""git commit -a -m "%s" %s %s %s""" %
+				(options.name.replace('"', r'\"'), options.edit, options.amend, options.files))
 		sys.exit(0)
 	for i in status.hunks:
 		p = []
@@ -340,8 +344,8 @@ Options:
 				os.system("git add %s" % diff2filename(lines[0]))
 	for i in newlist:
 		os.system("git reset HEAD %s" % i)
-	os.system("""git commit -m '%s' %s""" %
-			(options.name.replace("'", """'"'"'"""), options.edit))
+	os.system("""git commit -m '%s' %s %s""" %
+			(options.name.replace("'", """'"'"'"""), options.edit, options.amend))
 	# readd the uncommitted new files
 	for i in newlist:
 		os.system("git add %s" % i)
@@ -891,6 +895,8 @@ PURPOSE.""" % __version__
 			os.environ['GIT_PAGER'] = 'cat'
 		if sys.argv[1][:3] == "rec":
 			return record(argv[1:])
+		elif sys.argv[1] == "amend-record":
+			return record(argv[1:], amend=True)
 		elif sys.argv[1][:3] == "rev":
 			return revert(argv[1:])
 		elif sys.argv[1][:4] == "what":
