@@ -902,6 +902,8 @@ PURPOSE.""" % __version__
 			return unrecord(argv[1:])
 		elif sys.argv[1] == "unpull":
 			return unpull(argv[1:])
+		elif sys.argv[1] == "obliterate":
+			return unpull(argv[1:])
 		elif sys.argv[1][:3] == "opt":
 			return optimize(argv[1:])
 		elif sys.argv[1] == "check":

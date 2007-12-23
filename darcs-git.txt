@@ -83,7 +83,7 @@ Copying patches between repositories with working copy update:
 ----
 Y pull          Copy and apply patches from another repository to this one.
 A unpull        Opposite of pull; unsafe if patch is not in remote repository.
-N obliterate    Delete selected patches from the repository. (UNSAFE!)
+A obliterate    Delete selected patches from the repository. (UNSAFE!)
 Y push          Copy and apply patches from this repository to another one.
 A send          Send by email a bundle of one or more patches.
 W apply         Apply patches (from an email bundle) to the repository.
