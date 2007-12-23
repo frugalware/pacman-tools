@@ -842,6 +842,19 @@ Options:
 		usage(0)
 	os.system("git fsck")
 
+def dist(argv):
+	def usage(ret):
+		print """Usage: darcs-git dist [OPTION]...
+Create a distribution tarball.
+This is an alias for "git archive".
+
+Options:
+  -h         --help                shows brief description of command and its arguments"""
+		sys.exit(ret)
+	if len(argv) and argv[0] in ("-h", "--help"):
+		usage(0)
+	return os.system("git clone %s" % " ".join(argv))
+
 def trackdown(argv):
 	def usage(ret):
 		print """Usage: darcs-git trackdown [OPTION]...
@@ -894,6 +907,8 @@ PURPOSE.""" % __version__
 			return setpref(argv[1:])
 		elif sys.argv[1] == "get":
 			return get(argv[1:])
+		elif sys.argv[1] == "dist":
+			return dist(argv[1:])
 		elif sys.argv[1] == "tag":
 			return tag(argv[1:])
 		elif sys.argv[1][:4] == "roll":
