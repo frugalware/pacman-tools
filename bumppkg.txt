@@ -20,6 +20,9 @@ bumppkg [options]
 --push::
 	Push the changes right after committing locally.
 
+--silentpush::
+	Call only dg push, not repoman push.
+
 --rebuild::
 	Don't bump to a newer version, but increment the package release and
 	rebuild the package.

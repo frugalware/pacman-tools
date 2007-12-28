@@ -118,6 +118,15 @@ do_build()
 	Fmessage "done, testing time!"
 }
 
+do_push()
+{
+	if [ "$1" == "--push" ]; then
+		repoman -t $tree -k push
+	elif [ "$1" == "--silentpush" ]; then
+		dg push
+	fi
+}
+
 USE_COLOR="y"
 . /usr/lib/frugalware/fwmakepkg
 . /etc/makepkg.conf
@@ -151,8 +160,8 @@ if [ "$1" == "--rebuild" ]; then
 		repoman rec "$1"
 		shift 1
 	fi
-	if [ "$1" == "--push" ]; then
-		repoman -t $tree -k push
+	if [ "$1" == "--push" -o "$1" == "--silentpush" ]; then
+		do_push $1
 	fi
 	exit 0
 fi
@@ -163,6 +172,6 @@ update_pkgrel
 src_cleanup
 src_download $tree
 do_build $tree
-if [ "$1" == "--push" ]; then
-	repoman -t $tree -k push
+if [ "$1" == "--push" -o "$1" == "--silentpush" ]; then
+	do_push $1
 fi
