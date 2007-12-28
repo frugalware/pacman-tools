@@ -293,8 +293,9 @@ _check_nobuild()
 _do_record()
 {
 	if [ "$F_makepkg_scm" = "git" ]; then
+		git add -u .
 		echo -e "$pkgname-$pkgver-$pkgrel-$arch
-$@" | git commit -a -F - .
+$@" | git commit -F -
 	else
 	root="`_get_root`"
 	echo -e "`LANG= LC_ALL= date +"%a %b %d %H:%M:%S %Z %Y"`
