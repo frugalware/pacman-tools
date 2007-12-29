@@ -123,7 +123,7 @@ do_push()
 	if [ "$1" == "--push" ]; then
 		repoman -t $tree -k push
 	elif [ "$1" == "--silentpush" ]; then
-		dg push
+		dg push -a
 	fi
 }
 
