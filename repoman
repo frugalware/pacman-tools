@@ -442,7 +442,7 @@ sync()
 	dry_run changelog $groups/$pkgname
 	if [ "$1" == "-c" ]; then
 		if [ "$F_makepkg_scm" = "git" ]; then
-			git clean -x -d
+			git clean -x -d -f
 		else
 			rm -rvf *-$arch.fpm
 			rm -vf *.log.bz2
