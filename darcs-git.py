@@ -931,7 +931,7 @@ PURPOSE.""" % __version__
 		elif sys.argv[1][:5] == "track":
 			return trackdown(argv[1:])
 		else:
-			return os.system("git %s" % " ".join(argv))
+			return os.system("git '%s'" % "' '".join(argv))
 
 if __name__ == "__main__":
 	if main(sys.argv[1:]) != 0:
