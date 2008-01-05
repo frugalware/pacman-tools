@@ -645,6 +645,7 @@ Options:
 			return(1)
 	else:
 		changes = False
+	# TODO: use git pull --rebase after 1.5.4, in fact we just pulling without a merge
 	if os.system("git rebase %s" % options.gitopts) != 0:
 		return(1)
 	if changes and os.system("git stash apply --index && sed -i '$d' `git rev-parse --show-cdup`.git/logs/refs/stash") != 0:
