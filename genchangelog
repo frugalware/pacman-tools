@@ -15,8 +15,10 @@ strip_url()
 
 echo $* |grep -q -- --check && exit 0
 
-if [ "$1" = "--clean" -a -e ../tools/fpm2db ]; then
-	../tools/fpm2db -D -m $2
+if [ "$1" = "--clean" ]; then
+	if [ -e ../tools/fpm2db ]; then
+		../tools/fpm2db -D -m $2
+	fi
 	exit 0
 fi
 
