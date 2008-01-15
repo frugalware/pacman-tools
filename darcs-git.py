@@ -679,7 +679,7 @@ Options:
 	sock = os.popen("git config user.email")
 	author += " <%s>" % sock.readline().strip()
 	sock.close()
-	return os.system("""git send-email --envelope-sender "%s" --from "%s" %s""" % (author, author, " ".join(argv)))
+	return os.system("""git send-email --envelope-sender "%s" --from "%s" --suppress-from %s""" % (author, author, " ".join(argv)))
 
 def get(argv):
 	def usage(ret):
