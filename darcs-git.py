@@ -130,7 +130,7 @@ def scan_dir(files=""):
 			file = File()
 			inheader = True
 			header.append(i)
-		elif i.startswith("+++ ") or i.startswith("--- ") or i.startswith("index "):
+		elif i.startswith("+++ ") or i.startswith("--- ") or i.startswith("index ") or i.startswith("deleted "):
 			header.append(i)
 		elif i.startswith("@@") or i.startswith("GIT binary patch"):
 			if i.startswith("GIT binary patch"):
@@ -315,19 +315,26 @@ Options:
 		sock = os.popen("git apply --cached 2>/dev/null", "w")
 		sock.write("".join(p))
 		sock.close()
-	# a list for new files. we'll revert their addition, commit and add
-	# them again
+	# a list for new/deleted files. we'll revert their addition/deletion,
+	# commit and add/remove them again
 	newlist = []
+	dellist = []
 	for i in allstatus.hunks:
 		if not status.ispicked(i):
 			lines = i.text.split("\n")
 			new = False
+			old = False
 			for j in lines:
 				if j.startswith("index 0000000"):
 					new = True
 					break
+				elif re.match(r"index [0-9a-f]{7}\.\.0000000", j):
+					old = True
+					break
 			if new:
 				newlist.append(diff2filename(lines[0]))
+			if old:
+				dellist.append(i.text)
 		else:
 			lines = i.text.split("\n")
 			new = False
@@ -341,6 +348,10 @@ Options:
 				os.system("git add %s" % diff2filename(lines[0]))
 	for i in newlist:
 		os.system("git reset HEAD %s" % i)
+	for i in dellist:
+		sock = os.popen("git apply --cached -R", "w")
+		sock.write(i)
+		sock.close()
 	os.system("""git commit -m '%s' %s %s""" %
 			(options.name.replace("'", """'"'"'"""), options.edit, options.amend))
 	# readd the uncommitted new files
