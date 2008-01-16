@@ -115,7 +115,7 @@ class Syncpkgcd:
 			server.report_result(config.server_user, config.server_pass, pkg, 1, base64.encodestring("No such package."))
 			return
 		if scm == "git":
-			self.system("git clean -x -d")
+			self.system("git clean -x -d -f")
 		elif scm == "darcs":
 			junk = []
 			junk.extend(glob.glob("*.fpm"))
@@ -142,7 +142,7 @@ class Syncpkgcd:
 				server.report_result(config.server_user, config.server_pass, pkg, 1, base64.encodestring(buf))
 			except socket.error:
 				pass
-			self.system("git clean -x -d")
+			self.system("git clean -x -d -f")
 			return
 		self.system("repoman -t %s -k sync" % tree)
 		self.log(pkg, "build finished")
@@ -150,7 +150,7 @@ class Syncpkgcd:
 			server.report_result(config.server_user, config.server_pass, pkg, 0)
 		except socket.error:
 			pass
-		self.system("git clean -x -d")
+		self.system("git clean -x -d -f")
 
 	def log(self, pkg, action):
 		self.logsock.write("%s\n" % "; ".join([time.ctime(), pkg, action]))
