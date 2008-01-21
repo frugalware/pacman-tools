@@ -1,5 +1,9 @@
 VERSION         DESCRIPTION
 -----------------------------------------------------------------------------
+1.0.5         - chkdep: improved support for dependency cycles
+              - support for the upcoming git-1.5.4
+              - dg: new commands for better darcs compatibility
+              - genchangelog: fix for --clean
 1.0.4         - darcs-git: push now automatically tries to pull if necessary
 	      - mkiso: output only the necessary informations, not all the
 	        debug info received from libpacman
