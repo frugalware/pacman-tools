@@ -67,6 +67,9 @@ if [ ! "`check_option NOMIRROR`" -a ! "`check_option NOBUILD`" ]; then
 fi
 
 cd ../../../frugalware-$arch
+
+. ../t/functions.sh
+
 if [ -x ../tools/fpm2db ]; then
 echo -n "updating the mysql2 database... "
 if [ ! "`check_option NOBUILD`" ]; then
@@ -81,7 +84,10 @@ if [ ! -z "$subpkgs" ]; then
 	do
 		cd $CWD
 		cd ../../../frugalware-$arch
-		../tools/fpm2db -f $subpkg-$pkgver-$pkgrel-$arch.fpm -m $pkgname -g $groups
+		if in_array $arch ${subarchs[$i]}; then
+			../tools/fpm2db -f $subpkg-$pkgver-$pkgrel-$arch.fpm -m $pkgname -g $groups
+		fi
+		i=$(($i+1))
 	done
 fi
 
@@ -102,7 +108,10 @@ if [ -x ../tools/fpm2irc ]; then
 		do
 			cd $CWD
 			cd ../../../frugalware-$arch
-			../tools/fpm2irc -f $subpkg-$pkgver-$pkgrel-$arch.fpm -g $groups
+			if in_array $arch ${subarchs[$i]}; then
+				../tools/fpm2irc -f $subpkg-$pkgver-$pkgrel-$arch.fpm -g $groups
+			fi
+			i=$(($i+1))
 		done
 	fi
 
