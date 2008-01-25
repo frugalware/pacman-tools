@@ -68,7 +68,12 @@ fi
 
 cd ../../../frugalware-$arch
 
-. ../t/functions.sh
+if [ -e ../t/functions.sh ]; then
+	. ../t/functions.sh
+else
+	# custom repo
+	exit 0
+fi
 
 if [ -x ../tools/fpm2db ]; then
 echo -n "updating the mysql2 database... "
