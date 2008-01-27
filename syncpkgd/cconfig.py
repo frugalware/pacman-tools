@@ -6,4 +6,7 @@ class config:
 	# wait X seconds if no package to build
 	sleep = 300
 
+	# if the load is higher than this value, don't start building a new package
+	#throttle = 1.00
+
 # vim: ft=python

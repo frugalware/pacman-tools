@@ -51,6 +51,9 @@ class Syncpkgcd:
 		# main loop
 		try:
 			while True:
+				if not self.checkload():
+					self.sleep("load too high")
+					continue
 				try:
 					pkg = server.request_pkg(config.server_user, config.server_pass, os.uname()[-1])
 				except socket.error:
@@ -69,6 +72,19 @@ class Syncpkgcd:
 			return
 		except Exception:
 			self.log_exception()
+
+	def checkload(self):
+		if not hasattr(config, "throttle"):
+			# no limit defined
+			return True
+		sock = os.popen("uptime")
+		buf = sock.read().strip()
+		sock.close()
+		load = re.sub(r".*: [0-9.]+, .*", r"\1", buf)
+		if float(load) > config.throttle:
+			return False
+		else:
+			return True
 
 	def build(self, pkg):
 		# maybe later support protocolls (the first item) other than git?
