@@ -77,10 +77,10 @@ class Syncpkgcd:
 		if not hasattr(config, "throttle"):
 			# no limit defined
 			return True
-		sock = os.popen("uptime")
+		sock = open("/proc/loadavg")
 		buf = sock.read().strip()
 		sock.close()
-		load = re.sub(r".*: [0-9.]+, .*", r"\1", buf)
+		load = buf.split(' ')[0]
 		if float(load) > config.throttle:
 			return False
 		else:
