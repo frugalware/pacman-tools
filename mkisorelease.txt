@@ -50,3 +50,8 @@ Here is a list of what is _not_ updated at the moment:
 * the .ls-Ral files
 
 * the `SHA1SUM` file
+
+* the .torrent files
+
+The last 3 items are done by typing `make`, you can get the `Makefile` from any
+`frugalware-<tree>-iso` directory of your favourite Frugalware mirror.
