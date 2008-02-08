@@ -59,7 +59,7 @@ if [ ! "`check_option NOMIRROR`" -a ! "`check_option NOBUILD`" ]; then
 	do
 		[[ "$i" =~ "http://ftp.frugalware.org" ]] && continue
 		file=`strip_url "$i"`
-		if [ ! -e "$file" ]; then
+		if [ -n "$file" -a ! -e "$file" ]; then
 			echo "downloading "$file"..."
 			$FTPAGENT "$i"
 		fi
