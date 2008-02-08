@@ -55,13 +55,13 @@ CWD=`pwd`
 if [ ! "`check_option NOMIRROR`" -a ! "`check_option NOBUILD`" ]; then
 	echo "downloading missing source files..."
 
-	for i in ${source[@]} ${signatures[@]}
+	for i in "${source[@]}" "${signatures[@]}"
 	do
 		[[ "$i" =~ "http://ftp.frugalware.org" ]] && continue
-		file=`strip_url $i`
-		if [ ! -e $file ]; then
-			echo "downloading $file..."
-			$FTPAGENT $i
+		file=`strip_url "$i"`
+		if [ ! -e "$file" ]; then
+			echo "downloading "$file"..."
+			$FTPAGENT "$i"
 		fi
 	done
 fi
