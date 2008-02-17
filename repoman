@@ -493,36 +493,17 @@ update()
 		for j in ${servers[@]}
 		do
 			echo "warning: this operation can take minutes, please be patient"
-			# support upgraders
-			if [ -d $fst_root/$i -a ! -d $fst_root/$i/.git ]; then
-				rm -rf $fst_root/$i
-			fi
-			# check for scm
-			if rsync -q $j/.git 2>/dev/null; then
-				if [ -d $fst_root/$i/.git ]; then
-					cmd="cd $i && git pull"
-				else
-					cmd="git clone $j/.git $i"
-				fi
-			elif rsync -q $j/_darcs 2>/dev/null; then
-				cmd="rsync -azvP $j/_darcs/current/ $i"
+			# check if we need to clone or pull
+			if [ -d $fst_root/$i/.git ]; then
+				cmd="cd $i && git pull"
 			else
-				echo "This server ($j) does not support git nor darcs."
-				echo "HINT: if you are upgrading from a previous version of Frugalware, try running 'rm -rf /var/fst/' and 'repoman upd'."
-				continue
+				cmd="git clone $j $i"
 			fi
 			mkdir -p $fst_root
 			cd $fst_root
-			if [ "$verbose" != 1 ]; then
-				echo -n "$i... "
-				eval $cmd &>/dev/null
-				ret=$?
-			else
-				echo "$i..."
-				eval $cmd
-				ret=$?
-			fi
-			if [ $ret != 0 ]; then
+			echo "$i..."
+			eval $cmd
+			if [ $? != 0 ]; then
 				echo "failed."
 			else
 				echo "done."
