@@ -5,28 +5,8 @@
 repos=(${repos[@]} 'current')
 
 current_servers=(
-# -----------
-# - BELGIUM -
-# -----------
-# Belgian National Research Network (1 GBit)
-"rsync://rsync5.frugalware.org/packages/frugalware/pub/frugalware/frugalware-current"
-# -----------
-# - HUNGARY -
-# -----------
-# Free Software Network (100 MBit)
-"rsync://rsync4.frugalware.org/pub/linux/distributions/frugalware/frugalware-current"
-# -----------
-# - IRELAND -
-# -----------
-# Ireland's National Education and Research Network (2 GBit)
-"rsync://rsync12.frugalware.org/mirrors/ftp.frugalware.org/pub/frugalware/frugalware-current"
-# -------
-# - USA -
-# -------
-# SourceMirrors (100 MBit)
-"rsync://rsync6.frugalware.org/frugalware/frugalware/frugalware-current"
-# TDS Telecom (1 GBit)
-"rsync://rsync10.frugalware.org/pub/linux/frugalware/frugalware-current"
+"git://repo.or.cz/frugalware-current.git"
+"git://git.frugalware.org/pub/frugalware/frugalware-current"
 )
 
 # the rest is only for developers who upload packages
