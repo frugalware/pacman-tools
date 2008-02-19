@@ -1,5 +1,9 @@
 VERSION         DESCRIPTION
 -----------------------------------------------------------------------------
+1.0.6	      - repoman: support for pacman-g2>=3.6.6
+	      - dg: support for git>=1.5.4
+	      - implement throttle control in syncpkgcd
+	      - genchangelog: handle subpkgs disabled in subarchs()
 1.0.5         - chkdep: improved support for dependency cycles
               - support for the upcoming git-1.5.4
               - dg: new commands for better darcs compatibility
