@@ -21,6 +21,7 @@ class Options:
 class Syncpkgcd:
 	def __init__(self, options):
 		self.options = options
+		self.home = pwd.getpwnam(options.uid).pw_dir
 		def on_sigterm(num, frame):
 			raise KeyboardInterrupt
 		signal.signal(signal.SIGTERM, on_sigterm)
@@ -95,7 +96,7 @@ class Syncpkgcd:
 		pkgver = "-".join(pkgarr[-3:-1])
 		arch = pkgarr[-1]
 		self.log(pkg, "starting build")
-		sock = os.popen("export HOME=/home/syncpkgd; . ~/.repoman.conf; echo $fst_root; echo $%s_servers" % tree)
+		sock = os.popen("export HOME=%s; . ~/.repoman.conf; echo $fst_root; echo $%s_servers" % (self.home, tree))
 		buf = sock.readlines()
 		sock.close()
 		fst_root = buf[0].strip()
@@ -174,7 +175,7 @@ class Syncpkgcd:
 	
 	def system(self, cmd):
 		logfile = "syncpkgcd-%s.log" % time.strftime("%Y%m%d", time.localtime())
-		return os.system("export HOME=/home/syncpkgd; %s >> %s 2>&1" % (cmd, logfile))
+		return os.system("export HOME=%s; %s >> %s 2>&1" % (self.home, cmd, logfile))
 	
 	def go(self, pkgname):
 		for root, dirs, files in os.walk("."):
