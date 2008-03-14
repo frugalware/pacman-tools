@@ -14,7 +14,7 @@ TEXTDOMAINDIR=/lib/initscripts/messages
 actions=(restart start status stop)
 daemon=$"package builder client daemon"
 
-pid="cat /var/lock/syncpkgcd.pid"
+pid="cat /var/lock/syncpkgcd.pid 2> /dev/null"
 
 rc_start()
 {
@@ -32,7 +32,7 @@ rc_stop()
 	stop_msg
 	if [[ "$(eval $pid)" != "" ]] ; then
 		kill $(eval $pid)
-		: > /var/lock/syncpkgcd.pid
+		rm /var/lock/syncpkgcd.pid
 		ok $?
 	else
 		ok 999
