@@ -2,7 +2,7 @@
 
 package Chkworld;
 
-require 5.8.8;
+require 5.008_008;
 use sort "_quicksort";
 use warnings;
 no warnings qw( uninitialized );
