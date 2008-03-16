@@ -172,8 +172,8 @@ if [ ! -z "$subpkgs" ]; then
 	check "right number of suboptions" "[ \"${#suboptions[@]}\" = 0 ] || [ \"${#suboptions[@]}\" = \"${#subpkgs[@]}\" ]"
 fi
 
-if [ "`get_root`" = "stable" -o "`get_root`" = "sayshell" ]; then
-	check "unchanged pkgrel" "echo $pkgrel | grep -q 'sayshell'"
+if [ "`get_root`" = "stable" -o "`get_root`" = "kalgan" ]; then
+	check "unchanged pkgrel" "echo $pkgrel | grep -q 'kalgan'"
 fi
 
 [ "$_fblint_verbose" ] && echo "done: $_fblint_done, failed $_fblint_failed"
