@@ -114,7 +114,7 @@ check "sbu" "grep -i -q \"^# Compiling Time: [~0-9\.]\+ SBU$\" $_fblint_fb"
 check "maintainer" "grep -q '^# Maintainer: ' $_fblint_fb"
 check "syntax errors" "source $_fblint_fb"
 check "pkgname" "[ ! -z \"$pkgname\" ]"
-check "uppercase letters in pkgname" "[[ ! \"$pkgname\" =~ \"[A-Z]\" ]]"
+check "uppercase letters in pkgname" "! echo $pkgname | grep -q [A-Z]"
 check "pkgver" "[ ! -z \"$pkgver\" ]"
 check "hyphen-less pkgver" "[ ! `echo $pkgver | grep '-'` ]"
 check "pkgrel" "[ ! -z "$pkgrel" ]"
@@ -148,7 +148,7 @@ fi
 if [ ! -z "$subpkgs" ]; then
 	for subpkg in "${subpkgs[@]}"
 	do
-		check "uppercase letters in subpkgs" "[[ ! \"$subpkg\" =~ \"[A-Z]\" ]]"
+		check "uppercase letters in subpkgs" "! echo $subpkg | grep -q [A-Z]"
 	done
 	check "subdescs" "[ ! -z \"$subdescs\" ]"
 	check "subgroups" "[ ! -z \"$subgroups\" ]"
