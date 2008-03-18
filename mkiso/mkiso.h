@@ -23,7 +23,7 @@
 #define DVD_SIZE 4360350
 
 #define PRINTF(fmt, args...) do { \
-	printf(fmt, ##args); \
+	fprintf(stderr, fmt, ##args); \
 	fflush(stdout); \
 } while(0)
 

@@ -91,7 +91,7 @@ int detect_priority(PM_PKG *pkg)
 		else
 			return(20);
 	}
-	fprintf(stderr, "possible invalid group '%s' for package '%s'\n", grp, (char*)pacman_pkg_getinfo(pkg, PM_PKG_NAME));
+	PRINTF("possible invalid group '%s' for package '%s'\n", grp, (char*)pacman_pkg_getinfo(pkg, PM_PKG_NAME));
 	return(0);
 }
 
@@ -111,7 +111,7 @@ int add_targets()
 		char *pkgname = pacman_pkg_getinfo(isopkg->pkg, PM_PKG_NAME);
 		if(pacman_trans_addtarget(pkgname))
 		{
-			fprintf(stderr, "failed to add target '%s' (%s)\n", pkgname, pacman_strerror(pm_errno));
+			PRINTF("failed to add target '%s' (%s)\n", pkgname, pacman_strerror(pm_errno));
 			return(1);
 		}
 	}
@@ -156,7 +156,7 @@ int iso_add(int dryrun, FILE *fp, char *fmt, ...)
 	if(!dryrun)
 		fprintf(fp, "%s=%s\n", str, str);
 	else
-		printf("%s=%s\n", str, str);
+		printf("%s\n", str);
 	return(0);
 }
 
@@ -221,7 +221,7 @@ int isogrp_add(PM_PKG *pkg)
 		isogrp_t *isogrp;
 		if((isogrp = (isogrp_t *)malloc(sizeof(isogrp_t)))==NULL)
 		{
-			fprintf(stderr, "out of memory!\n");
+			PRINTF("out of memory!\n");
 			return(1);
 		}
 		isogrp->name = strdup(grp);
@@ -339,7 +339,7 @@ int mkiso(volume_t *volume, int countonly, int stable, int dryrun)
 	if(!countonly && !dryrun)
 		system(cmdline);
 	else if(!dryrun)
-		printf("expected volume number: %d\n", myvolume);
+		PRINTF("expected volume number: %d\n", myvolume);
 
 	free(fname);
 	free(label);
@@ -354,7 +354,7 @@ int mkiso(volume_t *volume, int countonly, int stable, int dryrun)
 
 void cb_log(unsigned short level, char *msg)
 {
-	printf("%s\n", msg);
+	PRINTF("%s\n", msg);
 }
 
 PM_DB *db_register(volume_t *volume, char *treename)
@@ -365,7 +365,7 @@ PM_DB *db_register(volume_t *volume, char *treename)
 	PRINTF("registering database %s...", treename);
 	if(!(db = pacman_db_register(treename)))
 	{
-		fprintf(stderr, "could not register '%s' database (%s)\n", treename, pacman_strerror(pm_errno));
+		PRINTF("could not register '%s' database (%s)\n", treename, pacman_strerror(pm_errno));
 		return(NULL);
 	}
 	ptr = g_strdup_printf("file://%s/frugalware-%s", fst_root, volume->arch);
@@ -373,7 +373,7 @@ PM_DB *db_register(volume_t *volume, char *treename)
 	free(ptr);
 	if(pacman_db_update(0, db) == -1)
 	{
-		fprintf(stderr, "failed to update %s (%s)\n", treename, pacman_strerror(pm_errno));
+		PRINTF("failed to update %s (%s)\n", treename, pacman_strerror(pm_errno));
 		return(NULL);
 	}
 	PRINTF(" done.\n");
@@ -431,18 +431,18 @@ int prepare(volume_t *volume, char *tmproot, int countonly, int stable, int dryr
 	PM_DB *db_local, *db_sync;
 
 	if(pacman_initialize(tmproot) == -1)
-		fprintf(stderr, "failed to initilize pacman library (%s)\n", pacman_strerror(pm_errno));
+		PRINTF("failed to initilize pacman library (%s)\n", pacman_strerror(pm_errno));
 	pacman_set_option(PM_OPT_LOGCB, (long)cb_log);
 	pacman_set_option(PM_OPT_LOGMASK, (long)PM_LOG_WARNING);
 	if((db_local = pacman_db_register("local"))==NULL)
-		fprintf(stderr, "could not register 'local' database (%s)\n", pacman_strerror(pm_errno));
+		PRINTF("could not register 'local' database (%s)\n", pacman_strerror(pm_errno));
 	if(stable)
 		db_sync = db_register(volume, "frugalware");
 	else
 		db_sync = db_register(volume, "frugalware-current");
 
 	if(pacman_trans_init(PM_TRANS_TYPE_SYNC, PM_TRANS_FLAG_NOCONFLICTS, NULL, NULL, NULL) == -1)
-		fprintf(stderr, "failed to init transaction (%s)\n", pacman_strerror(pm_errno));
+		PRINTF("failed to init transaction (%s)\n", pacman_strerror(pm_errno));
 
 	if(strcmp(volume->media, "net"))
 	{
@@ -453,7 +453,7 @@ int prepare(volume_t *volume, char *tmproot, int countonly, int stable, int dryr
 
 			if((isopkg = (isopkg_t *)malloc(sizeof(isopkg_t)))==NULL)
 			{
-				fprintf(stderr, "out of memory!\n");
+				PRINTF("out of memory!\n");
 				return(1);
 			}
 			isopkg->pkg = pkg;
@@ -468,7 +468,7 @@ int prepare(volume_t *volume, char *tmproot, int countonly, int stable, int dryr
 	PRINTF("preparing the transaction...");
 	if(pacman_trans_prepare(&junk) == -1)
 	{
-		fprintf(stderr, "failed to prepare transaction (%s)\n", pacman_strerror(pm_errno));
+		PRINTF("failed to prepare transaction (%s)\n", pacman_strerror(pm_errno));
 		for(i = pacman_list_first(junk); i; i = pacman_list_next(i))
 		{
 			PM_DEPMISS *miss = pacman_list_getdata(i);
