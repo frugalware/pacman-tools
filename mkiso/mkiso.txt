@@ -88,6 +88,9 @@ Probably the most changing part is the initrd and the kernel. You can generate t
 	Do not generate the isos, just print out the number of required isos
 	for the given size.
 
+-n, --dry-run::
+	Do not generate the isos, just print out the filelist.
+
 -s, --stable::
 	Assume that the given repo is a -stable one, so that there will be a
 	'frugalware.fdb' under the 'frugalware-<arch>' directory, not a

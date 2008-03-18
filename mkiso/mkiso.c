@@ -141,7 +141,7 @@ char *get_label(char *version, char *arch, char *media, int volume)
 		return(g_strdup_printf("Frugalware %s-%s Install %s", version, arch, media));
 }
 
-int iso_add(FILE *fp, char *fmt, ...)
+int iso_add(int dryrun, FILE *fp, char *fmt, ...)
 {
 	va_list args;
 
@@ -153,7 +153,10 @@ int iso_add(FILE *fp, char *fmt, ...)
 
 	if(!fp)
 		return(1);
-	fprintf(fp, "%s=%s\n", str, str);
+	if(!dryrun)
+		fprintf(fp, "%s=%s\n", str, str);
+	else
+		printf("%s=%s\n", str, str);
 	return(0);
 }
 
@@ -245,7 +248,7 @@ void isogrp_stat(FILE *fp)
 	fprintf(fp, "%-16s %4dMB %4dMB\n", "total", sum, usum);
 }
 
-int mkiso(volume_t *volume, int countonly, int stable)
+int mkiso(volume_t *volume, int countonly, int stable, int dryrun)
 {
 	PM_LIST *i, *sorted;
 	int total=0, myvolume=1, bootsize;
@@ -261,31 +264,31 @@ int mkiso(volume_t *volume, int countonly, int stable)
 	if((fp=fopen(flist, "w"))==NULL)
 		return(1);
 	// initial filelist
-	iso_add(fp, "AUTHORS");
-	iso_add(fp, "ChangeLog.txt");
-	iso_add(fp, "LICENSE");
-	iso_add(fp, "docs");
+	iso_add(dryrun, fp, "AUTHORS");
+	iso_add(dryrun, fp, "ChangeLog.txt");
+	iso_add(dryrun, fp, "LICENSE");
+	iso_add(dryrun, fp, "docs");
 	ptr = detect_kernel(volume->arch);
 	kptr = g_strdup_printf("boot/vmlinuz-%s", ptr);
 	free(ptr);
-	iso_add(fp, kptr);
+	iso_add(dryrun, fp, kptr);
 	iptr = g_strdup_printf("boot/initrd-%s.img.gz", volume->arch);
-	iso_add(fp, iptr);
+	iso_add(dryrun, fp, iptr);
 	// how many space is needed for the kernel & initrd?
 	bootsize = boot_size(fst_root, kptr, iptr);
 	free(kptr);
 	free(iptr);
-	iso_add(fp, "boot/grub/message");
-	iso_add(fp, "boot/grub/stage2_eltorito");
+	iso_add(dryrun, fp, "boot/grub/message");
+	iso_add(dryrun, fp, "boot/grub/stage2_eltorito");
 	menu = mkmenu(volume);
 	fprintf(fp, "boot/grub/menu.lst=%s\n", menu);
 	// first volume of !net medias
 	if(volume->serial==1)
 	{
 		if(stable)
-			iso_add(fp, "frugalware-%s/frugalware.fdb", volume->arch);
+			iso_add(dryrun, fp, "frugalware-%s/frugalware.fdb", volume->arch);
 		else
-			iso_add(fp, "frugalware-%s/frugalware-current.fdb", volume->arch);
+			iso_add(dryrun, fp, "frugalware-%s/frugalware-current.fdb", volume->arch);
 	}
 
 	sorted = pacman_trans_getinfo(PM_TRANS_PACKAGES);
@@ -304,7 +307,7 @@ int mkiso(volume_t *volume, int countonly, int stable)
 		if(myvolume==volume->serial)
 		{
 			ptr = strdup("frugalware-%s/%s-%s-%s%s");
-			iso_add(fp, ptr,
+			iso_add(dryrun, fp, ptr,
 			volume->arch,
 			(char*)pacman_pkg_getinfo(pkg, PM_PKG_NAME),
 			(char*)pacman_pkg_getinfo(pkg, PM_PKG_VERSION),
@@ -333,9 +336,9 @@ int mkiso(volume_t *volume, int countonly, int stable)
 	free(ptr);
 	isogrp_stat(fp);
 	fclose(fp);
-	if(!countonly)
+	if(!countonly && !dryrun)
 		system(cmdline);
-	else
+	else if(!dryrun)
 		printf("expected volume number: %d\n", myvolume);
 
 	free(fname);
@@ -422,7 +425,7 @@ int rmrf(char *path)
 	return(0);
 }
 
-int prepare(volume_t *volume, char *tmproot, int countonly, int stable)
+int prepare(volume_t *volume, char *tmproot, int countonly, int stable, int dryrun)
 {
 	PM_LIST *i, *junk;
 	PM_DB *db_local, *db_sync;
@@ -487,7 +490,7 @@ int prepare(volume_t *volume, char *tmproot, int countonly, int stable)
 	}
 	PRINTF(" done.\n");
 
-	mkiso(volume, countonly, stable);
+	mkiso(volume, countonly, stable, dryrun);
 	pacman_trans_release();
 	pacman_release();
 	g_list_free(isopkgs);
@@ -501,7 +504,7 @@ int main(int argc, char **argv)
 {
 	char tmproot[] = "/tmp/mkiso_XXXXXX";
 	char *xmlfile = strdup("volumes.xml");
-	int i, countonly=0, stable=0;
+	int i, countonly=0, stable=0, dryrun=0;
 	char *ptr;
 	int opt;
 	int option_index;
@@ -509,6 +512,7 @@ int main(int argc, char **argv)
 	{
 		{"help",        no_argument,       0, 'h'},
 		{"count",       no_argument,       0, 'c'},
+		{"dry-run",     no_argument,       0, 'n'},
 		{"stable",      no_argument,       0, 's'},
 		{"file",        required_argument, 0, 'f'},
 		{0, 0, 0, 0}
@@ -516,7 +520,7 @@ int main(int argc, char **argv)
 
 	if(argc >= 2)
 	{
-		while((opt = getopt_long(argc, argv, "hcsf:", opts, &option_index)))
+		while((opt = getopt_long(argc, argv, "hcsf:n", opts, &option_index)))
 		{
 			if(opt < 0)
 				break;
@@ -527,11 +531,13 @@ int main(int argc, char **argv)
 					printf("       -c | --count   count the possible number of images only\n");
 					printf("       -f | --file    use some other source instead of volumes.xml\n");
 					printf("       -h | --help    this help\n");
+					printf("       -n | --dry-run do not generate an iso, just print a filelist\n");
 					printf("       -s | --stable  indicate that the source repo is a -stable one\n");
 					free(xmlfile);
 					return(0);
 				break;
 				case 'c': countonly=1; break;
+				case 'n': dryrun=1; break;
 				case 's': stable=1; break;
 				case 'f':
 					  free(xmlfile);
@@ -555,7 +561,7 @@ int main(int argc, char **argv)
 	free(ptr);
 
 	for(i=0;i<g_list_length(volumes);i++)
-		if(prepare(g_list_nth_data(volumes, i), tmproot, countonly, stable))
+		if(prepare(g_list_nth_data(volumes, i), tmproot, countonly, stable, dryrun))
 			break;
 
 	PRINTF("cleaning up...");
