@@ -524,10 +524,10 @@ int main(int argc, char **argv)
 			{
 				case 'h':
 					printf("usage: %s [ options ]\n", argv[0]);
-					printf("       -h | --help    this help\n");
 					printf("       -c | --count   count the possible number of images only\n");
-					printf("       -s | --stable  indicate that the source repo is a -stable one\n");
 					printf("       -f | --file    use some other source instead of volumes.xml\n");
+					printf("       -h | --help    this help\n");
+					printf("       -s | --stable  indicate that the source repo is a -stable one\n");
 					free(xmlfile);
 					return(0);
 				break;
