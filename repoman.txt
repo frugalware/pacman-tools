@@ -81,6 +81,7 @@ $ cd current
 $ git config user.name "John Smith"
 $ git config user.email john@frugalware.org
 $ git config remote.origin.receivepack "sudo -u <owner> git-receive-pack"
+$ git config branch.master.rebase true
 ----
 
 Here you should substitute <owner> with the nick of the repo owner, currently
@@ -320,7 +321,7 @@ Once you are ready, go to '\~/git/current' (make sure you don't have anything to
 push!) and
 
 ----
-$ git pull nick@git.frugalware.org:/home/ftp/pub/other/people/nick/flac113 master
+$ git pull --no-rebase nick@git.frugalware.org:/home/ftp/pub/other/people/nick/flac113 master
 ----
 
 This will merge your WIP repo to your local current repo. If there are
