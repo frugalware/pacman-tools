@@ -187,7 +187,7 @@ class Syncpkgcd:
 				if dir == pkgname:
 					os.chdir(os.path.join(root, dir))
 					return True
-		raise False
+		return False
 	def save(self):
 		self.log("", "client shutting down")
 		self.logsock.close()
