@@ -56,7 +56,11 @@ the server with a `command="syncpkg-shell <nick>" ` prefix.
 ----
 repos=('stable' 'current')
 stable_servers=("syncpkgd@git.frugalware.org:/home/ftp/pub/frugalware/frugalware-stable")
+stable_sudo="vmiklos"
+stable_fdb="frugalware.fdb"
 current_servers=("syncpkgd@git.frugalware.org:/home/ftp/pub/frugalware/frugalware-current")
+current_sudo="vmiklos"
+current_fdb="frugalware-current.fdb"
 fst_root=~/repos
 REMOTEHOME=/home/syncpkgd
 ----
