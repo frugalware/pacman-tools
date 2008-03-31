@@ -66,6 +66,12 @@ class Syncpkgcd:
 				if not len(pkg):
 					self.sleep("no package to build")
 					continue
+				# there is a pkg to build, request
+				# up to date repo list first
+				buf = server.request_conf()
+				sock = open(os.path.join(self.home, ".repoman.conf"), "w")
+				sock.write(base64.decodestring(buf))
+				sock.close()
 				self.build(pkg)
 		except KeyboardInterrupt:
 			# here we could abort the current build properly
