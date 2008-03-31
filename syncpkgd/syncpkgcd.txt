@@ -51,20 +51,6 @@ $ ssh-keygen -t dsa
 NOTE: The `\~/.ssh/id_dsa.pub` file should be appended to `\~/.ssh/authorized_keys` on
 the server with a `command="syncpkg-shell <nick>" ` prefix.
 
-* Add the followings to your `\~/.repoman.conf` (still as `syncpkgd`):
-
-----
-repos=('stable' 'current')
-stable_servers=("syncpkgd@git.frugalware.org:/home/ftp/pub/frugalware/frugalware-stable")
-stable_sudo="vmiklos"
-stable_fdb="frugalware.fdb"
-current_servers=("syncpkgd@git.frugalware.org:/home/ftp/pub/frugalware/frugalware-current")
-current_sudo="vmiklos"
-current_fdb="frugalware-current.fdb"
-fst_root=~/repos
-REMOTEHOME=/home/syncpkgd
-----
-
 * Now login to git.frugalware.org manually so that the fingerprint of the
   servers will be added to the `\~/.ssh/known_hosts` file.
 
