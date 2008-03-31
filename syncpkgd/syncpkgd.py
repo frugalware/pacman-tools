@@ -61,6 +61,16 @@ class Actions:
 			self.__log(login, pkg, "package rejected by the server")
 			return False
 
+	def request_conf(self):
+		"""request the up to date repo list"""
+		try:
+			sock = open(os.path.join(pwd.getpwnam(options.uid).pw_dir, ".repoman.conf"))
+			buf = sock.read()
+			sock.close()
+		except IOError:
+			buf = ""
+		return base64.encodestring(buf)
+
 	def report_result(self, login, password, pkg, exitcode, log=None):
 		"""report the build result of a package"""
 		if not self.__login(login, password):
