@@ -235,6 +235,7 @@ First, clone current to your personal directory on the server:
 $ cd /home/ftp/pub/other/people/nick
 $ git clone /home/ftp/pub/frugalware/frugalware-current
 $ mv frugalware-current flac113
+$ chmod g+w flac113/.git
 $ mkdir flac113/frugalware-$arch
 ----
 
