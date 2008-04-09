@@ -658,7 +658,7 @@ Options:
 		changes = False
 	if os.system("git pull --rebase %s" % options.gitopts) != 0:
 		return(1)
-	if changes and os.system("git stash apply --index && sed -i '$d' `git rev-parse --show-cdup`.git/logs/refs/stash") != 0:
+	if changes and os.system("git stash pop") != 0:
 			return(1)
 
 def send(argv):
