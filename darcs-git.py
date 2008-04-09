@@ -729,7 +729,7 @@ Options:
 	if len(argv) and argv[0] in ("-h", "--help"):
 		usage(0)
 	ret = 0
-	ret += os.system("echo 'TAG %s' |git update-ref HEAD `git commit-tree HEAD^{tree} -p HEAD`" % argv[-1])
+	ret += os.system("git commit --allow-empty -m 'TAG %s'" % argv[-1])
 	if len(argv) > 1:
 		msg = " ".join(argv[:2])
 	else:
