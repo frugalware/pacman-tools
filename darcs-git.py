@@ -349,7 +349,7 @@ Options:
 	for i in newlist:
 		os.system("git reset HEAD %s" % i)
 	for i in dellist:
-		sock = os.popen("git apply --cached -R", "w")
+		sock = os.popen("git apply --cached -R 2>/dev/null", "w")
 		sock.write(i)
 		sock.close()
 	os.system("""git commit -m '%s' %s %s""" %
@@ -438,7 +438,7 @@ Options:
 		p = []
 		if i.picked == True:
 			p.append(i.text)
-		sock = os.popen("git apply -R >/dev/null", "w")
+		sock = os.popen("git apply -R 2>/dev/null", "w")
 		sock.write("".join(p))
 		sock.close()
 	# we need git reset too if we revert deleted files
