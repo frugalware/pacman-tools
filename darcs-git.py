@@ -574,7 +574,7 @@ Options:
 	if options.help:
 		usage(0)
 	branch = get_branch()
-	sock = os.popen("git log %s/%s..%s --no-merges 2>&1" % (options.gitopts, branch, branch))
+	sock = os.popen("git log %s/%s..%s 2>&1" % (options.gitopts, branch, branch))
 	lines = sock.readlines()
 	ret = sock.close()
 	if not len(lines):
@@ -635,7 +635,7 @@ Options:
 		usage(0)
 	os.system("git fetch %s" % options.gitopts)
 	branch = get_branch()
-	sock = os.popen("git log %s..%s/%s --no-merges 2>&1" % (branch, options.gitopts, branch))
+	sock = os.popen("git log %s..%s/%s 2>&1" % (branch, options.gitopts, branch))
 	lines = sock.readlines()
 	ret = sock.close()
 	if not len(lines):
