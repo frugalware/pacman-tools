@@ -106,6 +106,12 @@ def merge_check():
 			break
 	return ret
 
+def svn_check():
+	sock = os.popen("git rev-parse --show-cdup")
+	cdup = sock.read().strip()
+	sock.close()
+	return os.path.exists(os.path.join(cdup, ".git/svn"))
+
 def scan_dir(files=""):
 	ret = []
 	lines = get_diff(files)
@@ -574,7 +580,10 @@ Options:
 	if options.help:
 		usage(0)
 	branch = get_branch()
-	sock = os.popen("git log %s/%s..%s 2>&1" % (options.gitopts, branch, branch))
+	remote = "%s/%s" % (options.gitopts, branch)
+	if svn_check():
+		remote = "git-svn"
+	sock = os.popen("git log %s..%s 2>&1" % (remote, branch))
 	lines = sock.readlines()
 	ret = sock.close()
 	if not len(lines):
@@ -589,14 +598,17 @@ Options:
 			if ret in ("n", "q"):
 				return(0)
 			print "Invalid response, try again!"
-	ret = os.system("git push %s" % options.gitopts)
-	if ret:
-		ret = pull(['-a'])
-		if not ret:
-			ret = os.system("git push %s" % options.gitopts)
-			if ret:
-				return(1)
-	os.system("git push --tags %s" % options.gitopts)
+	if not svn_check():
+		ret = os.system("git push %s" % options.gitopts)
+		if ret:
+			ret = pull(['-a'])
+			if not ret:
+				ret = os.system("git push %s" % options.gitopts)
+				if ret:
+					return(1)
+		os.system("git push --tags %s" % options.gitopts)
+	else:
+		os.system("git svn dcommit")
 	return(0)
 
 def pull(argv):
@@ -633,9 +645,15 @@ Options:
 		options.gitopts = "origin"
 	if options.help:
 		usage(0)
-	os.system("git fetch %s" % options.gitopts)
+	if not svn_check():
+		os.system("git fetch %s" % options.gitopts)
+	else:
+		os.system("git svn fetch")
 	branch = get_branch()
-	sock = os.popen("git log %s..%s/%s 2>&1" % (branch, options.gitopts, branch))
+	remote = "%s/%s" % (options.gitopts, branch)
+	if svn_check():
+		remote = "git-svn"
+	sock = os.popen("git log %s..%s 2>&1" % (branch, remote))
 	lines = sock.readlines()
 	ret = sock.close()
 	if not len(lines):
@@ -656,8 +674,12 @@ Options:
 			return(1)
 	else:
 		changes = False
-	if os.system("git pull --rebase %s" % options.gitopts) != 0:
-		return(1)
+	if not svn_check():
+		if os.system("git pull --rebase %s" % options.gitopts) != 0:
+			return(1)
+	else:
+		if os.system("git svn rebase") != 0:
+			return(1)
 	if changes and os.system("git stash pop") != 0:
 			return(1)
 
