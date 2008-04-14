@@ -678,7 +678,7 @@ Options:
 		if os.system("git pull --rebase %s" % options.gitopts) != 0:
 			return(1)
 	else:
-		if os.system("git svn rebase") != 0:
+		if os.system("git svn rebase -l") != 0:
 			return(1)
 	if changes and os.system("git stash pop") != 0:
 			return(1)
