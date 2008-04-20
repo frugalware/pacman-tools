@@ -1,5 +1,11 @@
 VERSION         DESCRIPTION
 -----------------------------------------------------------------------------
+1.0.7         - syncpkgcd now handles the case when its home is not
+                under /home
+              - mkiso now has a --dry-run option
+              - fblint now really checks for uppercase letters in
+                pkgname
+              - dg: make use of git>=1.5.5
 1.0.6	      - repoman: support for pacman-g2>=3.6.6
 	      - dg: support for git>=1.5.4
 	      - implement throttle control in syncpkgcd
