@@ -837,7 +837,7 @@ Options:
 		usage(0)
 	print "Checking how much disk space is wasted..."
 	os.system("git count-objects")
-	print "Chleaning up..."
+	print "Cleaning up..."
 	os.system("git gc")
 
 def query(argv):
