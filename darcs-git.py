@@ -492,6 +492,14 @@ Options:
 		options.files = " ".join(argv[optind:])
 	if options.help:
 		usage(0)
+	if os.system("git rev-parse --verify HEAD >/dev/null 2>&1"):
+		sock = os.popen("git ls-files")
+		while True:
+			line = sock.readline()
+			if not line:
+				break
+			print "A %s" % line.strip()
+		return
 	ret = os.system("git diff HEAD -M -C --find-copies-harder --exit-code %s %s" % (options.summary, options.files))
 	if not ret:
 		print "No changes!"
