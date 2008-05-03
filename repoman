@@ -206,12 +206,10 @@ clean()
 	[ -z "$fdb" ] && fdb="$reponame.fdb"
 	for i in $*
 	do
-		# drop the group/ prefix if any
-		i=${i#*/}
 		msg "Cleaning up $i"
 		ssh $host "`declare -f _check_nobuild`; cd $path/frugalware-$arch && \
-			_check_nobuild || arch=$arch $sudo_cmd updatesync del $fdb $i && \
-			genchangelog --clean $i"
+			_check_nobuild || arch=$arch $sudo_cmd updatesync del $fdb ${i#*/} && \
+			genchangelog --clean ${i#*/} && rm -rfv ../source/$i"
 	done
 }
 
