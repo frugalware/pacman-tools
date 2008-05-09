@@ -44,17 +44,29 @@ static char *get_arch()
 	return(strdup(name.machine));
 }
 
-static char *get_timestamp()
+static char *get_version()
 {
-	time_t t;
-	struct tm *tm;
-	char buf[9];
+	FILE *fp;
+	char *ptr, line[PATH_MAX+1], *cmdline = g_strdup_printf("git --git-dir %s/.git describe", fst_root);
 
-	t = time(NULL);
-	tm = localtime(&t);
+	fp = popen(cmdline, "r");
+	if(!fp)
+		sprintf(line, "git");
+	else
+	{
+		fgets(line, PATH_MAX, fp);
+		fclose(fp);
+		line[strlen(line)-1] = '\0';
+		ptr = line;
+		while((ptr = strchr(ptr, '-')))
+		{
+			*ptr = '.';
+			ptr++;
+		}
+	}
+	free(cmdline);
 
-	sprintf(buf, "20%02d%02d%02d", tm->tm_year-100, tm->tm_mon+1, tm->tm_mday);
-	return(strdup(buf));
+	return(strdup(line));
 }
 
 static int parseVolume(xmlDoc *doc, xmlNode *cur)
@@ -164,7 +176,7 @@ int parseVolumes(char *docname)
 		return(1);
 	}
 	if(!fst_ver)
-		fst_ver = get_timestamp();
+		fst_ver = get_version();
 	if(!fst_codename)
 		fst_codename = strdup("-current");
 	if(!volumes)
