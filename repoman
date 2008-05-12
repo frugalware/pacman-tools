@@ -209,7 +209,7 @@ clean()
 		msg "Cleaning up $i"
 		ssh $host "`declare -f _check_nobuild`; cd $path/frugalware-$arch && \
 			_check_nobuild || arch=$arch $sudo_cmd updatesync del $fdb ${i#*/} && \
-			genchangelog --clean ${i#*/} && rm -rfv ../source/$i"
+			genchangelog --clean ${i#*/} && [ -d ../source/$i ] && rm -rfv ../source/$i"
 	done
 }
 
