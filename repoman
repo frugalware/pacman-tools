@@ -75,30 +75,52 @@ _set_lockname()
 	fi
 }
 
+server()
+{
+	case "$1" in
+		delete)
+		shift
+		if [ $# -lt 4 ]; then
+			echo "Too few parameters!"
+			echo "usage: repoman server delete user opts path file1 [file2..]"
+			echo "example: repoman server delete "" -v /home/ftp foo bar"
+			return
+		fi
+		local sudouser="$1" rmopts="$2" path="$3"
+		shift 3
+		if [ -n "$sudouser" ]; then
+			sudo_cmd="$sudo_env -u $sudouser"
+		else
+			sudo_cmd=""
+		fi
+		if [ "${path:0:1}" != "/" ]; then
+			echo "Please use absolute paths in repoman.conf!"
+			return
+		fi
+		cd $path
+		if [ -e .git/lock ]; then
+			echo "Couldn't get lock."
+			return
+		fi
+		for i in "$@"
+		do
+			# strip leading / and any ..
+			$sudo_cmd rm $rmopts "`echo $i|sed 's|^/||;s|\.\./||g'`"
+		done
+		;;
+	esac
+}
+
 delete()
 {
-	local i files rmopts host
+	local files rmopts host
 	check_servers
 	sudouser=$(eval "echo \$${reponame}_sudo")
-	if [ -n "$sudouser" ]; then
-		sudo_cmd="$sudo_env -u $sudouser"
-	else
-		sudo_cmd=""
-	fi
-	# Strip leading / and any ..
-	for i in $*
-	do
-		files="$files `echo $i|sed 's|^/||;s|\.\./||g'`"
-	done
 	if [ "$verbose" != 0 ]; then
 		rmopts="-v"
 	fi
-	for i in $files
-	do
-		msg "Deleting file(s): $i"
-		_set_lockname
-		ssh $host "cd $path; if [ ! -e $lock ]; then $sudo_cmd rm $rmopts $path/$i; else echo \"Couldn't get lock.\"; fi"
-	done
+	msg "Deleting file(s): $*"
+	ssh $host "repoman server delete '$sudouser' '$rmopts' '$path' $*"
 }
 
 upload()
@@ -664,6 +686,10 @@ while [ "$1" != "" ]; do
 		del|delete)
 			shift 1
 			delete $*
+		;;
+		server)
+			shift 1
+			server "$@"
 		;;
 		ls|list)
 			shift 1
