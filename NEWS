@@ -1,5 +1,12 @@
 VERSION         DESCRIPTION
 -----------------------------------------------------------------------------
+1.0.8         - fblint: added new / improved existing tests
+              - dg: improve dg what before the first commit
+              - repoman: do more agressive cleanup on repoman clean.
+                please not that it _does_ matter which group do you use on
+                repoman clean group/pkgname!
+              - mkiso now outputs versioned iso images (and no longer
+                uses dates)
 1.0.7         - syncpkgcd now handles the case when its home is not
                 under /home
               - mkiso now has a --dry-run option
