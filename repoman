@@ -83,7 +83,6 @@ server()
 		if [ $# -lt 4 ]; then
 			echo "Too few parameters!"
 			echo "usage: repoman server delete user opts path file1 [file2..]"
-			echo "example: repoman server delete "" -v /home/ftp foo bar"
 			return
 		fi
 		local sudouser="$1" rmopts="$2" path="$3"
@@ -107,6 +106,13 @@ server()
 			# strip leading / and any ..
 			$sudo_cmd rm $rmopts "`echo $i|sed 's|^/||;s|\.\./||g'`"
 		done
+		;;
+		mktemp)
+		shift
+		mktemp -p $HOME 2>/dev/null
+		;;
+		*)
+		echo "Unknown server command!"
 		;;
 	esac
 }
@@ -143,7 +149,7 @@ upload()
 	do
 		name=`basename $src`
 		msg "Requesting a temporary file"
-		tmp=`ssh $host $mktemp_remote 2>/dev/null`
+		tmp=`ssh $host repoman server mktemp`
 		if [ -z "$tmp" ]; then
 			echo "Failed to get a temporary file :-/"
 			exit 1
@@ -613,11 +619,6 @@ fi
 # Initializating variables.
 version='0.3.1'
 [ -z "$arch" ] && arch=`uname -m`
-if [ -n "$REMOTEHOME" ]; then
-	mktemp_remote="mktemp -p $REMOTEHOME"
-else
-	mktemp_remote="mktemp -p $HOME"
-fi
 mktemp_local="mktemp -p $HOME"
 sudo_env="sudo -E"
 
