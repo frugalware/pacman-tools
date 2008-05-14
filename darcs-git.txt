@@ -2,7 +2,7 @@
 
 == NAME
 
-darcs-git - a darcs-like interface for git with \~20 commands (git has \~140)
+darcs-git - a darcs-like porcelain on top of core git
 
 == SYNOPSIS
 
