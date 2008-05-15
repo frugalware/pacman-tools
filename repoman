@@ -145,6 +145,26 @@ server()
 		$sudo_cmd ln $tmp "`echo $dest|sed 's|^/||;s|\.\./||g'`"
 		rm $tmp
 		;;
+		list)
+		shift
+		if [ $# -lt 2 ]; then
+			echo "Too few parameters!"
+			echo "usage: repoman server list path file1 [file2..]"
+			return
+		fi
+		local path="$1"
+		shift
+		if [ "${path:0:1}" != "/" ]; then
+			echo "Please use absolute paths in repoman.conf!"
+			return
+		fi
+		cd $path
+		for i in "$@"
+		do
+			# strip leading / and any ..
+			ls "`echo $i|sed 's|^/||;s|\.\./||g'`"
+		done
+		;;
 		*)
 		echo "Unknown server command!"
 		;;
@@ -220,13 +240,8 @@ fpmmerge()
 list()
 {
 	check_servers
-	for i in $*
-	do
-		msg "Fetching contents of directory: $i"
-		ssh $host "ls $path/$i"
-		ret=$?
-	done
-	exit $ret
+	msg "Fetching contents of: $*"
+	ssh $host "repoman server list '$path' $*"
 }
 
 split_group_pkg()
