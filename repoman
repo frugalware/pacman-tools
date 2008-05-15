@@ -369,19 +369,13 @@ clean()
 {
 	check_servers
 	sudouser=$(eval "echo \$${reponame}_sudo")
-	if [ -n "$sudouser" ]; then
-		sudo_cmd="$sudo_env -u $sudouser"
-	else
-		sudo_cmd=""
-	fi
 	fdb=$(eval "echo \$${reponame}_fdb")
 	[ -z "$fdb" ] && fdb="$reponame.fdb"
 	for i in $*
 	do
 		msg "Cleaning up $i"
-		ssh $host "`declare -f _check_nobuild`; cd $path/frugalware-$arch && \
-			_check_nobuild || arch=$arch $sudo_cmd updatesync del $fdb ${i#*/} && \
-			genchangelog --clean ${i#*/} && [ -d ../source/$i ] && rm -rfv ../source/$i"
+		split_group_pkg $i
+		ssh $host "repoman server clean '$sudouser' '$path' '$fdb' '$group' '$pkg' '$arch'"
 	done
 }
 
