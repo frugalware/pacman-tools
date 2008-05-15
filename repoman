@@ -109,7 +109,41 @@ server()
 		;;
 		mktemp)
 		shift
-		mktemp -p $HOME 2>/dev/null
+		local tmp="`mktemp -p $HOME 2>/dev/null`"
+		if [ -z "$tmp" ]; then
+			echo "Failed to get a temporary file :-/" >&2
+		else
+			echo $tmp
+		fi
+		;;
+		upload)
+		shift
+		if [ $# -lt 5 ]; then
+			echo "Too few parameters!"
+			echo "usage: repoman server upload user path yourtmpfile sha1 targetfile"
+			return
+		fi
+		local sudouser="$1" path="$2" tmp="$3" sha="$4" dest="$5"
+		shift 5
+		if [ -n "$sudouser" ]; then
+			sudo_cmd="$sudo_env -u $sudouser"
+		else
+			sudo_cmd=""
+		fi
+		if [ "${path:0:1}" != "/" ]; then
+			echo "Please use absolute paths in repoman.conf!"
+			return
+		fi
+		cd $path
+		if ! echo "$sha  $tmp" |sha1sum -c - >/dev/null 2>&1; then
+			echo "The uploaded file is corrupted :-/"
+			rm $tmp
+			return
+		fi
+		chmod 644 $tmp
+		# strip leading / and any ..
+		$sudo_cmd ln $tmp "`echo $dest|sed 's|^/||;s|\.\./||g'`"
+		rm $tmp
 		;;
 		*)
 		echo "Unknown server command!"
@@ -138,32 +172,17 @@ upload()
 	fi
 	check_servers
 	sudouser=$(eval "echo \$${reponame}_sudo")
-	if [ -n "$sudouser" ]; then
-		sudo_cmd="$sudo_env -u $sudouser"
-	else
-		sudo_cmd=""
-	fi
-	# Strip leading / and any ..
-	dest=`echo ${@:$#} |sed 's|^/||;s|\.\./||g'`
+	dest=${@:$#}
 	for src in "${@:1:$#-1}"
 	do
 		name=`basename $src`
 		msg "Requesting a temporary file"
 		tmp=`ssh $host repoman server mktemp`
-		if [ -z "$tmp" ]; then
-			echo "Failed to get a temporary file :-/"
-			exit 1
-		fi
+		[ -z "$tmp" ] && exit 1
 		msg "Uploading file: $src (to $tmp)"
 		scp $src $host:$tmp
-		if echo "`sha1sum $src|sed 's/\(.*\)  .*/\1/'`  $tmp" |ssh $host sha1sum -c - >/dev/null 2>&1; then
-			msg "Copying to $dest"
-			ssh $host "chmod 644 $tmp; $sudo_cmd cp $tmp $path/$dest/$name && rm $tmp"
-		else
-			echo "The uploaded file is corrupted :-/"
-			ssh $host "rm $tmp"
-			exit 1
-		fi
+		sha=`sha1sum $src|sed 's/\(.*\)  .*/\1/'`
+		ssh $host "repoman server upload '$sudouser' '$path' '$tmp' '$sha' '$dest/$src'"
 	done
 }
 
