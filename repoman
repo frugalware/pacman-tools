@@ -281,37 +281,9 @@ changelog()
 	split_group_pkg $1
 	check_servers
 	sudouser=$(eval "echo \$${reponame}_sudo")
-	if [ -n "$sudouser" ]; then
-		sudo_cmd="$sudo_env -u $sudouser"
-	else
-		sudo_cmd=""
-	fi
 	fdb=$(eval "echo \$${reponame}_fdb")
 	[ -z "$fdb" ] && fdb="$reponame.fdb"
-	if [ "$verbose" == 1 ]; then
-		catcmd="cat Changelog"
-	else
-		# just a workaround for the "syntax error near unexpected token `;'" bug
-		catcmd="echo -n \"\""
-	fi
-	_set_lockname
-	ssh $host "`declare -f _check_nobuild`; \
-options=\"${options[@]}\"
-cd $path; \
-if [ ! -e $lock ]; then \
-	touch $lock; \
-	cd frugalware-$arch; \
-	if [ ! -e '$fdb' ]; then \
-		_check_nobuild || arch=$arch $sudo_cmd gensync ../source/$group/$pkg $fdb; \
-	else \
-		_check_nobuild || arch=$arch $sudo_cmd updatesync upd $fdb ../source/$group/$pkg/FrugalBuild; \
-	fi; \
-	cd $path; rm $lock; \
-	cd $path/source/$group/$pkg; arch=$arch $sudo_cmd genchangelog; \
-	$catcmd; \
-else \
-	echo \"Couldn't get lock.\"; \
-fi"
+	ssh $host "repoman server changelog '$sudouser' '$path' '$fdb' '$group' '$pkg' '$arch'"
 }
 
 _keypress()
