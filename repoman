@@ -348,25 +348,28 @@ fpmmerge()
 	fi
 	check_servers
 	sudouser=$(eval "echo \$${reponame}_sudo")
-	if [ -n "$sudouser" ]; then
-		sudo_cmd="$sudo_env -u $sudouser"
-	else
-		sudo_cmd=""
-	fi
 	srcurl=$(eval "echo \$$1_servers")
 	if [ -z "$srcurl" ]; then
 		die "so such repo!"
 	fi
-	if ! ssh $host "cd $path/frugalware-$arch && $sudo_cmd rsync -avP `echo $srcurl|sed 's/^.*@//'`/frugalware-$arch/*.fpm ./"; then
-		die "rsync failed! :/"
-	fi
+	# for each arch
+	mergearchs="`rsync -vP $srcurl/|grep ^d.*frugalware-|sed 's/.* //'`"
+	for i in $mergearchs
+	do
+		ssh $host "repoman server rsync '$sudouser' '$path' '$tmp' '$srcurl' '$i'"
+	done
+
 	# now push
 	dg push -a
-	# finally run repoman cl for each
-	for i in `$0 -t $1 ls /frugalware-$arch/ 2>/dev/null|sed 's/-[^-]\+-[^-]\+-[^-]\+$//'`
+
+	# finally run repoman cl for each arch and pkg
+	for i in $archlist
 	do
-		cd `git rev-parse --git-dir`/../source/*/$i 2>/dev/null || continue
-		$0 -t $reponame cl $i
+		for j in `$0 -t $1 ls /frugalware-$i/ 2>/dev/null|sed 's/-[^-]\+-[^-]\+-[^-]\+$//'`
+		do
+			cd `git rev-parse --git-dir`/../source/*/$j 2>/dev/null || continue
+			arch=$i $0 -t $reponame cl $j
+		done
 	done
 }
 
