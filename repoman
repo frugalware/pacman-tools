@@ -107,6 +107,7 @@ server()
 			$sudo_cmd rm $rmopts "`echo $i|sed 's|^/||;s|\.\./||g'`"
 		done
 		;;
+
 		mktemp)
 		shift
 		local tmp="`mktemp -p $HOME 2>/dev/null`"
@@ -116,6 +117,7 @@ server()
 			echo $tmp
 		fi
 		;;
+
 		upload)
 		shift
 		if [ $# -lt 5 ]; then
@@ -145,6 +147,7 @@ server()
 		$sudo_cmd ln $tmp "`echo $dest|sed 's|^/||;s|\.\./||g'`"
 		rm $tmp
 		;;
+
 		list)
 		shift
 		if [ $# -lt 2 ]; then
@@ -165,6 +168,60 @@ server()
 			ls "`echo $i|sed 's|^/||;s|\.\./||g'`"
 		done
 		;;
+
+		changelog)
+		shift
+		if [ $# -lt 4 ]; then
+			echo "Too few parameters!"
+			echo "usage: repoman server changelog user path fdb group pkg arch"
+			return
+		fi
+		local sudouser="$1" path="$2" fdb="$3" group="$4" pkg="$5" arch="$6"
+		shift 6
+		if [ -n "$sudouser" ]; then
+			sudo_cmd="$sudo_env -u $sudouser"
+		else
+			sudo_cmd=""
+		fi
+		if [ "${path:0:1}" != "/" ]; then
+			echo "Please use absolute paths in repoman.conf!"
+			return
+		fi
+		cd $path
+		if [ -e .git/lock ]; then
+			echo "Couldn't get lock."
+			return
+		else
+			touch .git/lock
+		fi
+		if ! cd source/$group/$pkg; then
+			echo "There is no package with this group!"
+			return
+		fi
+		if ! source FrugalBuild; then
+			echo "Failed to parse the FrugalBuid!"
+			return
+		fi
+		cd - >/dev/null
+		cd frugalware-$arch
+		if ! _check_nobuild; then
+			if [ ! -e $fdb ]; then
+				if ! arch=$arch $sudo_cmd gensync ../source/$group/$pkg $fdb; then
+					echo "gensync failed!"
+					return
+				fi
+			else
+				if ! arch=$arch $sudo_cmd updatesync upd $fdb ../source/$group/$pkg/FrugalBuild; then
+					echo "updatesync failed!"
+					return
+				fi
+			fi
+		fi
+		rm ../.git/lock
+		cd ../source/$group/$pkg
+		arch=$arch $sudo_cmd genchangelog
+		;;
+
 		*)
 		echo "Unknown server command!"
 		;;
