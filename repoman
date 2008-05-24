@@ -138,6 +138,10 @@ server()
 			return
 		fi
 		cd $path
+		if [ -e .git/lock ]; then
+			echo "Couldn't get lock."
+			return
+		fi
 		if ! echo "$sha  $tmp" |sha1sum -c - >/dev/null 2>&1; then
 			echo "The uploaded file is corrupted :-/"
 			rm $tmp
