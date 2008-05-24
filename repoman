@@ -144,8 +144,7 @@ server()
 			return
 		fi
 		# strip leading / and any ..
-		ln $tmp "`echo $dest|sed 's|^/||;s|\.\./||g'`"
-		rm $tmp
+		mv -f $tmp "`echo $dest|sed 's|^/||;s|\.\./||g'`"
 		;;
 
 		list)
