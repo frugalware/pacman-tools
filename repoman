@@ -80,18 +80,13 @@ server()
 	case "$1" in
 		delete)
 		shift
-		if [ $# -lt 4 ]; then
+		if [ $# -lt 3 ]; then
 			echo "Too few parameters!"
-			echo "usage: repoman server delete user opts path file1 [file2..]"
+			echo "usage: repoman server delete opts path file1 [file2..]"
 			return
 		fi
-		local sudouser="$1" rmopts="$2" path="$3"
-		shift 3
-		if [ -n "$sudouser" ]; then
-			sudo_cmd="$sudo_env -u $sudouser"
-		else
-			sudo_cmd=""
-		fi
+		local rmopts="$1" path="$2"
+		shift 2
 		if [ "${path:0:1}" != "/" ]; then
 			echo "Please use absolute paths in repoman.conf!"
 			return
@@ -104,7 +99,7 @@ server()
 		for i in "$@"
 		do
 			# strip leading / and any ..
-			$sudo_cmd rm $rmopts "`echo $i|sed 's|^/||;s|\.\./||g'`"
+			rm $rmopts "`echo $i|sed 's|^/||;s|\.\./||g'`"
 		done
 		;;
 
@@ -114,24 +109,20 @@ server()
 		if [ -z "$tmp" ]; then
 			echo "Failed to get a temporary file :-/" >&2
 		else
+			chmod 664 $tmp
 			echo $tmp
 		fi
 		;;
 
 		upload)
 		shift
-		if [ $# -lt 5 ]; then
+		if [ $# -lt 4 ]; then
 			echo "Too few parameters!"
-			echo "usage: repoman server upload user path yourtmpfile sha1 targetfile"
+			echo "usage: repoman server upload path yourtmpfile sha1 targetfile"
 			return
 		fi
-		local sudouser="$1" path="$2" tmp="$3" sha="$4" dest="$5"
-		shift 5
-		if [ -n "$sudouser" ]; then
-			sudo_cmd="$sudo_env -u $sudouser"
-		else
-			sudo_cmd=""
-		fi
+		local path="$1" tmp="$2" sha="$3" dest="$4"
+		shift 4
 		if [ "${path:0:1}" != "/" ]; then
 			echo "Please use absolute paths in repoman.conf!"
 			return
@@ -142,9 +133,8 @@ server()
 			rm $tmp
 			return
 		fi
-		chmod 644 $tmp
 		# strip leading / and any ..
-		$sudo_cmd ln $tmp "`echo $dest|sed 's|^/||;s|\.\./||g'`"
+		ln $tmp "`echo $dest|sed 's|^/||;s|\.\./||g'`"
 		rm $tmp
 		;;
 
@@ -171,18 +161,13 @@ server()
 
 		changelog)
 		shift
-		if [ $# -lt 4 ]; then
+		if [ $# -lt 5 ]; then
 			echo "Too few parameters!"
-			echo "usage: repoman server changelog user path fdb group pkg arch"
+			echo "usage: repoman server changelog path fdb group pkg arch"
 			return
 		fi
-		local sudouser="$1" path="$2" fdb="$3" group="$4" pkg="$5" arch="$6"
-		shift 6
-		if [ -n "$sudouser" ]; then
-			sudo_cmd="$sudo_env -u $sudouser"
-		else
-			sudo_cmd=""
-		fi
+		local path="$1" fdb="$2" group="$3" pkg="$4" arch="$5"
+		shift 5
 		if [ "${path:0:1}" != "/" ]; then
 			echo "Please use absolute paths in repoman.conf!"
 			return
@@ -206,12 +191,12 @@ server()
 		cd frugalware-$arch
 		if ! _check_nobuild; then
 			if [ ! -e $fdb ]; then
-				if ! arch=$arch $sudo_cmd gensync ../source/$group/$pkg $fdb; then
+				if ! arch=$arch gensync ../source/$group/$pkg $fdb; then
 					echo "gensync failed!"
 					return
 				fi
 			else
-				if ! arch=$arch $sudo_cmd updatesync upd $fdb ../source/$group/$pkg/FrugalBuild; then
+				if ! arch=$arch updatesync upd $fdb ../source/$group/$pkg/FrugalBuild; then
 					echo "updatesync failed!"
 					return
 				fi
@@ -219,23 +204,18 @@ server()
 		fi
 		rm ../.git/lock
 		cd ../source/$group/$pkg
-		arch=$arch $sudo_cmd genchangelog
+		arch=$arch genchangelog
 		;;
 
 		clean)
 		shift
-		if [ $# -lt 4 ]; then
+		if [ $# -lt 5 ]; then
 			echo "Too few parameters!"
-			echo "usage: repoman server clean user path fdb group pkg arch"
+			echo "usage: repoman server clean path fdb group pkg arch"
 			return
 		fi
-		local sudouser="$1" path="$2" fdb="$3" group="$4" pkg="$5" arch="$6"
-		shift 6
-		if [ -n "$sudouser" ]; then
-			sudo_cmd="$sudo_env -u $sudouser"
-		else
-			sudo_cmd=""
-		fi
+		local path="$1" fdb="$2" group="$3" pkg="$4" arch="$5"
+		shift 5
 		if [ "${path:0:1}" != "/" ]; then
 			echo "Please use absolute paths in repoman.conf!"
 			return
@@ -262,7 +242,7 @@ server()
 				echo "No package database to clean from!"
 				return
 			else
-				if ! arch=$arch $sudo_cmd updatesync del $fdb $pkg; then
+				if ! arch=$arch updatesync del $fdb $pkg; then
 					echo "updatesync failed!"
 					return
 				fi
@@ -277,25 +257,20 @@ server()
 
 		rsync)
 		shift
-		if [ $# -lt 4 ]; then
+		if [ $# -lt 3 ]; then
 			echo "Too few parameters!"
-			echo "usage: repoman server rsync user path src arch"
+			echo "usage: repoman server rsync path src arch"
 			return
 		fi
-		local sudouser="$1" path="$2" srcurl="$3" arch="$4"
-		shift 4
-		if [ -n "$sudouser" ]; then
-			sudo_cmd="$sudo_env -u $sudouser"
-		else
-			sudo_cmd=""
-		fi
+		local path="$1" srcurl="$2" arch="$3"
+		shift 3
 		if [ "${path:0:1}" != "/" ]; then
 			echo "Please use absolute paths in repoman.conf!"
 			return
 		fi
 		cd $path
 		cd frugalware-$arch
-		$sudo_cmd rsync -avP `echo $srcurl|sed 's/^.*@//'`/frugalware-$arch/*.fpm ./
+		rsync -avP `echo $srcurl|sed 's/^.*@//'`/frugalware-$arch/*.fpm ./
 		;;
 
 		*)
@@ -309,11 +284,16 @@ delete()
 	local files rmopts host
 	check_servers
 	sudouser=$(eval "echo \$${reponame}_sudo")
+	if [ -n "$sudouser" ]; then
+		sudo_cmd="sudo -u $sudouser"
+	else
+		sudo_cmd=""
+	fi
 	if [ "$verbose" != 0 ]; then
 		rmopts="-v"
 	fi
 	msg "Deleting file(s): $*"
-	ssh $host "repoman server delete '$sudouser' '$rmopts' '$path' $*"
+	ssh $host "$sudo_cmd repoman server delete '$rmopts' '$path' $*"
 }
 
 upload()
@@ -325,6 +305,11 @@ upload()
 	fi
 	check_servers
 	sudouser=$(eval "echo \$${reponame}_sudo")
+	if [ -n "$sudouser" ]; then
+		sudo_cmd="sudo -u $sudouser"
+	else
+		sudo_cmd=""
+	fi
 	dest=${@:$#}
 	for src in "${@:1:$#-1}"
 	do
@@ -335,7 +320,7 @@ upload()
 		msg "Uploading file: $src (to $tmp)"
 		scp $src $host:$tmp
 		sha=`sha1sum $src|sed 's/\(.*\)  .*/\1/'`
-		ssh $host "repoman server upload '$sudouser' '$path' '$tmp' '$sha' '$dest/$src'"
+		ssh $host "$sudo_cmd repoman server upload '$path' '$tmp' '$sha' '$dest/$src'"
 	done
 }
 
@@ -348,6 +333,11 @@ fpmmerge()
 	fi
 	check_servers
 	sudouser=$(eval "echo \$${reponame}_sudo")
+	if [ -n "$sudouser" ]; then
+		sudo_cmd="sudo -u $sudouser"
+	else
+		sudo_cmd=""
+	fi
 	srcurl=$(eval "echo \$$1_servers")
 	if [ -z "$srcurl" ]; then
 		die "so such repo!"
@@ -356,7 +346,7 @@ fpmmerge()
 	mergearchs="`rsync -vP $srcurl/|grep ^d.*frugalware-|sed 's/.* //'`"
 	for i in $mergearchs
 	do
-		ssh $host "repoman server rsync '$sudouser' '$path' '$tmp' '$srcurl' '$i'"
+		ssh $host "$sudo_cmd repoman server rsync '$sudouser' '$path' '$tmp' '$srcurl' '$i'"
 	done
 
 	# now push
@@ -395,13 +385,18 @@ clean()
 {
 	check_servers
 	sudouser=$(eval "echo \$${reponame}_sudo")
+	if [ -n "$sudouser" ]; then
+		sudo_cmd="sudo -u $sudouser"
+	else
+		sudo_cmd=""
+	fi
 	fdb=$(eval "echo \$${reponame}_fdb")
 	[ -z "$fdb" ] && fdb="$reponame.fdb"
 	for i in $*
 	do
 		msg "Cleaning up $i"
 		split_group_pkg $i
-		ssh $host "repoman server clean '$sudouser' '$path' '$fdb' '$group' '$pkg' '$arch'"
+		ssh $host "$sudo_cmd repoman server clean '$path' '$fdb' '$group' '$pkg' '$arch'"
 	done
 }
 
@@ -411,9 +406,14 @@ changelog()
 	split_group_pkg $1
 	check_servers
 	sudouser=$(eval "echo \$${reponame}_sudo")
+	if [ -n "$sudouser" ]; then
+		sudo_cmd="sudo -u $sudouser"
+	else
+		sudo_cmd=""
+	fi
 	fdb=$(eval "echo \$${reponame}_fdb")
 	[ -z "$fdb" ] && fdb="$reponame.fdb"
-	ssh $host "repoman server changelog '$sudouser' '$path' '$fdb' '$group' '$pkg' '$arch'"
+	ssh $host "$sudo_cmd repoman server changelog '$path' '$fdb' '$group' '$pkg' '$arch'"
 }
 
 _keypress()
