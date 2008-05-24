@@ -315,7 +315,7 @@ upload()
 	do
 		name=`basename $src`
 		msg "Requesting a temporary file"
-		tmp=`ssh $host repoman server mktemp`
+		tmp=`ssh $host "$sudo_cmd repoman server mktemp"`
 		[ -z "$tmp" ] && exit 1
 		msg "Uploading file: $src (to $tmp)"
 		scp $src $host:$tmp
@@ -361,8 +361,9 @@ fpmmerge()
 list()
 {
 	check_servers
+	check_sudo
 	msg "Fetching contents of: $*"
-	ssh $host "repoman server list '$path' $*"
+	ssh $host "$sudo_cmd repoman server list '$path' $*"
 }
 
 split_group_pkg()
