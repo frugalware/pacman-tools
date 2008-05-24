@@ -85,6 +85,14 @@ _set_lockname()
 	fi
 }
 
+check_absolute_path()
+{
+	if [ "${path:0:1}" != "/" ]; then
+		echo "Please use absolute paths in repoman.conf!"
+		exit 1
+	fi
+}
+
 server()
 {
 	case "$1" in
@@ -97,10 +105,7 @@ server()
 		fi
 		local rmopts="$1" path="$2"
 		shift 2
-		if [ "${path:0:1}" != "/" ]; then
-			echo "Please use absolute paths in repoman.conf!"
-			return
-		fi
+		check_absolute_path
 		cd $path
 		if [ -e .git/lock ]; then
 			echo "Couldn't get lock."
@@ -133,10 +138,7 @@ server()
 		fi
 		local path="$1" tmp="$2" sha="$3" dest="$4"
 		shift 4
-		if [ "${path:0:1}" != "/" ]; then
-			echo "Please use absolute paths in repoman.conf!"
-			return
-		fi
+		check_absolute_path
 		cd $path
 		if [ -e .git/lock ]; then
 			echo "Couldn't get lock."
@@ -160,10 +162,7 @@ server()
 		fi
 		local path="$1"
 		shift
-		if [ "${path:0:1}" != "/" ]; then
-			echo "Please use absolute paths in repoman.conf!"
-			return
-		fi
+		check_absolute_path
 		cd $path
 		for i in "$@"
 		do
@@ -181,10 +180,7 @@ server()
 		fi
 		local path="$1" fdb="$2" group="$3" pkg="$4" arch="$5"
 		shift 5
-		if [ "${path:0:1}" != "/" ]; then
-			echo "Please use absolute paths in repoman.conf!"
-			return
-		fi
+		check_absolute_path
 		cd $path
 		if [ -e .git/lock ]; then
 			echo "Couldn't get lock."
@@ -231,10 +227,7 @@ server()
 		fi
 		local path="$1" fdb="$2" group="$3" pkg="$4" arch="$5"
 		shift 5
-		if [ "${path:0:1}" != "/" ]; then
-			echo "Please use absolute paths in repoman.conf!"
-			return
-		fi
+		check_absolute_path
 		cd $path
 		if [ -e .git/lock ]; then
 			echo "Couldn't get lock."
@@ -279,10 +272,7 @@ server()
 		fi
 		local path="$1" srcurl="$2" arch="$3"
 		shift 3
-		if [ "${path:0:1}" != "/" ]; then
-			echo "Please use absolute paths in repoman.conf!"
-			return
-		fi
+		check_absolute_path
 		cd $path
 		cd frugalware-$arch
 		rsync -avP `echo $srcurl|sed 's/^.*@//'`/frugalware-$arch/*.fpm ./
