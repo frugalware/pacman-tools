@@ -115,7 +115,7 @@ server()
 
 		mktemp)
 		shift
-		local tmp="`mktemp -p $HOME 2>/dev/null`"
+		local tmp="`mktemp -p /var/tmp 2>/dev/null`"
 		if [ -z "$tmp" ]; then
 			echo "Failed to get a temporary file :-/" >&2
 		else
