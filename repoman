@@ -45,6 +45,16 @@ check_servers()
         fi
 }
 
+check_sudo()
+{
+	sudouser=$(eval "echo \$${reponame}_sudo")
+	if [ -n "$sudouser" ]; then
+		sudo_cmd="sudo -u $sudouser"
+	else
+		sudo_cmd=""
+	fi
+}
+
 get_root()
 {
 	local i
@@ -283,12 +293,7 @@ delete()
 {
 	local files rmopts host
 	check_servers
-	sudouser=$(eval "echo \$${reponame}_sudo")
-	if [ -n "$sudouser" ]; then
-		sudo_cmd="sudo -u $sudouser"
-	else
-		sudo_cmd=""
-	fi
+	check_sudo
 	if [ "$verbose" != 0 ]; then
 		rmopts="-v"
 	fi
@@ -304,12 +309,7 @@ upload()
 		exit 1
 	fi
 	check_servers
-	sudouser=$(eval "echo \$${reponame}_sudo")
-	if [ -n "$sudouser" ]; then
-		sudo_cmd="sudo -u $sudouser"
-	else
-		sudo_cmd=""
-	fi
+	check_sudo
 	dest=${@:$#}
 	for src in "${@:1:$#-1}"
 	do
@@ -332,12 +332,7 @@ fpmmerge()
 		exit 1
 	fi
 	check_servers
-	sudouser=$(eval "echo \$${reponame}_sudo")
-	if [ -n "$sudouser" ]; then
-		sudo_cmd="sudo -u $sudouser"
-	else
-		sudo_cmd=""
-	fi
+	check_sudo
 	srcurl=$(eval "echo \$$1_servers")
 	if [ -z "$srcurl" ]; then
 		die "so such repo!"
@@ -384,12 +379,7 @@ split_group_pkg()
 clean()
 {
 	check_servers
-	sudouser=$(eval "echo \$${reponame}_sudo")
-	if [ -n "$sudouser" ]; then
-		sudo_cmd="sudo -u $sudouser"
-	else
-		sudo_cmd=""
-	fi
+	check_sudo
 	fdb=$(eval "echo \$${reponame}_fdb")
 	[ -z "$fdb" ] && fdb="$reponame.fdb"
 	for i in $*
@@ -405,12 +395,7 @@ changelog()
 	msg "Generating Changelog for $1"
 	split_group_pkg $1
 	check_servers
-	sudouser=$(eval "echo \$${reponame}_sudo")
-	if [ -n "$sudouser" ]; then
-		sudo_cmd="sudo -u $sudouser"
-	else
-		sudo_cmd=""
-	fi
+	check_sudo
 	fdb=$(eval "echo \$${reponame}_fdb")
 	[ -z "$fdb" ] && fdb="$reponame.fdb"
 	ssh $host "$sudo_cmd repoman server changelog '$path' '$fdb' '$group' '$pkg' '$arch'"
