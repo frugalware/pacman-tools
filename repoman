@@ -49,7 +49,7 @@ check_sudo()
 {
 	sudouser=$(eval "echo \$${reponame}_sudo")
 	if [ -n "$sudouser" ]; then
-		sudo_cmd="sudo -u $sudouser"
+		sudo_cmd="sudo -H -u $sudouser"
 	else
 		sudo_cmd=""
 	fi
