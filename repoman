@@ -203,11 +203,13 @@ server()
 			if [ ! -e $fdb ]; then
 				if ! arch=$arch gensync ../source/$group/$pkg $fdb; then
 					echo "gensync failed!"
+					rm ../.git/lock
 					return
 				fi
 			else
 				if ! arch=$arch updatesync upd $fdb ../source/$group/$pkg/FrugalBuild; then
 					echo "updatesync failed!"
+					rm ../.git/lock
 					return
 				fi
 			fi
