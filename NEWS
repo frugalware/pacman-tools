@@ -1,5 +1,10 @@
 VERSION         DESCRIPTION
 -----------------------------------------------------------------------------
+1.0.9         - repoman now uses only repoman server on the server,
+                without the need to spam sudoers
+              - fblint: silence a warning in chroot
+              - repoman fpmmerge now supports multiple archs
+              - most repoman commands now respects locks
 1.0.8         - fblint: added new / improved existing tests
               - dg: improve dg what before the first commit
               - repoman: do more agressive cleanup on repoman clean.
