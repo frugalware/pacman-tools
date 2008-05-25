@@ -17,6 +17,7 @@
 #
 
 VERSION = 1.0.9
+DATE := $(shell date +%Y-%m-%d)
 
 CFLAGS ?= -Wall -Werror -g -O2 -pipe
 CFLAGS += $(shell pkg-config --cflags libxml-2.0)
@@ -99,7 +100,8 @@ apidocs:
 	asciidoc $^
 
 %.1: %.txt
-	a2x -f manpage $^
+	a2x --asciidoc-opts="-f asciidoc.conf" -a \
+		pacman_tools_version=$(VERSION) -a pacman_tools_date=$(DATE) -f manpage $^
 
 doc: ../HEADER.html ../Changelog
 
