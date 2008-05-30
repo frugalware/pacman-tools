@@ -308,6 +308,12 @@ upload()
 	dest=${@:$#}
 	for src in "${@:1:$#-1}"
 	do
+		if ! LANG= LC_ALL= pacman-g2 -Qi -p $src |grep -q "^Build Type.*chroot$"; then
+			echo "$src is not built in chroot. Remove the -H option"
+			echo "from your makepkg commandline switches, rebuild your"
+			echo "package and try again."
+			exit 1
+		fi
 		name=`basename $src`
 		msg "Requesting a temporary file"
 		tmp=`ssh $host "$sudo_cmd repoman server mktemp"`
