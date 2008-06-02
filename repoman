@@ -220,13 +220,12 @@ server()
 
 		clean)
 		shift
-		if [ $# -lt 5 ]; then
+		if [ $# -lt 4 ]; then
 			echo "Too few parameters!"
-			echo "usage: repoman server clean path fdb group pkg arch"
+			echo "usage: repoman server clean path fdb group pkg"
 			return
 		fi
-		local path="$1" fdb="$2" group="$3" pkg="$4" arch="$5"
-		shift 5
+		local path="$1" fdb="$2" group="$3" pkg="$4"
 		check_absolute_path
 		cd $path
 		if [ -e .git/lock ]; then
@@ -235,31 +234,26 @@ server()
 		else
 			touch .git/lock
 		fi
-		if ! cd source/$group/$pkg; then
-			echo "There is no package with this group!"
-			return
-		fi
-		if ! source FrugalBuild; then
-			echo "Failed to parse the FrugalBuid!"
-			return
-		fi
-		cd - >/dev/null
-		cd frugalware-$arch
-		if ! _check_nobuild; then
-			if [ ! -e $fdb ]; then
-				echo "No package database to clean from!"
-				return
-			else
-				if ! arch=$arch updatesync del $fdb $pkg; then
-					echo "updatesync failed!"
+		for i in frugalware-*
+		do
+			cd frugalware-$arch
+			if ! _check_nobuild; then
+				if [ ! -e $fdb ]; then
+					echo "No package database to clean from!"
 					return
+				else
+					if ! arch=$arch updatesync del $fdb $pkg; then
+						echo "updatesync failed!"
+						return
+					fi
 				fi
 			fi
-		fi
-		rm ../.git/lock
-		arch=$arch genchangelog --clean $pkg
-		if [ -d ../source/$group/$pkg ]; then
-			rm -rfv ../source/$group/$pkg
+			genchangelog --clean $pkg
+			cd - >/dev/null
+		done
+		rm .git/lock
+		if [ -d source/$group/$pkg ]; then
+			rm -rfv source/$group/$pkg
 		fi
 		;;
 
@@ -388,7 +382,7 @@ clean()
 	do
 		msg "Cleaning up $i"
 		split_group_pkg $i
-		ssh $host "$sudo_cmd repoman server clean '$path' '$fdb' '$group' '$pkg' '$arch'"
+		ssh $host "$sudo_cmd repoman server clean '$path' '$fdb' '$group' '$pkg'"
 	done
 }
 
