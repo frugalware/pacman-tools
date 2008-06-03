@@ -234,7 +234,7 @@ server()
 		else
 			touch .git/lock
 		fi
-		for i in frugalware-*
+		for i in $i
 		do
 			cd frugalware-$arch
 			if ! _check_nobuild; then
