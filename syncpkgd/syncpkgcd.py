@@ -119,8 +119,8 @@ class Syncpkgcd:
 			os.stat(tree)
 			os.chdir(tree)
 			if scm == "git":
-				self.system("git pull")
-				self.system("git checkout -f")
+				self.system("git fetch")
+				self.system("git reset --hard origin/master")
 			elif scm == "darcs":
 				self.system("darcs pull -a")
 				self.system("darcs revert -a")
