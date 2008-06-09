@@ -726,18 +726,20 @@ Use "darcs-git help send-email" for more information.
 
 Options:
   -d  --dry-run                      don't actually take the action
-  -h  --help                         shows brief description of command and its arguments"""
+  -h  --help                         shows brief description of command and its arguments
+  -t  --to                           specify destination email"""
 		sys.exit(ret)
 	
 	class Options:
 		def __init__(self):
 			self.dryrun = ""
 			self.help = False
+			self.to = ""
 			self.gitopts = ""
 	options = Options()
 
 	try:
-		opts, args = getopt.getopt(argv, "d", ["dry-run"])
+		opts, args = getopt.getopt(argv, "dt:", ["dry-run", "to="])
 	except getopt.GetoptError:
 		usage(1)
 	optind = 0
@@ -746,6 +748,8 @@ Options:
 			options.dryrun = "--dry-run"
 		elif opt in ("-h", "--help"):
 			options.help = True
+		elif opt in ("-t", "--to"):
+			options.to = '--to="%s"' % arg
 		optind += 1
 	if optind < len(argv):
 		options.gitopts = " ".join(argv[optind:])
@@ -757,7 +761,7 @@ Options:
 	sock = os.popen("git config user.email")
 	author += " <%s>" % sock.readline().strip()
 	sock.close()
-	return os.system("""git send-email --envelope-sender "%s" --from "%s" --suppress-from %s %s""" % (author, author, options.dryrun, options.gitopts))
+	return os.system("""git send-email --envelope-sender "%s" --from "%s" --suppress-from %s %s %s""" % (author, author, options.dryrun, options.to, options.gitopts))
 
 def get(argv):
 	def usage(ret):
