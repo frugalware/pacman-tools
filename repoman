@@ -114,7 +114,12 @@ server()
 		for i in "$@"
 		do
 			# strip leading / and any ..
-			rm $rmopts "`echo $i|sed 's|^/||;s|\.\./||g'`"
+			target=`echo $i|sed 's|^/||;s|\.\./||g'`
+			if [ -f $target ]; then
+				rm $rmopts $target
+			elif [ -d $target ]; then
+				rmdir $rmopts $target
+			fi
 		done
 		;;
 
