@@ -103,13 +103,18 @@ server()
 			echo "usage: repoman server delete opts path file1 [file2..]"
 			return
 		fi
-		local rmopts="$1" path="$2"
+		local verbose="$1" path="$2"
 		shift 2
 		check_absolute_path
 		cd $path
 		if [ -e .git/lock ]; then
 			echo "Couldn't get lock."
 			return
+		fi
+		if [ -n "$verbose" ]; then
+			rmopts="-v"
+		else
+			rmotps=""
 		fi
 		for i in "$@"
 		do
@@ -293,10 +298,12 @@ delete()
 	check_servers
 	check_sudo
 	if [ "$verbose" != 0 ]; then
-		rmopts="-v"
+		verbose="y"
+	else
+		verbose=""
 	fi
 	msg "Deleting file(s): $*"
-	ssh $host "$sudo_cmd repoman server delete '$rmopts' '$path' $*"
+	ssh $host "$sudo_cmd repoman server delete '$verbose' '$path' $*"
 }
 
 upload()
