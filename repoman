@@ -190,10 +190,12 @@ server()
 		fi
 		if ! cd source/$group/$pkg; then
 			echo "There is no package with this group!"
+			rm -f .git/lock
 			return
 		fi
 		if ! source FrugalBuild; then
 			echo "Failed to parse the FrugalBuid!"
+			rm -f .git/lock
 			return
 		fi
 		cd - >/dev/null
@@ -240,10 +242,12 @@ server()
 			if ! _check_nobuild; then
 				if [ ! -e $fdb ]; then
 					echo "No package database to clean from!"
+					rm -f .git/lock
 					return
 				else
 					if ! arch=$arch updatesync del $fdb $pkg; then
 						echo "updatesync failed!"
+						rm -f .git/lock
 						return
 					fi
 				fi
