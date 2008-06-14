@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import xmlrpclib, time, os, getopt, sys, socket, glob, base64, pwd, signal
-import traceback
+import traceback, shutil
 sys.path.append("/etc/syncpkgcd")
 from cconfig import config
 
@@ -153,6 +153,12 @@ class Syncpkgcd:
 		else:
 			makepkg_tree = tree
 		self.system("sudo makepkg -t %s -C" % makepkg_tree)
+		# download sources from our mirror if possible
+		self.system("sudo makepkg -t %s -doeuH")
+		# clean up duplicated dirs
+		for i in ["src", "pkg"]:
+			if os.path.exists(i):
+				shutil.rmtree(i)
 		if self.system("sudo makepkg -t %s -cu" % makepkg_tree):
 			self.log(pkg, "makepkg failed")
 			try:
