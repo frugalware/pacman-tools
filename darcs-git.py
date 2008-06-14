@@ -712,15 +712,12 @@ def send(argv):
 		print """Usage: darcs-git send [OPTION]... <PATCHES>
 Send by email a bundle of one or more patches.
 
-The recommended work is:
+The recommended workflow is:
 
-	1) darcs-git config sendemail.to foo@bar.com
-	   This is the address of the maintainer and you have to run this
-	   command only once.
-	2) darcs-git format-patch
+	1) darcs-git format-patch
 	   Optionally you can now edit the patches to add custom headers like
 	   Cc and In-Reply-To ones.
-	3) darcs-git send *.patch
+	2) darcs-git send --to="M A Intener <m8r@example.com>" *.patch
 
 Use "darcs-git help send-email" for more information.
 
