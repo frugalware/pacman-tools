@@ -630,7 +630,11 @@ Options:
 				ret = os.system("git push %s" % options.gitopts)
 				if ret:
 					return(1)
-		os.system("git push --tags %s" % options.gitopts)
+		sock = os.popen("git push --tags --dry-run 2>&1")
+		buf = sock.read()
+		sock.close()
+		if buf.strip() != "Everything up-to-date":
+			os.system("git push --tags %s" % options.gitopts)
 	else:
 		os.system("git svn dcommit")
 	return(0)
