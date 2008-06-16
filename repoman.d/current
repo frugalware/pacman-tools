@@ -6,6 +6,7 @@ repos=(${repos[@]} 'current')
 
 current_servers=(
 "git://repo.or.cz/frugalware-current.git"
+"git://github.com/frugalware/frugalware-current.git"
 "git://git.frugalware.org/pub/frugalware/frugalware-current"
 )
 
