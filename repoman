@@ -246,9 +246,9 @@ server()
 		else
 			touch .git/lock
 		fi
-		for i in $i
+		for i in frugalware-*
 		do
-			cd frugalware-$arch
+			cd $i
 			if ! _check_nobuild; then
 				if [ ! -e $fdb ]; then
 					echo "No package database to clean from!"
