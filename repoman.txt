@@ -233,10 +233,8 @@ First, clone current to your personal directory on the server:
 
 ----
 $ cd /home/ftp/pub/other/people/nick
-$ git clone /home/ftp/pub/frugalware/frugalware-current
-$ mv frugalware-current flac113
+$ git clone /home/ftp/pub/frugalware/frugalware-current flac113
 $ chmod g+w flac113/.git
-$ mkdir flac113/frugalware-$arch
 ----
 
 You _need_ hooks. You have two choices. If you want the standard required +
@@ -276,20 +274,12 @@ repos=(${repos[@]} 'flac113')
 flac113_servers=("nick@git.frugalware.org:/home/ftp/pub/other/people/nick/flac113")
 ----
 
-And create a file named /etc/pacman.d/flac113:
+And create a file named `~/.pacman-g2/repos/flac113`:
 
 ----
 [flac113]
 Server = http://ftp.frugalware.org/pub/other/people/nick/flac113/frugalware-$arch/
 ----
-
-Then add
-
-----
-Include = /etc/pacman.d/flac113
-----
-
-to your `/etc/pacman.conf` _before_ any other includes.
 
 Building a package will be a bit more complicated than 'sudo makepkg -c', so
 let's create an alias:
