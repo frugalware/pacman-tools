@@ -369,19 +369,19 @@ fpmmerge()
 	mergearchs="`rsync -vP $srcurl/|grep ^d.*frugalware-|sed 's/.* //'`"
 	for i in $mergearchs
 	do
-		ssh $host "$sudo_cmd repoman server rsync '$sudouser' '$path' '$tmp' '$srcurl' '$i'"
+		ssh $host "$sudo_cmd repoman server rsync '$path' '${srcurl#*:}' '${i//frugalware-}'"
 	done
 
 	# now push
 	dg push -a
 
 	# finally run repoman cl for each arch and pkg
-	for i in $archlist
+	for i in $mergearchs
 	do
-		for j in `$0 -t $1 ls /frugalware-$i/ 2>/dev/null|sed 's/-[^-]\+-[^-]\+-[^-]\+$//'`
+		for j in `$0 -t $1 ls /$i/ 2>/dev/null|sed 's/-[^-]\+-[^-]\+-[^-]\+$//'`
 		do
 			cd `git rev-parse --git-dir`/../source/*/$j 2>/dev/null || continue
-			arch=$i $0 -t $reponame cl $j
+			arch=${i//frugalware-} $0 -t $reponame cl $j
 		done
 	done
 }
