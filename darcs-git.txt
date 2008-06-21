@@ -85,7 +85,7 @@ Y pull          Copy and apply patches from another repository to this one.
 A unpull        Opposite of pull; unsafe if patch is not in remote repository.
 A obliterate    Delete selected patches from the repository. (UNSAFE!)
 Y push          Copy and apply patches from this repository to another one.
-A send          Send by email a bundle of one or more patches.
+Y send          Send by email a bundle of one or more patches.
 W apply         Apply patches (from an email bundle) to the repository.
 A get           Create a local copy of another repository.
 N put           Makes a copy of the repository

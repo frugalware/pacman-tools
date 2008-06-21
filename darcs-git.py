@@ -720,7 +720,7 @@ The recommended workflow is:
 
 	1) darcs-git format-patch
 	   Optionally you can now edit the patches to add custom headers like
-	   Cc and In-Reply-To ones.
+	   In-Reply-To ones and/or custom message between --- and the diffstat.
 	2) darcs-git send --to="M A Intener <m8r@example.com>" *.patch
 
 Use "darcs-git help send-email" for more information.
@@ -728,7 +728,8 @@ Use "darcs-git help send-email" for more information.
 Options:
   -d  --dry-run                      don't actually take the action
   -h  --help                         shows brief description of command and its arguments
-  -t  --to                           specify destination email"""
+  -t  --to                           specify destination EMAIL
+  -c  --cc                           additional EMAIL(s)."""
 		sys.exit(ret)
 	
 	class Options:
@@ -736,11 +737,12 @@ Options:
 			self.dryrun = ""
 			self.help = False
 			self.to = ""
+			self.cc = ""
 			self.gitopts = ""
 	options = Options()
 
 	try:
-		opts, args = getopt.getopt(argv, "dt:", ["dry-run", "to="])
+		opts, args = getopt.getopt(argv, "c:dt:", ["cc=", "dry-run", "to="])
 	except getopt.GetoptError:
 		usage(1)
 	optind = 0
@@ -751,6 +753,8 @@ Options:
 			options.help = True
 		elif opt in ("-t", "--to"):
 			options.to = '--to="%s"' % arg
+		elif opt in ("-c", "--cc"):
+			options.cc += ' --cc="%s"' % arg
 		optind += 1
 	if optind < len(argv):
 		options.gitopts = " ".join(argv[optind:])
@@ -762,7 +766,7 @@ Options:
 	sock = os.popen("git config user.email")
 	author += " <%s>" % sock.readline().strip()
 	sock.close()
-	return os.system("""git send-email --envelope-sender "%s" --from "%s" --suppress-from %s %s %s""" % (author, author, options.dryrun, options.to, options.gitopts))
+	return os.system("""git send-email --envelope-sender "%s" --from "%s" --suppress-from %s %s %s %s""" % (author, author, options.dryrun, options.to, options.cc, options.gitopts))
 
 def get(argv):
 	def usage(ret):
