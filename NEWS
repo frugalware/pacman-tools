@@ -1,5 +1,10 @@
 VERSION         DESCRIPTION
 -----------------------------------------------------------------------------
+1.1.0         - repoman clean now cleans each archs by default
+              - dg send: add --dry-run/--to/--cc options
+              - dg push: silence bogus "already up to date" after each
+                run
+              - added new repoman mirrors
 1.0.9         - repoman now uses only repoman server on the server,
                 without the need to spam sudoers
               - fblint: silence a warning in chroot
