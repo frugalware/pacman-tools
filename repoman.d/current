@@ -9,7 +9,6 @@ current_servers=(
 "git://gitorious.org/frugalware/frugalware-current.git"
 "git://git.utsl.gen.nz/mirror/repo.or.cz/frugalware-current.git"
 "git://repo.or.cz/frugalware-current.git"
-"git://git.frugalware.org/pub/frugalware/frugalware-current"
 )
 
 # the rest is only for developers who upload packages
