@@ -5,8 +5,9 @@
 repos=(${repos[@]} 'stable')
 
 stable_servers=(
-"git://repo.or.cz/frugalware-stable.git"
 "git://github.com/frugalware/frugalware-stable.git"
+"git://git.utsl.gen.nz/mirror/repo.or.cz/frugalware-stable.git"
+"git://repo.or.cz/frugalware-stable.git"
 "git://git.frugalware.org/pub/frugalware/frugalware-stable"
 )
 
