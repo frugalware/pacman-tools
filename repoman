@@ -95,6 +95,8 @@ check_absolute_path()
 
 server()
 {
+	local i
+
 	case "$1" in
 		delete)
 		shift
