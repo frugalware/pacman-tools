@@ -122,10 +122,10 @@ server()
 		do
 			# strip leading / and any ..
 			target=`echo $i|sed 's|^/||;s|\.\./||g'`
-			if [ -f $target ]; then
-				rm $rmopts $target
-			elif [ -d $target ]; then
+			if [ -d "$target" ]; then
 				rmdir $rmopts $target
+			else
+				rm $rmopts $target
 			fi
 		done
 		;;
