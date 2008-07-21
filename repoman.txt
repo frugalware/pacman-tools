@@ -274,7 +274,16 @@ repos=(${repos[@]} 'flac113')
 flac113_servers=("nick@git.frugalware.org:/home/ftp/pub/other/people/nick/flac113")
 ----
 
-And create a file named `~/.pacman-g2/repos/flac113`:
+On the server, set up your '\~/.repoman.conf' like this:
+
+----
+fst_root=~/git
+repos=('current' 'flac113')
+current_servers=("nick@git.frugalware.org:/home/ftp/pub/frugalware/frugalware-current")
+flac113_servers=("nick@git.frugalware.org:/home/ftp/pub/other/people/nick/flac113")
+----
+
+Switch back to the client, and create a file named `~/.pacman-g2/repos/flac113`:
 
 ----
 [flac113]
