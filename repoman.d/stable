@@ -11,6 +11,12 @@ stable_servers=(
 "git://repo.or.cz/frugalware-stable.git"
 )
 
+# additional servers in case you are behind a firewall where only http
+# is allowed:
+# http://git.gitorious.org/frugalware/frugalware-stable.git
+# http://git.utsl.gen.nz/mirror/repo.or.cz/frugalware-stable.git
+# http://repo.or.cz/r/frugalware-stable.git
+
 # the rest is only for developers who upload packages
 # if the server requires sudo usage, the name of the user to execute the commands as
 stable_sudo="vmiklos"
