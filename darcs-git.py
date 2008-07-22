@@ -107,7 +107,7 @@ def get_diff(files = ""):
 which is not compatible with darcs-git. Please set that value
 to false or auto. Example:
 
-git-config diff.color auto"""
+git config diff.color auto"""
 		sys.exit(0)
 	return lines
 
