@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # 
-#   darcs-git, a darcs-like porcelain on top of core git
+#   darcs-git, a darcs-like porcelain on top of git plumbing
 #  
 #   Copyright (c) 2007, 2008 by Miklos Vajna <vmiklos@frugalware.org>
 #  

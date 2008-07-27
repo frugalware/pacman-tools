@@ -2,7 +2,7 @@
 
 == NAME
 
-darcs-git - a darcs-like porcelain on top of core git
+darcs-git - a darcs-like porcelain on top of git plumbing
 
 == SYNOPSIS
 
