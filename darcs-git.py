@@ -831,7 +831,7 @@ def unrecord(argv):
 	def usage(ret):
 		print """Usage: darcs-git unrecord [OPTION]...
 Remove last committed patch without changing the working directory.
-This is an alias for "git reset --soft HEAD^".
+This is an alias for "git reset HEAD^".
 
 Options:
   -h         --help                shows brief description of command and its arguments"""
