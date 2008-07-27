@@ -369,7 +369,7 @@ Options:
 				# been updated since add. add it again
 				os.system("git add %s" % diff2filename(lines[0]))
 	for i in newlist:
-		os.system("git reset HEAD %s" % i)
+		os.system("git reset -q HEAD %s" % i)
 	for i in dellist:
 		sock = os.popen("git apply --cached -R 2>/dev/null", "w")
 		sock.write(i)
@@ -472,7 +472,7 @@ Options:
 				new = True
 				break
 		if new:
-			os.system("git reset HEAD %s >/dev/null" % diff2filename(lines[0]))
+			os.system("git reset -q HEAD %s" % diff2filename(lines[0]))
 	revert_stale()
 	print "Finished reverting."
 
@@ -831,7 +831,7 @@ def unrecord(argv):
 	def usage(ret):
 		print """Usage: darcs-git unrecord [OPTION]...
 Remove last committed patch without changing the working directory.
-This is an alias for "git reset HEAD^".
+This is an alias for "git reset -q HEAD^".
 
 Options:
   -h         --help                shows brief description of command and its arguments"""
@@ -846,7 +846,7 @@ Options:
 		if ret in ("n", "q"):
 			sys.exit(0)
 		print "Invalid response, try again!"
-	os.system("git reset HEAD^ %s >/dev/null" % " ".join(argv))
+	os.system("git reset -q HEAD^ %s >/dev/null" % " ".join(argv))
 	print "Finished unrecording."
 
 def unpull(argv):
