@@ -1,5 +1,9 @@
 VERSION         DESCRIPTION
 -----------------------------------------------------------------------------
+1.1.1         - fix up darcs-git for git-1.6.0
+              - repoman config now has http mirrors for firewalled users
+              - repoman del now accepts wildcards again
+              - fblint: one fix and one improvement in the checks
 1.1.0         - repoman clean now cleans each archs by default
               - dg send: add --dry-run/--to/--cc options
               - dg push: silence bogus "already up to date" after each
