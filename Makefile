@@ -78,7 +78,7 @@ clean:
 	$(MAKE) -C mkiso clean
 
 dist:
-	git-archive --format=tar --prefix=pacman-tools-$(VERSION)/ HEAD > pacman-tools-$(VERSION).tar
+	git archive --format=tar --prefix=pacman-tools-$(VERSION)/ HEAD > pacman-tools-$(VERSION).tar
 	mkdir -p pacman-tools-$(VERSION)
 	git log --no-merges |git name-rev --tags --stdin > pacman-tools-$(VERSION)/Changelog
 	tar rf pacman-tools-$(VERSION).tar pacman-tools-$(VERSION)/Changelog
