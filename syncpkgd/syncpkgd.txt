@@ -8,6 +8,31 @@ syncpkgd - a daemon that accepts requests from syncpkg clients
 
 syncpkgd [options]
 
+== DESCRIPTION
+
+'syncpkgd' framework, the collection of scripts to build packages
+automatically has the following components:
+
+- 'syncpkgcd', the client daemon. There may be multiple client daemons,
+  even for the same arch and they can be behind a firewall.
+  Configuration lives in cconfig.py. It has an init script and it will
+  request packages from syncpkgd from time to time.
+
+- 'syncpkgd' itself, the daemon that controls the client daemons. There
+  is only one 'syncpkgd' in the system, it accepts new build requests in
+  an xmlrpc interface and provides packages for clients if they request
+  ones. It is a single-thread application, and thus it needs a crontab
+  file as well for maintenance tasks. Configuration lives in dconfig.py.
+  It has an init script and then it will listen an a port, 1873 by default
+  to accept requests from controllers and build clients.
+
+- 'syncpkgdctl' is a sample client that controls syncpkgd, you can add
+  new packages to the queue and you can query the queue as well.
+  Configuration lives in ctlconfig.py.
+
+- 'syncpkg-shell' is a special wrapper shell that allows using a single
+  system account on the server for all syncpkgcd.
+
 == OPTIONS
 
 -c, --clientlogs <directory>::
