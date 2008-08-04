@@ -14,5 +14,5 @@ if len(sys.argv) > 1:
 else:
 	print """At the moment the following packages are waiting to be built:"""
 	print server.get_todo(config.server_user, config.server_pass)
-	print "Please not that this list does not include failed or already started builds."
+	print "Please note that this list does not include failed or already started builds."
 	print "See man syncpkgdctl for more info."
