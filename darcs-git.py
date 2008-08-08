@@ -22,7 +22,7 @@
 
 __version__ = "0.7"
 
-import sys, tty, termios, os, re, getopt
+import sys, tty, termios, os, re, getopt, sha
 
 class File:
 	def __init__(self):
@@ -491,6 +491,7 @@ Options:
 			self.summary = ""
 			self.help = False
 			self.files = ""
+			self.head = "HEAD"
 	options = Options()
 
 	try:
@@ -509,14 +510,8 @@ Options:
 	if options.help:
 		usage(0)
 	if os.system("git rev-parse --verify HEAD >/dev/null 2>&1"):
-		sock = os.popen("git ls-files")
-		while True:
-			line = sock.readline()
-			if not line:
-				break
-			print "A %s" % line.strip()
-		return
-	ret = os.system("git diff HEAD -M -C --find-copies-harder --exit-code %s %s" % (options.summary, options.files))
+		options.head = sha.sha("tree 0\0").hexdigest()
+	ret = os.system("git diff %s -M -C --find-copies-harder --exit-code %s %s" % (options.head, options.summary, options.files))
 	if not ret:
 		print "No changes!"
 
