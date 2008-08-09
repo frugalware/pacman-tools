@@ -32,7 +32,7 @@ rc_stop()
 	stop_msg
 	if [[ "$(eval $pid)" != "" ]] ; then
 		kill $(eval $pid)
-		rm /var/lock/syncpkgcd.pid
+		: > /var/lock/syncpkgcd.pid
 		ok $?
 	else
 		ok 999
