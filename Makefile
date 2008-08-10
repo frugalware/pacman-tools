@@ -33,7 +33,7 @@ man3dir = /usr/share/man/man3
 man8dir = /usr/share/man/man8
 sysconfdir = /etc
 docdir = /usr/share/doc/pacman-tools-$(VERSION)
-FINCDIR = $(shell source /usr/lib/frugalware/fwmakepkg; echo $$Fincdir)
+FINCDIR = $(shell [ -e /usr/lib/frugalware/fwmakepkg ] && source /usr/lib/frugalware/fwmakepkg; echo $$Fincdir)
 DOCS = $(wildcard *.txt) $(wildcard syncpkgd/*.txt) $(wildcard mkiso/*.txt)
 MANS = $(subst .txt,.1,$(DOCS))
 
@@ -70,7 +70,9 @@ install: compile
 	$(INSTALL) etcconfig.py $(DESTDIR)$(sbindir)/etcconfig
 	$(INSTALL) mkiso/mkiso $(DESTDIR)$(bindir)/mkiso
 	$(INSTALL) -m644 mkiso/volumes.xml $(DESTDIR)$(docdir)/volumes.xml
+ifneq ($(FINCDIR),)
 	$(INSTALL) -m644 apidocs/*.3 $(DESTDIR)$(man3dir)
+endif
 	make -C syncpkgd DESTDIR=$(DESTDIR) install
 
 clean:
@@ -93,8 +95,10 @@ release:
 	mv pacman-tools-$(VERSION).tar.gz{,.asc} ../
 
 apidocs:
+ifneq ($(FINCDIR),)
 	cp -a $(FINCDIR) apidocs
 	make -C apidocs
+endif
 
 %.html: %.txt
 	asciidoc $^
