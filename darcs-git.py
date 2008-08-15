@@ -511,7 +511,7 @@ Options:
 		usage(0)
 	if os.system("git symbolic-ref -q HEAD >/dev/null"):
 		options.head = sha.sha("tree 0\0").hexdigest()
-	os.system("git update-index --refresh")
+	os.system("git update-index --refresh >/dev/null")
 	ret = os.system("git diff %s -M -C --find-copies-harder --exit-code %s %s" % (options.head, options.summary, options.files))
 	if not ret:
 		print "No changes!"
