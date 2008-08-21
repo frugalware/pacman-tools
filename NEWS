@@ -1,5 +1,13 @@
 VERSION         DESCRIPTION
 -----------------------------------------------------------------------------
+1.1.2         - fix up build system for git-1.6.0
+              - fblint now notices the typo when you write option()
+                instead of options()
+              - man syncpkgd now has a description section that explains
+                the different syncpkg* tools
+              - dg what learned to show the same output before the first
+                commit than usual
+              - fix the stop target of the init scripts of syncpkg*
 1.1.1         - fix up darcs-git for git-1.6.0
               - repoman config now has http mirrors for firewalled users
               - repoman del now accepts wildcards again
