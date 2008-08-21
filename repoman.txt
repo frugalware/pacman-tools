@@ -206,6 +206,28 @@ $ repoman -k push
 WARNING: You should not use 'repoman push' till you don't understand what it
 does!
 
+== Removing packages
+
+Removing a package means that you want to remove the buildscript and
+other tracked files, the mirrored upstream source, you want to delete
+the package database (fdb) entry for the package and you also want to
+remove it from the sql website database.
+
+In this example, we'll remove the synaptics package:
+
+----
+$ cd ~/git/current/source/x11-extra/synaptics
+$ repoman rec <1>
+$ cd ..
+$ rm -rf synaptics
+$ git commit -a -e -m "<paste here the patchname>"
+$ dg push -a <2>
+$ repoman clean x11-extra/synaptics <3>
+----
+<1> This will generate a nice patch name for you, copy it to the clipboard, and hit Ctrl-C
+<2> This removes the buildscript and other tracked files
+<3> This removes everything else
+
 == WIP REPOS
 
 === Introduction
