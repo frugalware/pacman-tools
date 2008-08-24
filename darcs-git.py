@@ -509,7 +509,7 @@ Options:
 		options.files = " ".join(argv[optind:])
 	if options.help:
 		usage(0)
-	if os.system("git symbolic-ref -q HEAD >/dev/null"):
+	if os.system("git rev-parse --verify HEAD >/dev/null 2>&1"):
 		options.head = sha.sha("tree 0\0").hexdigest()
 	os.system("git update-index --refresh >/dev/null")
 	ret = os.system("git diff %s -M -C --find-copies-harder --exit-code %s %s" % (options.head, options.summary, options.files))
