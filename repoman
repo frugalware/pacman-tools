@@ -473,6 +473,7 @@ _do_record()
 	if [ "$F_makepkg_scm" = "git" ]; then
 		git add -u .
 		echo -e "$pkgname-$pkgver-$pkgrel-$arch
+
 $@" | git commit -F -
 	else
 	root="`_get_root`"
