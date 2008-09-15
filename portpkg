@@ -6,6 +6,9 @@ die()
 	exit 1
 }
 
+if ! grep -q "subarchs.*`uname -m`" FrugalBuild; then
+	die "please add `uname -m` to subarchs() manually and restart"
+fi
 . /usr/lib/frugalware/fwmakepkg
 
 . FrugalBuild || die "error while parsing the buildscript"
