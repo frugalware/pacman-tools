@@ -178,8 +178,8 @@ if [ ! -z "$subpkgs" ]; then
 	check "right number of suboptions" "[ \"${#suboptions[@]}\" = 0 ] || [ \"${#suboptions[@]}\" = \"${#subpkgs[@]}\" ]"
 fi
 
-if [ "`get_root`" = "stable" -o "`get_root`" = "kalgan" ]; then
-	check "unchanged pkgrel" "echo $pkgrel | grep -q 'kalgan'"
+if [ "`get_root`" = "stable" -o "`get_root`" = "solaria" ]; then
+	check "unchanged pkgrel" "echo $pkgrel | grep -q 'solaria'"
 fi
 check "trailing whitespace" "! grep -q ' $' $_fblint_fb"
 
