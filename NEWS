@@ -1,5 +1,10 @@
 VERSION         DESCRIPTION
 -----------------------------------------------------------------------------
+1.1.3         - mkisorelease: fakeroot fixes
+              - dg send now handles multiple arguments to --to/--cc
+              - repoman rec now leaves the second line of the commit
+                message empty in non-interactive mode (as recommended by git)
+              - fblint: stable is now solaria
 1.1.2         - fix up build system for git-1.6.0
               - fblint now notices the typo when you write option()
                 instead of options()
