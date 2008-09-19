@@ -25,14 +25,10 @@ class Syncpkgcd:
 		def on_sigterm(num, frame):
 			raise KeyboardInterrupt
 		signal.signal(signal.SIGTERM, on_sigterm)
-		if os.getuid() == 0 and options.uid:
-			try:
-				os.setuid(int(options.uid))
-			except:
-				os.setuid(pwd.getpwnam(options.uid).pw_uid)
 		if options.daemon:
 			pid = os.fork()
 			if pid == 0:
+				self.setuid()
 				os.setpgrp()
 				nullin = file('/dev/null', 'r')
 				nullout = file('/dev/null', 'w')
@@ -45,6 +41,8 @@ class Syncpkgcd:
 				except:
 					pass
 				sys.exit(0)
+		else:
+				self.setuid()
 		# log
 		self.logsock = open(options.logfile, "a")
 		self.log("", "client started")
@@ -80,6 +78,12 @@ class Syncpkgcd:
 		except Exception:
 			self.log_exception()
 
+	def setuid():
+		if os.getuid() == 0 and self.options.uid:
+			try:
+				os.setuid(int(self.options.uid))
+			except:
+				os.setuid(pwd.getpwnam(self.options.uid).pw_uid)
 	def checkload(self):
 		if not hasattr(config, "throttle"):
 			# no limit defined
