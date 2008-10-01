@@ -165,7 +165,13 @@ char *detect_kernel(char *arch)
 	DIR *dir;
 	struct dirent *ent;
 	char *ptr = g_strdup_printf("%s/boot", fst_root);
+	char *kname = NULL;
 
+	if (!strcmp(arch, "i686") || !strcmp(arch, "x86_64")) {
+		kname = "vmlinuz-";
+	} else if (!strcmp(arch, "ppc")) {
+		kname = "vmlinux-";
+	}
 	dir = opendir(ptr);
 	free(ptr);
 	if (!dir)
@@ -174,10 +180,10 @@ char *detect_kernel(char *arch)
 	{
 		if(!strcmp(ent->d_name, ".") || !strcmp(ent->d_name, ".."))
 			continue;
-		if(strstr(ent->d_name, "vmlinuz-") && strstr(ent->d_name, arch))
+		if(strstr(ent->d_name, kname) && strstr(ent->d_name, arch))
 		{
 			closedir(dir);
-			return(strdup(ent->d_name+strlen("vmlinuz-")));
+			return(strdup(ent->d_name+strlen(kname)));
 		}
 	}
 	closedir(dir);
@@ -254,7 +260,7 @@ int mkiso(volume_t *volume, int countonly, int stable, int dryrun)
 	int total=0, myvolume=1, bootsize;
 	char *fname=get_filename(fst_ver, volume->arch, volume->media, volume->serial);
 	char *label=get_label(fst_ver, volume->arch, volume->media, volume->serial);
-	char *flist, *cmdline = NULL, *ptr, *kptr, *iptr;
+	char *flist, *cmdline = NULL, *ptr, *kptr = NULL, *iptr;
 	char cwd[PATH_MAX] = "";
 	FILE *fp;
 	char *menu = NULL, *bootmsg = NULL, *conf = NULL;
@@ -270,7 +276,11 @@ int mkiso(volume_t *volume, int countonly, int stable, int dryrun)
 	iso_add(dryrun, fp, "LICENSE");
 	iso_add(dryrun, fp, "docs");
 	ptr = detect_kernel(volume->arch);
-	kptr = g_strdup_printf("boot/vmlinuz-%s", ptr);
+	if (!strcmp(volume->arch, "i686") || !strcmp(volume->arch, "x86_64")) {
+		kptr = g_strdup_printf("boot/vmlinuz-%s", ptr);
+	} else if (!strcmp(volume->arch, "ppc")) {
+		kptr = g_strdup_printf("boot/vmlinux-%s", ptr);
+	}
 	free(ptr);
 	iso_add(dryrun, fp, kptr);
 	iptr = g_strdup_printf("boot/initrd-%s.img.gz", volume->arch);
