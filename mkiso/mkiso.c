@@ -254,9 +254,10 @@ int mkiso(volume_t *volume, int countonly, int stable, int dryrun)
 	int total=0, myvolume=1, bootsize;
 	char *fname=get_filename(fst_ver, volume->arch, volume->media, volume->serial);
 	char *label=get_label(fst_ver, volume->arch, volume->media, volume->serial);
-	char *flist, *cmdline, *ptr, *kptr, *iptr, *menu;
+	char *flist, *cmdline = NULL, *ptr, *kptr, *iptr;
 	char cwd[PATH_MAX] = "";
 	FILE *fp;
+	char *menu = NULL, *bootmsg = NULL, *conf = NULL;
 
 	flist = strdup("/tmp/mkiso_XXXXXX");
 	mkstemp(flist);
@@ -278,10 +279,20 @@ int mkiso(volume_t *volume, int countonly, int stable, int dryrun)
 	bootsize = boot_size(fst_root, kptr, iptr);
 	free(kptr);
 	free(iptr);
-	iso_add(dryrun, fp, "boot/grub/message");
-	iso_add(dryrun, fp, "boot/grub/stage2_eltorito");
-	menu = mkmenu(volume);
-	fprintf(fp, "boot/grub/menu.lst=%s\n", menu);
+	if (!strcmp(volume->arch, "i686") || !strcmp(volume->arch, "x86_64")) {
+		menu = mkmenu(volume);
+		iso_add(dryrun, fp, "boot/grub/message");
+		iso_add(dryrun, fp, "boot/grub/stage2_eltorito");
+		fprintf(fp, "boot/grub/menu.lst=%s\n", menu);
+	} else if (!strcmp(volume->arch, "ppc")) {
+		bootmsg = mkbootmsg(volume);
+		conf = mkconf(volume);
+		iso_add(dryrun, fp, "boot/yaboot/maps");
+		iso_add(dryrun, fp, "boot/yaboot/ofboot.b");
+		iso_add(dryrun, fp, "boot/yaboot/yaboot");
+		fprintf(fp, "boot/yaboot/boot.msg=%s\n", bootmsg);
+		fprintf(fp, "boot/yaboot/yaboot.conf=%s\n", conf);
+	}
 	// first volume of !net medias
 	if(volume->serial==1)
 	{
@@ -321,30 +332,55 @@ int mkiso(volume_t *volume, int countonly, int stable, int dryrun)
 	getcwd(cwd, PATH_MAX);
 	chdir(fst_root);
 
-	cmdline = g_strdup_printf("mkisofs -o %s "
-		"-R -J -V \"Frugalware Install\" "
-		"-A \"%s\" "
-		"-graft-points "
-		"-path-list %s "
-		"-hide-rr-moved "
-		"-b boot/grub/stage2_eltorito "
-		"-v -d -N -no-emul-boot -boot-load-size 4 -boot-info-table",
-		fname, label, flist);
+	if (!strcmp(volume->arch, "i686") || !strcmp(volume->arch, "x86_64")) {
+		cmdline = g_strdup_printf("mkisofs -o %s "
+				"-R -J -V \"Frugalware Install\" "
+				"-A \"%s\" "
+				"-graft-points "
+				"-path-list %s "
+				"-hide-rr-moved "
+				"-b boot/grub/stage2_eltorito "
+				"-v -d -N -no-emul-boot -boot-load-size 4 -boot-info-table",
+				fname, label, flist);
+	} else if (!strcmp(volume->arch, "ppc")) {
+		cmdline = g_strdup_printf("mkhybrid -o %s "
+				"-r -hfs-unlock -part -hfs -map ./boot/yaboot/maps "
+				"-no-desktop -hfs-volid \"Frugalware Install\" "
+				"-graft-points "
+				"-path-list %s",
+				fname, flist);
+		printf("debug, cmdline: %s\n", cmdline);
+	}
 	ptr = g_strdup_printf("%s.lst", fname);
 	if((fp=fopen(ptr, "w"))==NULL)
 		return(1);
 	free(ptr);
 	isogrp_stat(fp);
 	fclose(fp);
-	if(!countonly && !dryrun)
+	if(!countonly && !dryrun) {
 		system(cmdline);
+		if (!strcmp(volume->arch, "ppc")) {
+			free(cmdline);
+			cmdline = g_strdup_printf("hmount %s", fname);
+			system(cmdline);
+			system("hattrib -b :boot:yaboot:");
+			system("humount");
+		}
+	}
 	else if(!dryrun)
 		PRINTF("expected volume number: %d\n", myvolume);
 
 	free(fname);
 	free(label);
-	unlink(menu);
-	free(menu);
+	if (!strcmp(volume->arch, "i686") || !strcmp(volume->arch, "x86_64")) {
+		unlink(menu);
+		free(menu);
+	} else if (!strcmp(volume->arch, "ppc")) {
+		unlink(bootmsg);
+		free(bootmsg);
+		unlink(conf);
+		free(conf);
+	}
 	unlink(flist);
 	free(flist);
 	free(cmdline);
