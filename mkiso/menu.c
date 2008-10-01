@@ -83,3 +83,30 @@ char *mkbootmsg(volume_t *volume)
 	free(kernel);
 	return(flist);
 }
+
+char *mkconf(volume_t *volume)
+{
+	char *flist = strdup("/tmp/mkiso_XXXXXX");
+	FILE *fp;
+	char *kernel = detect_kernel(volume->arch);
+	char *ptr = g_strdup_printf("%s/boot/initrd-%s.img.gz", fst_root, volume->arch);
+
+	mkstemp(flist);
+	if(!(fp = fopen(flist, "w")))
+		return(NULL);
+
+	fprintf(fp, "device=cd:\n"
+		"default=install\n"
+		"root=/dev/ram\n"
+		"message=boot/yaboot/boot.msg\n");
+	fprintf(fp, "image=boot/vmlinux-%s\n", kernel);
+	fprintf(fp, "label=install\n");
+	fprintf(fp, "\tinitrd=boot/initrd-%s.img.gz\n", volume->arch);
+	fprintf(fp, "\tinitrd-size=%d\n", gunzip_size(ptr)/1024);
+	fprintf(fp, "\tread-write\n");
+
+	fclose(fp);
+	free(ptr);
+	free(kernel);
+	return(flist);
+}
