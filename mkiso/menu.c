@@ -64,3 +64,22 @@ char *mkmenu(volume_t *volume)
 	free(kernel);
 	return(flist);
 }
+
+char *mkbootmsg(volume_t *volume)
+{
+	char *flist = strdup("/tmp/mkiso_XXXXXX");
+	FILE *fp;
+	char *kernel = detect_kernel(volume->arch);
+
+	mkstemp(flist);
+	if(!(fp = fopen(flist, "w")))
+		return(NULL);
+
+	fprintf(fp, "Frugalware %s (%s) - %s\n\n", fst_ver, fst_codename, kernel);
+	fprintf(fp, "To boot the kernel, just hit enter, or use 'install'.\n\n");
+	fprintf(fp, "If the system fails to boot at all (the typical symptom is a white screen which\n"
+			"doesn't go away), use 'install video=ofonly'.\n\n");
+	fclose(fp);
+	free(kernel);
+	return(flist);
+}
