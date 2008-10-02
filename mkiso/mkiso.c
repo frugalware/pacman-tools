@@ -356,6 +356,7 @@ int mkiso(volume_t *volume, int countonly, int stable, int dryrun)
 		cmdline = g_strdup_printf("mkhybrid -o %s "
 				"-r -hfs-unlock -part -hfs -map ./boot/yaboot/maps "
 				"-no-desktop -hfs-volid \"Frugalware Install\" "
+				"-V \"Frugalware Install\" "
 				"-graft-points "
 				"-path-list %s",
 				fname, flist);
