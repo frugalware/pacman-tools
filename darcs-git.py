@@ -750,11 +750,8 @@ Options:
 		elif opt in ("-t", "--to"):
 			options.to = '--to="%s"' % arg
 		elif opt in ("-c", "--cc"):
-			for i in arg.split('>, '):
-				if i == arg.split('>, ')[-1]:
-					options.cc += ' --cc="%s"' % i
-				else:
-					options.cc += ' --cc="%s>"' % i
+			for i in arg.split(', '):
+				options.cc += ' --cc="%s"' % i
 		optind += 1
 	if optind < len(argv):
 		options.gitopts = " ".join(argv[optind:])
