@@ -748,10 +748,11 @@ Options:
 		elif opt in ("-h", "--help"):
 			options.help = True
 		elif opt in ("-t", "--to"):
-			options.to = '--to="%s"' % arg
+			for i in arg.split(', '):
+				options.to += ' --to="%s"' % i.replace('"', r'\"')
 		elif opt in ("-c", "--cc"):
 			for i in arg.split(', '):
-				options.cc += ' --cc="%s"' % i
+				options.cc += ' --cc="%s"' % i.replace('"', r'\"')
 		optind += 1
 	if optind < len(argv):
 		options.gitopts = " ".join(argv[optind:])
