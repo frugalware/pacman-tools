@@ -360,7 +360,6 @@ int mkiso(volume_t *volume, int countonly, int stable, int dryrun)
 				"-graft-points "
 				"-path-list %s",
 				fname, flist);
-		printf("debug, cmdline: %s\n", cmdline);
 	}
 	ptr = g_strdup_printf("%s.lst", fname);
 	if((fp=fopen(ptr, "w"))==NULL)
