@@ -756,15 +756,16 @@ merge()
 	[ "$found" = 0 ] && die "package '$target' not found"
 }
 
-[ -e /etc/repoman.conf ] && . /etc/repoman.conf || \
-	die "Can't find /etc/repoman.conf!"
-
 if [ "$1" != "upd" -a "$1" != "update" ]; then
 	[ -e /usr/lib/frugalware/fwmakepkg ] && . /usr/lib/frugalware/fwmakepkg || \
 		die "Can't find /usr/lib/frugalware/fwmakepkg!"
 	[ -e /etc/makepkg.conf ] && . /etc/makepkg.conf || \
 		die "Can't find /etc/makepkg.conf!"
+else
+	[ -e /etc/repoman.conf ] && . /etc/repoman.conf || \
+		die "Can't find /etc/repoman.conf!"
 fi
+
 if [ -e FrugalBuild ]; then
 	. FrugalBuild
 fi
