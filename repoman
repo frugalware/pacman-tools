@@ -62,17 +62,17 @@ get_root()
 		i=`git rev-parse --git-dir 2>/dev/null`
 		echo `dirname $i`
 	else
-	i=`pwd`
-	while true
-	do
-		if [ -e "$i/_darcs" ]; then
-			break
-		elif [ "$i" == "" ]; then
-			break
-		fi
-		i=`echo $i|sed 's|\(.*\)/.*|\1|'`
-	done
-	echo $i
+		i=`pwd`
+		while true
+		do
+			if [ -e "$i/_darcs" ]; then
+				break
+			elif [ "$i" == "" ]; then
+				break
+			fi
+			i=`echo $i|sed 's|\(.*\)/.*|\1|'`
+		done
+		echo $i
 	fi
 }
 
@@ -500,8 +500,8 @@ _do_record()
 
 $@" | git commit -F -
 	else
-	root="`_get_root`"
-	echo -e "`LANG= LC_ALL= date +"%a %b %d %H:%M:%S %Z %Y"`
+		root="`_get_root`"
+		echo -e "`LANG= LC_ALL= date +"%a %b %d %H:%M:%S %Z %Y"`
 `cat $root/_darcs/prefs/author`
 $pkgname-$pkgver-$pkgrel-$arch
 $@" | darcs rec -a --pipe .
@@ -566,25 +566,25 @@ srcdel()
 			fi
 		done
 	else
-	srckeep=$($mktemp_local)
+		srckeep=$($mktemp_local)
 
-	darcsdir="_darcs/pristine"
-	if ! $0 -t $reponame ls $darcsdir &>/dev/null; then
-		darcsdir="_darcs/current"
-	fi
-
-	$0 -t $reponame ls $darcsdir/$mydir 2>/dev/null >$srckeep
-
-	for i in $($0 -t $reponame ls $mydir 2>/dev/null)
-	do
-		if ! grep -q $i $srckeep && ! _is_log $i && [ "$i" != "Changelog" ]; then
-			if ! echo ${srclocal[@]} |grep -q $i; then
-				dry_run delete $mydir/$i
-			fi
+		darcsdir="_darcs/pristine"
+		if ! $0 -t $reponame ls $darcsdir &>/dev/null; then
+			darcsdir="_darcs/current"
 		fi
-	done
 
-	rm -f $srckeep
+		$0 -t $reponame ls $darcsdir/$mydir 2>/dev/null >$srckeep
+
+		for i in $($0 -t $reponame ls $mydir 2>/dev/null)
+		do
+			if ! grep -q $i $srckeep && ! _is_log $i && [ "$i" != "Changelog" ]; then
+				if ! echo ${srclocal[@]} |grep -q $i; then
+					dry_run delete $mydir/$i
+				fi
+			fi
+		done
+
+		rm -f $srckeep
 	fi
 }
 
