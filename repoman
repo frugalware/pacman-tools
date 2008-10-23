@@ -296,6 +296,9 @@ server()
 
 delete()
 {
+	if ! ask "repoman del $*"; then
+		return
+	fi
 	local files rmopts host
 	check_servers
 	check_sudo
@@ -314,6 +317,9 @@ upload()
 		echo "Too few parameters!"
 		usage
 		exit 1
+	fi
+	if ! ask "repoman upload $*"; then
+		return
 	fi
 	check_servers
 	check_sudo
@@ -423,6 +429,9 @@ clean()
 
 changelog()
 {
+	if ! ask "repoman changelog $*"; then
+		return
+	fi
 	msg "Generating Changelog for $1"
 	split_group_pkg $1
 	check_servers
@@ -442,6 +451,21 @@ _keypress()
 }
 
 ask()
+{
+	if [ -z "$noask" ]; then
+		echo $*
+		echo -n "Is this ok? [Y/n] "
+		c=`_keypress`
+		echo
+	fi
+	if [ -n "$noask" ] || [[ "(y|Y)?" =~ "$c" ]]; then
+		return 0
+	else
+		return 1
+	fi
+}
+
+ask_and_eval()
 {
 	if [ -z "$noask" ]; then
 		echo $*
@@ -498,10 +522,10 @@ record()
 	else
 		if [ "$F_makepkg_scm" = "git" ]; then
 			dg what -s .
-			ask "dg record --edit-long-comment -m '$pkgname-$pkgver-$pkgrel-$arch' ."
+			ask_and_eval "dg record --edit-long-comment -m '$pkgname-$pkgver-$pkgrel-$arch' ."
 		else
 			darcs what -s .
-			ask "darcs record --edit-long-comment -m '$pkgname-$pkgver-$pkgrel-$arch' ."
+			ask_and_eval "darcs record --edit-long-comment -m '$pkgname-$pkgver-$pkgrel-$arch' ."
 		fi
 	fi
 }
@@ -585,6 +609,11 @@ fpmdel()
 	rm -f $fpmkeep $fpmserver
 }
 
+bzip()
+{
+	ask_and_eval "bzip2 $*"
+}
+
 sync()
 {
 	ls *-$arch.fpm &>/dev/null && srcdel
@@ -613,7 +642,7 @@ sync()
 
 	buildlog="$pkgname-$pkgver-$pkgrel-$arch.log"
 	if [ -f $buildlog -o -f $buildlog.bz2 ]; then
-		[ -f $buildlog ] && dry_run bzip2 $buildlog
+		[ -f $buildlog ] && dry_run bzip $buildlog
 		_check_nobuild || dry_run upload $buildlog.bz2 source/$groups/$pkgname/
 	fi
 
