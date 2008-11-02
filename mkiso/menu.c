@@ -95,8 +95,7 @@ char *mkconf(volume_t *volume)
 	if(!(fp = fopen(flist, "w")))
 		return(NULL);
 
-	fprintf(fp, "device=cd:\n"
-		"default=install\n"
+	fprintf(fp, "default=install\n"
 		"root=/dev/ram\n"
 		"message=boot/yaboot/boot.msg\n");
 	fprintf(fp, "image=boot/vmlinux-%s\n", kernel);
