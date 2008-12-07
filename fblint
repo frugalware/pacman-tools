@@ -20,6 +20,8 @@
 #   USA.
 #
 
+export LC_ALL="POSIX"
+
 myver="0.6.5"
 
 die()
