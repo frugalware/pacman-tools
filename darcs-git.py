@@ -227,7 +227,7 @@ h or ?: show this help""" % { 'action': action }
 		return hunks
 
 def diff2filename(diff):
-	return re.sub(r".* a/([^ ]+) .*", r"\1", diff)
+	return re.sub(r".* [a-z]/([^ ]+) .*", r"\1", diff)
 
 def record(argv, amend=False):
 	def usage(ret):
