@@ -104,9 +104,9 @@ endif
 %.html: %.txt
 	asciidoc $^
 
-%.1: %.txt asciidoc.conf
+%.1: %.txt
 	a2x --asciidoc-opts="-f asciidoc.conf" -a \
-		pacman_tools_version=$(VERSION) -a pacman_tools_date=$(DATE) -f manpage $<
+		pacman_tools_version=$(VERSION) -a pacman_tools_date=$(DATE) -f manpage $^
 
 doc: ../HEADER.html ../Changelog
 
