@@ -1,5 +1,9 @@
 VERSION         DESCRIPTION
 -----------------------------------------------------------------------------
+1.1.5         - make manpage build process work with newer docbook-xsl
+              - mkiso: ppc fix for ibm machines
+              - fblint: utf-8 specific fixes
+              - dg: git-1.6.1-related fixes
 1.1.4         - syncpkg: now really fixes the odd pidfile issues
               - repoman: documentation updates, -k is no longer a
                 (mostly) noop
