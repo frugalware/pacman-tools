@@ -389,7 +389,7 @@ fpmmerge()
 		for j in `$0 -t $1 ls /$i/ 2>/dev/null|sed 's/-[^-]\+-[^-]\+-[^-]\+$//'`
 		do
 			cd `git rev-parse --git-dir`/../source/*/$j 2>/dev/null || continue
-			arch=${i//frugalware-} $0 -t $reponame cl $j
+			arch=${i//frugalware-} $0 -t $reponame -k cl $j
 		done
 	done
 }
