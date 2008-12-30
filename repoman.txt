@@ -23,11 +23,11 @@ NOTE: This section is for users. If you're a developer, just skip it.
 
 Here is a reference comparing pacman-g2 and repoman:
 
-`-----------------------`-----------------
-pacman-g2 -Sy           repoman upd
-pacman-g2 -S pkg        repoman merge pkg
-pacman-g2 -Ss foo       repoman search foo
-------------------------------------------
+|====
+| pacman-g2 -Sy     | repoman upd
+| pacman-g2 -S pkg  | repoman merge pkg
+| pacman-g2 -Ss foo | repoman search foo
+|====
 
 There is a possibility to alter the result of the merge without editing the
 buildscript for some packages. To build the development version of a package,
