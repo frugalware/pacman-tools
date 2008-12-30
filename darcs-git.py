@@ -22,7 +22,7 @@
 
 __version__ = "0.7"
 
-import sys, tty, termios, os, re, getopt, sha
+import sys, tty, termios, os, re, getopt, hashlib
 
 class File:
 	def __init__(self):
@@ -510,7 +510,7 @@ Options:
 	if options.help:
 		usage(0)
 	if os.system("git rev-parse --verify HEAD >/dev/null 2>&1"):
-		options.head = sha.sha("tree 0\0").hexdigest()
+		options.head = hashlib.sha1("tree 0\0").hexdigest()
 	os.system("git update-index --refresh >/dev/null")
 	ret = os.system("git diff %s -M -C --find-copies-harder --exit-code %s %s" % (options.head, options.summary, options.files))
 	if not ret:

@@ -6,7 +6,7 @@ __date__ = "Thu, 19 Oct 2006 00:18:19 +0200"
 __copyright__ = "Copyright (c) 2006 Miklos Vajna"
 __license__ = "GPL"
 
-import os, urllib, sys, sha
+import os, urllib, sys, hashlib
 from xml.dom import minidom
 from email.Utils import formatdate
 
@@ -109,7 +109,7 @@ local = open('%s-%s.tgz' % (name, pkgver), 'w')
 local.write(remote.read())
 remote.close()
 local.close()
-ctx = sha.new()
+ctx = hashlib.new("sha1")
 sock = open('%s-%s.tgz' % (name, pkgver))
 while True:
 	buf = sock.read(16384)

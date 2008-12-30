@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import sys, getopt, os, pwd, sha, time, base64, re, pickle, signal
+import sys, getopt, os, pwd, hashlib, time, base64, re, pickle, signal
 sys.path.append("/etc/syncpkgd")
 from SimpleXMLRPCServer import SimpleXMLRPCServer
 from dconfig import config
@@ -27,7 +27,7 @@ class Actions:
 
 	def __login(self, login, password):
 		if login in config.passes.keys() and \
-			sha.sha(password).hexdigest() == config.passes[login]:
+			hashlib.sha1(password).hexdigest() == config.passes[login]:
 				if login not in self.lags.keys():
 					self.lags[login] = time.time()
 				return True
