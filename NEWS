@@ -1,5 +1,8 @@
 VERSION         DESCRIPTION
 -----------------------------------------------------------------------------
+1.1.6         - YY-MM-DD-style dates are back in manpages
+              - fix python-2.6 warnings
+              - fixed repoman fpmmerge to be non-interactive like it was
 1.1.5         - make manpage build process work with newer docbook-xsl
               - mkiso: ppc fix for ibm machines
               - fblint: utf-8 specific fixes

@@ -3,7 +3,7 @@
 __author__ = "Miklos Vajna <vmiklos@frugalware.org>"
 __version__ = "0.8.4"
 __date__ = "Thu, 19 Oct 2006 00:18:19 +0200"
-__copyright__ = "Copyright (c) 2006 Miklos Vajna"
+__copyright__ = "Copyright (c) 2006, 2008 Miklos Vajna"
 __license__ = "GPL"
 
 import os, urllib, sys, hashlib
