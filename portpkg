@@ -25,6 +25,8 @@ if ! echo ${archs[@]} |grep -q `uname -m`; then
 fi
 
 if ! ls *fpm &>/dev/null; then
+	makepkg -dgu || die "failed to download sources"
+	rm -rf src || die "failed to remove duplicated sources"
 	sudo makepkg -cuk || die "build failed"
 fi
 
