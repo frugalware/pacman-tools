@@ -1,11 +1,11 @@
 #!/bin/bash
 
-# (c) 2007 Miklos Vajna <vmiklos@frugalware.org>
+# (c) 2007, 2009 Miklos Vajna <vmiklos@frugalware.org>
 # rc.syncpkgcd for Frugalware
 # distributed under GPL License
 
 # chkconfig: 2345 95 05
-# description: Package builder daemon.
+# description: Package builder client daemon.
 
 source /lib/initscripts/functions
 TEXTDOMAIN=syncpkgcd
