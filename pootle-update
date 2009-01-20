@@ -23,6 +23,7 @@ rsync rsync://rsync.frugalware.org/pub/other/pacman-g2/pacman-g2/src/pacman-g2/p
 rsync rsync://rsync.frugalware.org/pub/other/pacman-g2/pacman-g2/lib/libpacman/po/libpacman.pot pacman/templates/libpacman.pot
 rsync rsync://rsync.frugalware.org/pub/other/pacman-g2/pacman-g2/doc/po/mans.pot pacman/templates/mans.pot
 rsync rsync://rsync.frugalware.org/pub/other/frugalwareutils/frugalwareutils/grubconfig/po/grubconfig.pot frugalwareutils/templates/grubconfig.pot
+rsync rsync://rsync.frugalware.org/pub/other/frugalwareutils/frugalwareutils/yabootcfg/po/yabootcfg.pot frugalwareutils/templates/yabootcfg.pot
 rsync rsync://rsync.frugalware.org/pub/other/frugalwareutils/frugalwareutils/libfwdialog/po/libfwdialog.pot frugalwareutils/templates/libfwdialog.pot
 rsync rsync://rsync.frugalware.org/pub/other/frugalwareutils/frugalwareutils/libfwnetconfig/po/libfwnetconfig.pot frugalwareutils/templates/libfwnetconfig.pot
 rsync rsync://rsync.frugalware.org/pub/other/frugalwareutils/frugalwareutils/libfwxconfig/po/xconfig-helper.pot frugalwareutils/templates/xconfig-helper.pot
@@ -40,6 +41,7 @@ rsync rsync://rsync.frugalware.org/pub/other/fw-control-center/fw-control-center
 rsync rsync://rsync.frugalware.org/pub/other/fun/fun/po/fun.pot fun/templates/fun.pot
 rsync rsync://rsync.frugalware.org/pub/other/fw-control-center/fw-control-center/gfpm-mcs-plugin/po/gfpm-mcs-plugin.pot fwcontrolcenter/templates/gfpm-mcs-plugin.pot
 rsync rsync://rsync.frugalware.org/pub/other/gfpm/gfpm/po/gfpm.pot gfpm/templates/gfpm.pot
+rsync rsync://rsync.frugalware.org/pub/other/gservice/gservice/po/gservice.pot gservice/templates/gservice.pot
 echo "done."
 
 for i in *
