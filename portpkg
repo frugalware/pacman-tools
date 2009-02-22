@@ -27,7 +27,7 @@ fi
 if ! ls *fpm &>/dev/null; then
 	makepkg -dgu || die "failed to download sources"
 	rm -rf src || die "failed to remove duplicated sources"
-	sudo makepkg -cuk || die "build failed"
+	sudo makepkg -cu || die "build failed"
 fi
 
 if [ "$1" == "--push" -o "$1" == "--silentpush" ]; then
