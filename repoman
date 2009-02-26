@@ -76,15 +76,6 @@ get_root()
 	fi
 }
 
-_set_lockname()
-{
-	if [ -z "$F_makepkg_scm" -o "$F_makepkg_scm" = "git" ]; then
-		lock=".git/lock"
-	else
-		lock="_darcs/lock"
-	fi
-}
-
 check_absolute_path()
 {
 	if [ "${path:0:1}" != "/" ]; then
