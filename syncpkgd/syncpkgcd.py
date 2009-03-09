@@ -66,7 +66,11 @@ class Syncpkgcd:
 					continue
 				# there is a pkg to build, request
 				# up to date repo list first
-				buf = server.request_conf()
+				try:
+					buf = server.request_conf()
+				except socket.error:
+					self.sleep("can't download repoman.conf from the server")
+					continue
 				sock = open(os.path.join(self.home, ".repoman.conf"), "w")
 				sock.write(base64.decodestring(buf))
 				sock.close()
