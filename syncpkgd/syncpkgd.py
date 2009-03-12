@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import sys, getopt, os, pwd, hashlib, time, base64, re, pickle, signal
+import sys, getopt, os, pwd, hashlib, time, base64, re, pickle, signal, glob
 sys.path.append("/etc/syncpkgd")
 from SimpleXMLRPCServer import SimpleXMLRPCServer
 from dconfig import config
@@ -60,6 +60,18 @@ class Actions:
 		else:
 			self.__log(login, pkg, "package rejected by the server")
 			return False
+
+	def __get_conf_list(self):
+		"""build a list of conf files to transfer"""
+		confs = ['.repoman.conf', '.pacman-g2/repos/*']
+		home = pwd.getpwnam(options.uid).pw_dir
+
+		l = []
+		for i in confs:
+			res = glob.glob(os.path.join(home, i))
+			for j in res:
+				l.append(j.replace(home + os.path.sep, ''))
+		return l
 
 	def request_conf(self):
 		"""request the up to date repo list"""
