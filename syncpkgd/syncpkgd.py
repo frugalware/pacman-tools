@@ -73,6 +73,23 @@ class Actions:
 				l.append(j.replace(home + os.path.sep, ''))
 		return l
 
+	def __get_base64(self, path):
+		"""return a path as a base64-encoded string"""
+		try:
+			sock = open(os.path.join(pwd.getpwnam(options.uid).pw_dir, path))
+			buf = sock.read()
+			sock.close()
+		except IOError:
+			buf = ""
+		return base64.encodestring(buf)
+
+	def request_confs(self):
+		"""request the up to date config files"""
+		ret = {}
+		for i in self.__get_conf_list():
+			ret[i] = self.__get_base64(i)
+		return ret
+
 	def request_conf(self):
 		"""request the up to date repo list"""
 		try:
