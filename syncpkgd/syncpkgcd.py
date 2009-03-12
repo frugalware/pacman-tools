@@ -162,7 +162,7 @@ class Syncpkgcd:
 			makepkg_tree = tree
 		self.system("sudo makepkg -t %s -C" % makepkg_tree)
 		# download sources from our mirror if possible
-		self.system("makepkg -doeuH")
+		self.system("makepkg -t %s -doeuH" % makepkg_tree)
 		# clean up duplicated dirs
 		for i in ["src", "pkg"]:
 			if os.path.exists(i):
