@@ -245,6 +245,7 @@ server()
 			if ! _check_nobuild; then
 				if [ ! -e $fdb ]; then
 					echo "No package database to clean from!"
+					cd - >/dev/null
 					rm -f .git/lock
 					return
 				else
