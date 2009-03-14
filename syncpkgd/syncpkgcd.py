@@ -67,13 +67,15 @@ class Syncpkgcd:
 				# there is a pkg to build, request
 				# up to date repo list first
 				try:
-					buf = server.request_conf()
+					confs = server.request_confs()
 				except socket.error:
 					self.sleep("can't download repoman.conf from the server")
 					continue
-				sock = open(os.path.join(self.home, ".repoman.conf"), "w")
-				sock.write(base64.decodestring(buf))
-				sock.close()
+				os.makedirs(os.path.join(self.home, ".pacman-g2/repos"))
+				for k, v in confs:
+					sock = open(os.path.join(self.home, k), "w")
+					sock.write(base64.decodestring(v))
+					sock.close()
 				self.build(pkg)
 		except KeyboardInterrupt:
 			# here we could abort the current build properly
