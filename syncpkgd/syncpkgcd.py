@@ -71,8 +71,11 @@ class Syncpkgcd:
 				except socket.error:
 					self.sleep("can't download repoman.conf from the server")
 					continue
-				os.makedirs(os.path.join(self.home, ".pacman-g2/repos"))
-				for k, v in confs:
+				try:
+					os.makedirs(os.path.join(self.home, ".pacman-g2/repos"))
+				except OSError:
+					pass
+				for k, v in confs.items():
 					sock = open(os.path.join(self.home, k), "w")
 					sock.write(base64.decodestring(v))
 					sock.close()
