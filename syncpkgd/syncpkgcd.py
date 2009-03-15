@@ -77,7 +77,7 @@ class Syncpkgcd:
 					pass
 				for k, v in confs.items():
 					sock = open(os.path.join(self.home, k), "w")
-					sock.write(base64.decodestring(v))
+					sock.write(base64.decodestring(v).replace('@CARCH@', os.uname()[-1]))
 					sock.close()
 				self.build(pkg)
 		except KeyboardInterrupt:
