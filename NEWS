@@ -1,5 +1,10 @@
 VERSION         DESCRIPTION
 -----------------------------------------------------------------------------
+1.1.7         - portpkg: added rsync cache support
+              - syncpkg: added support for distributing wip repo configs
+              - repoman rec no longer expands "* some message" by
+                accident in commit messages
+              - repoman clean no longer forgets to delete the lockfile
 1.1.6         - YY-MM-DD-style dates are back in manpages
               - fix python-2.6 warnings
               - fixed repoman fpmmerge to be non-interactive like it was

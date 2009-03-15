@@ -1,6 +1,6 @@
 # Makefile for pacman-tools
 #
-# Copyright (C) 2004, 2005, 2006, 2007, 2008
+# Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009
 # Miklos Vajna <vmiklos@frugalware.org>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -17,7 +17,7 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 #
 
-VERSION = 1.1.6
+VERSION = 1.1.7
 DATE := $(shell date +%Y-%m-%d)
 
 CFLAGS ?= -Wall -Werror -g -O2 -pipe
