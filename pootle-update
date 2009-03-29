@@ -42,6 +42,7 @@ rsync rsync://rsync.frugalware.org/pub/other/fun/fun/po/fun.pot fun/templates/fu
 rsync rsync://rsync.frugalware.org/pub/other/fw-control-center/fw-control-center/gfpm-mcs-plugin/po/gfpm-mcs-plugin.pot fwcontrolcenter/templates/gfpm-mcs-plugin.pot
 rsync rsync://rsync.frugalware.org/pub/other/gfpm/gfpm/po/gfpm.pot gfpm/templates/gfpm.pot
 rsync rsync://rsync.frugalware.org/pub/other/gservice/gservice/po/gservice.pot gservice/templates/gservice.pot
+rsync rsync://rsync.frugalware.org/pub/other/fwife/fwife/po/fwife.pot fwife/templates/fwife.pot
 echo "done."
 
 for i in *
