@@ -2,7 +2,7 @@
 # 
 #   darcs-git, a darcs-like porcelain on top of git plumbing
 #  
-#   Copyright (c) 2007, 2008 by Miklos Vajna <vmiklos@frugalware.org>
+#   Copyright (c) 2007, 2008, 2009 by Miklos Vajna <vmiklos@frugalware.org>
 #  
 #   This program is free software; you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -572,24 +572,28 @@ Copy and apply patches from this repository to another one.
 
 Options:
   -a         --all                 answer yes to all questions
+  -v         --verbose             give verbose output
   -h         --help                shows brief description of command and its arguments"""
 		sys.exit(ret)
 
 	class Options:
 		def __init__(self):
 			self.all = False
+			self.verbose = False
 			self.help = False
 			self.gitopts = ""
 	options = Options()
 
 	try:
-		opts, args = getopt.getopt(argv, "ah", ["all", "help"])
+		opts, args = getopt.getopt(argv, "avh", ["all", "verbose", "help"])
 	except getopt.GetoptError:
 		usage(1)
 	optind = 0
 	for opt, arg in opts:
 		if opt in ("-a", "--all"):
 			options.all = True
+		elif opt in ("-v", "--verbose"):
+			options.verbose = True
 		elif opt in ("-h", "--help"):
 			options.help = True
 		optind += 1
@@ -603,7 +607,11 @@ Options:
 	remote = "%s/%s" % (options.gitopts, branch)
 	if svn_check():
 		remote = "git-svn"
-	sock = os.popen("git log %s..%s 2>&1" % (remote, branch))
+	if options.verbose:
+		logopts = "-p"
+	else:
+		logopts = ""
+	sock = os.popen("git log %s %s..%s 2>&1" % (logopts, remote, branch))
 	lines = sock.readlines()
 	ret = sock.close()
 	if not len(lines):
