@@ -659,7 +659,7 @@ push()
 	else
 		clean=""
 	fi
-	dry_run record $*
+	dry_run record "$*"
 	sync $clean
 }
 
