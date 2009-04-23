@@ -2,7 +2,11 @@
 
 myver="0.7.9"
 
-. /usr/lib/frugalware/fwmakepkg
+#
+# Copy&pasted from FST/source/include/util.sh, kept in sync manually by
+# boobaa@.
+#
+Farchs=('i686' 'x86_64' 'ppc')
 
 usage()
 {
