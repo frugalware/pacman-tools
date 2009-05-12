@@ -200,7 +200,7 @@ class Syncpkgcd:
 	
 	def system(self, cmd):
 		logfile = "syncpkgcd-%s.log" % time.strftime("%Y%m%d", time.localtime())
-		return os.system("export HOME=%s; %s >> %s 2>&1" % (self.home, cmd, logfile))
+		return os.system("export HOME=%s; timeout -s KILL 86400 %s >> %s 2>&1" % (self.home, cmd, logfile))
 	
 	def go(self, pkgname):
 		for root, dirs, files in os.walk("."):
