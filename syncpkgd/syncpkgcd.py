@@ -148,7 +148,10 @@ class Syncpkgcd:
 				self.log(pkg, "failed to get the repo")
 				return
 		if not self.go(pkgname):
-			server.report_result(config.server_user, config.server_pass, pkg, 1, base64.encodestring("No such package."))
+			try:
+				server.report_result(config.server_user, config.server_pass, pkg, 1, base64.encodestring("No such package."))
+			except xmlrpclib.Fault:
+					self.log(pkg, "failed to report 'no such package'")
 			return
 		if scm == "git":
 			self.system("git clean -x -d -f")
