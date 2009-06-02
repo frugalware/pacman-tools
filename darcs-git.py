@@ -572,6 +572,7 @@ Copy and apply patches from this repository to another one.
 
 Options:
   -a         --all                 answer yes to all questions
+  -s         --summary             summarize changes
   -v         --verbose             give verbose output
   -h         --help                shows brief description of command and its arguments"""
 		sys.exit(ret)
@@ -580,18 +581,21 @@ Options:
 		def __init__(self):
 			self.all = False
 			self.verbose = False
+			self.summary = False
 			self.help = False
 			self.gitopts = ""
 	options = Options()
 
 	try:
-		opts, args = getopt.getopt(argv, "avh", ["all", "verbose", "help"])
+		opts, args = getopt.getopt(argv, "asvh", ["all", "summary", "verbose", "help"])
 	except getopt.GetoptError:
 		usage(1)
 	optind = 0
 	for opt, arg in opts:
 		if opt in ("-a", "--all"):
 			options.all = True
+		elif opt in ("-s", "--summary"):
+			options.summary = True
 		elif opt in ("-v", "--verbose"):
 			options.verbose = True
 		elif opt in ("-h", "--help"):
@@ -607,10 +611,11 @@ Options:
 	remote = "%s/%s" % (options.gitopts, branch)
 	if svn_check():
 		remote = "git-svn"
+	logopts = ""
 	if options.verbose:
-		logopts = "-p"
-	else:
-		logopts = ""
+		logopts += "-p "
+	if options.summary:
+		logopts += "--name-status"
 	sock = os.popen("git log %s %s..%s 2>&1" % (logopts, remote, branch))
 	lines = sock.readlines()
 	ret = sock.close()
