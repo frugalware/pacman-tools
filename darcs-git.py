@@ -128,6 +128,12 @@ def svn_check():
 	sock.close()
 	return os.path.exists(os.path.join(cdup, ".git/svn"))
 
+def darcs_check():
+	sock = os.popen("git rev-parse --show-cdup")
+	cdup = sock.read().strip()
+	sock.close()
+	return os.path.exists(os.path.join(cdup, ".git/darcs"))
+
 def handle_submodules(argv = None):
 	# clone
 	if argv:
@@ -632,6 +638,8 @@ Options:
 	remote = "%s/%s" % (options.gitopts, branch)
 	if svn_check():
 		remote = "git-svn"
+	elif darcs_check():
+		remote = "darcs/upstream"
 	logopts = ""
 	if options.verbose:
 		logopts += "-p "
@@ -652,7 +660,11 @@ Options:
 			if ret in ("n", "q"):
 				return(0)
 			print "Invalid response, try again!"
-	if not svn_check():
+	if svn_check():
+		os.system("git svn dcommit")
+	elif darcs_check():
+		os.system("git darcs push upstream")
+	else:
 		ret = os.system("git push %s" % options.gitopts)
 		if ret:
 			ret = pull(['-a'])
@@ -665,8 +677,6 @@ Options:
 		sock.close()
 		if buf.strip() != "Everything up-to-date":
 			os.system("git push --tags %s" % options.gitopts)
-	else:
-		os.system("git svn dcommit")
 	return(0)
 
 def pull(argv):
@@ -703,14 +713,18 @@ Options:
 		options.gitopts = "origin"
 	if options.help:
 		usage(0)
-	if not svn_check():
-		os.system("git fetch %s" % options.gitopts)
-	else:
+	if svn_check():
 		os.system("git svn fetch")
+	elif darcs_check():
+		os.system("git darcs fetch upstream")
+	else:
+		os.system("git fetch %s" % options.gitopts)
 	branch = get_branch()
 	remote = "%s/%s" % (options.gitopts, branch)
 	if svn_check():
 		remote = "git-svn"
+	elif darcs_check():
+		remote = "darcs/upstream"
 	sock = os.popen("git log %s..%s 2>&1" % (branch, remote))
 	lines = sock.readlines()
 	ret = sock.close()
@@ -732,11 +746,14 @@ Options:
 			return(1)
 	else:
 		changes = False
-	if not svn_check():
-		if os.system("git pull --rebase %s" % options.gitopts) != 0:
+	if svn_check():
+		if os.system("git svn rebase -l") != 0:
+			return(1)
+	elif darcs_check():
+		if os.system("git rebase darcs/upstream") != 0:
 			return(1)
 	else:
-		if os.system("git svn rebase -l") != 0:
+		if os.system("git pull --rebase %s" % options.gitopts) != 0:
 			return(1)
 	if changes and os.system("git stash pop") != 0:
 			return(1)
