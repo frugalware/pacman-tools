@@ -22,7 +22,7 @@ The meaning of the letters are the following:
 
 ----
 A             Alias.
-              Example: darcs-git get does exactly the same as git clone.
+              Example: darcs-git check does exactly the same as git fsck.
 Y             Yes, supported, and dg adds some extra features.
               Example: darcs-git push tries to find out what will be pushed.
 W             Supported unintentionally, because the darcs-git wrapper calls
@@ -87,7 +87,7 @@ A obliterate    Delete selected patches from the repository. (UNSAFE!)
 Y push          Copy and apply patches from this repository to another one.
 Y send          Send by email a bundle of one or more patches.
 W apply         Apply patches (from an email bundle) to the repository.
-A get           Create a local copy of another repository.
+Y get           Create a local copy of another repository.
 N put           Makes a copy of the repository
 ----
 
