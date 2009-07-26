@@ -11,7 +11,7 @@ if grep -q subarchs FrugalBuild && ! grep -q "subarchs.*`uname -m`" FrugalBuild;
 fi
 . /usr/lib/frugalware/fwmakepkg
 
-. FrugalBuild || die "error while parsing the buildscript"
+. ./FrugalBuild || die "error while parsing the buildscript"
 
 # update archs()
 if ! echo ${archs[@]} |grep -q `uname -m`; then
@@ -20,7 +20,7 @@ if ! echo ${archs[@]} |grep -q `uname -m`; then
 	else
 		echo "archs=(\${archs[@]} '`uname -m`')" >> FrugalBuild
 	fi
-	. FrugalBuild
+	. ./FrugalBuild
 	echo ${archs[@]} |grep -q `uname -m` || die "failed to add `uname -m` to archs()"
 fi
 

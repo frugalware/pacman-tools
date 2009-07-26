@@ -42,6 +42,6 @@ if [ -n "$rodepends" ]; then
 	echo "rodepends=('$rodepends')" >> FrugalBuild
 fi
 echo "Finclude emul" >> FrugalBuild
-. FrugalBuild
+. ./FrugalBuild
 $FTPAGENT $source
 echo "sha1sums=('`sha1sum $(echo "$source" | sed 's|^.*://.*/||g')|sed 's/  .*//'`')" >> FrugalBuild

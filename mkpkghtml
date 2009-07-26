@@ -21,7 +21,7 @@ elif [ "$1" == "--version" ]; then
 fi
 
 . /usr/lib/frugalware/fwmakepkg || "can't find fwmakepkg"
-. FrugalBuild || "can't find FrugalBuild"
+. ./FrugalBuild || "can't find FrugalBuild"
 [ -f README.Frugalware ] || "can't find FrugalBuild"
 
 [ -f $pkgname.txt ] && "$pkgname.txt alrady exists, won't overwrite"
