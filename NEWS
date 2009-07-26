@@ -1,5 +1,11 @@
 VERSION         DESCRIPTION
 -----------------------------------------------------------------------------
+1.1.8         - dg: new -v/-s option to push
+              - fwmirror now works without a repoman upd
+              - syncpkgd now kills the build after a timeout (1 day by
+                default)
+              - dg: get/pull now handles git submodules
+              - fixes for bash 4.0
 1.1.7         - portpkg: added rsync cache support
               - syncpkg: added support for distributing wip repo configs
               - repoman rec no longer expands "* some message" by
