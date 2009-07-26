@@ -545,7 +545,7 @@ srcdel()
 		unset pkgver source
 		for j in `set|grep ^_F_|sed 's/\(=.*\| ()\)//'`; do unset $j; done
 		export startdir=`pwd`
-		. FrugalBuild
+		. ./FrugalBuild
 		srclocal=(${srclocal[@]} ${source[@]})
 	done
 	srclocal=(${srclocal[@]} ${signatures[@]})
@@ -788,7 +788,7 @@ else
 fi
 
 if [ -e FrugalBuild ]; then
-	. FrugalBuild
+	. ./FrugalBuild
 fi
 
 # Initializating variables.
