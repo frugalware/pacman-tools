@@ -27,7 +27,7 @@ if [ "$1" == "-v" -o "$1" == "--version" ]; then
 	exit $?
 fi
 
-mkiso="fakeroot mkiso"
+mkiso="fakeroot mkiso $*"
 xml=volumes.xml
 
 sed -i "s|<media>[a-z]\+</media>|<media>net</media>|" $xml

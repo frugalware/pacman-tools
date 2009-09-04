@@ -47,6 +47,8 @@ Here is a list of what is _not_ updated at the moment:
 
 * fwlive iso (it takes a lot of time)
 
+* chroot tarball
+
 * the .ls-Ral files
 
 * the `SHA1SUM` file
@@ -55,3 +57,11 @@ Here is a list of what is _not_ updated at the moment:
 
 The last 3 items are done by typing `make`, you can get the `Makefile` from any
 `frugalware-<tree>-iso` directory of your favourite Frugalware mirror.
+
+The options passed to this script are passed to `mkiso`, so for example
+
+----
+$ mkisorelease -s
+----
+
+can be used for stable releases.
