@@ -829,10 +829,9 @@ Options:
 		sys.exit(ret)
 	if len(argv) and argv[0] in ("-h", "--help"):
 		usage(0)
-	ret = os.system("git clone %s" % " ".join(argv))
+	ret = os.system("git clone --recursive %s" % " ".join(argv))
 	if ret:
 		return ret
-	handle_submodules(argv)
 
 def setpref(argv):
 	def usage(ret):
