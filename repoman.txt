@@ -228,6 +228,29 @@ $ repoman clean x11-extra/synaptics <3>
 <2> This removes the buildscript and other tracked files
 <3> This removes everything else
 
+== Moving packages between categories
+
+If a package has `groups=('foo' 'bar')`, then it's located under
+`/source/foo/pkgname`. Now if you change the first item of the groups
+array, you have to move the package. Here are the steps to do so:
+
+----
+$ cd ~/git/current/source
+$ git mv network/netkit-rsh network-extra
+$ cd network-extra/netkit-rsh
+$ vi FrugalBuild <1>
+$ repoman rec <2>
+$ git commit -a -e -m "<paste here the patchname>"
+$ dg push -a <3>
+----
+<1> Edit the FrugalBuild: increment the pkgrel value by one
+<2> This will generate a nice patch name for you, copy it to the clipboard, and hit Ctrl-C
+<3> This will move the tracked files and then the git hook will move the untracked files as well
+
+NOTE: Incrementing the pkgrel value is not a must, for huge packages it
+may be easier to just do a `repoman cl` for each arch, but that's a bit
+ugly, better to just let `syncpkgd` to rebuild the package.
+
 == WIP REPOS
 
 === Introduction
