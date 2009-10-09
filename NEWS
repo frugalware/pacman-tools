@@ -1,5 +1,9 @@
 VERSION         DESCRIPTION
 -----------------------------------------------------------------------------
+1.1.9         - dropped dead genauthors
+              - mkisorelease now passes its options to mkiso
+              - dg now uses git clone's --recursive option
+              - documentation: describe package moves using repoman
 1.1.8         - dg: new -v/-s option to push
               - fwmirror now works without a repoman upd
               - syncpkgd now kills the build after a timeout (1 day by
