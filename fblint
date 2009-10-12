@@ -138,7 +138,11 @@ check "up2date" "test -n \"`echo $up2date|sed 's/\$(/\\\\\$(/g'`\""
 _fblint_have_remote_source=n
 for i in ${source[@]}
 do
-	echo $i|grep -q :// && _fblint_have_remote_source=y
+	if echo $i|grep -q ://; then
+		_fblint_have_remote_source=y
+	else
+		check "not downloadable file $i is added to the repo" "git ls-files |grep -q $i"
+	fi
 done
 if [ "$_fblint_have_remote_source" = "y" ]; then
 	check "md5sums/sha1sums/signatures" "[ ${#md5sums[@]} -gt 0 -o ${#sha1sums[@]} -gt 0 -o ${#signatures[@]} -gt 0 ]"
