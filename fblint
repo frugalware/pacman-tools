@@ -151,6 +151,7 @@ if [ ${#md5sums[@]} -gt 0 ]; then
 	check "right number of md5sums" "[ ${#md5sums[@]} -eq ${#source[@]} ]"
 fi
 if [ ${#sha1sums[@]} -gt 0 ]; then
+	check "the need of sha1sums (they are not needed when signatures present)" "[ ${#signatures[@]} -eq 0 ]"
 	check "right number of sha1sums" "[ ${#sha1sums[@]} -eq ${#source[@]} ]"
 fi
 if [ ${#signatures[@]} -gt 0 ]; then
