@@ -46,7 +46,7 @@ A typical package update should be done as follows:
 === Configuring repoman
 
 ----
-$ echo 'current_servers=("<nick>@git.frugalware.org:/home/ftp/pub/frugalware/frugalware-current")' \
+$ echo 'current_servers=("<nick>@git.frugalware.org:/pub/frugalware/frugalware-current")' \
 	> ~/.repoman.conf
 $ echo 'fst_root=~/git' >> ~/.repoman.conf
 ----
@@ -65,13 +65,13 @@ Example for the first time:
 
 ----
 $ cd ~/git
-$ git clone <nick>@git.frugalware.org:/home/ftp/pub/frugalware/frugalware-current current
+$ git clone <nick>@git.frugalware.org:/pub/frugalware/frugalware-current current
 ----
 
 Getting other git repos is similar. For example, to get the pacman-tools repo, type:
 
 ----
-$ git clone <nick>@git.frugalware.org:/home/ftp/pub/other/pacman-tools/pacman-tools
+$ git clone <nick>@git.frugalware.org:/pub/other/pacman-tools/pacman-tools
 ----
 
 Now set some defaults:
@@ -277,8 +277,8 @@ flac113.
 First, clone current to your personal directory on the server:
 
 ----
-$ cd /home/ftp/pub/other/people/nick
-$ git clone /home/ftp/pub/frugalware/frugalware-current flac113
+$ cd /pub/other/people/nick
+$ git clone /pub/frugalware/frugalware-current flac113
 $ chmod g+w flac113/.git
 ----
 
@@ -286,7 +286,7 @@ You _need_ hooks. You have two choices. If you want the standard required +
 cia + mailing list combo, then:
 
 ----
-$ ln -sf /home/ftp/pub/other/git-hooks/git-hooks.py .git/hooks/post-receive
+$ ln -sf /pub/other/git-hooks/git-hooks.py .git/hooks/post-receive
 ----
 
 Otherwise just do:
@@ -307,7 +307,7 @@ cl will see the updated FrugalBuild.
 Okay now you can git clone your repo to localhost:
 
 ----
-$ git clone nick@git.frugalware.org:/home/ftp/pub/other/people/nick/flac113
+$ git clone nick@git.frugalware.org:/pub/other/people/nick/flac113
 ----
 
 Now you have to configure repoman and pacman-g2.
@@ -316,7 +316,7 @@ Just append your '\~/.repoman.conf':
 
 ----
 repos=(${repos[@]} 'flac113')
-flac113_servers=("nick@git.frugalware.org:/home/ftp/pub/other/people/nick/flac113")
+flac113_servers=("nick@git.frugalware.org:/pub/other/people/nick/flac113")
 ----
 
 If the repo is owned by an other developer, then you have to add a
@@ -331,12 +331,12 @@ On the server, set up your '\~/.repoman.conf' like this:
 ----
 fst_root=~/git
 repos=('current' 'flac113')
-current_servers=("nick@git.frugalware.org:/home/ftp/pub/frugalware/frugalware-current")
-flac113_servers=("nick@git.frugalware.org:/home/ftp/pub/other/people/nick/flac113")
+current_servers=("nick@git.frugalware.org:/pub/frugalware/frugalware-current")
+flac113_servers=("nick@git.frugalware.org:/pub/other/people/nick/flac113")
 ----
 
-Finally symlink `/home/ftp/pub/frugalware/frugalware-current` to `\~/git/current`,
-`/home/ftp/pub/other/people/nick/flac113` to `\~/git/flac113`.
+Finally symlink `/pub/frugalware/frugalware-current` to `\~/git/current`,
+`/pub/other/people/nick/flac113` to `\~/git/flac113`.
 
 Switch back to the client, and create a file named `~/.pacman-g2/repos/flac113`:
 
@@ -376,7 +376,7 @@ Once you are ready, go to '\~/git/current' (make sure you don't have anything to
 push!) and
 
 ----
-$ git pull --no-rebase nick@git.frugalware.org:/home/ftp/pub/other/people/nick/flac113 master
+$ git pull --no-rebase nick@git.frugalware.org:/pub/other/people/nick/flac113 master
 ----
 
 This will merge your WIP repo to your local current repo. If there are
