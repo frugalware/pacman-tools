@@ -319,6 +319,13 @@ repos=(${repos[@]} 'flac113')
 flac113_servers=("nick@git.frugalware.org:/home/ftp/pub/other/people/nick/flac113")
 ----
 
+If the repo is owned by an other developer, then you have to add a
+line to indicate that:
+
+----
+flac113_sudo="<nick of the other developer>"
+----
+
 On the server, set up your '\~/.repoman.conf' like this:
 
 ----
@@ -328,7 +335,7 @@ current_servers=("nick@git.frugalware.org:/home/ftp/pub/frugalware/frugalware-cu
 flac113_servers=("nick@git.frugalware.org:/home/ftp/pub/other/people/nick/flac113")
 ----
 
-and symlink `/home/ftp/pub/frugalware/frugalware-current` to `\~/git/current`,
+Finally symlink `/home/ftp/pub/frugalware/frugalware-current` to `\~/git/current`,
 `/home/ftp/pub/other/people/nick/flac113` to `\~/git/flac113`.
 
 Switch back to the client, and create a file named `~/.pacman-g2/repos/flac113`:
