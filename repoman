@@ -840,7 +840,7 @@ while [ "$1" != "" ]; do
 			dryrun=1
 		;;
 		-*)
-			echo "Wrong parameter!"
+			echo "Unkown option: $1"
 			usage
 			exit 1
 		;;
@@ -896,6 +896,11 @@ while [ "$1" != "" ]; do
 		sync)
 			shift 1
 			sync $*
+		;;
+		*)
+			echo "Unkown command: $1"
+			usage
+			exit 1
 		;;
 	esac
 	shift 1
