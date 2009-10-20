@@ -42,7 +42,7 @@ class Actions:
 
 	def __request_build(self, pkg):
 		# this regex is not too nice, but at least works
-		if not re.search("^(git|darcs)://[A-Za-z][A-Za-z0-9_,]+/.+-[^-]+-[^-]+-[^-]+/.+ <.+>$", pkg):
+		if not re.search("^(git|darcs)://[^/]+/[^/]+-[^-]+-[^-]+-[^-]+/[^/]+ <[^/]+>$", pkg):
 			raise Exception("invalid uri")
 		if pkg in self.tobuild:
 			return False
@@ -51,7 +51,7 @@ class Actions:
 			return True
 	
 	def request_build(self, login, password, pkg):
-		"""add a package to build. be careful, currently no way to undo it"""
+		"""add a package to build"""
 		if not self.__login(login, password):
 			return
 		if self.__request_build(pkg):
@@ -59,6 +59,24 @@ class Actions:
 			return True
 		else:
 			self.__log(login, pkg, "package rejected by the server")
+			return False
+
+	def __cancel_build(self, pkg):
+		if pkg not in self.tobuild:
+			return False
+		else:
+			self.tobuild.remove(pkg)
+			return True
+	
+	def cancel_build(self, login, password, pkg):
+		"""delete a package from the build queue, if it's there yet (ie the build is not yet started)"""
+		if not self.__login(login, password):
+			return
+		if self.__cancel_build(pkg):
+			self.__log(login, pkg, "package deletion request was accepted by the server")
+			return True
+		else:
+			self.__log(login, pkg, "package deletion request was rejected by the server")
 			return False
 
 	def __get_conf_list(self):
