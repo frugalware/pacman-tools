@@ -7,10 +7,16 @@ from ctlconfig import config
 server = xmlrpclib.Server(config.server_url)
 
 if len(sys.argv) > 1:
-	if server.request_build(config.server_user, config.server_pass, sys.argv[1]):
-		print "Okay, the daemon will build this package for you."
+	if sys.argv[1] == "-d":
+		if server.cancel_build(config.server_user, config.server_pass, sys.argv[2]):
+			print "Okay, the daemon will not build this package for you."
+		else:
+			print "Oops, something went wrong. Maybe this package was already removed from the queue?"
 	else:
-		print "Oops, something went wrong. Maybe this package is already in the queue?"
+		if server.request_build(config.server_user, config.server_pass, sys.argv[1]):
+			print "Okay, the daemon will build this package for you."
+		else:
+			print "Oops, something went wrong. Maybe this package is already in the queue?"
 else:
 	print """At the moment the following packages are waiting to be built:"""
 	print server.get_todo(config.server_user, config.server_pass)

@@ -6,7 +6,12 @@ syncpkgdctl - controller client for the package synchronization daemon
 
 == SYNOPSIS
 
-syncpkgdctl [<url>]
+syncpkgdctl [<options>] [<url>]
+
+== OPTIONS
+
+-d::
+	Don't add the url but remove it.
 
 == DESCTIPTION
 
