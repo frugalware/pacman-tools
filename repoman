@@ -474,7 +474,7 @@ _check_nobuild()
 {
 	# trick: we require subpkgs not to be set. this is because this way:
 	# 1) kde-i18n and such pkgs (only the main pkg is a nobuild one) is
-	# recgnized as a normal pkg
+	# recognized as a normal pkg
 	# 2) opera and friends (where we use nobuild is there because of
 	# license issues) will be recognized as a nobuild one
 	if echo ${options[@]} | grep -q nobuild && [ -z "$subpkgs" ]; then
@@ -761,7 +761,7 @@ merge()
 	found=0
 	for i in ${repo[@]}
 	do
-		# sanility checks
+		# sanity checks
 		chk_updated $fst_root/$i
 		pushonly=$(eval "echo \$${i}_pushonly")
 		[ "$pushonly" = "y" ] && continue
@@ -791,7 +791,7 @@ if [ -e FrugalBuild ]; then
 	. ./FrugalBuild
 fi
 
-# Initializating variables.
+# Initializing variables.
 version='0.3.1'
 [ -z "$arch" ] && arch=`uname -m`
 mktemp_local="mktemp -p $HOME"
@@ -806,7 +806,7 @@ if [ $? != 0 ]; then
 fi
 fi
 
-# Pharsing parameters.
+# Parsing parameters.
 
 if [ $# -le 0 ]; then
 	usage
@@ -840,7 +840,7 @@ while [ "$1" != "" ]; do
 			dryrun=1
 		;;
 		-*)
-			echo "Unkown option: $1"
+			echo "Unknown option: $1"
 			usage
 			exit 1
 		;;
@@ -898,7 +898,7 @@ while [ "$1" != "" ]; do
 			sync $*
 		;;
 		*)
-			echo "Unkown command: $1"
+			echo "Unknown command: $1"
 			usage
 			exit 1
 		;;
