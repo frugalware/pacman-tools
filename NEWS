@@ -1,5 +1,11 @@
 VERSION         DESCRIPTION
 -----------------------------------------------------------------------------
+1.2.0         - fblint now warns for sha1sums() addition when
+                signatures() already present
+              - syncpkgd: allow deleting packages from the queue
+              - mkiso: disable vga fb by default
+              - repoman manpage now documents sudo configuration for wip
+                repos
 1.1.9         - dropped dead genauthors
               - mkisorelease now passes its options to mkiso
               - dg now uses git clone's --recursive option
