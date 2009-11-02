@@ -817,7 +817,7 @@ fi
 reponame=${repos[0]}
 
 while [ "$1" != "" ]; do
-	case $1 in
+	case "$1" in
 		-h|--help)
 			usage
 			exit 0
@@ -844,6 +844,15 @@ while [ "$1" != "" ]; do
 			usage
 			exit 1
 		;;
+		*)
+			break
+		;;
+	esac
+	shift
+done
+
+if [ "$1" != "" ]; then
+	case "$1" in
 		cl|changelog)
 			shift 1
 			changelog $*
@@ -863,7 +872,6 @@ while [ "$1" != "" ]; do
 		ls|list)
 			shift 1
 			list $*
-			exit 0
 		;;
 		m|merge)
 			shift 1
@@ -903,5 +911,9 @@ while [ "$1" != "" ]; do
 			exit 1
 		;;
 	esac
-	shift 1
-done
+else
+	echo "No command given"
+	exit 1
+fi
+
+exit 0
