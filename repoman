@@ -261,7 +261,11 @@ server()
 		done
 		rm .git/lock
 		if [ -d source/$group/$pkg ]; then
-			rm -rfv source/$group/$pkg
+			if [ ! -f source/$group/$pkg/FrugalBuild ]; then
+				rm -rfv source/$group/$pkg
+			else
+				git clean -x -d -f source/$group/$pkg
+			fi
 		fi
 		;;
 
