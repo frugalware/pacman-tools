@@ -196,6 +196,7 @@ server()
 			rm -f .git/lock
 			return
 		fi
+		startdir=`pwd`
 		if ! source FrugalBuild; then
 			echo "Failed to parse the FrugalBuid!"
 			rm -f $(git rev-parse --show-cdup)/.git/lock
