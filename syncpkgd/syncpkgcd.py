@@ -61,6 +61,9 @@ class Syncpkgcd:
 				except xmlrpclib.ProtocolError:
 					self.sleep("can't connect to proxy")
 					continue
+				except xmlrpclib.Fault:
+					self.sleep("remote error, probably can't log in")
+					continue
 				if not len(pkg):
 					self.sleep("no package to build")
 					continue
