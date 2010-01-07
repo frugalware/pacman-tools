@@ -1,0 +1,17 @@
+#!/bin/sh
+
+#
+# Runs 'repoman upd; repoman --dry-run upgrade' after each
+# 'pacman-g2 -Syu' so that you won't forget to run
+# 'repoman upgrade' if it's necessary to do so.
+#
+
+post_sysupgrade()
+{
+	repoman upd
+	repoman --dry-run upgrade
+}
+
+op=$1
+shift
+$op $*

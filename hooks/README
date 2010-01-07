@@ -1,0 +1,8 @@
+The Pacman-G2 hooks in this directory are disabled by default. If you
+want to enable one of them, then run:
+
+# cd /etc/pacman-g2/hooks
+# cp /usr/share/doc/pacman-tools-*/hooks/foo .
+
+The comments at the top of each hook gives you a brief summary about
+what does it do.

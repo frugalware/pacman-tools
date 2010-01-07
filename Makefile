@@ -57,7 +57,7 @@ install: compile
 	$(INSTALL) -d $(DESTDIR)$(man8dir)
 	$(INSTALL) -d $(DESTDIR)$(sysconfdir)
 	$(INSTALL) -d $(DESTDIR)$(sysconfdir)/repoman.d
-	$(INSTALL) -d $(DESTDIR)$(docdir)
+	$(INSTALL) -d $(DESTDIR)$(docdir)/hooks
 	$(INSTALL) -d $(DESTDIR)/home/syncpkgd
 	chown syncpkgd:daemon $(DESTDIR)/home/syncpkgd
 	$(INSTALL) -m755 $(PROGRAMS) $(DESTDIR)$(bindir)
@@ -71,6 +71,7 @@ install: compile
 	$(INSTALL) etcconfig.py $(DESTDIR)$(sbindir)/etcconfig
 	$(INSTALL) mkiso/mkiso $(DESTDIR)$(bindir)/mkiso
 	$(INSTALL) -m644 mkiso/volumes.xml $(DESTDIR)$(docdir)/volumes.xml
+	$(INSTALL) -m644 hooks/* $(DESTDIR)$(docdir)/hooks
 ifneq ($(FINCDIR),)
 	$(INSTALL) -m644 apidocs/*.3 $(DESTDIR)$(man3dir)
 endif
