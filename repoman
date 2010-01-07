@@ -697,7 +697,6 @@ update()
 		echo ":: Synchronizing source trees..."
 		for j in ${servers[@]}
 		do
-			echo "warning: this operation can take minutes, please be patient"
 			# check if we need to clone or pull
 			if [ -d $fst_root/$i/.git ]; then
 				cmd="cd $i && git pull"
@@ -706,12 +705,11 @@ update()
 			fi
 			mkdir -p $fst_root
 			cd $fst_root
-			echo "$i..."
+			echo -n "$i: "
 			eval $cmd
 			if [ $? != 0 ]; then
 				echo "failed."
 			else
-				echo "done."
 				break
 			fi
 		done
