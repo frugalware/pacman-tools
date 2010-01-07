@@ -498,7 +498,8 @@ upd|update::
 upgrade::
 
 	To be used by users. Merge the newer version of all installed
-	nobuild packages.
+	nobuild packages. The 'upgrade_ignore' variable in repoman.conf
+	can contain packages to be ignored during the upgrade.
 
 == ENVIRONMENT
 
