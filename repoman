@@ -794,7 +794,8 @@ upgrade()
 	if [ -z "$dryrun" ]; then
 		for i in $targets
 		do
-			if ! $0 merge $i; then
+			echo ":: Merging $i..."
+			if ! $0 -f merge $i; then
 				echo "Failed to merge $i."
 				echo "Try merging the package manually then run 'repoman upgrade' again to merge the"
 				echo "rest of the targets."
@@ -816,6 +817,7 @@ merge()
 		repo="${repos[@]}"
 		target=$1
 	fi
+	if [ -z "$force" ]; then
 	# install essential packages if necessary
 	echo -n "checking for essential packages... "
 	. /etc/makepkg.conf
@@ -832,6 +834,7 @@ merge()
 	else
 		echo "done"
 	fi
+	fi
 	found=0
 	for i in ${repo[@]}
 	do
@@ -846,6 +849,7 @@ merge()
 			found=1
 			cd $dir
 			makepkg $makepkg_opts
+			exit $?
 		fi
 	done
 	[ "$found" = 0 ] && die "package '$target' not found"
@@ -913,6 +917,9 @@ while [ "$1" != "" ]; do
 		;;
 		-d|--dry-run)
 			dryrun=1
+		;;
+		-f|--force)
+			force=1
 		;;
 		-*)
 			echo "Unknown option: $1"

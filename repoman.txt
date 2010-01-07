@@ -395,6 +395,11 @@ $ repoman fpmmerge flac113
 -d|--dry-run::
 	Don't do anything, just print what would happen.
 
+-f|--force::
+	Enable 'I know what I am doing' mode. Currently it lets 'repoman
+	merge' not to check if essential packages (like a C compiler) are
+	installed.
+
 -h|--help::
 	This manpage.
 
