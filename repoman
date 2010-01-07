@@ -737,6 +737,31 @@ search()
 	done
 }
 
+info()
+{
+	chk_updated $fst_root
+	for i in ${repos[@]}
+	do
+		if [ -d $fst_root/$i/source/*/$1 ]; then
+			cd $fst_root/$i/source/*/$1
+			source ./FrugalBuild
+			[ ${#depends[*]} -eq 0 ] && depends="" || depends="${depends[@]} "
+			[ ${#rodepends[*]} -gt 0 ] && depends="$depends${rodepends[@]}"
+			echo "Repository        : $i"
+			echo "Name              : $pkgname"
+			echo "Version           : $pkgver-$pkgrel"
+			echo "Groups            : ${groups[@]}"
+			echo "Provides          : ${provides[@]:-None}"
+			echo "Depends On        : ${depends[@]:-None}"
+			echo "Removes           : ${removes[@]:-None}"
+			echo "Conflicts With    : ${conflicts[@]:-None}"
+			echo "Replaces          : ${replaces[@]:-None}"
+			echo "Description       : $pkgdesc"
+			break
+		fi
+	done
+}
+
 merge()
 {
 	local i repo target
@@ -801,6 +826,7 @@ version='0.3.1'
 [ -z "$arch" ] && arch=`uname -m`
 mktemp_local="mktemp -p $HOME"
 sudo_env="sudo -E"
+unset LANG LC_ALL
 
 if [ "$F_makepkg_scm" = "git" ]; then
 # Checking for git.
@@ -909,6 +935,10 @@ if [ "$1" != "" ]; then
 		sync)
 			shift 1
 			sync $*
+		;;
+		info)
+			shift 1
+			info $*
 		;;
 		*)
 			echo "Unknown command: $1"

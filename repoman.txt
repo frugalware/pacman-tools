@@ -26,6 +26,7 @@ Here is a reference comparing pacman-g2 and repoman:
 |====
 | pacman-g2 -Sy     | repoman upd
 | pacman-g2 -S pkg  | repoman merge pkg
+| pacman-g2 -Si pkg | repoman info pkg
 | pacman-g2 -Ss foo | repoman search foo
 |====
 
@@ -432,6 +433,12 @@ del|delete <path>::
 fpmmerge <repo>::
 
 	Merges fpms from an other repo to the current one.
+
+info <pkg>::
+
+	Display dependency information for a given package. This will
+	search through all repositories for a matching package and display the
+	dependencies, conflicts, etc.
 
 ls|list <path> [<options>]::
 
