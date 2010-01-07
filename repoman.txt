@@ -490,6 +490,11 @@ upd|update::
 	some time!).  If you want to blacklist a repository then add
 	'<reponame>_pushonly="y"' to '/etc/repoman.d/<reponame>'.
 
+upgrade::
+
+	To be used by users. Merge the newer version of all installed
+	nobuild packages.
+
 == ENVIRONMENT
 
 'repoman' utilizes the following environment variable:

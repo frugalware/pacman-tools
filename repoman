@@ -757,9 +757,53 @@ info()
 			echo "Conflicts With    : ${conflicts[@]:-None}"
 			echo "Replaces          : ${replaces[@]:-None}"
 			echo "Description       : $pkgdesc"
+			cd - >/dev/null
 			break
 		fi
 	done
+}
+
+upgrade()
+{
+	chk_updated $fst_root
+	echo ":: Searching for nobuild packages..."
+	localpkgs=$(pacman-g2 -Qm|sed 's/ .*//')
+	echo ":: Starting local database upgrade for nobuild packages..."
+	targets=""
+	targetstr="Targets:"
+	for i in $localpkgs
+	do
+		remotever=$(info $i|grep ^Version|sed 's/.*: //')
+		[ -z "$remotever" ] && continue
+		localver=$(pacman-g2 -Qi $i|grep ^Version|sed 's/.*: //')
+		diff=$(vercmp $remotever $localver)
+		if [ $diff -le 0 ]; then
+			[ $diff -lt 0 ] && "warning: $i-$localver: local version is newer"
+			continue
+		fi
+		if echo $upgrade_ignore |grep -q $i; then
+			echo "warning: $i-$localver: ignoring package upgrade ($remotever)"
+			continue
+		fi
+		targets="$targets $i"
+		targetstr="$targetstr $i-$remotever"
+	done
+
+	[ -n "$targets" ] && echo -e "\n$targetstr\n"
+
+	if [ -z "$dryrun" ]; then
+		for i in $targets
+		do
+			if ! $0 merge $i; then
+				echo "Failed to merge $i."
+				echo "Try merging the package manually then run 'repoman upgrade' again to merge the"
+				echo "rest of the targets."
+				exit 1
+			fi
+		done
+	else
+		[ -n "$targets" ] && echo "Run 'repoman upgrade' to merge all target packages."
+	fi
 }
 
 merge()
@@ -939,6 +983,10 @@ if [ "$1" != "" ]; then
 		info)
 			shift 1
 			info $*
+		;;
+		upgrade)
+			shift 1
+			upgrade $*
 		;;
 		*)
 			echo "Unknown command: $1"
