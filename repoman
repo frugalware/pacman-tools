@@ -518,6 +518,16 @@ record()
 		_do_record "$*"
 	else
 		if [ "$F_makepkg_scm" = "git" ]; then
+			if ! git symbolic-ref -q HEAD >/dev/null; then
+				echo
+				echo "WARNING: Your HEAD is detached. In most cases you get into this
+state by running 'git pull --rebase', getting a conflict, but not
+resolving it. Run 'git status' to see the list of files which have
+conflicts, resolve them, run 'git add <file1> [<file2> ...]', finally
+'git rebase --continue' before you try to commit again. Continue without
+the steps above only in case you know what you are doing."
+				echo
+			fi
 			dg what -s .
 			ask_and_eval "dg record --edit-long-comment -m '$pkgname-$pkgver-$pkgrel-$arch' ."
 		else
