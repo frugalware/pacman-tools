@@ -14,6 +14,7 @@ class Options:
 		self.logfile = "syncpkgcd.log"
 		self.help = False
 		self.uid = False
+		self.logfile = "syncpkgcd-%s.log" % time.strftime("%Y%m%d", time.localtime())
 	def usage(self, ret):
 		os.system("man syncpkgcd")
 		sys.exit(ret)
@@ -192,7 +193,20 @@ class Syncpkgcd:
 				pass
 			self.system("git clean -x -d -f")
 			return
-		self.system("repoman -t %s -k sync" % tree)
+		if self.system("repoman -t %s -k sync" % tree):
+			self.log(pkg, "repoman failed")
+			try:
+				sock = open(self.logfile)
+				buf = sock.read()
+				sock.close()
+			except IOError:
+				buf = "No repoman log available."
+			try:
+				server.report_result(config.server_user, config.server_pass, pkg, 1, base64.encodestring(buf))
+			except socket.error:
+				pass
+			self.system("git clean -x -d -f")
+			return
 		self.log(pkg, "build finished")
 		try:
 			server.report_result(config.server_user, config.server_pass, pkg, 0)
@@ -205,8 +219,7 @@ class Syncpkgcd:
 		self.logsock.flush()
 	
 	def system(self, cmd):
-		logfile = "syncpkgcd-%s.log" % time.strftime("%Y%m%d", time.localtime())
-		return os.system("export HOME=%s; timeout -s KILL 86400 %s >> %s 2>&1" % (self.home, cmd, logfile))
+		return os.system("export HOME=%s; timeout -s KILL 86400 %s >> %s 2>&1" % (self.home, cmd, self.logfile))
 	
 	def go(self, pkgname):
 		for root, dirs, files in os.walk("."):
