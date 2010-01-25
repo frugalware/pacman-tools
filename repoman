@@ -361,7 +361,7 @@ fpmmerge()
 {
 	if [ ! "`type -p rsync`" ]; then
 		die "The rsync program is missing. Please install it with pacman-g2 -S rsync."
-	if [ -z "$1" ]; then
+	elif [ -z "$1" ]; then
 		echo "fpmmerge needs a parameter! (a repo name to pull in fpms from)"
 		usage
 		exit 1
@@ -688,7 +688,7 @@ die()
 
 update()
 {
-	elif [ ! "`type -p git`" ]; then
+	if [ ! "`type -p git`" ]; then
 		die "The git program is missing. Please install it with pacman-g2 -S git."
 	fi
 	for i in ${repos[@]}
