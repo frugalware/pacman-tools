@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# (c) 2005, 2006, 2007, 2008, 2009 Miklos Vajna <vmiklos@frugalware.org>
+# (c) 2005, 2006, 2007, 2008, 2009, 2010 Miklos Vajna <vmiklos@frugalware.org>
 # repoman for Frugalware
 # distributed under GPL License
 
@@ -359,6 +359,8 @@ upload()
 
 fpmmerge()
 {
+	if [ ! "`type -p rsync`" ]; then
+		die "The rsync program is missing. Please install it with pacman-g2 -S rsync."
 	if [ -z "$1" ]; then
 		echo "fpmmerge needs a parameter! (a repo name to pull in fpms from)"
 		usage
@@ -686,8 +688,6 @@ die()
 
 update()
 {
-	if [ ! "`type -p rsync`" ]; then
-		die "The rsync program is missing. Please install it with pacman-g2 -S rsync."
 	elif [ ! "`type -p git`" ]; then
 		die "The git program is missing. Please install it with pacman-g2 -S git."
 	fi
