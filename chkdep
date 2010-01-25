@@ -112,6 +112,8 @@ class Checks:
 				# not all the deps are installed
 				lib = lib.split(' ')[0]
 			if len(lib):
+				if trace:
+					print "'%s' links to '%s'." % (file, lib)
 				libs.append(lib)
 		sock.close()
 		return libs
