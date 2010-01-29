@@ -1,5 +1,10 @@
 VERSION         DESCRIPTION
 -----------------------------------------------------------------------------
+1.2.1         - repoman upd no longer requires rsync
+              - new repoman upgrade subcommand
+              - syncpkgcd now checks for errors from repoman cl as well
+              - chkdep can now show which file introduced a given
+                dependency
 1.2.0         - fblint now warns for sha1sums() addition when
                 signatures() already present
               - syncpkgd: allow deleting packages from the queue
