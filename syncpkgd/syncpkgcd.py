@@ -14,7 +14,6 @@ class Options:
 		self.logfile = "syncpkgcd.log"
 		self.help = False
 		self.uid = False
-		self.logfile = "syncpkgcd-%s.log" % time.strftime("%Y%m%d", time.localtime())
 	def usage(self, ret):
 		os.system("man syncpkgcd")
 		sys.exit(ret)
@@ -44,9 +43,11 @@ class Syncpkgcd:
 				sys.exit(0)
 		else:
 				self.setuid()
-		# log
+		# system log
 		self.logsock = open(options.logfile, "a")
 		self.log("", "client started")
+		# package log
+		self.logfile = "syncpkgcd-%s.log" % time.strftime("%Y%m%d", time.localtime())
 
 		# main loop
 		try:
