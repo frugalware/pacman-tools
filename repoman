@@ -305,7 +305,7 @@ delete()
 		verbose=""
 	fi
 	msg "Deleting file(s): $*"
-	ssh $host "$sudo_cmd repoman server delete '$verbose' '$path' $*"
+	$repoman_ssh $host "$sudo_cmd repoman server delete '$verbose' '$path' $*"
 }
 
 upload()
@@ -348,12 +348,24 @@ upload()
 		fi
 		name=`basename $src`
 		msg "Requesting a temporary file"
-		tmp=`ssh $host "$sudo_cmd repoman server mktemp"`
+		tmp=`$repoman_ssh $host "$sudo_cmd repoman server mktemp"`
 		[ -z "$tmp" ] && exit 1
-		msg "Uploading file: $src (to $tmp)"
-		scp $src $host:$tmp
+		if [  "$REPOMAN_USE_TUNNEL" == "yes" ]; then
+			## Fix me ? well since we use something like:
+			## local -> genesis ( genesis acts like tunnel for itself )
+			## or remote_box -> genesis , local -> remote_box we are always
+			## using 127.0.0.1 .. scp -S really sucks and I get a lot problems
+			## with rsync -e with all this tunneling =)
+			## the other solution may be to force host when tunnel is used to be user@127.0.0.1
+			## since -p <port> user@local gives out user@genesis .. 
+			msg "Uploading file: $src (to $tmp) over local tunnel."
+                        $repoman_scp $src 127.0.0.1:$tmp
+                else
+			msg "Uploading file: $src (to $tmp)"
+                        $repoman_scp $src $host:$tmp
+                fi
 		sha=`sha1sum $src|sed 's/\(.*\)  .*/\1/'`
-		ssh $host "$sudo_cmd repoman server upload '$path' '$tmp' '$sha' '$dest/$src'"
+		$repoman_ssh $host "$sudo_cmd repoman server upload '$path' '$tmp' '$sha' '$dest/$src'"
 	done
 }
 
@@ -376,7 +388,7 @@ fpmmerge()
 	mergearchs="`rsync -vP $srcurl/|grep ^d.*frugalware-|sed 's/.* //'`"
 	for i in $mergearchs
 	do
-		ssh $host "$sudo_cmd repoman server rsync '$path' '${srcurl#*:}' '${i//frugalware-}'"
+		$repoman_ssh $host "$sudo_cmd repoman server rsync '$path' '${srcurl#*:}' '${i//frugalware-}'"
 	done
 
 	# now push
@@ -398,7 +410,7 @@ list()
 	check_servers
 	check_sudo
 	msg "Fetching contents of: $*"
-	ssh $host "$sudo_cmd repoman server list '$path' $*"
+	$repoman_ssh $host "$sudo_cmd repoman server list '$path' $*"
 }
 
 split_group_pkg()
@@ -422,7 +434,7 @@ clean()
 	do
 		msg "Cleaning up $i"
 		split_group_pkg $i
-		ssh $host "$sudo_cmd repoman server clean '$path' '$fdb' '$group' '$pkg'"
+		$repoman_ssh $host "$sudo_cmd repoman server clean '$path' '$fdb' '$group' '$pkg'"
 	done
 }
 
@@ -437,7 +449,7 @@ changelog()
 	check_sudo
 	fdb=$(eval "echo \$${reponame}_fdb")
 	[ -z "$fdb" ] && fdb="$reponame.fdb"
-	ssh $host "$sudo_cmd repoman server changelog '$path' '$fdb' '$group' '$pkg' '$arch'"
+	$repoman_ssh $host "$sudo_cmd repoman server changelog '$path' '$fdb' '$group' '$pkg' '$arch'"
 }
 
 _keypress()
@@ -568,7 +580,7 @@ srcdel()
 	srclocal=(${srclocal[@]} ${signatures[@]})
 	if [ "$F_makepkg_scm" = "git" ]; then
 		check_servers
-		for i in $(ssh $host "[ -d $path/$mydir ] && cd $path/$mydir && git ls-files --others --directory")
+		for i in $($repoman_ssh $host "[ -d $path/$mydir ] && cd $path/$mydir && git ls-files --others --directory")
 		do
 			if ! echo ${srclocal[@]} |grep -q $i && ! _is_log $i && [ "$i" != "Changelog" ]; then
 				dry_run delete $mydir/$i
