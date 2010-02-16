@@ -296,7 +296,7 @@ delete()
 	if ! ask "repoman del $*"; then
 		return
 	fi
-	local files rmopts host
+	local files rmopts host verbose
 	check_servers
 	check_sudo
 	if [ "$verbose" != 0 ]; then
