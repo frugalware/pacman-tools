@@ -519,6 +519,19 @@ $@" | darcs rec -a --pipe .
 	fi
 }
 
+__pkg_commit_info()
+{
+	local commitmsg
+	commitmsg="$pkgname-$pkgver-$pkgrel-$arch"
+	msg "Your git commit command is:"
+	msg "git commit -a -e -m $commitmsg"
+}
+
+commit_info()
+{
+	__pkg_commit_info
+}
+
 record()
 {
 	echo -n "Checking FrugalBuild... "
@@ -1015,6 +1028,10 @@ if [ "$1" != "" ]; then
 		upgrade)
 			shift 1
 			upgrade $*
+		;;
+		ci)
+			shift 1
+			commit_info $*
 		;;
 		*)
 			echo "Unknown command: $1"
