@@ -1,5 +1,9 @@
 VERSION         DESCRIPTION
 -----------------------------------------------------------------------------
+1.2.2         - repoman info no longer ignores infos inherited using Finclude
+              - repoman now supports ssh tunnels
+              - repoman: new 'ci' subcommand
+              - syncpkgcd: logging fix
 1.2.1         - repoman upd no longer requires rsync
               - new repoman upgrade subcommand
               - syncpkgcd now checks for errors from repoman cl as well
