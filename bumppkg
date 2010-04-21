@@ -154,7 +154,8 @@ if [ "$1" == "--rebuild" ]; then
 	update_pkgrel $newrel
 	if [ "$tree" == "stable" ] && echo "$pkgrel" | grep -q "^[0-9]\+$"; then
 		# first stable rebuild, like 1 -> 2foo1
-		update_pkgrel ${newrel}anacreon1
+		codename=$(sed 's/.*(\(.*\))/\1/' /etc/frugalware-release|tr '[A-Z]' '[a-z]')
+		update_pkgrel ${newrel}${codename}1
 	fi
 	if [ "$1" != "--nobuild" ]; then
 		do_build $tree u
