@@ -280,30 +280,9 @@ First, clone current to your personal directory on the server:
 ----
 $ cd /pub/other/people/nick
 $ git clone /pub/frugalware/frugalware-current flac113
-$ chmod g+w flac113/.git
 ----
 
-You _need_ hooks. You have two choices. If you want the standard required +
-cia + mailing list combo, then:
-
-----
-$ ln -sf /pub/other/git-hooks/git-hooks.py .git/hooks/post-receive
-----
-
-Otherwise just do:
-
-----
-$ echo "unset GIT_DIR; cd ..; git checkout -f" > .git/hooks/post-receive
-----
-
-Then (in case you chose the second way)
-
-----
-$ chmod +x .git/hooks/post-receive
-----
-
-This is necessary to update the working directory after a push, so that repoman
-cl will see the updated FrugalBuild.
+You _need_ hooks. See here for more info: $$ http://frugalware.org/docs/repos#_enabling_hooks_for_your_repository $$
 
 Okay now you can git clone your repo to localhost:
 
