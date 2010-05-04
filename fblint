@@ -190,7 +190,7 @@ if [ "`get_root`" = "stable" -o "`get_root`" = "$codename" ]; then
 	check "unchanged pkgrel" "echo $pkgrel | grep -q '$codename'"
 fi
 check "trailing whitespace" "! grep -q ' $' $_fblint_fb"
-
+check "existence of trailing newline" "[ '`echo 'q' | ed -s $_fblint_fb 2>&1`' != 'Newline appended' ]"
 [ "$_fblint_verbose" ] && echo "done: $_fblint_done, failed $_fblint_failed"
 
 if [ $_fblint_failed -gt 0 ]; then
