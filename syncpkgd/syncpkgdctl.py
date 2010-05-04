@@ -19,6 +19,7 @@ if len(sys.argv) > 1:
 			print "Oops, something went wrong. Maybe this package is already in the queue?"
 else:
 	print """At the moment the following packages are waiting to be built:"""
-	print server.get_todo(config.server_user, config.server_pass)
+	for i, item in enumerate(server.get_todo(config.server_user, config.server_pass)):
+		print '\t%s. %s' % (i+1, item)
 	print "Please note that this list does not include failed or already started builds."
 	print "See man syncpkgdctl for more info."
