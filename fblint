@@ -2,7 +2,7 @@
 # 
 #   fblint for Frugalware
 #  
-#   Copyright (c) 2006, 2007, 2008, 2009 by Miklos Vajna <vmiklos@frugalware.org>
+#   Copyright (c) 2006, 2007, 2008, 2009, 2010 by Miklos Vajna <vmiklos@frugalware.org>
 #  
 #   This program is free software; you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -190,7 +190,7 @@ if [ "`get_root`" = "stable" -o "`get_root`" = "$codename" ]; then
 	check "unchanged pkgrel" "echo $pkgrel | grep -q '$codename'"
 fi
 check "trailing whitespace" "! grep -q ' $' $_fblint_fb"
-check "existence of trailing newline" "[ '`echo 'q' | ed -s $_fblint_fb 2>&1`' != 'Newline appended' ]"
+check "existence of trailing newline" "! cat $_fblint_fb |perl -le '@a=<>; exit \$a[\$#a] =~ /\\n$/s ? 1 : 0'"
 [ "$_fblint_verbose" ] && echo "done: $_fblint_done, failed $_fblint_failed"
 
 if [ $_fblint_failed -gt 0 ]; then
