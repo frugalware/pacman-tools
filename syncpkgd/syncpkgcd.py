@@ -57,8 +57,8 @@ class Syncpkgcd:
 					continue
 				try:
 					pkg = server.request_pkg(config.server_user, config.server_pass, os.uname()[-1])
-				except socket.error:
-					self.sleep("can't connect to server")
+				except socket.error, msg:
+					self.sleep("can't connect to server (%s)" % msg)
 					continue
 				except xmlrpclib.ProtocolError:
 					self.sleep("can't connect to proxy")
