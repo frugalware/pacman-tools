@@ -1,0 +1,29 @@
+= wipcheck(1)
+
+== NAME
+
+wipcheck - examines work in progress repositories
+
+== SYNOPSIS
+
+wipcheck [options]
+
+== DESCRIPTION
+
+The goal of this tool is to automatically check for trivial errors in a
+WIP repo. First just run it and wait till it dies somewhere. If you
+removed a package but a patch is still there for the removed package
+then you have directories without FrugalBuild files and the script will
+just die. Just run the re-run the script again and again till it does
+not die.
+
+Once you fixed these errors, you can run the script with the -q flag to
+see missing (to be exact: not yet synchronized by syncpkgcds) binary
+packages. The repo can be merged using fpmmerge in case that list is
+empty.
+
+== OPTIONS
+
+-q::
+	Quiet mode, just print errors and no output. Useful once you are
+	sure about the script won't die anywhere.

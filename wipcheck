@@ -1,0 +1,52 @@
+#!/bin/sh
+# 
+#   wipcheck, a wip repo checker
+#  
+#   Copyright (c) 2010 by Miklos Vajna <vmiklos@frugalware.org>
+#  
+#   This program is free software; you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published by
+#   the Free Software Foundation; either version 2 of the License, or
+#   (at your option) any later version.
+# 
+#   This program is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#   GNU General Public License for more details.
+#  
+#   You should have received a copy of the GNU General Public License
+#   along with this program; if not, write to the Free Software
+#   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, 
+#   USA.
+#
+
+# fake variable for fwmakepkg
+CHROOT=1
+
+. /etc/makepkg.conf
+. /usr/lib/frugalware/fwmakepkg
+
+die()
+{
+	echo "$@"
+	exit 1
+}
+
+[ -d source ] || die "This tool must be invoked within a WIP repo."
+
+upstream=$(git log|grep -m1 ^Merge|sed 's/.* //')
+for i in $(git log --pretty=oneline $upstream..|sed 's/^[a-f0-9]\+ \([^ ]\+\).*/\1/'|sed 's/-[^-]\+-[^-]\+-[^-]\+$//' |sort -u)
+do
+	[ -d source/*/$i ] || continue
+	[ "$1" == "-q" ] || echo "checking $i... (dir: $(pwd) )"
+	cd source/*/$i
+	unset pkgname pkgver pkgextraver pkgrel nobuild options archs
+	export startdir=`pwd`
+	. ./FrugalBuild || die "errors parsing the FrugalBuild"
+	for j in ${archs[@]}
+	do
+		[[ "${j:0:1}" = "!" ]] && continue
+		[ -e ../../../frugalware-$j/$pkgname-$pkgver-$pkgrel-$j.fpm ] || echo "$pkgname-$pkgver-$pkgrel-$j is missing"
+	done
+	cd - >/dev/null
+done
