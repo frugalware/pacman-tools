@@ -27,3 +27,8 @@ empty.
 -q::
 	Quiet mode, just print errors and no output. Useful once you are
 	sure about the script won't die anywhere.
+
+== BUGS
+
+It is important that this tool can only determine the branch point in
+case `-current` is merged to the wip repo at least once.
