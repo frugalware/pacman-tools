@@ -352,8 +352,10 @@ $ repoman -t flac113 -k push
 
 === Merge
 
-Once you are ready, go to '\~/git/current' (make sure you don't have anything to
-push!) and
+Once you are ready, go to '\~/git/current'. Push your local commits if
+you have ones. If you don't have any, just pull, so that you can be sure
+you will be able to push the result of the merge. Perform the merge
+using:
 
 ----
 $ git pull --no-rebase nick@git.frugalware.org:/pub/other/people/nick/flac113 master
