@@ -94,7 +94,7 @@ server()
 		if [ $# -lt 3 ]; then
 			echo "Too few parameters!"
 			echo "usage: repoman server delete opts path file1 [file2..]"
-			return
+			return 1
 		fi
 		local verbose="$1" path="$2"
 		shift 2
@@ -102,7 +102,7 @@ server()
 		cd $path
 		if [ -e .git/lock ]; then
 			echo "Couldn't get lock."
-			return
+			return 1
 		fi
 		if [ -n "$verbose" ]; then
 			rmopts="-v"
@@ -137,7 +137,7 @@ server()
 		if [ $# -lt 4 ]; then
 			echo "Too few parameters!"
 			echo "usage: repoman server upload path yourtmpfile sha1 targetfile"
-			return
+			return 1
 		fi
 		local path="$1" tmp="$2" sha="$3" dest="$4"
 		shift 4
@@ -145,12 +145,12 @@ server()
 		cd $path
 		if [ -e .git/lock ]; then
 			echo "Couldn't get lock."
-			return
+			return 1
 		fi
 		if ! echo "$sha  $tmp" |sha1sum -c - >/dev/null 2>&1; then
 			echo "The uploaded file is corrupted :-/"
 			rm $tmp
-			return
+			return 1
 		fi
 		# strip leading / and any ..
 		mv -f $tmp "`echo $dest|sed 's|^/||;s|\.\./||g'`"
@@ -161,7 +161,7 @@ server()
 		if [ $# -lt 2 ]; then
 			echo "Too few parameters!"
 			echo "usage: repoman server list path file1 [file2..]"
-			return
+			return 1
 		fi
 		local path="$1"
 		shift
@@ -179,7 +179,7 @@ server()
 		if [ $# -lt 5 ]; then
 			echo "Too few parameters!"
 			echo "usage: repoman server changelog path fdb group pkg arch"
-			return
+			return 1
 		fi
 		local path="$1" fdb="$2" group="$3" pkg="$4" arch="$5"
 		shift 5
@@ -187,20 +187,20 @@ server()
 		cd $path
 		if [ -e .git/lock ]; then
 			echo "Couldn't get lock."
-			return
+			return 1
 		else
 			touch .git/lock
 		fi
 		if ! cd source/$group/$pkg; then
 			echo "There is no package with this group!"
 			rm -f .git/lock
-			return
+			return 1
 		fi
 		startdir=`pwd`
 		if ! source FrugalBuild; then
 			echo "Failed to parse the FrugalBuid!"
 			rm -f $(git rev-parse --show-cdup)/.git/lock
-			return
+			return 1
 		fi
 		cd - >/dev/null
 		cd frugalware-$arch
@@ -209,13 +209,13 @@ server()
 				if ! arch=$arch gensync ../source/$group/$pkg $fdb; then
 					echo "gensync failed!"
 					rm ../.git/lock
-					return
+					return 1
 				fi
 			else
 				if ! arch=$arch updatesync upd $fdb ../source/$group/$pkg/FrugalBuild; then
 					echo "updatesync failed!"
 					rm ../.git/lock
-					return
+					return 1
 				fi
 			fi
 		fi
@@ -229,14 +229,14 @@ server()
 		if [ $# -lt 4 ]; then
 			echo "Too few parameters!"
 			echo "usage: repoman server clean path fdb group pkg"
-			return
+			return 1
 		fi
 		local path="$1" fdb="$2" group="$3" pkg="$4"
 		check_absolute_path
 		cd $path
 		if [ -e .git/lock ]; then
 			echo "Couldn't get lock."
-			return
+			return 1
 		else
 			touch .git/lock
 		fi
@@ -248,12 +248,12 @@ server()
 					echo "No package database to clean from!"
 					cd - >/dev/null
 					rm -f .git/lock
-					return
+					return 1
 				else
 					if ! arch=$arch updatesync del $fdb $pkg; then
 						echo "updatesync failed!"
 						rm -f .git/lock
-						return
+						return 1
 					fi
 				fi
 			fi
@@ -275,7 +275,7 @@ server()
 		if [ $# -lt 3 ]; then
 			echo "Too few parameters!"
 			echo "usage: repoman server rsync path src arch"
-			return
+			return 1
 		fi
 		local path="$1" srcurl="$2" arch="$3"
 		shift 3
@@ -287,6 +287,7 @@ server()
 
 		*)
 		echo "Unknown server command!"
+		return 1
 		;;
 	esac
 }
@@ -306,6 +307,7 @@ delete()
 	fi
 	msg "Deleting file(s): $*"
 	$repoman_ssh $host "$sudo_cmd repoman server delete '$verbose' '$path' $*"
+	return $?
 }
 
 upload()
@@ -365,7 +367,9 @@ upload()
                         $repoman_scp $src $host:$tmp
                 fi
 		sha=`sha1sum $src|sed 's/\(.*\)  .*/\1/'`
-		$repoman_ssh $host "$sudo_cmd repoman server upload '$path' '$tmp' '$sha' '$dest/$src'"
+		if ! $repoman_ssh $host "$sudo_cmd repoman server upload '$path' '$tmp' '$sha' '$dest/$src'"; then
+			return 1
+		fi
 	done
 }
 
@@ -388,7 +392,9 @@ fpmmerge()
 	mergearchs="`rsync -vP $srcurl/|grep ^d.*frugalware-|sed 's/.* //'`"
 	for i in $mergearchs
 	do
-		$repoman_ssh $host "$sudo_cmd repoman server rsync '$path' '${srcurl#*:}' '${i//frugalware-}'"
+		if ! $repoman_ssh $host "$sudo_cmd repoman server rsync '$path' '${srcurl#*:}' '${i//frugalware-}'"; then
+			return 1
+		fi
 	done
 
 	# now push
@@ -411,6 +417,7 @@ list()
 	check_sudo
 	msg "Fetching contents of: $*"
 	$repoman_ssh $host "$sudo_cmd repoman server list '$path' $*"
+	return $?
 }
 
 split_group_pkg()
@@ -434,7 +441,9 @@ clean()
 	do
 		msg "Cleaning up $i"
 		split_group_pkg $i
-		$repoman_ssh $host "$sudo_cmd repoman server clean '$path' '$fdb' '$group' '$pkg'"
+		if ! $repoman_ssh $host "$sudo_cmd repoman server clean '$path' '$fdb' '$group' '$pkg'"; then
+			return 1
+		fi
 	done
 }
 
@@ -450,6 +459,7 @@ changelog()
 	fdb=$(eval "echo \$${reponame}_fdb")
 	[ -z "$fdb" ] && fdb="$reponame.fdb"
 	$repoman_ssh $host "$sudo_cmd repoman server changelog '$path' '$fdb' '$group' '$pkg' '$arch'"
+	return $?
 }
 
 _keypress()
@@ -972,66 +982,82 @@ if [ "$1" != "" ]; then
 		cl|changelog)
 			shift 1
 			changelog $*
+			exit $?
 		;;
 		c|clean)
 			shift 1
 			clean $*
+			exit $?
 		;;
 		del|delete)
 			shift 1
 			delete $*
+			exit $?
 		;;
 		server)
 			shift 1
 			server "$@"
+			exit $?
 		;;
 		ls|list)
 			shift 1
 			list $*
+			exit $?
 		;;
 		m|merge)
 			shift 1
 			merge $*
+			exit $?
 		;;
 		fpmmerge)
 			shift 1
 			fpmmerge $*
+			exit $?
 		;;
 		up|upload)
 			shift 1
 			upload $*
+			exit $?
 		;;
 		upd|update)
 			shift 1
 			update $*
+			exit $?
 		;;
 		s|search)
 			shift 1
 			search $*
+			exit $?
 		;;
 		rec|record)
 			shift 1
 			record "$*"
+			exit $?
 		;;
 		push)
 			shift 1
 			push $*
+			exit $?
 		;;
 		sync)
 			shift 1
 			sync $*
+			exit $?
 		;;
 		info)
 			shift 1
 			info $*
+			exit $?
 		;;
 		upgrade)
 			shift 1
 			upgrade $*
+			exit $?
 		;;
 		ci)
 			shift 1
 			commit_info $*
+			exit $?
 		;;
 		*)
 			echo "Unknown command: $1"
