@@ -204,7 +204,7 @@ $ repoman rec
 $ repoman -k push
 ----
 
-WARNING: You should not use 'repoman push' till you don't understand what it
+WARNING: You should not use 'repoman push' unless you understand what it
 does!
 
 == Removing packages
