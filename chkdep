@@ -126,7 +126,7 @@ class Checks:
 	def mono(self, file):
 		dlls = []
 		ret = []
-		sock = os.popen("monodis --assemblyref runme.exe")
+		sock = os.popen("monodis --assemblyref %s" % file)
 
 		while True:
 			i = sock.readline()
@@ -140,7 +140,7 @@ class Checks:
 		sock.close()
 
 		for i in dlls:
-			sock = os.popen('MONO_LOG_LEVEL="debug" mono --aot runme.exe')
+			sock = os.popen('MONO_LOG_LEVEL="debug" mono --aot %s' % i)
 			while True:
 				j = sock.readline()
 				if not j:
