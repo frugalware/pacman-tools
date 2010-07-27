@@ -17,7 +17,7 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 #
 
-VERSION = 1.2.2
+VERSION = 1.2.3
 DATE := $(shell date +%Y-%m-%d)
 
 CFLAGS ?= -Wall -Werror -g -O2 -pipe

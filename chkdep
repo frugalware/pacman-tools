@@ -1,10 +1,25 @@
 #!/usr/bin/env python
-
-__author__ = "Miklos Vajna <vmiklos@frugalware.org>, Marcus Habermehl <bmh1980de@yahoo.de>"
-__version__ = "0.8.8"
-__date__ = "Fri, 20 Apr 2007 21:43:12 +0200"
-__copyright__ = "Copyright (c) 2007 Miklos Vajna, Marcus Habermehl"
-__license__ = "GPL"
+# 
+#   chkdep
+#  
+#   Copyright (c) 2007, 2010 by Miklos Vajna <vmiklos@frugalware.org>
+#   Copyright (c) 2007 by Marcus Habermehl <bmh1980de@yahoo.de>
+#  
+#   This program is free software; you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published by
+#   the Free Software Foundation; either version 2 of the License, or
+#   (at your option) any later version.
+# 
+#   This program is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#   GNU General Public License for more details.
+#  
+#   You should have received a copy of the GNU General Public License
+#   along with this program; if not, write to the Free Software
+#   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, 
+#   USA.
+#
 
 import tarfile, tempfile, shutil, os, stat, re, pacman, getopt, sys
 

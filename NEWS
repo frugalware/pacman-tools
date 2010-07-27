@@ -1,5 +1,9 @@
 VERSION         DESCRIPTION
 -----------------------------------------------------------------------------
+1.2.3         - fblint now checks for trailing newlines
+              - syncpkgdctl now has an easier-to-grep output
+              - new wipcheck tool
+              - chkdep now really tries to remove duplicated depenencies
 1.2.2         - repoman info no longer ignores infos inherited using Finclude
               - repoman now supports ssh tunnels
               - repoman: new 'ci' subcommand
