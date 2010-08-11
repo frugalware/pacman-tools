@@ -284,6 +284,8 @@ $ git clone /pub/frugalware/frugalware-current flac113
 
 You _need_ hooks. See here for more info: $$ http://frugalware.org/docs/repos#_enabling_hooks_for_your_repository $$
 
+If you need syncpkgd support, read this as well: $$ http://frugalware.org/docs/repos#_enabling_syncpkgd_support_for_a_wip_repo $$
+
 Okay now you can git clone your repo to localhost:
 
 ----
