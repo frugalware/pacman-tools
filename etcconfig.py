@@ -92,7 +92,7 @@ while x<m:
        if choice in choices:
 	       if(choice == choices[0]):
 		       print(k,korig)
-		       command='mv --reply=yes %s %s' % (k,korig)
+		       command='mv -f %s %s' % (k,korig)
 		       os.system("%s" % command)
 		       print "Updated!"
 	       	       x=x+1
