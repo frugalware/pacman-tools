@@ -28,7 +28,12 @@ if [ "$1" == "-v" -o "$1" == "--version" ]; then
 fi
 
 mkiso="fakeroot mkiso $*"
-xml=volumes.xml
+[ -z "$arch" ] && arch=`uname -m`
+if [ -e volumes-$arch.xml ]; then
+	xml=volumes-$arch.xml
+else
+	xml=volumes.xml
+fi
 
 sed -i "s|<media>[a-z]\+</media>|<media>net</media>|" $xml
 sed -i 's|\(<serial>.*</serial>\)$|<!-- \1 -->|' $xml
