@@ -50,12 +50,15 @@ def rmdupdeps(deps):
 	depdeps = []
 	newdeps = []
 	for i in deps:
-		depdeps.extend(getdeps(i))
+		if i not in ignorepkgs:
+			depdeps.extend(getdeps(i))
 	for i in deps:
 		if i not in depdeps and i not in ignorepkgs:
 			newdeps.append(i)
 		elif i in depdeps and trace:
 			print "Ignoring %s as it is already a dependency of some other dependency." % i
+		elif i in ignorepkgs and trace:
+			print "Ignoring %s as requested." % i
 	return newdeps
 
 def detect_owner(lib):
