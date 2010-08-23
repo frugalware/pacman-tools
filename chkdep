@@ -21,7 +21,7 @@
 #   USA.
 #
 
-import tarfile, tempfile, shutil, os, stat, re, pacman, getopt, sys
+import subprocess, tempfile, shutil, os, stat, re, pacman, getopt, sys
 
 from modulefinder import ModuleFinder
 
@@ -235,9 +235,11 @@ if "FAKEROOTKEY" in os.environ.keys():
 
 if pkg:
 	fpmroot = tempfile.mkdtemp()
-	fpm = tarfile.TarFile.open(pkg, "r:bz2")
-	fpm.extractall(fpmroot)
-	fpm.close()
+	cwd = os.getcwd()
+	os.chdir(fpmroot)
+	if subprocess.call(["bsdtar", "xf", os.path.join(cwd, pkg)]) != 0:
+		raise Exception("bsdtar failed")
+	os.chdir(cwd)
 
 if dir:
 	fpmroot = dir
