@@ -187,7 +187,12 @@ class Syncpkgcd:
 				buf = sock.read()
 				sock.close()
 			except IOError:
-				buf = "No log available."
+				try:
+					sock = open(self.logfile)
+					buf = sock.read()
+					sock.close()
+				except IOError:
+					buf = "No makepkg log available."
 			try:
 				server.report_result(config.server_user, config.server_pass, pkg, 1, base64.encodestring(buf))
 			except socket.error:
