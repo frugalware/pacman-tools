@@ -110,6 +110,12 @@ class Syncpkgcd:
 			return False
 		else:
 			return True
+	
+	def checkblacklist(self, pkg):
+		if not hasattr(config, "blacklist"):
+			# no blacklist defined
+			return True
+		return pkg not in config.blacklist
 
 	def build(self, pkg):
 		# maybe later support protocolls (the first item) other than git?
@@ -119,6 +125,14 @@ class Syncpkgcd:
 		pkgname = "-".join(pkgarr[:-3])
 		pkgver = "-".join(pkgarr[-3:-1])
 		arch = pkgarr[-1]
+		if not self.checkblacklist(pkgname):
+			self.log(pkg, "blacklisted package, aborting the build")
+			buf = "The package is on the blacklist of this client."
+			try:
+				server.report_result(config.server_user, config.server_pass, pkg, 1, base64.encodestring(buf))
+			except socket.error:
+				pass
+			return
 		self.log(pkg, "starting build")
 		sock = os.popen("export HOME=%s; . ~/.repoman.conf; echo $fst_root; echo $%s_servers" % (self.home, tree))
 		buf = sock.readlines()
