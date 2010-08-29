@@ -226,17 +226,14 @@ class Options:
 
 class Syncpkgd:
 	def __init__(self, options):
+		self.options = options
 		def on_sigterm(num, frame):
 			raise KeyboardInterrupt
 		signal.signal(signal.SIGTERM, on_sigterm)
-		if os.getuid() == 0 and options.uid:
-			try:
-				os.setuid(int(options.uid))
-			except:
-				os.setuid(pwd.getpwnam(options.uid).pw_uid)
-		if options.daemon:
+		if self.options.daemon:
 			pid = os.fork()
 			if pid == 0:
+				self.setuid()
 				os.setpgrp()
 				nullin = file('/dev/null', 'r')
 				nullout = file('/dev/null', 'w')
@@ -245,18 +242,27 @@ class Syncpkgd:
 				os.dup2(nullout.fileno(), sys.stderr.fileno())
 			else:
 				try:
-					file(options.pidfile,'w+').write(str(pid)+'\n')
+					file(self.options.pidfile,'w+').write(str(pid)+'\n')
 				except:
 					pass
 				sys.exit(0)
+		else:
+			self.setuid()
 		server = SimpleXMLRPCServer(('',1873))
-		actions = Actions(options)
+		actions = Actions(self.options)
 		server.register_instance(actions)
 		try:
 			server.serve_forever()
 		except KeyboardInterrupt:
 			actions.save()
 			return
+	
+	def setuid():
+		if os.getuid() == 0 and self.options.uid:
+			try:
+				os.setuid(int(self.options.uid))
+			except:
+				os.setuid(pwd.getpwnam(self.options.uid).pw_uid)
 
 if __name__ == "__main__":
 	options = Options()
