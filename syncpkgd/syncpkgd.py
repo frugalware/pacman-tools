@@ -257,7 +257,7 @@ class Syncpkgd:
 			actions.save()
 			return
 	
-	def setuid():
+	def setuid(self):
 		if os.getuid() == 0 and self.options.uid:
 			try:
 				os.setuid(int(self.options.uid))
