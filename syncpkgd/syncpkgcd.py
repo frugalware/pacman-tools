@@ -165,6 +165,10 @@ class Syncpkgcd:
 				os.chdir(tree)
 			except OSError:
 				self.log(pkg, "failed to get the repo")
+				try:
+					server.report_result(config.server_user, config.server_pass, pkg, 1, base64.encodestring("Failed to get the repo."))
+				except xmlrpclib.Fault:
+					self.log(pkg, "failed to report 'failed to get the repo'")
 				return
 		if not self.go(pkgname):
 			try:
