@@ -1,5 +1,12 @@
 VERSION         DESCRIPTION
 -----------------------------------------------------------------------------
+1.2.4         - rpm2fpm now turns all 32bit rpms to i686 to match `uname
+                -m` output
+              - etcconfig: don't use mv --reply, it's no longer
+                supported
+              - chkdep: handle xz-compressed fpms
+              - syncpkgcd: upload makepkg output as error log in case
+                there is no makepkg log
 1.2.3         - fblint now checks for trailing newlines
               - syncpkgdctl now has an easier-to-grep output
               - new wipcheck tool
