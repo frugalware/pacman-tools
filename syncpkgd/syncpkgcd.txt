@@ -70,6 +70,15 @@ syncpkgd ALL=(ALL) NOPASSWD: /usr/bin/makepkg
 is in `/etc/sudoers`. It should be, if you installed the `pacman-tools` package
 and you haven't commented it out.
 
+Also, if you set the `CHROOTDIR` in `/etc/makepkg.conf` to be
+`$HOME`-dependent, then make sure to set
+
+----
+Defaults env_keep += "HOME"
+----
+
+in `/etc/sudoers` as well.
+
 * Finally you can enable and start syncpkgcd as root:
 
 ----
