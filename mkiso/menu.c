@@ -1,7 +1,7 @@
 /*
  *  menu.c
  *
- *  Copyright (c) 2006, 2007, 2008, 2009 by Miklos Vajna <vmiklos@frugalware.org>
+ *  Copyright (c) 2006, 2007, 2008, 2009, 2010 by Miklos Vajna <vmiklos@frugalware.org>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -22,6 +22,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <sys/stat.h>
 #include <glib.h>
 #include <pacman.h>
 
@@ -38,14 +39,16 @@ char *mkmenu(volume_t *volume)
 	FILE *fp;
 	char *kernel = detect_kernel(volume->arch);
 	char *ptr = g_strdup_printf("%s/boot/initrd-%s.img.gz", fst_root, volume->arch);
+	struct stat buf;
 
 	mkstemp(flist);
 	if(!(fp = fopen(flist, "w")))
 		return(NULL);
 
 	fprintf(fp, "default=0\n"
-		"timeout=10\n"
-		"gfxmenu /boot/grub/message\n\n");
+		"timeout=10\n");
+	if(!stat("/boot/grub/message", &buf))
+		fprintf(fp, "gfxmenu /boot/grub/message\n\n");
 	fprintf(fp, "title Frugalware %s (%s) - %s\n",
 		fst_ver, fst_codename, kernel);
 	fprintf(fp, "\tkernel /boot/vmlinuz-%s initrd=initrd-%s.img.gz load_ramdisk=1 prompt_ramdisk=0 ramdisk_size=%d rw root=/dev/ram quiet\n",
