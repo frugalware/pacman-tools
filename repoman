@@ -174,6 +174,22 @@ server()
 		done
 		;;
 
+		list-untracked)
+		shift
+		if [ $# -lt 1 ]; then
+			echo "Too few parameters!"
+			echo "usage: repoman server list-untracked path"
+			return 1
+		fi
+		local path="$1"
+		shift
+		check_absolute_path
+		if [ -d $path ]; then
+			cd $path
+			git ls-files --others --directory
+		fi
+		;;
+
 		changelog)
 		shift
 		if [ $# -lt 5 ]; then
@@ -603,7 +619,7 @@ srcdel()
 	srclocal=(${srclocal[@]} ${signatures[@]})
 	if [ "$F_makepkg_scm" = "git" ]; then
 		check_servers
-		for i in $($repoman_ssh $host "[ -d $path/$mydir ] && cd $path/$mydir && git ls-files --others --directory")
+		for i in $($repoman_ssh $host "$sudo_cmd repoman server list-untracked '$path/$mydir'")
 		do
 			if ! echo ${srclocal[@]} |grep -q $i && ! _is_log $i && [ "$i" != "Changelog" ]; then
 				dry_run delete $mydir/$i
