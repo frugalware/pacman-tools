@@ -1,5 +1,10 @@
 VERSION         DESCRIPTION
 -----------------------------------------------------------------------------
+1.2.5         - genchangelog now mentions package copies / renames
+              - mkiso no longer forces the usage of gfxboot
+              - syncpkgcd documentaiton has been fixed to work with
+                sudo-1.7.4
+              - chkdep: improved duplicated dependency cleanup code
 1.2.4         - rpm2fpm now turns all 32bit rpms to i686 to match `uname
                 -m` output
               - etcconfig: don't use mv --reply, it's no longer
