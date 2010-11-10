@@ -308,6 +308,11 @@ server()
 	esac
 }
 
+_ssh()
+{
+	$repoman_ssh $host "$sudo_cmd repoman server $*"
+}
+
 delete()
 {
 	if ! ask "repoman del $*"; then
@@ -322,7 +327,7 @@ delete()
 		verbose=""
 	fi
 	msg "Deleting file(s): $*"
-	$repoman_ssh $host "$sudo_cmd repoman server delete '$verbose' '$path' $*"
+	_ssh "delete '$verbose' '$path' $*"
 	return $?
 }
 
@@ -366,7 +371,7 @@ upload()
 		fi
 		name=`basename $src`
 		msg "Requesting a temporary file"
-		tmp=`$repoman_ssh $host "$sudo_cmd repoman server mktemp"`
+		tmp=`_ssh "mktemp"`
 		[ -z "$tmp" ] && exit 1
 		if [  "$REPOMAN_USE_TUNNEL" == "yes" ]; then
 			## Fix me ? well since we use something like:
@@ -383,7 +388,7 @@ upload()
                         $repoman_scp $src $host:$tmp
                 fi
 		sha=`sha1sum $src|sed 's/\(.*\)  .*/\1/'`
-		if ! $repoman_ssh $host "$sudo_cmd repoman server upload '$path' '$tmp' '$sha' '$dest/$src'"; then
+		if ! _ssh "upload '$path' '$tmp' '$sha' '$dest/$src'"; then
 			return 1
 		fi
 	done
@@ -408,7 +413,7 @@ fpmmerge()
 	mergearchs="`rsync -vP $srcurl/|grep ^d.*frugalware-|sed 's/.* //'`"
 	for i in $mergearchs
 	do
-		if ! $repoman_ssh $host "$sudo_cmd repoman server rsync '$path' '${srcurl#*:}' '${i//frugalware-}'"; then
+		if ! _ssh "rsync '$path' '${srcurl#*:}' '${i//frugalware-}'"; then
 			return 1
 		fi
 	done
@@ -432,7 +437,7 @@ list()
 	check_servers
 	check_sudo
 	msg "Fetching contents of: $*"
-	$repoman_ssh $host "$sudo_cmd repoman server list '$path' $*"
+	_ssh "list '$path' $*"
 	return $?
 }
 
@@ -457,7 +462,7 @@ clean()
 	do
 		msg "Cleaning up $i"
 		split_group_pkg $i
-		if ! $repoman_ssh $host "$sudo_cmd repoman server clean '$path' '$fdb' '$group' '$pkg'"; then
+		if ! _ssh "clean '$path' '$fdb' '$group' '$pkg'"; then
 			return 1
 		fi
 	done
@@ -474,7 +479,7 @@ changelog()
 	check_sudo
 	fdb=$(eval "echo \$${reponame}_fdb")
 	[ -z "$fdb" ] && fdb="$reponame.fdb"
-	$repoman_ssh $host "$sudo_cmd repoman server changelog '$path' '$fdb' '$group' '$pkg' '$arch'"
+	_ssh "changelog '$path' '$fdb' '$group' '$pkg' '$arch'"
 	return $?
 }
 
@@ -619,7 +624,7 @@ srcdel()
 	srclocal=(${srclocal[@]} ${signatures[@]})
 	if [ "$F_makepkg_scm" = "git" ]; then
 		check_servers
-		for i in $($repoman_ssh $host "$sudo_cmd repoman server list-untracked '$path/$mydir'")
+		for i in $(_ssh "list-untracked '$path/$mydir'")
 		do
 			if ! echo ${srclocal[@]} |grep -q $i && ! _is_log $i && [ "$i" != "Changelog" ]; then
 				dry_run delete $mydir/$i
