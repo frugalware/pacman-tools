@@ -38,7 +38,7 @@ if [ ! -e Changelog ] || [ `stat -c %Y Changelog` -lt `stat -c %Y FrugalBuild` ]
 	echo "done."
 fi
 
-CARCH=$arch source FrugalBuild || die "errors parsing the FrugalBuild"
+CARCH=$arch source ./FrugalBuild || die "errors parsing the FrugalBuild"
 
 if [ -e README.Frugalware ]; then
 	if [ ! -e $pkgname.html ] || [ `stat -c %Y $pkgname.html` -lt `stat -c %Y README.Frugalware` ]; then

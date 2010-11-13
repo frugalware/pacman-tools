@@ -29,7 +29,7 @@ for pkg in $(find . -name FrugalBuild)
 do
 	cd $(dirname $pkg)
 	unset pkgdesc pkgname subpkgs subdescs
-	source FrugalBuild
+	source ./FrugalBuild
 	genmsgentry "$pkgdesc" "$pkgname"
 	if [ ! -z "$subpkgs" ]; then
 		i=0

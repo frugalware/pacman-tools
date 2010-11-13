@@ -213,7 +213,7 @@ server()
 			return 1
 		fi
 		startdir=`pwd`
-		if ! source FrugalBuild; then
+		if ! source ./FrugalBuild; then
 			echo "Failed to parse the FrugalBuid!"
 			rm -f $(git rev-parse --show-cdup)/.git/lock
 			return 1
