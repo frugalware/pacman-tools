@@ -39,6 +39,7 @@ char *mkmenu(volume_t *volume)
 	FILE *fp;
 	char *kernel = detect_kernel(volume->arch);
 	char *ptr = g_strdup_printf("%s/boot/initrd-%s.img.gz", fst_root, volume->arch);
+	char *gptr = g_strdup_printf("%s/boot/initrd-%s-gui.img.gz", fst_root, volume->arch);
 	struct stat buf;
 
 	mkstemp(flist);
@@ -49,12 +50,14 @@ char *mkmenu(volume_t *volume)
 		"timeout=10\n");
 	if(!stat("/boot/grub/message", &buf))
 		fprintf(fp, "gfxmenu /boot/grub/message\n\n");
+
 	fprintf(fp, "title Frugalware %s (%s) - %s\n",
 		fst_ver, fst_codename, kernel);
 	fprintf(fp, "\tkernel /boot/vmlinuz-%s initrd=initrd-%s.img.gz load_ramdisk=1 prompt_ramdisk=0 ramdisk_size=%d rw root=/dev/ram quiet\n",
 		kernel, volume->arch, gunzip_size(ptr)/1024);
 	fprintf(fp, "\tinitrd /boot/initrd-%s.img.gz\n",
 		volume->arch);
+
 	fprintf(fp, "title Frugalware %s (%s) - %s (vga fb)\n",
 		fst_ver, fst_codename, kernel);
 	fprintf(fp, "\tkernel /boot/vmlinuz-%s initrd=initrd-%s.img.gz load_ramdisk=1 prompt_ramdisk=0 ramdisk_size=%d rw root=/dev/ram quiet vga=791\n",
@@ -62,8 +65,16 @@ char *mkmenu(volume_t *volume)
 	fprintf(fp, "\tinitrd /boot/initrd-%s.img.gz\n",
 		volume->arch);
 
+	fprintf(fp, "title Frugalware %s (%s) - %s (gui)\n",
+		fst_ver, fst_codename, kernel);
+	fprintf(fp, "\tkernel /boot/vmlinuz-%s initrd=initrd-%s-gui.img.gz load_ramdisk=1 prompt_ramdisk=0 ramdisk_size=%d rw root=/dev/ram quiet\n",
+		kernel, volume->arch, gunzip_size(gptr)/1024);
+	fprintf(fp, "\tinitrd /boot/initrd-%s-gui.img.gz\n",
+		volume->arch);
+
 	fclose(fp);
 	free(ptr);
+	free(gptr);
 	free(kernel);
 	return(flist);
 }

@@ -1,7 +1,7 @@
 /*
  *  mkiso.c
  *
- *  Copyright (c) 2006 by Miklos Vajna <vmiklos@frugalware.org>
+ *  Copyright (c) 2006, 2007, 2008, 2010 by Miklos Vajna <vmiklos@frugalware.org>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -260,7 +260,7 @@ int mkiso(volume_t *volume, int countonly, int stable, int dryrun)
 	int total=0, myvolume=1, bootsize;
 	char *fname=get_filename(fst_ver, volume->arch, volume->media, volume->serial);
 	char *label=get_label(fst_ver, volume->arch, volume->media, volume->serial);
-	char *flist, *cmdline = NULL, *ptr, *kptr = NULL, *iptr;
+	char *flist, *cmdline = NULL, *ptr, *kptr = NULL, *iptr, *giptr;
 	char cwd[PATH_MAX] = "";
 	FILE *fp;
 	char *menu = NULL, *bootmsg = NULL, *conf = NULL;
@@ -285,10 +285,13 @@ int mkiso(volume_t *volume, int countonly, int stable, int dryrun)
 	iso_add(dryrun, fp, kptr);
 	iptr = g_strdup_printf("boot/initrd-%s.img.gz", volume->arch);
 	iso_add(dryrun, fp, iptr);
+	giptr = g_strdup_printf("boot/initrd-%s-gui.img.gz", volume->arch);
+	iso_add(dryrun, fp, giptr);
 	// how many space is needed for the kernel & initrd?
-	bootsize = boot_size(fst_root, kptr, iptr);
+	bootsize = boot_size(fst_root, kptr, iptr, giptr);
 	free(kptr);
 	free(iptr);
+	free(giptr);
 	if (!strcmp(volume->arch, "i686") || !strcmp(volume->arch, "x86_64")) {
 		menu = mkmenu(volume);
 		iso_add(dryrun, fp, "boot/grub/message");

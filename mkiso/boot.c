@@ -1,7 +1,7 @@
 /*
  *  boot.c
  *
- *  Copyright (c) 2006 by Miklos Vajna <vmiklos@frugalware.org>
+ *  Copyright (c) 2006, 2010 by Miklos Vajna <vmiklos@frugalware.org>
  *  parts are from gzip, Copyright (C) 1992-1993 by Jean-loup Gailly
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -42,7 +42,7 @@ int gunzip_size(char *path)
 	return(LG(buf+4));
 }
 
-int boot_size(char *root, char *kernel, char *initrd)
+int boot_size(char *root, char *kernel, char *initrd, char *ginitrd)
 {
 	struct stat buf;
 	int ret;
@@ -52,9 +52,16 @@ int boot_size(char *root, char *kernel, char *initrd)
 	if(stat(path, &buf))
 		return(0);
 	ret = buf.st_size/1024;
+
 	snprintf(path, PATH_MAX, "%s/%s", root, initrd);
 	if(stat(path, &buf))
 		return(0);
 	ret += buf.st_size/1024;
+
+	snprintf(path, PATH_MAX, "%s/%s", root, ginitrd);
+	if(stat(path, &buf))
+		return(0);
+	ret += buf.st_size/1024;
+
 	return(ret);
 }

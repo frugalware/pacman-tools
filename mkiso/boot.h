@@ -1,7 +1,7 @@
 /*
  *  boot.h
  *
- *  Copyright (c) 2006 by Miklos Vajna <vmiklos@frugalware.org>
+ *  Copyright (c) 2006, 2010 by Miklos Vajna <vmiklos@frugalware.org>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -20,4 +20,4 @@
  */
 
 int gunzip_size(char *path);
-int boot_size(char *root, char *kernel, char *initrd);
+int boot_size(char *root, char *kernel, char *initrd, char *ginitrd);
