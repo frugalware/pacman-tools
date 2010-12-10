@@ -98,6 +98,13 @@ def get_branch():
 		sys.exit(0)
 	return branch
 
+def get_remote(branch):
+	sock = os.popen("git config branch.%s.merge" % branch)
+	remote = sock.read().strip()[11:]
+	if sock.close():
+		sys.exit(0)
+	return remote
+
 def get_diff(files = ""):
 	sock = os.popen("git diff HEAD --binary %s" % files)
 	lines = sock.readlines()
@@ -720,7 +727,7 @@ Options:
 	else:
 		os.system("git fetch %s" % options.gitopts)
 	branch = get_branch()
-	remote = "%s/%s" % (options.gitopts, branch)
+	remote = "%s/%s" % (options.gitopts, get_remote(branch))
 	if svn_check():
 		remote = "git-svn"
 	elif darcs_check():
