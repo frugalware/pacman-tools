@@ -141,7 +141,10 @@ do
 	if echo $i|grep -q ://; then
 		_fblint_have_remote_source=y
 	else
-		check "not downloadable file $i is added to the repo" "git ls-files |grep -q $i"
+		if git rev-parse --show-cdup &>/dev/null; then
+			# we are in a git repo
+			check "not downloadable file $i is added to the repo" "git ls-files |grep -q $i"
+		fi
 	fi
 done
 if [ "$_fblint_have_remote_source" = "y" ]; then
