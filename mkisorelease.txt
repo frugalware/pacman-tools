@@ -47,8 +47,6 @@ Here is a list of what is _not_ updated at the moment:
 
 * fwlive iso (it takes a lot of time)
 
-* fwife iso
-
 * chroot tarball
 
 * the .ls-Ral files
