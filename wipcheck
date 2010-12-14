@@ -35,7 +35,7 @@ die()
 [ -d source ] || die "This tool must be invoked within a WIP repo."
 
 upstream=$(git log|grep -m1 ^Merge|sed 's/.* //')
-for i in $(git log --pretty=oneline $upstream..|sed 's/^[a-f0-9]\+ \([^ ]\+\).*/\1/'|sed 's/-[^-]\+-[^-]\+-[^-]\+$//' |sort -u)
+for i in $(git diff --name-only $upstream..|grep FrugalBuild|sed 's|.*/\([^/]\+\)/FrugalBuild|\1|')
 do
 	[ -d source/*/$i ] || continue
 	[ "$1" == "-q" ] || echo "checking $i... (dir: $(pwd) )"
