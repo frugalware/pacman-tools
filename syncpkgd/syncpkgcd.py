@@ -137,6 +137,28 @@ class Syncpkgcd:
 			return True
 		return pkg not in config.blacklist
 
+	def makepkg(self, makepkg_tree):
+		return self.system("sudo makepkg -t %s -cu" % makepkg_tree) == 0
+
+	def report_error(self, pkg):
+		self.log(pkg, "makepkg failed")
+		try:
+			sock = open("%s.log" % pkg.split('/')[3])
+			buf = sock.read()
+			sock.close()
+		except IOError:
+			try:
+				sock = open(self.logfile)
+				buf = sock.read()
+				sock.close()
+			except IOError:
+				buf = "No makepkg log available."
+		try:
+			server.report_result(config.server_user, config.server_pass, pkg, 1, base64.encodestring(buf))
+		except socket.error:
+			pass
+		self.system("git clean -x -d -f")
+
 	def build(self, pkg):
 		# maybe later support protocolls (the first item) other than git?
 		scm = pkg.split('/')[0][:-1]
@@ -218,25 +240,17 @@ class Syncpkgcd:
 		for i in ["src", "pkg"]:
 			if os.path.exists(i):
 				shutil.rmtree(i)
-		if self.system("sudo makepkg -t %s -cu" % makepkg_tree):
-			self.log(pkg, "makepkg failed")
-			try:
-				sock = open("%s.log" % pkg.split('/')[3])
-				buf = sock.read()
-				sock.close()
-			except IOError:
-				try:
-					sock = open(self.logfile)
-					buf = sock.read()
-					sock.close()
-				except IOError:
-					buf = "No makepkg log available."
-			try:
-				server.report_result(config.server_user, config.server_pass, pkg, 1, base64.encodestring(buf))
-			except socket.error:
-				pass
-			self.system("git clean -x -d -f")
-			return
+		if not self.makepkg(makepkg_tree):
+			# if there is no makepkg log, try building in a
+			# fresh chroot first
+			if not os.path.exists("%s.log" % pkg.split('/')[3]):
+				self.system("sudo makepkg -t %s -Cc" % makepkg_tree)
+				if not self.makepkg(makepkg_tree):
+					self.report_error(pkg)
+					return
+			else:
+				self.report_error(pkg)
+				return
 		if self.system("repoman -t %s -k sync" % tree):
 			self.log(pkg, "repoman failed")
 			try:
