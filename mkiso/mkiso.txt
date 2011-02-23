@@ -100,6 +100,10 @@ Probably the most changing part is the initrd and the kernel. You can generate t
 	By default, 'mkiso' searches for the file named 'volumes.xml'. If you
 	want a different one, then just specify it.
 
+-g, --group <group>::
+	'mkiso' includes all groups from the repo by default. If you
+	want to include a single group only, use this option.
+
 == REPORTING BUGS
 
 Please report bugs to http://bugs.frugalware.org/.

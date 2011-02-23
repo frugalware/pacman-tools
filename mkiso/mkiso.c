@@ -1,7 +1,7 @@
 /*
  *  mkiso.c
  *
- *  Copyright (c) 2006, 2007, 2008, 2010 by Miklos Vajna <vmiklos@frugalware.org>
+ *  Copyright (c) 2006, 2007, 2008, 2010, 2011 by Miklos Vajna <vmiklos@frugalware.org>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -474,7 +474,7 @@ int rmrf(char *path)
 	return(0);
 }
 
-int prepare(volume_t *volume, char *tmproot, int countonly, int stable, int dryrun)
+int prepare(volume_t *volume, char *tmproot, int countonly, int stable, int dryrun, char *group)
 {
 	PM_LIST *i, *junk;
 	PM_DB *db_local, *db_sync;
@@ -499,6 +499,8 @@ int prepare(volume_t *volume, char *tmproot, int countonly, int stable, int dryr
 		{
 			PM_PKG *pkg=pacman_list_getdata(i);
 			isopkg_t *isopkg;
+			PM_LIST *i = pacman_pkg_getinfo(pkg, PM_PKG_GROUPS);
+			char *grp = pacman_list_getdata(i);
 
 			if((isopkg = (isopkg_t *)malloc(sizeof(isopkg_t)))==NULL)
 			{
@@ -507,7 +509,8 @@ int prepare(volume_t *volume, char *tmproot, int countonly, int stable, int dryr
 			}
 			isopkg->pkg = pkg;
 			isopkg->priority = detect_priority(pkg);
-			isopkgs = g_list_append(isopkgs, isopkg);
+			if (!group || !strcmp(grp, group))
+				isopkgs = g_list_append(isopkgs, isopkg);
 		}
 	}
 
@@ -553,6 +556,7 @@ int main(int argc, char **argv)
 {
 	char tmproot[] = "/tmp/mkiso_XXXXXX";
 	char *xmlfile = strdup("volumes.xml");
+	char *group = NULL;
 	int i, countonly=0, stable=0, dryrun=0;
 	char *ptr;
 	int opt;
@@ -564,12 +568,13 @@ int main(int argc, char **argv)
 		{"dry-run",     no_argument,       0, 'n'},
 		{"stable",      no_argument,       0, 's'},
 		{"file",        required_argument, 0, 'f'},
+		{"group",       required_argument, 0, 'g'},
 		{0, 0, 0, 0}
 	};
 
 	if(argc >= 2)
 	{
-		while((opt = getopt_long(argc, argv, "hcsf:n", opts, &option_index)))
+		while((opt = getopt_long(argc, argv, "hcsf:g:n", opts, &option_index)))
 		{
 			if(opt < 0)
 				break;
@@ -582,6 +587,7 @@ int main(int argc, char **argv)
 					printf("       -h | --help    this help\n");
 					printf("       -n | --dry-run do not generate an iso, just print a filelist\n");
 					printf("       -s | --stable  indicate that the source repo is a -stable one\n");
+					printf("       -g | --group   include packages from a single group only\n");
 					free(xmlfile);
 					return(0);
 				break;
@@ -591,6 +597,9 @@ int main(int argc, char **argv)
 				case 'f':
 					  free(xmlfile);
 					  xmlfile = strdup(optarg);
+				break;
+				case 'g':
+					group = strdup(optarg);
 				break;
 			}
 		}
@@ -610,7 +619,7 @@ int main(int argc, char **argv)
 	free(ptr);
 
 	for(i=0;i<g_list_length(volumes);i++)
-		if(prepare(g_list_nth_data(volumes, i), tmproot, countonly, stable, dryrun))
+		if(prepare(g_list_nth_data(volumes, i), tmproot, countonly, stable, dryrun, group))
 			break;
 
 	PRINTF("cleaning up...");
