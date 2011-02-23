@@ -414,7 +414,7 @@ fpmmerge()
 	for i in $mergearchs
 	do
 		if ! _ssh "rsync '$path' '${srcurl#*:}' '${i//frugalware-}'"; then
-			return 1
+			echo "WARNING: syncing $i failed"
 		fi
 	done
 
