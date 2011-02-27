@@ -1,5 +1,11 @@
 VERSION         DESCRIPTION
 -----------------------------------------------------------------------------
+1.2.6         - new mkiso -g option, fwife is now part of the grub menu
+              - fblint does not try to run git ls-files outside a git
+                repo
+              - wipcheck now handles reverts
+              - syncpkgcd now rebuilds the chroot if upgradading it
+                failed
 1.2.5         - genchangelog now mentions package copies / renames
               - mkiso no longer forces the usage of gfxboot
               - syncpkgcd documentaiton has been fixed to work with
