@@ -8,13 +8,18 @@ dosplit()
 	sed -i "s|<media>[a-z]\+</media>|<media>$1</media>|" $xml
 	sed -i 's|<!-- \(<serial>.*</serial>\) -->$|\1|' $xml
 	sed -i "s|<serial>[0-9]\+</serial>|<serial>1</serial>|" $xml
-	num=`$mkiso -c 2>&1|grep "expected volume number"|sed 's/.*: //'`
-	for i in `seq 1 $num`
-	do
-		sed -i "s|<serial>[0-9]\+</serial>|<serial>$i</serial>|" $xml
-		$mkiso
+	if [ -z "$2" ]; then
+		num=`$mkiso -c 2>&1|grep "expected volume number"|sed 's/.*: //'`
+		for i in `seq 1 $num`
+		do
+			sed -i "s|<serial>[0-9]\+</serial>|<serial>$i</serial>|" $xml
+			$mkiso
+			rm -rf /tmp/mkiso_*
+		done
+	else
+		$mkiso -g $2
 		rm -rf /tmp/mkiso_*
-	done
+	fi
 }
 
 if [ "$1" == "-h" -o "$1" == "--help" ]; then
@@ -39,5 +44,5 @@ sed -i "s|<media>[a-z]\+</media>|<media>net</media>|" $xml
 sed -i 's|\(<serial>.*</serial>\)$|<!-- \1 -->|' $xml
 $mkiso
 
-dosplit cd
+dosplit cd base
 dosplit dvd
