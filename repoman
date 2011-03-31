@@ -936,7 +936,13 @@ fi
 
 # Initializing variables.
 version='0.3.1'
-[ -z "$arch" ] && arch=`uname -m`
+if [ -z "$arch" ]; then
+	if [[ "`uname -m`" == arm* ]]; then
+		arch="arm"
+	else
+		arch="`uname -m`"
+    fi
+fi
 mktemp_local="mktemp -p $HOME"
 sudo_env="sudo -E"
 unset LANG LC_ALL
