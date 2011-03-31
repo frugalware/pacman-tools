@@ -1,5 +1,9 @@
 VERSION         DESCRIPTION
 -----------------------------------------------------------------------------
+1.2.7         - mkisorelease learned how to produce a base-only cd
+              - repoman now supports arm
+              - syncpkgd writes pidfiles under /var/run now
+              - syncpkgd writes persistent data under /var/lib now
 1.2.6         - new mkiso -g option, fwife is now part of the grub menu
               - fblint does not try to run git ls-files outside a git
                 repo
