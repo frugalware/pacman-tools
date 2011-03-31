@@ -20,7 +20,7 @@ rc_start()
 {
 	start_msg
 	if [[ "$(eval $pid)" == "" ]] ; then
-		syncpkgd -c /var/log/syncpkgd/clientlogs -d -l /var/log/syncpkgd/daemon.log -p /var/run/syncpkgd.pid -s /var/run/syncpkgd.status -u syncpkgd
+		syncpkgd -c /var/log/syncpkgd/clientlogs -d -l /var/log/syncpkgd/daemon.log -p /var/lib/syncpkgd.pid -s /var/lib/syncpkgd.status -u syncpkgd
 		ok $?
 	else
 		ok 999
