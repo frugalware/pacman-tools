@@ -17,7 +17,6 @@ install:
 	mkdir -p $(DESTDIR)/var/log/syncpkgd
 	touch $(DESTDIR)/var/log/syncpkgd/daemon.log
 	chown 12:2 $(DESTDIR)/var/log/syncpkgd/daemon.log
-	mkdir -p $(DESTDIR)/var/lock
 	mkdir -p $(DESTDIR)/var/run
 	touch $(DESTDIR)/var/run/syncpkgd.status
 	chown 12:2 $(DESTDIR)/var/run/syncpkgd.status
