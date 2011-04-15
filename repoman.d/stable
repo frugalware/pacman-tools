@@ -19,6 +19,6 @@ stable_servers=(
 
 # the rest is only for developers who upload packages
 # if the server requires sudo usage, the name of the user to execute the commands as
-stable_sudo="vmiklos"
+stable_sudo="repo"
 # name of the package database
 stable_fdb="frugalware.fdb"

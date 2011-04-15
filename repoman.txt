@@ -86,7 +86,7 @@ $ git config branch.master.rebase true
 ----
 
 Here you should substitute <owner> with the nick of the repo owner, currently
-vmiklos.
+'repo'.
 
 === Updating the repo
 
@@ -197,7 +197,7 @@ $ repoman -k push
 
 Will be interactive only in case there is some unrecorded change.
 
-Usually I (vmiklos) use the following:
+It's recommended to do the following:
 
 ----
 $ repoman rec

@@ -70,7 +70,7 @@ sock.write(""")
 
 # the rest is only for developers who upload packages
 # if the server requires sudo usage, the name of the user to execute the commands as
-%s_sudo="vmiklos"
+%s_sudo="repo"
 # name of the package database
 %s_fdb="%s.fdb"
 """ % (out, out, repo))
