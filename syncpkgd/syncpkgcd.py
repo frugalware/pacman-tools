@@ -76,7 +76,10 @@ class Syncpkgcd:
 					self.sleep("load too high")
 					continue
 				try:
-					pkg = server.request_pkg(config.server_user, config.server_pass, os.uname()[-1])
+					arch = os.uname()[-1]
+					if arch.startswith("arm"):
+						arch = "arm"
+					pkg = server.request_pkg(config.server_user, config.server_pass, arch)
 				except socket.error, msg:
 					self.sleep("can't connect to server (%s)" % msg)
 					continue
