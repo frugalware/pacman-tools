@@ -76,10 +76,7 @@ class Syncpkgcd:
 					self.sleep("load too high")
 					continue
 				try:
-					arch = os.uname()[-1]
-					if arch.startswith("arm"):
-						arch = "arm"
-					pkg = server.request_pkg(config.server_user, config.server_pass, arch)
+					pkg = server.request_pkg(config.server_user, config.server_pass, self.getarch())
 				except socket.error, msg:
 					self.sleep("can't connect to server (%s)" % msg)
 					continue
@@ -105,7 +102,7 @@ class Syncpkgcd:
 					pass
 				for k, v in confs.items():
 					sock = open(os.path.join(self.home, k), "w")
-					sock.write(base64.decodestring(v).replace('@CARCH@', os.uname()[-1]))
+					sock.write(base64.decodestring(v).replace('@CARCH@', self.getarch()))
 					sock.close()
 				self.build(pkg)
 		except KeyboardInterrupt:
@@ -114,6 +111,12 @@ class Syncpkgcd:
 			return
 		except Exception:
 			self.log_exception()
+
+	def getarch(self):
+		arch = os.uname()[-1]
+		if arch.startswith("arm"):
+			arch = "arm"
+		return arch
 
 	def setuid(self):
 		if os.getuid() == 0 and self.options.uid:
