@@ -98,9 +98,16 @@ def get_branch():
 		sys.exit(0)
 	return branch
 
-def get_remote(branch):
+def get_merge(branch):
 	sock = os.popen("git config branch.%s.merge" % branch)
-	remote = sock.read().strip()[11:]
+	merge = sock.read().strip()[11:]
+	if sock.close():
+		sys.exit(0)
+	return merge
+
+def get_remote(branch):
+	sock = os.popen("git config branch.%s.remote" % branch)
+	remote = sock.read().strip()
 	if sock.close():
 		sys.exit(0)
 	return remote
@@ -635,13 +642,13 @@ Options:
 		elif opt in ("-h", "--help"):
 			options.help = True
 		optind += 1
+	branch = get_branch()
 	if optind < len(argv):
 		options.gitopts = " ".join(argv[optind:])
 	else:
-		options.gitopts = "origin"
+		options.gitopts = get_remote(branch)
 	if options.help:
 		usage(0)
-	branch = get_branch()
 	remote = "%s/%s" % (options.gitopts, branch)
 	if svn_check():
 		remote = "git-svn"
@@ -714,10 +721,11 @@ Options:
 		elif opt in ("-h", "--help"):
 			options.help = True
 		optind += 1
+	branch = get_branch()
 	if optind < len(argv):
 		options.gitopts = " ".join(argv[optind:])
 	else:
-		options.gitopts = "origin"
+		options.gitopts = get_remote(branch)
 	if options.help:
 		usage(0)
 	if svn_check():
@@ -726,8 +734,7 @@ Options:
 		os.system("git darcs fetch upstream")
 	else:
 		os.system("git fetch %s" % options.gitopts)
-	branch = get_branch()
-	remote = "%s/%s" % (options.gitopts, get_remote(branch))
+	remote = "%s/%s" % (options.gitopts, get_merge(branch))
 	if svn_check():
 		remote = "git-svn"
 	elif darcs_check():
