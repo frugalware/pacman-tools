@@ -1,5 +1,9 @@
 VERSION         DESCRIPTION
 -----------------------------------------------------------------------------
+1.2.8         - repoman clean learned a new --nofdb switch
+              - repoman defaults to remote username 'repo'
+              - arm fixes
+              - darcs-git handles remotes not named 'origin'
 1.2.7         - mkisorelease learned how to produce a base-only cd
               - repoman now supports arm
               - syncpkgd writes pidfiles under /var/run now
