@@ -207,6 +207,19 @@ $ repoman -k push
 WARNING: You should not use 'repoman push' unless you understand what it
 does!
 
+Also, if you built a package locally, tested it, but you do not want to
+upload it (lack of bandwidth, avoid some oddity in your local build
+environment, etc.), you can do a simple:
+
+----
+$ git push
+----
+
+and buildservers will build the binary package for you.
+
+IMPORTANT: Never use the above command to publish packages you did not
+test locally!
+
 == Removing packages
 
 Removing a package means that you want to remove the buildscript and
@@ -259,6 +272,11 @@ ugly, better to just let `syncpkgd` to rebuild the package.
 WIP stands for "Work In Progress". Such repos are used usually only for a few
 days or weeks, if you except that a package upgrade will break several others,
 then it's good to create a WIP repo, and merge when you fixed all the revdeps.
+
+In general, if you expect that the breakage you introduce takes more
+than a workday to fix, please use a WIP repo. If you do so, nobody will
+urge you to finish your work quickly -- and it's free, so if you are
+unsure, use this feature.
 
 === Before you begin
 
