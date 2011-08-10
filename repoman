@@ -709,7 +709,11 @@ sync()
 	if ls *-$arch.fpm &>/dev/null; then
 		for i in *-$arch.fpm
 		do
-			_check_nobuild || dry_run upload $i frugalware-$arch/
+			if ! _check_nobuild; then
+				if ! dry_run upload $i frugalware-$arch/; then
+					return 1
+				fi
+			fi
 		done
 	fi
 
