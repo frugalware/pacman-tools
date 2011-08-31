@@ -143,8 +143,8 @@ class Syncpkgcd:
 			return True
 		return pkg not in config.blacklist
 
-	def makepkg(self, makepkg_tree):
-		return self.system("sudo makepkg -t %s -cu" % makepkg_tree) == 0
+	def makepkg(self, tree):
+		return self.system("sudo makepkg -t %s -cu" % tree) == 0
 
 	def report_error(self, pkg):
 		self.log(pkg, "makepkg failed")
@@ -233,25 +233,19 @@ class Syncpkgcd:
 			junk.extend(glob.glob("*.log.bz2"))
 			for i in junk:
 				os.unlink(i)
-		# FIXME: hardcoding this is a bit ugly, but well, this probably
-		# won't change in the near future
-		if tree not in ('current', 'stable'):
-			makepkg_tree = "%s,current" % tree
-		else:
-			makepkg_tree = tree
-		self.system("sudo makepkg -t %s -C" % makepkg_tree)
+		self.system("sudo makepkg -t %s -C" % tree)
 		# download sources from our mirror if possible
-		self.system("makepkg -t %s -doeuH" % makepkg_tree)
+		self.system("makepkg -t %s -doeuH" % tree)
 		# clean up duplicated dirs
 		for i in ["src", "pkg"]:
 			if os.path.exists(i):
 				shutil.rmtree(i)
-		if not self.makepkg(makepkg_tree):
+		if not self.makepkg(tree):
 			# if there is no makepkg log, try building in a
 			# fresh chroot first
 			if not os.path.exists("%s.log" % pkg.split('/')[3]):
-				self.system("sudo makepkg -t %s -Cc" % makepkg_tree)
-				if not self.makepkg(makepkg_tree):
+				self.system("sudo makepkg -t %s -Cc" % tree)
+				if not self.makepkg(tree):
 					self.report_error(pkg)
 					return
 			else:
