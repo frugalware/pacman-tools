@@ -1,5 +1,9 @@
 VERSION         DESCRIPTION
 -----------------------------------------------------------------------------
+1.2.9         - repoman sync now stops at the first failed upload
+              - dg no longer invokes git push --tags
+              - syncpkgcd now supports wip repos based on custom bases
+              - syncpkgd and syncpkgcd is now migrated to systemd
 1.2.8         - repoman clean learned a new --nofdb switch
               - repoman defaults to remote username 'repo'
               - arm fixes
