@@ -6,8 +6,7 @@ install:
 	install -m644 ctlconfig.py $(DESTDIR)/etc/syncpkgd/ctlconfig.py
 	mkdir -p  $(DESTDIR)/lib/systemd/system
 	install -m644 syncpkgcd.service $(DESTDIR)/lib/systemd/system/syncpkgcd.service
-	mkdir -p  $(DESTDIR)/etc/rc.d
-	install rc.syncpkgd $(DESTDIR)/etc/rc.d/rc.syncpkgd
+	install -m644 syncpkgd.service $(DESTDIR)/lib/systemd/system/syncpkgd.service
 	mkdir -p  $(DESTDIR)/usr/bin
 	install syncpkgcd.py $(DESTDIR)/usr/bin/syncpkgcd
 	install syncpkgdctl.py $(DESTDIR)/usr/bin/syncpkgdctl

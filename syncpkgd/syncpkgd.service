@@ -1,0 +1,8 @@
+[Unit]
+Description=Package builder daemon
+
+[Service]
+ExecStart=/usr/bin/syncpkgd -c /var/log/syncpkgd/clientlogs -l /var/log/syncpkgd/daemon.log -p /var/lib/syncpkgd.pid -s /var/lib/syncpkgd.status -u syncpkgd
+
+[Install]
+WantedBy=multi-user.target
