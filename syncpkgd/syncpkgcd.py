@@ -185,7 +185,11 @@ class Syncpkgcd:
 		sock = os.popen("export HOME=%s; . ~/.repoman.conf; echo $fst_root; echo $%s_servers" % (self.home, tree))
 		buf = sock.readlines()
 		sock.close()
-		fst_root = buf[0].strip()
+		try:
+			fst_root = buf[0].strip()
+		except IndexError:
+			self.log(pkg, "no idea what fst_root is, probably syntax error in repoman.conf")
+			return
 		url = buf[1].strip()
 		try:
 			os.stat(fst_root)
