@@ -188,7 +188,7 @@ if [ ! -z "$subpkgs" ]; then
 	check "right number of suboptions" "[ \"${#suboptions[@]}\" = 0 ] || [ \"${#suboptions[@]}\" = \"${#subpkgs[@]}\" ]"
 fi
 
-codename=$(sed 's/.*(\(.*\))/\1/' /etc/frugalware-release|tr '[A-Z]' '[a-z]')
+codename=$(grep ^VERSION $(git rev-parse --show-cdup)/docs/Makefile|sed 's/.*(\(.*\))/\1/'|tr '[A-Z]' '[a-z]')
 if [ "`get_root`" = "stable" -o "`get_root`" = "$codename" ]; then
 	check "unchanged pkgrel" "echo $pkgrel | grep -q '$codename'"
 fi
