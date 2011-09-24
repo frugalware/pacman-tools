@@ -139,7 +139,7 @@ class Actions:
 					% (fro, to, title)
 			msg += """Hello,
 
-The syncpkg client daemon running at '%s' failed to build '%s' for you.
+The syncpkg client service running at '%s' failed to build '%s' for you.
 The build log is available at:
 
 http://frugalware.org/buildlogs/%s/%s.log
@@ -213,7 +213,6 @@ ssh genesis.frugalware.org "syncpkgdctl '%s'"
 class Options:
 	def __init__(self):
 		self.clientlogs = "clientlogs"
-		self.daemon = False
 		self.pidfile = "syncpkgd.pid"
 		self.statusfile = "syncpkgd.status"
 		self.logfile = "syncpkgd.log"
@@ -230,24 +229,7 @@ class Syncpkgd:
 		def on_sigterm(num, frame):
 			raise KeyboardInterrupt
 		signal.signal(signal.SIGTERM, on_sigterm)
-		if self.options.daemon:
-			pid = os.fork()
-			if pid == 0:
-				self.setuid()
-				os.setpgrp()
-				nullin = file('/dev/null', 'r')
-				nullout = file('/dev/null', 'w')
-				os.dup2(nullin.fileno(), sys.stdin.fileno())
-				os.dup2(nullout.fileno(), sys.stdout.fileno())
-				os.dup2(nullout.fileno(), sys.stderr.fileno())
-			else:
-				try:
-					file(self.options.pidfile,'w+').write(str(pid)+'\n')
-				except:
-					pass
-				sys.exit(0)
-		else:
-			self.setuid()
+		self.setuid()
 		server = SimpleXMLRPCServer(('',1873))
 		actions = Actions(self.options)
 		server.register_instance(actions)
@@ -267,16 +249,14 @@ class Syncpkgd:
 if __name__ == "__main__":
 	options = Options()
 	try:
-		opts, args = getopt.getopt(sys.argv[1:], "c:dhl:p:s:u:",
-			["clientlogs=", "daemon", "help", "logfile=",
+		opts, args = getopt.getopt(sys.argv[1:], "c:hl:p:s:u:",
+			["clientlogs=", "help", "logfile=",
 				"pidfile=", "statusfile=", "uid="])
 	except getopt.GetoptError:
 		options.usage(1)
 	for opt, arg in opts:
 		if opt in ("-c", "--clientlogs"):
 			options.clientlogs = arg
-		elif opt in ("-d", "--daemon"):
-			options.daemon = True
 		elif opt in ("-h", "--help"):
 			options.help = True
 		elif opt in ("-l", "--logfile"):

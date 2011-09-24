@@ -10,9 +10,6 @@ syncpkgcd [options]
 
 == OPTIONS
 
--d, --daemon::
-	Run as daemon in the background.
-
 -l, --logfile::
 	Set the logfile (default: syncpkgcd.log).
 
@@ -82,8 +79,8 @@ in `/etc/sudoers` as well.
 * Finally you can enable and start syncpkgcd as root:
 
 ----
-# service syncpkgcd add
-# service syncpkgcd start
+# systemctl enable syncpkgcd.service
+# systemctl start syncpkgcd.service
 ----
 
 NOTE: You may want to check `/var/log/syncpkgcd.log` to see if everything works as

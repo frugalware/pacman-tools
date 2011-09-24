@@ -29,7 +29,6 @@ server = xmlrpclib.Server(config.server_url)
 
 class Options:
 	def __init__(self):
-		self.daemon = False
 		self.pidfile = "syncpkgcd.pid"
 		self.logfile = "syncpkgcd.log"
 		self.help = False
@@ -45,24 +44,7 @@ class Syncpkgcd:
 		def on_sigterm(num, frame):
 			raise KeyboardInterrupt
 		signal.signal(signal.SIGTERM, on_sigterm)
-		if options.daemon:
-			pid = os.fork()
-			if pid == 0:
-				self.setuid()
-				os.setpgrp()
-				nullin = file('/dev/null', 'r')
-				nullout = file('/dev/null', 'w')
-				os.dup2(nullin.fileno(), sys.stdin.fileno())
-				os.dup2(nullout.fileno(), sys.stdout.fileno())
-				os.dup2(nullout.fileno(), sys.stderr.fileno())
-			else:
-				try:
-					file(options.pidfile,'w+').write(str(pid)+'\n')
-				except:
-					pass
-				sys.exit(0)
-		else:
-				self.setuid()
+		self.setuid()
 		# system log
 		self.logsock = open(options.logfile, "a")
 		self.log("", "client started")
@@ -313,13 +295,11 @@ class Syncpkgcd:
 if __name__ == "__main__":
 	options = Options()
 	try:
-		opts, args = getopt.getopt(sys.argv[1:], "dhl:p:u:", ["daemon", "help", "logfile=", "pidfile=", "uid="])
+		opts, args = getopt.getopt(sys.argv[1:], "hl:p:u:", ["help", "logfile=", "pidfile=", "uid="])
 	except getopt.GetoptError:
 		options.usage(1)
 	for opt, arg in opts:
-		if opt in ("-d", "--daemon"):
-			options.daemon = True
-		elif opt in ("-h", "--help"):
+		if opt in ("-h", "--help"):
 			options.help = True
 		elif opt in ("-l", "--logfile"):
 			options.logfile = arg

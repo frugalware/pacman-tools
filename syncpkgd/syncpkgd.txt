@@ -38,9 +38,6 @@ automatically has the following components:
 -c, --clientlogs <directory>::
 	set the dir to place failed build logs (default: clientlogs)
 
--d, --daemon::
-	run as daemon in the background
-
 -l, --logfile <path>::
 	set the logfile (default: syncpkgd.log)
 
