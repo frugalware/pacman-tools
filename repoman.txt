@@ -265,6 +265,24 @@ NOTE: Incrementing the pkgrel value is not a must, for huge packages it
 may be easier to just do a `repoman cl` for each arch, but that's a bit
 ugly, better to just let `syncpkgd` to rebuild the package.
 
+== Reverting package changes
+
+Let's see an example: mc-4.7.5.3-1 was upgraded to 4.7.5.4-1, but later
+it turned it was a bad idea. Here are the steps to revert that change:
+
+----
+$ cd ~/git/current/source/apps/mc
+$ git revert $commit <1>
+$ vi FrugalBuild <2>
+$ git commit --amend FrugalBuild <3>
+----
+<1> $commit is the sha1 hash of the problematic commit, introducing the upgrade
+<2> Increment pkgrel (from 1 to 2 in this case) and add `options=('force')`
+<3> This will make your changes to FrugalBuild be part of the revert commit
+
+Once this is done, do the usual 'build', 'test' and 'push' tasks, and
+you're done.
+
 == WIP REPOS
 
 === Introduction
