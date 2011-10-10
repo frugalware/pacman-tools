@@ -438,11 +438,11 @@ $ repoman fpmmerge flac113
 
 == COMMANDS
 
-c|clean [--nofdb] <package>::
+c|clean [--nofdb] [--exclusivearch <arch>] <package>::
 
 	Removes the package from the package database. The optional `--nofdb`
 	parameter means that only the source directory will be removed, but the
-	fdb database will be left untouched.
+	fdb database will be left untouched. The other optional `--exclusivearch` parameter means that only the fdb of the given arch
 
 cl|changelog [<group>/]<package>::
 

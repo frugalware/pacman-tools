@@ -260,10 +260,10 @@ server()
 		shift
 		if [ $# -lt 4 ]; then
 			echo "Too few parameters!"
-			echo "usage: repoman server clean path fdb group pkg nofdb"
+			echo "usage: repoman server clean path fdb group pkg nofdb exclusivearch"
 			return 1
 		fi
-		local path="$1" fdb="$2" group="$3" pkg="$4" nofdb="$5"
+		local path="$1" fdb="$2" group="$3" pkg="$4" nofdb="$5" exclusivearch="$6"
 		check_absolute_path
 		cd $path
 		if [ -z "$nofdb" ]; then
@@ -275,6 +275,9 @@ server()
 			fi
 			for i in frugalware-*
 			do
+				if [ -n "$exclusivearch" -a "frugalware-$exclusivearch" != $i ]; then
+					continue
+				fi
 				cd $i
 				if ! _check_nobuild; then
 					if [ ! -e $fdb ]; then
@@ -290,12 +293,12 @@ server()
 						fi
 					fi
 				fi
-				genchangelog --clean $pkg
+				[ -z "$exclusivearch" ] && genchangelog --clean $pkg
 				cd - >/dev/null
 			done
 			rm .git/lock
 		fi
-		if [ -d source/$group/$pkg ]; then
+		if [ -d source/$group/$pkg -a -z "$exclusivearch" ]; then
 			if [ ! -f source/$group/$pkg/FrugalBuild ]; then
 				rm -rfv source/$group/$pkg
 			else
@@ -481,11 +484,20 @@ clean()
 		shift
 		nofdb=t
 	fi
+	if [ "$2" == "--exclusivearch" ]; then
+		shift
+		exclusivearch=$1
+		shift
+	fi
 	for i in $*
 	do
-		msg "Cleaning up $i"
+		if [ -z "$exclusivearch" ]; then
+			msg "Cleaning up $i"
+		else
+			msg "Cleaning up $i (only on $exclusivearch)"
+		fi
 		split_group_pkg $i
-		if ! _ssh "clean '$path' '$fdb' '$group' '$pkg' '$nofdb'"; then
+		if ! _ssh "clean '$path' '$fdb' '$group' '$pkg' '$nofdb' '$exclusivearch'"; then
 			return 1
 		fi
 	done
