@@ -1,7 +1,7 @@
 /*
  *  menu.c
  *
- *  Copyright (c) 2006, 2007, 2008, 2009, 2010 by Miklos Vajna <vmiklos@frugalware.org>
+ *  Copyright (c) 2006, 2007, 2008, 2009, 2010, 2011 by Miklos Vajna <vmiklos@frugalware.org>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -33,19 +33,18 @@ extern char *fst_root;
 extern char *fst_ver;
 extern char *fst_codename;
 
-char *mkmenu(volume_t *volume)
+char *mkmenu(volume_t *volume, int isolinux)
 {
 	char *flist = strdup("/tmp/mkiso_XXXXXX");
-	FILE *fp;
 	char *kernel = detect_kernel(volume->arch);
-	char *ptr = g_strdup_printf("%s/boot/initrd-%s.img.gz", fst_root, volume->arch);
-	char *gptr = g_strdup_printf("%s/boot/initrd-%s-gui.img.gz", fst_root, volume->arch);
-	struct stat buf;
+	FILE *fp;
 
 	mkstemp(flist);
 	if(!(fp = fopen(flist, "w")))
 		return(NULL);
 
+	if (!isolinux) {
+	struct stat buf;
 	fprintf(fp, "default=0\n"
 		"timeout=10\n");
 	if(!stat("/boot/grub/message", &buf))
@@ -69,9 +68,32 @@ char *mkmenu(volume_t *volume)
 	fprintf(fp, "\tinitrd /boot/initrd-%s-gui.img.gz\n",
 		volume->arch);
 
+	} else {
+		fprintf(fp, "timeout 100\n");
+		fprintf(fp, "ui menu.c32\n");
+		fprintf(fp, "menu title Frugalware Linux\n\n");
+
+		fprintf(fp, "label frugalware\n");
+		fprintf(fp, "\tmenu label Frugalware %s (%s) - %s\n",
+			fst_ver, fst_codename, kernel);
+		fprintf(fp, "\tlinux /boot/vmlinuz\n");
+		fprintf(fp, "\tinitrd /boot/initrd\n");
+
+		fprintf(fp, "label frugalwarevgafb\n");
+		fprintf(fp, "\tmenu label Frugalware %s (%s) - %s (vga fb)\n",
+			fst_ver, fst_codename, kernel);
+		fprintf(fp, "\tlinux /boot/vmlinuz\n");
+		fprintf(fp, "\tinitrd /boot/initrd\n");
+		fprintf(fp, "\tappend vga=791\n");
+
+		fprintf(fp, "label frugalwaregui\n");
+		fprintf(fp, "\tmenu label Frugalware %s (%s) - %s (gui)\n",
+			fst_ver, fst_codename, kernel);
+		fprintf(fp, "\tlinux /boot/vmlinuz\n");
+		fprintf(fp, "\tinitrd /boot/initrd-gui\n");
+
+	}
 	fclose(fp);
-	free(ptr);
-	free(gptr);
 	free(kernel);
 	return(flist);
 }

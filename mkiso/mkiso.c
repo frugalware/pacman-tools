@@ -254,7 +254,7 @@ void isogrp_stat(FILE *fp)
 	fprintf(fp, "%-16s %4dMB %4dMB\n", "total", sum, usum);
 }
 
-int mkiso(volume_t *volume, int countonly, int stable, int dryrun)
+int mkiso(volume_t *volume, int countonly, int stable, int dryrun, int isolinux)
 {
 	PM_LIST *i, *sorted;
 	int total=0, myvolume=1, bootsize;
@@ -282,21 +282,33 @@ int mkiso(volume_t *volume, int countonly, int stable, int dryrun)
 		kptr = g_strdup_printf("boot/vmlinux-%s", ptr);
 	}
 	free(ptr);
-	iso_add(dryrun, fp, kptr);
 	iptr = g_strdup_printf("boot/initrd-%s.img.gz", volume->arch);
-	iso_add(dryrun, fp, iptr);
 	giptr = g_strdup_printf("boot/initrd-%s-gui.img.gz", volume->arch);
-	iso_add(dryrun, fp, giptr);
+	if (!isolinux) {
+		iso_add(dryrun, fp, kptr);
+		iso_add(dryrun, fp, iptr);
+		iso_add(dryrun, fp, giptr);
+	} else {
+		fprintf(fp, "boot/vmlinuz=%s\n", kptr);
+		fprintf(fp, "boot/initrd=%s\n", iptr);
+		fprintf(fp, "boot/initrd-gui=%s\n", giptr);
+	}
 	// how many space is needed for the kernel & initrd?
 	bootsize = boot_size(fst_root, kptr, iptr, giptr);
 	free(kptr);
 	free(iptr);
 	free(giptr);
 	if (!strcmp(volume->arch, "i686") || !strcmp(volume->arch, "x86_64")) {
-		menu = mkmenu(volume);
-		iso_add(dryrun, fp, "boot/grub/message");
-		iso_add(dryrun, fp, "boot/grub/stage2_eltorito");
-		fprintf(fp, "boot/grub/menu.lst=%s\n", menu);
+		menu = mkmenu(volume, isolinux);
+		if (!isolinux) {
+			iso_add(dryrun, fp, "boot/grub/message");
+			iso_add(dryrun, fp, "boot/grub/stage2_eltorito");
+			fprintf(fp, "boot/grub/menu.lst=%s\n", menu);
+		} else {
+			iso_add(dryrun, fp, "boot/syslinux/isolinux.bin");
+			iso_add(dryrun, fp, "boot/syslinux/menu.c32");
+			fprintf(fp, "boot/syslinux/syslinux.cfg=%s\n", menu);
+		}
 	} else if (!strcmp(volume->arch, "ppc")) {
 		bootmsg = mkbootmsg(volume);
 		conf = mkconf(volume);
@@ -352,9 +364,10 @@ int mkiso(volume_t *volume, int countonly, int stable, int dryrun)
 				"-graft-points "
 				"-path-list %s "
 				"-hide-rr-moved "
-				"-b boot/grub/stage2_eltorito "
+				"-b %s "
 				"-v -d -N -no-emul-boot -boot-load-size 4 -boot-info-table",
-				fname, label, flist);
+				fname, label, flist,
+				(!isolinux ? "boot/grub/stage2_eltorito" : "boot/syslinux/isolinux.bin"));
 	} else if (!strcmp(volume->arch, "ppc")) {
 		cmdline = g_strdup_printf("mkhybrid -o %s "
 				"-r -hfs-unlock -part -hfs -map ./boot/yaboot/maps "
@@ -474,7 +487,7 @@ int rmrf(char *path)
 	return(0);
 }
 
-int prepare(volume_t *volume, char *tmproot, int countonly, int stable, int dryrun, char *group)
+int prepare(volume_t *volume, char *tmproot, int countonly, int stable, int dryrun, char *group, int isolinux)
 {
 	PM_LIST *i, *junk;
 	PM_DB *db_local, *db_sync;
@@ -542,7 +555,7 @@ int prepare(volume_t *volume, char *tmproot, int countonly, int stable, int dryr
 	}
 	PRINTF(" done.\n");
 
-	mkiso(volume, countonly, stable, dryrun);
+	mkiso(volume, countonly, stable, dryrun, isolinux);
 	pacman_trans_release();
 	pacman_release();
 	g_list_free(isopkgs);
@@ -557,7 +570,7 @@ int main(int argc, char **argv)
 	char tmproot[] = "/tmp/mkiso_XXXXXX";
 	char *xmlfile = strdup("volumes.xml");
 	char *group = NULL;
-	int i, countonly=0, stable=0, dryrun=0;
+	int i, countonly=0, stable=0, dryrun=0, isolinux=0;
 	char *ptr;
 	int opt;
 	int option_index;
@@ -569,12 +582,13 @@ int main(int argc, char **argv)
 		{"stable",      no_argument,       0, 's'},
 		{"file",        required_argument, 0, 'f'},
 		{"group",       required_argument, 0, 'g'},
+		{"isolinux",    no_argument,	   0, 'i'},
 		{0, 0, 0, 0}
 	};
 
 	if(argc >= 2)
 	{
-		while((opt = getopt_long(argc, argv, "hcsf:g:n", opts, &option_index)))
+		while((opt = getopt_long(argc, argv, "hcsf:g:ni", opts, &option_index)))
 		{
 			if(opt < 0)
 				break;
@@ -588,6 +602,7 @@ int main(int argc, char **argv)
 					printf("       -n | --dry-run do not generate an iso, just print a filelist\n");
 					printf("       -s | --stable  indicate that the source repo is a -stable one\n");
 					printf("       -g | --group   include packages from a single group only\n");
+					printf("       -i | --isolinux use isolinux instead of grub (on x86)\n");
 					free(xmlfile);
 					return(0);
 				break;
@@ -600,6 +615,8 @@ int main(int argc, char **argv)
 				break;
 				case 'g':
 					group = strdup(optarg);
+				case 'i': isolinux=1; break;
+				default:
 				break;
 			}
 		}
@@ -619,7 +636,7 @@ int main(int argc, char **argv)
 	free(ptr);
 
 	for(i=0;i<g_list_length(volumes);i++)
-		if(prepare(g_list_nth_data(volumes, i), tmproot, countonly, stable, dryrun, group))
+		if(prepare(g_list_nth_data(volumes, i), tmproot, countonly, stable, dryrun, group, isolinux))
 			break;
 
 	PRINTF("cleaning up...");

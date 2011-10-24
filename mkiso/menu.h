@@ -1,7 +1,7 @@
 /*
  *  menu.h
  *
- *  Copyright (c) 2006, 2008 by Miklos Vajna <vmiklos@frugalware.org>
+ *  Copyright (c) 2006, 2008, 2011 by Miklos Vajna <vmiklos@frugalware.org>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -19,6 +19,6 @@
  *  USA.
  */
 
-char *mkmenu(volume_t *volume);
+char *mkmenu(volume_t *volume, int isolinux);
 char *mkbootmsg(volume_t *volume);
 char *mkconf(volume_t *volume);
