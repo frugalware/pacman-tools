@@ -59,7 +59,7 @@ char *mkmenu(volume_t *volume)
 
 	fprintf(fp, "title Frugalware %s (%s) - %s (vga fb)\n",
 		fst_ver, fst_codename, kernel);
-	fprintf(fp, "\tkernel /boot/vmlinuz-%s vga=791\n", kernel);
+	fprintf(fp, "\tkernel /boot/vmlinuz-%s quiet vga=791\n", kernel);
 	fprintf(fp, "\tinitrd /boot/initrd-%s.img.gz\n",
 		volume->arch);
 
