@@ -526,9 +526,9 @@ int prepare(volume_t *volume, char *tmproot, int countonly, int stable, int dryr
 			PM_DEPMISS *miss = pacman_list_getdata(i);
 
 			printf(":: %s: %s %s", (char*)pacman_dep_getinfo(miss, PM_DEP_TARGET),
-				(int)pacman_dep_getinfo(miss, PM_DEP_TYPE) == PM_DEP_TYPE_DEPEND ? "requires" : "is required by",
+				(long)pacman_dep_getinfo(miss, PM_DEP_TYPE) == PM_DEP_TYPE_DEPEND ? "requires" : "is required by",
 				(char*)pacman_dep_getinfo(miss, PM_DEP_NAME));
-			switch((int)pacman_dep_getinfo(miss, PM_DEP_MOD))
+			switch((long)pacman_dep_getinfo(miss, PM_DEP_MOD))
 			{
 				case PM_DEP_MOD_EQ: printf("=%s\n", (char*)pacman_dep_getinfo(miss, PM_DEP_VERSION)); break;
 				case PM_DEP_MOD_GE: printf(">=%s\n", (char*)pacman_dep_getinfo(miss, PM_DEP_VERSION)); break;
