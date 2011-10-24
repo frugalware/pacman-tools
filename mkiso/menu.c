@@ -44,29 +44,29 @@ char *mkmenu(volume_t *volume, int isolinux)
 		return(NULL);
 
 	if (!isolinux) {
-	struct stat buf;
-	fprintf(fp, "default=0\n"
-		"timeout=10\n");
-	if(!stat("/boot/grub/message", &buf))
-		fprintf(fp, "gfxmenu /boot/grub/message\n\n");
+		struct stat buf;
+		fprintf(fp, "default=0\n"
+				"timeout=10\n");
+		if(!stat("/boot/grub/message", &buf))
+			fprintf(fp, "gfxmenu /boot/grub/message\n\n");
 
-	fprintf(fp, "title Frugalware %s (%s) - %s\n",
-		fst_ver, fst_codename, kernel);
-	fprintf(fp, "\tkernel /boot/vmlinuz-%s quiet\n", kernel);
-	fprintf(fp, "\tinitrd /boot/initrd-%s.img.gz\n",
-		volume->arch);
+		fprintf(fp, "title Frugalware %s (%s) - %s\n",
+				fst_ver, fst_codename, kernel);
+		fprintf(fp, "\tkernel /boot/vmlinuz-%s quiet\n", kernel);
+		fprintf(fp, "\tinitrd /boot/initrd-%s.img.gz\n",
+				volume->arch);
 
-	fprintf(fp, "title Frugalware %s (%s) - %s (vga fb)\n",
-		fst_ver, fst_codename, kernel);
-	fprintf(fp, "\tkernel /boot/vmlinuz-%s quiet vga=791\n", kernel);
-	fprintf(fp, "\tinitrd /boot/initrd-%s.img.gz\n",
-		volume->arch);
+		fprintf(fp, "title Frugalware %s (%s) - %s (vga fb)\n",
+				fst_ver, fst_codename, kernel);
+		fprintf(fp, "\tkernel /boot/vmlinuz-%s quiet vga=791\n", kernel);
+		fprintf(fp, "\tinitrd /boot/initrd-%s.img.gz\n",
+				volume->arch);
 
-	fprintf(fp, "title Frugalware %s (%s) - %s (gui)\n",
-		fst_ver, fst_codename, kernel);
-	fprintf(fp, "\tkernel /boot/vmlinuz-%s quiet\n", kernel);
-	fprintf(fp, "\tinitrd /boot/initrd-%s-gui.img.gz\n",
-		volume->arch);
+		fprintf(fp, "title Frugalware %s (%s) - %s (gui)\n",
+				fst_ver, fst_codename, kernel);
+		fprintf(fp, "\tkernel /boot/vmlinuz-%s quiet\n", kernel);
+		fprintf(fp, "\tinitrd /boot/initrd-%s-gui.img.gz\n",
+				volume->arch);
 
 	} else {
 		fprintf(fp, "timeout 100\n");
