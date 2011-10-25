@@ -306,7 +306,8 @@ int mkiso(volume_t *volume, int countonly, int stable, int dryrun, int isolinux)
 			fprintf(fp, "boot/grub/menu.lst=%s\n", menu);
 		} else {
 			iso_add(dryrun, fp, "boot/syslinux/isolinux.bin");
-			iso_add(dryrun, fp, "boot/syslinux/menu.c32");
+			iso_add(dryrun, fp, "boot/syslinux/vesamenu.c32");
+			iso_add(dryrun, fp, "boot/syslinux/splash.png");
 			fprintf(fp, "boot/syslinux/syslinux.cfg=%s\n", menu);
 		}
 	} else if (!strcmp(volume->arch, "ppc")) {

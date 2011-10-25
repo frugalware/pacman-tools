@@ -70,8 +70,12 @@ char *mkmenu(volume_t *volume, int isolinux)
 
 	} else {
 		fprintf(fp, "timeout 100\n");
-		fprintf(fp, "ui menu.c32\n");
+		fprintf(fp, "ui vesamenu.c32\n");
 		fprintf(fp, "menu title Frugalware Linux\n\n");
+
+		fprintf(fp, "menu background splash.png\n");
+		fprintf(fp, "menu vshift 10\n");
+		fprintf(fp, "menu margin 0\n\n");
 
 		fprintf(fp, "label frugalware\n");
 		fprintf(fp, "\tmenu label Frugalware %s (%s) - %s\n",
