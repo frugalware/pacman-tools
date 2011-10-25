@@ -291,7 +291,7 @@ int mkiso(volume_t *volume, int countonly, int stable, int dryrun, int isolinux)
 	} else {
 		fprintf(fp, "boot/vmlinuz=%s\n", kptr);
 		fprintf(fp, "boot/initrd=%s\n", iptr);
-		fprintf(fp, "boot/initrd-gui=%s\n", giptr);
+		fprintf(fp, "boot/initrd.gui=%s\n", giptr);
 	}
 	// how many space is needed for the kernel & initrd?
 	bootsize = boot_size(fst_root, kptr, iptr, giptr);

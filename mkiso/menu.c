@@ -94,7 +94,7 @@ char *mkmenu(volume_t *volume, int isolinux)
 		fprintf(fp, "\tmenu label Frugalware %s (%s) - %s (gui)\n",
 			fst_ver, fst_codename, kernel);
 		fprintf(fp, "\tlinux /boot/vmlinuz\n");
-		fprintf(fp, "\tinitrd /boot/initrd-gui\n");
+		fprintf(fp, "\tinitrd /boot/initrd.gui\n");
 
 	}
 	fclose(fp);
