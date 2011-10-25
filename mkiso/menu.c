@@ -74,7 +74,7 @@ char *mkmenu(volume_t *volume, int isolinux)
 		fprintf(fp, "menu title Frugalware Linux\n\n");
 
 		fprintf(fp, "menu background splash.png\n");
-		fprintf(fp, "menu vshift 10\n");
+		fprintf(fp, "menu vshift 8\n");
 		fprintf(fp, "menu margin 0\n\n");
 
 		fprintf(fp, "label frugalware\n");
