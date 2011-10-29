@@ -1,5 +1,9 @@
 VERSION         DESCRIPTION
 -----------------------------------------------------------------------------
+1.3.0         - syncpkgd now handles repoman.conf syntax errors
+              - fblint now extracts codename from the git repo
+              - repoman clean learned --exclusivearch
+              - mkiso now uses isohybrid on x86
 1.2.9         - repoman sync now stops at the first failed upload
               - dg no longer invokes git push --tags
               - syncpkgcd now supports wip repos based on custom bases
