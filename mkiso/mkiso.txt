@@ -104,6 +104,9 @@ Probably the most changing part is the initrd and the kernel. You can generate t
 	'mkiso' includes all groups from the repo by default. If you
 	want to include a single group only, use this option.
 
+-G, --grub::
+	Use grub instead of isolinux on x86.
+
 == REPORTING BUGS
 
 Please report bugs to http://bugs.frugalware.org/.

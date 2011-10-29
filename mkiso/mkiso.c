@@ -575,7 +575,7 @@ int main(int argc, char **argv)
 	char tmproot[] = "/tmp/mkiso_XXXXXX";
 	char *xmlfile = strdup("volumes.xml");
 	char *group = NULL;
-	int i, countonly=0, stable=0, dryrun=0, isolinux=0;
+	int i, countonly=0, stable=0, dryrun=0, isolinux=1;
 	char *ptr;
 	int opt;
 	int option_index;
@@ -587,7 +587,7 @@ int main(int argc, char **argv)
 		{"stable",      no_argument,       0, 's'},
 		{"file",        required_argument, 0, 'f'},
 		{"group",       required_argument, 0, 'g'},
-		{"isolinux",    no_argument,	   0, 'i'},
+		{"grub",        no_argument,	   0, 'G'},
 		{0, 0, 0, 0}
 	};
 
@@ -607,7 +607,7 @@ int main(int argc, char **argv)
 					printf("       -n | --dry-run do not generate an iso, just print a filelist\n");
 					printf("       -s | --stable  indicate that the source repo is a -stable one\n");
 					printf("       -g | --group   include packages from a single group only\n");
-					printf("       -i | --isolinux use isolinux instead of grub (on x86)\n");
+					printf("       -G | --grub    use grub instead of isolinux (on x86)\n");
 					free(xmlfile);
 					return(0);
 				break;
@@ -620,7 +620,7 @@ int main(int argc, char **argv)
 				break;
 				case 'g':
 					group = strdup(optarg);
-				case 'i': isolinux=1; break;
+				case 'G': isolinux=0; break;
 				default:
 				break;
 			}
