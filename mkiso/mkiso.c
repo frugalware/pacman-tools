@@ -392,6 +392,10 @@ int mkiso(volume_t *volume, int countonly, int stable, int dryrun, int isolinux)
 			system(cmdline);
 			system("hattrib -b :boot:yaboot:");
 			system("humount");
+		} else if (isolinux) {
+			free(cmdline);
+			cmdline = g_strdup_printf("isohybrid %s", fname);
+			system(cmdline);
 		}
 	}
 	else if(!dryrun)
