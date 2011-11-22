@@ -751,7 +751,9 @@ sync()
 	fi
 
 	ls *-$arch.fpm &>/dev/null && fpmdel
-	dry_run changelog $groups/$pkgname
+	if ! dry_run changelog $groups/$pkgname; then
+		return 1
+	fi
 	if [ "$1" == "-c" ]; then
 		if [ "$F_makepkg_scm" = "git" ]; then
 			git clean -x -d -f
