@@ -2,7 +2,7 @@
 # 
 #   syncpkgcd
 #  
-#   Copyright (c) 2007, 2008, 2009, 2010 by Miklos Vajna <vmiklos@frugalware.org>
+#   Copyright (c) 2007, 2008, 2009, 2010, 2011 by Miklos Vajna <vmiklos@frugalware.org>
 #  
 #   This program is free software; you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -21,7 +21,7 @@
 #
 
 import xmlrpclib, time, os, getopt, sys, socket, glob, base64, pwd, signal
-import traceback, shutil
+import traceback, shutil, httplib
 sys.path.append("/etc/syncpkgcd")
 from cconfig import config
 
@@ -67,6 +67,9 @@ class Syncpkgcd:
 					continue
 				except xmlrpclib.Fault:
 					self.sleep("remote error, probably can't log in")
+					continue
+				except httplib.BadStatusLine:
+					self.sleep("http: bad status line")
 					continue
 				if not len(pkg):
 					self.sleep("no package to build")
