@@ -1,0 +1,17 @@
+#!/bin/sh
+
+File=err.txt
+cd ~
+rm $File
+touch $File
+for i in $(find /usr/bin 2>/dev/null; find /usr/lib 2>/dev/null)
+do
+#	echo "Scanning: $i" >&2
+	result=`LD_LIBRARY_PATH=/usr/lib/xulrunner ldd $i | grep "not found"`
+	if [ "$result" != "" ]
+	then
+		echo "Broken: $i" >&2
+		echo "$(pacman -Qo $i | awk '{print $1}'): $i $result" >> $File
+#		echo $result >> $File
+	fi
+done
