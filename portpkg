@@ -6,22 +6,27 @@ die()
 	exit 1
 }
 
-if grep -q subarchs FrugalBuild && ! grep -q "subarchs.*`uname -m`" FrugalBuild; then
-	die "please add `uname -m` to subarchs() manually and restart"
+uname_m=`uname -m`
+if [ "${uname_m:0:3}" == "arm" ]; then
+	uname_m="arm"
+fi
+
+if grep -q subarchs FrugalBuild && ! grep -q "subarchs.*$uname_m" FrugalBuild; then
+	die "please add $uname_m to subarchs() manually and restart"
 fi
 . /usr/lib/frugalware/fwmakepkg
 
 . ./FrugalBuild || die "error while parsing the buildscript"
 
 # update archs()
-if ! echo ${archs[@]} |grep -q `uname -m`; then
+if ! echo ${archs[@]} |grep -q $uname_m; then
 	if grep -q archs= FrugalBuild; then
-		sed -i "s/^\(archs=(.*\))/\1 '`uname -m`')/" FrugalBuild
+		sed -i "s/^\(archs=(.*\))/\1 '$uname_m')/" FrugalBuild
 	else
-		echo "archs=(\${archs[@]} '`uname -m`')" >> FrugalBuild
+		echo "archs=(\${archs[@]} '$uname_m')" >> FrugalBuild
 	fi
 	. ./FrugalBuild
-	echo ${archs[@]} |grep -q `uname -m` || die "failed to add `uname -m` to archs()"
+	echo ${archs[@]} |grep -q $uname_m || die "failed to add $uname_m to archs()"
 fi
 
 if ! ls *fpm &>/dev/null; then
@@ -31,7 +36,7 @@ if ! ls *fpm &>/dev/null; then
 fi
 
 if [ "$1" == "--push" -o "$1" == "--silentpush" ]; then
-	repoman rec "added `uname -m` to archs()" || die "failed to record the patch"
+	repoman rec "- added $uname_m to archs()" || die "failed to record the patch"
 	if [ "$1" == "--push" ]; then
 		repoman -k push
 	else
