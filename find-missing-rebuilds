@@ -6,7 +6,7 @@ if [ -e $File ]; then
 	rm $File
 fi
 touch $File
-LD_LIST="/usr/lib/firefox:/usr/lib/octave-3.2.4:/usr/lib/perl5/site_perl/current/i686-linux-thread-multi/auto/QtCore4/:/usr/lib/R/lib:/usr/lib/xulrunner"
+LD_LIST="/usr/lib/firefox:/usr/lib/octave-3.2.4:/usr/lib/perl5/site_perl/current/$(uname -m)-linux-thread-multi/auto/QtCore4/:/usr/lib/R/lib:/usr/lib/xulrunner"
 for i in $(find /usr/bin 2>/dev/null; find /usr/lib -executable 2>/dev/null)
 do
 #	echo "Scanning: $i" >&2
