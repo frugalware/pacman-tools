@@ -2,12 +2,15 @@
 
 File=err.txt
 cd ~
-rm $File
+if [ -e $File ]; then
+	rm $File
+fi
 touch $File
-for i in $(find /usr/bin 2>/dev/null; find /usr/lib 2>/dev/null)
+LD_LIST="/usr/lib/firefox:/usr/lib/octave-3.2.4:/usr/lib/perl5/site_perl/current/i686-linux-thread-multi/auto/QtCore4/:/usr/lib/R/lib:/usr/lib/xulrunner"
+for i in $(find /usr/bin 2>/dev/null; find /usr/lib -executable 2>/dev/null)
 do
 #	echo "Scanning: $i" >&2
-	result=`LD_LIBRARY_PATH=/usr/lib/xulrunner ldd $i | grep "not found"`
+	result=`LD_LIBRARY_PATH="$LD_LIST" ldd $i 2>/dev/null | grep "not found"`
 	if [ "$result" != "" ]
 	then
 		echo "Broken: $i" >&2
