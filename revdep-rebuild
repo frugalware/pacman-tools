@@ -74,7 +74,7 @@ for i in $revdeps
 do
 	go ${i%%_module*}
 	[ -n "$sed" ] && sed -i "$sed" FrugalBuild
-	bumppkg -t $tree --rebuild $nobuild "rebuilt with $pkg-$ver" $push || echo $i >>$log
+	bumppkg -t $tree --rebuild $nobuild "- rebuild with $pkg-$ver" $push || echo $i >>$log
 done
 cat $log
 rm $log
