@@ -169,7 +169,10 @@ server()
 			return 1
 		fi
 		# strip leading / and any ..
-		mv -f $tmp "`echo $dest|sed 's|^/||;s|\.\./||g'`"
+		if ! mv -f $tmp "`echo $dest|sed 's|^/||;s|\.\./||g'`"; then
+			echo "Failed to move the uploaded file"
+			rm $tmp
+			return 1
 		;;
 
 		list)
