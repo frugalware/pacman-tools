@@ -173,6 +173,7 @@ server()
 			echo "Failed to move the uploaded file"
 			rm $tmp
 			return 1
+		fi
 		;;
 
 		list)
