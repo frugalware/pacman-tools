@@ -103,10 +103,15 @@ check_absolute_path()
 # lock management
 get_lock()
 {
-	if [ -e .git/lock ]; then
-		echo "Couldn't get lock."
-		return 1
-	fi
+	local timeout=300
+	while [ "$timeout" -gt 0 ]; do
+		sleep 1
+		timeout=$((timeout - 1))
+		[ -e .git/lock ] || return 0
+		echo "Waiting for lock to be released..."
+	done
+	echo "Couldn't get lock."
+	return 1
 }
 
 put_lock()
