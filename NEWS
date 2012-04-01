@@ -4,6 +4,7 @@ VERSION         DESCRIPTION
               - syncpkgcd now handles one more network exception
               - new find-missing-rebuilds tool (not yet installed)
               - portpkg is ported to arm
+              - fblint now accepts the new 'noccache' option
 1.3.0         - syncpkgd now handles repoman.conf syntax errors
               - fblint now extracts codename from the git repo
               - repoman clean learned --exclusivearch
