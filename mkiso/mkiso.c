@@ -282,8 +282,8 @@ int mkiso(volume_t *volume, int countonly, int stable, int dryrun, int isolinux)
 		kptr = g_strdup_printf("boot/vmlinux-%s", ptr);
 	}
 	free(ptr);
-	iptr = g_strdup_printf("boot/initrd-%s.img.gz", volume->arch);
-	giptr = g_strdup_printf("boot/initrd-%s-gui.img.gz", volume->arch);
+	iptr = g_strdup_printf("boot/initrd-%s.img.xz", volume->arch);
+	giptr = g_strdup_printf("boot/initrd-%s-gui.img.xz", volume->arch);
 	if (!isolinux) {
 		iso_add(dryrun, fp, kptr);
 		iso_add(dryrun, fp, iptr);
