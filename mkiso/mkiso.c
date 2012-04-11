@@ -620,6 +620,7 @@ int main(int argc, char **argv)
 				break;
 				case 'g':
 					group = strdup(optarg);
+				break;
 				case 'G': isolinux=0; break;
 				default:
 				break;
