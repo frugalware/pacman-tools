@@ -190,6 +190,7 @@ class Syncpkgcd:
 			if scm == "git":
 				self.system("git fetch")
 				self.system("git reset --hard origin/master")
+				self.system("git config remote.origin.url %s" % url)
 			elif scm == "darcs":
 				self.system("darcs pull -a")
 				self.system("darcs revert -a")
