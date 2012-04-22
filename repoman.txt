@@ -402,6 +402,11 @@ $ git pull --no-rebase nick@git.frugalware.org:/pub/other/people/nick/flac113 ma
 This will merge your WIP repo to your local current repo. If there are
 conflicts, resolve them.
 
+NOTE: If you get a nontrivial conflict (e.g. you changed pkgrel from 1 to 2 in
+flac113 and that happened in current as well, and you resolve it with setting
+pkgrel to 3), it's better to merge current to flac113 first, and once you have
+the up to date binary packages in the flac113, you can do the real merge.
+
 Push your changes and transfer the fpms from your repo and run a repoman cl for
 each package:
 
