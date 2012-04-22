@@ -169,8 +169,6 @@ char *detect_kernel(char *arch)
 
 	if (!strcmp(arch, "i686") || !strcmp(arch, "x86_64")) {
 		kname = "vmlinuz-";
-	} else if (!strcmp(arch, "ppc")) {
-		kname = "vmlinux-";
 	}
 	dir = opendir(ptr);
 	free(ptr);
@@ -278,8 +276,6 @@ int mkiso(volume_t *volume, int countonly, int stable, int dryrun, int isolinux)
 	ptr = detect_kernel(volume->arch);
 	if (!strcmp(volume->arch, "i686") || !strcmp(volume->arch, "x86_64")) {
 		kptr = g_strdup_printf("boot/vmlinuz-%s", ptr);
-	} else if (!strcmp(volume->arch, "ppc")) {
-		kptr = g_strdup_printf("boot/vmlinux-%s", ptr);
 	}
 	free(ptr);
 	iptr = g_strdup_printf("boot/initrd-%s.img.xz", volume->arch);
@@ -310,14 +306,6 @@ int mkiso(volume_t *volume, int countonly, int stable, int dryrun, int isolinux)
 			iso_add(dryrun, fp, "boot/syslinux/splash.png");
 			fprintf(fp, "boot/syslinux/syslinux.cfg=%s\n", menu);
 		}
-	} else if (!strcmp(volume->arch, "ppc")) {
-		bootmsg = mkbootmsg(volume);
-		conf = mkconf(volume);
-		iso_add(dryrun, fp, "boot/yaboot/maps");
-		iso_add(dryrun, fp, "boot/yaboot/ofboot.b");
-		iso_add(dryrun, fp, "boot/yaboot/yaboot");
-		fprintf(fp, "boot/yaboot/boot.msg=%s\n", bootmsg);
-		fprintf(fp, "boot/yaboot/yaboot.conf=%s\n", conf);
 	}
 	// first volume of !net medias
 	if(volume->serial==1)
@@ -369,14 +357,6 @@ int mkiso(volume_t *volume, int countonly, int stable, int dryrun, int isolinux)
 				"-v -d -N -no-emul-boot -boot-load-size 4 -boot-info-table",
 				fname, label, flist,
 				(!isolinux ? "boot/grub/stage2_eltorito" : "boot/syslinux/isolinux.bin"));
-	} else if (!strcmp(volume->arch, "ppc")) {
-		cmdline = g_strdup_printf("mkhybrid -o %s "
-				"-r -hfs-unlock -part -hfs -map ./boot/yaboot/maps "
-				"-no-desktop -hfs-volid \"Frugalware Install\" "
-				"-V \"Frugalware Install\" "
-				"-graft-points "
-				"-path-list %s",
-				fname, flist);
 	}
 	ptr = g_strdup_printf("%s.lst", fname);
 	if((fp=fopen(ptr, "w"))==NULL)
@@ -386,13 +366,7 @@ int mkiso(volume_t *volume, int countonly, int stable, int dryrun, int isolinux)
 	fclose(fp);
 	if(!countonly && !dryrun) {
 		system(cmdline);
-		if (!strcmp(volume->arch, "ppc")) {
-			free(cmdline);
-			cmdline = g_strdup_printf("hmount %s", fname);
-			system(cmdline);
-			system("hattrib -b :boot:yaboot:");
-			system("humount");
-		} else if (isolinux) {
+		if (isolinux) {
 			free(cmdline);
 			cmdline = g_strdup_printf("isohybrid %s", fname);
 			system(cmdline);
@@ -406,11 +380,6 @@ int mkiso(volume_t *volume, int countonly, int stable, int dryrun, int isolinux)
 	if (!strcmp(volume->arch, "i686") || !strcmp(volume->arch, "x86_64")) {
 		unlink(menu);
 		free(menu);
-	} else if (!strcmp(volume->arch, "ppc")) {
-		unlink(bootmsg);
-		free(bootmsg);
-		unlink(conf);
-		free(conf);
 	}
 	unlink(flist);
 	free(flist);
