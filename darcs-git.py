@@ -553,7 +553,7 @@ Options:
 	if os.system("git rev-parse --verify HEAD >/dev/null 2>&1"):
 		options.head = hashlib.sha1("tree 0\0").hexdigest()
 	os.system("git update-index --refresh >/dev/null")
-	ret = os.system("git diff %s -M -C --find-copies-harder --exit-code %s %s" % (options.head, options.summary, options.files))
+	ret = os.system("git diff %s -M -C --exit-code %s %s" % (options.head, options.summary, options.files))
 	if not ret:
 		print "No changes!"
 
