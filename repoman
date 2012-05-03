@@ -836,7 +836,7 @@ update()
 		if [ $? != 0 ]; then
 			sudouser=$(eval "echo \$${i}_sudo")
 			if [ -n $sudouser ]; then
-				git config --file $fst_root/$i/.git/config remote.origin.receivepack "sudo -u $sudouser git-receive-pack"
+				git config --file $fst_root/$i/.git/config remote.origin.receivepack "sudo -u $sudouser git-receive-pack" >/dev/null 2>&1
 			fi
 		fi
 	done
