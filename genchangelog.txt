@@ -8,11 +8,6 @@ genchangelog - updates Changelogs for Frugalware packages
 
 genchangelog [options]
 
-== OPTIONS
-
---clean <package>::
-	Remove package from the SQL database.
-
 == DESCRIPTION
 
 'genchangelog' performs several tasks once a binary package is on the server

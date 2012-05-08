@@ -305,7 +305,9 @@ server()
 						fi
 					fi
 				fi
-				[ -z "$exclusivearch" ] && genchangelog --clean $pkg
+				if [ -z "$exclusivearch" -a -e ../tools/fpm2db ]; then
+					../tools/fpm2db -D -m $pkg
+				fi
 				cd - >/dev/null
 			done
 			rm .git/lock
