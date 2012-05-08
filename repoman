@@ -270,8 +270,7 @@ server()
 			fi
 		fi
 		rm ../.git/lock
-		cd ../source/$group/$pkg
-		arch=$arch genchangelog
+		( cd ../source/$group/$pkg; arch=$arch; genchangelog )
 		;;
 
 		clean)
@@ -795,6 +794,111 @@ die()
 {
 	echo -e "$0: $*"
 	exit 1
+}
+
+strip_url()
+{
+	echo $1 | sed 's|^.*://.*/||g'
+}
+
+genchangelog()
+{
+	[ -z "$arch" ] && arch=`arch`
+	[ -z "$uploader" ] && uploader=`echo $HOME|sed 's|.*/\(.*\)$|\1|'`
+
+	if [ ! -e Changelog ] || [ `stat -c %Y Changelog` -lt `stat -c %Y FrugalBuild` ]; then
+		if [ "$F_makepkg_scm" = "git" ]; then
+			echo -n "running git log... "
+			git log --follow --name-status FrugalBuild 2>/dev/null|grep -v $'^M\t' > Changelog
+		else
+			echo -n "running darcs changes... "
+			darcs changes FrugalBuild > Changelog
+		fi
+		echo "done."
+	fi
+
+	CARCH=$arch source ./FrugalBuild || die "errors parsing the FrugalBuild"
+
+	if [ -e README.Frugalware ]; then
+		if [ ! -e $pkgname.html ] || [ `stat -c %Y $pkgname.html` -lt `stat -c %Y README.Frugalware` ]; then
+			echo -n "updating $pkgname.html... "
+			mkpkghtml
+			echo "done."
+		fi
+	fi
+
+	CWD=`pwd`
+
+	if [ ! "`check_option NOMIRROR`" -a ! "`check_option NOBUILD`" ]; then
+		echo "downloading missing source files..."
+
+		for i in "${source[@]}" "${signatures[@]}"
+		do
+			[[ "$i" =~ "http://ftp.frugalware.org" ]] && continue
+			file=`strip_url "$i"`
+			if [ -n "$file" -a ! -e "$file" ]; then
+				echo "downloading "$file"..."
+				$FTPAGENT "$i"
+			fi
+		done
+	fi
+
+	cd ../../../frugalware-$arch
+
+	if [ -e ../t/functions.sh ]; then
+		. ../t/functions.sh
+	else
+		# custom repo
+		return 0
+	fi
+
+	if [ -x ../tools/fpm2db ]; then
+		echo -n "updating the mysql2 database... "
+		if [ ! "`check_option NOBUILD`" ]; then
+			../tools/fpm2db -f $pkgname-$pkgver-$pkgrel-$arch.fpm
+		else
+			../tools/fpm2db -f $pkgname-$pkgver-$pkgrel-$arch.fpm -g $groups
+		fi
+
+		if [ ! -z "$subpkgs" ]; then
+			i=0
+			for subpkg in "${subpkgs[@]}"
+			do
+				cd $CWD
+				cd ../../../frugalware-$arch
+				if in_array $arch ${subarchs[$i]}; then
+					../tools/fpm2db -f $subpkg-$pkgver-$pkgrel-$arch.fpm -m $pkgname -g $groups
+				fi
+				i=$(($i+1))
+			done
+		fi
+
+		echo "done."
+	fi
+
+	if [ -x ../tools/fpm2irc ]; then
+		echo -n "sending irc notifications... "
+		if [ ! "`check_option NOBUILD`" ]; then
+			../tools/fpm2irc -f $pkgname-$pkgver-$pkgrel-$arch.fpm
+		else
+			../tools/fpm2irc -f $pkgname-$pkgver-$pkgrel-$arch.fpm -g $groups
+		fi
+
+		if [ ! -z "$subpkgs" ]; then
+			i=0
+			for subpkg in "${subpkgs[@]}"
+			do
+				cd $CWD
+				cd ../../../frugalware-$arch
+				if in_array $arch ${subarchs[$i]}; then
+					../tools/fpm2irc -f $subpkg-$pkgver-$pkgrel-$arch.fpm -g $groups
+				fi
+				i=$(($i+1))
+			done
+		fi
+
+		echo "done."
+	fi
 }
 
 update()

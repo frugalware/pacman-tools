@@ -39,7 +39,7 @@ DOCS = $(wildcard *.txt) $(wildcard syncpkgd/*.txt) $(wildcard mkiso/*.txt)
 MANS = $(subst .txt,.1,$(DOCS))
 
 PROGRAMS = bumppkg chkdep chkworld fblint fpmdiff fwcpan fwmirror \
-	genchangelog mkisorelease mkpkghtml pear-makefb pootle-update \
+	mkisorelease mkpkghtml pear-makefb pootle-update \
 	portpkg repoman revdep-rebuild rpm2fpm syncemul wipcheck
 
 compile: $(PROGRAMS) apidocs docs
