@@ -13,8 +13,6 @@ strip_url()
 [ -z "$arch" ] && arch=`arch`
 [ -z "$uploader" ] && uploader=`echo $HOME|sed 's|.*/\(.*\)$|\1|'`
 
-echo $* |grep -q -- --check && exit 0
-
 # fake variable for fwmakepkg
 CHROOT=1
 
