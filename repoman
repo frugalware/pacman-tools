@@ -807,13 +807,8 @@ genchangelog()
 	[ -z "$uploader" ] && uploader=`echo $HOME|sed 's|.*/\(.*\)$|\1|'`
 
 	if [ ! -e Changelog ] || [ `stat -c %Y Changelog` -lt `stat -c %Y FrugalBuild` ]; then
-		if [ "$F_makepkg_scm" = "git" ]; then
-			echo -n "running git log... "
-			git log --follow --name-status FrugalBuild 2>/dev/null|grep -v $'^M\t' > Changelog
-		else
-			echo -n "running darcs changes... "
-			darcs changes FrugalBuild > Changelog
-		fi
+		echo -n "running git log... "
+		git log --follow --name-status FrugalBuild 2>/dev/null|grep -v $'^M\t' > Changelog
 		echo "done."
 	fi
 
