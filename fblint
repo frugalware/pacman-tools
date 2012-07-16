@@ -20,7 +20,7 @@
 #   USA.
 #
 
-export LC_ALL="POSIX"
+export LC_ALL="C"
 
 myver="0.6.5"
 
@@ -66,9 +66,6 @@ get_root()
 	echo $i
 	_scm=darcs
 }
-
-# so that grep [A-Z] will reall match only uppercase letters
-unset LANG LC_ALL
 
 if [ "$1" = "--version" ]; then
 	echo "fblint (pacman-tools) $myver"
