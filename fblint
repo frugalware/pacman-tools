@@ -20,8 +20,6 @@
 #   USA.
 #
 
-export LC_ALL="C"
-
 myver="0.6.5"
 
 die()
@@ -106,6 +104,8 @@ else
        echo "Error! File to check does not exist!"
        exit 1
 fi
+
+export LC_ALL="C"
 
 check "no last modified line" "! grep -q -i '^# Last Modified: ' $_fblint_fb"
 check "sbu" "grep -i -q \"^# Compiling Time: [~0-9\.]\+ SBU$\" $_fblint_fb"
