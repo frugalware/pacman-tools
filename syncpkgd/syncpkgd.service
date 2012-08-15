@@ -3,6 +3,8 @@ Description=Package builder daemon
 
 [Service]
 ExecStart=/usr/bin/syncpkgd -c /var/log/syncpkgd/clientlogs -l /var/log/syncpkgd/daemon.log -p /var/lib/syncpkgd.pid -s /var/lib/syncpkgd.status -u syncpkgd
+Restart=on-failure
+RestartSec=1s
 
 [Install]
 WantedBy=multi-user.target
