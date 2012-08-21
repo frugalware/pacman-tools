@@ -396,7 +396,7 @@ you will be able to push the result of the merge. Perform the merge
 using:
 
 ----
-$ git pull --no-rebase nick@git.frugalware.org:/pub/other/people/nick/flac113 master
+$ git pull --no-rebase --no-ff nick@git.frugalware.org:/pub/other/people/nick/flac113 master
 ----
 
 This will merge your WIP repo to your local current repo. If there are
