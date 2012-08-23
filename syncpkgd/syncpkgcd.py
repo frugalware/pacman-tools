@@ -258,7 +258,7 @@ class Syncpkgcd:
 		self.log(pkg, "build finished")
 		try:
 			server.report_result(config.server_user, config.server_pass, pkg, 0)
-		except socket.error:
+		except (socket.error, xmlrpclib.ProtocolError):
 			pass
 		self.system("git clean -x -d -f")
 
