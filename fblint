@@ -138,7 +138,7 @@ do
 	if echo $i|grep -q ://; then
 		_fblint_have_remote_source=y
 	else
-		if git rev-parse --show-cdup &>/dev/null; then
+		if git rev-parse --show-cdup &>/dev/null && ! echo ${options[@]}|grep -q nobuild; then
 			# we are in a git repo
 			check "not downloadable file $i is added to the repo" "git ls-files |grep -q $i"
 		fi
