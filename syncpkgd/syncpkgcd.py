@@ -270,7 +270,7 @@ class Syncpkgcd:
 		return os.system("export HOME=%s; timeout -s KILL 86400 %s >> %s 2>&1" % (self.home, cmd, self.logfile))
 	
 	def go(self, pkgname):
-		for root, dirs, files in os.walk("."):
+		for root, dirs, files in os.walk("source"):
 			for dir in dirs:
 				if "_darcs" in root:
 					continue
