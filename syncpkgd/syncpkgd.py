@@ -238,6 +238,10 @@ class Syncpkgd:
 		except KeyboardInterrupt:
 			actions.save()
 			return
+		except Exception, ex:
+			actions.__log("server","","unhandled exception in main loop: %s" % ex)
+			actions.save()
+			return
 	
 	def setuid(self):
 		if os.getuid() == 0 and self.options.uid:
