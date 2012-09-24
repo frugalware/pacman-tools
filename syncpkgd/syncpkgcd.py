@@ -267,7 +267,12 @@ class Syncpkgcd:
 		self.logsock.flush()
 	
 	def system(self, cmd):
-		return os.system("export HOME=%s; timeout -s KILL 86400 %s >> %s 2>&1" % (self.home, cmd, self.logfile))
+		if not hasattr(config, "timeout"):
+			# no timeout defined, default to 1 day
+			timeout = 24*60*60
+		else:
+			timeout = config.timeout
+		return os.system("export HOME=%s; timeout -s KILL %s %s >> %s 2>&1" % (self.home, timeout, cmd, self.logfile))
 	
 	def go(self, pkgname):
 		for root, dirs, files in os.walk("source"):

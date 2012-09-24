@@ -12,4 +12,7 @@ class config:
 	# never try to build these packages, just fail
 	#blacklist = ['foo', 'bar']
 
+	# if the build takes more than 1 day, kill it
+	timeout = 24*60*60
+
 # vim: ft=python
