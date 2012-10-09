@@ -25,6 +25,14 @@ class Actions:
 		self.logsock.write("%s\n" % "; ".join([time.ctime(), user, pkg, action]))
 		self.logsock.flush()
 
+	def log_exception(self):
+		type, value, tb = sys.exc_info()
+		stype = str(type).split("'")[1]
+		self.__log("server", "", "Traceback (most recent call last):")
+		self.__log("server", "", "".join(traceback.format_tb(tb)).strip())
+		self.__log("server", "", "%s: %s" % (stype, value))
+		self.save()
+
 	def __login(self, login, password):
 		if login in config.passes.keys() and \
 			hashlib.sha1(password).hexdigest() == config.passes[login]:
@@ -239,8 +247,7 @@ class Syncpkgd:
 			actions.save()
 			return
 		except Exception, ex:
-			actions.__log("server","","unhandled exception in main loop: %s" % ex)
-			actions.save()
+			actions.log_exception()
 			return
 	
 	def setuid(self):
