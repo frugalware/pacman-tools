@@ -649,7 +649,7 @@ Options:
 		options.gitopts = get_remote(branch)
 	if options.help:
 		usage(0)
-	remote = "%s/%s" % (options.gitopts, branch)
+	remote = "%s/%s" % (options.gitopts, get_merge(branch))
 	if svn_check():
 		remote = "git-svn"
 	elif darcs_check():
