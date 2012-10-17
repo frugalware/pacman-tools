@@ -148,27 +148,6 @@ def darcs_check():
 	sock.close()
 	return os.path.exists(os.path.join(cdup, ".git/darcs"))
 
-def handle_submodules(argv = None):
-	# clone
-	if argv:
-		# this is buggy in case the user uses 'dg get
-		# git://project.org/foo.git bar.git', but that's really rare...
-		dir = argv[-1].split('/')[-1].replace('.git', '')
-		if os.path.exists(dir):
-			os.chdir(dir)
-	sock = os.popen("git rev-parse --show-cdup")
-	cdup = sock.read().strip()
-	sock.close()
-	if os.path.exists(os.path.join(cdup, ".gitmodules")):
-		# pull
-		if not argv:
-			ret = os.system("git submodule sync >/dev/null")
-			if ret:
-				return ret
-		ret = os.system("git submodule update --init")
-		if ret:
-			return ret
-
 def scan_dir(files=""):
 	ret = []
 	lines = get_diff(files)
@@ -766,7 +745,6 @@ Options:
 			return(1)
 	if changes and os.system("git stash pop") != 0:
 			return(1)
-	handle_submodules()
 
 def send(argv):
 	def usage(ret):
