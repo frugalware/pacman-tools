@@ -10,9 +10,16 @@ fpmdiff [options] <fpm1> <fpm2>
 
 == OPTIONS
 
+-c::
+--clean-up::
+	Perform some clean-up fixes in the packages files listings to reduce
+	the differences due to package versioning.
+
+-h::
 --help::
 	Display this manpage.
 
+-v::
 --version::
 	Display the package version.
 

@@ -1,20 +1,75 @@
 #!/bin/bash
 
-if [ "$1" == "-h" -o "$1" == "--help" ]; then
+self="$(basename "$0")"
+
+while [ $# -gt 0 ]; do
+	case "$1" in
+	-c|--clean-up)
+		clean_up=y
+		;;
+	-h|--help)
+		show_usage=y
+		;;
+	-v|--version)
+		show_version=y
+		;;
+	--)
+		break
+		;;
+	--*|-?)
+		echo "${self} : Invalid option -- '$(echo "$1" | sed 's/^-\{1,2\}//')'" >&2
+		echo "Try '${self} -h' for more information." >&2
+		exit 1
+		;;
+	-*)
+		# Combined short options
+		split="$1"
+		shift
+		set -- \
+			"$(echo "$split}" | cut -c -2)" \
+			"-$(echo "${split}" | cut -c 3-)" \
+			"$@"
+		continue
+		;;
+	*)
+		# Not an option
+		if [ ! -r "$1" -o ! -r "$2" ]; then
+			echo "One of the fpms is not readable." >&2
+			exit 1
+		fi
+		break
+		;;
+	esac
+	shift
+done
+
+if [ "$show_usage" == y ]; then
 	man fpmdiff
-	exit $?
+	exit 1
 fi
 
-if [ "$1" == "-v" -o "$1" == "--version" ]; then
-	pacman-g2 -Q pacman-tools
-	exit $?
+if [ "$show_version" == y ]; then
+	pacman-g2 -Q pacman-tools >&2
+	exit 1
 fi
 
 old=`mktemp`
 new=`mktemp`
 
-pacman-g2 -Ql -p $1|sed 's/^[^ ]\+ //' > $old
-pacman-g2 -Ql -p $2|sed 's/^[^ ]\+ //' > $new
+# Remove pkgname at front
+re='s|^[^ ]+ ||;'
+
+if [ "$clean_up" == y ]; then
+	# Fix kernel numbering for diff
+	re+='s|^(/boot/[^-]*-).*|\1${_F_kernel_uname}|;'
+	re+='s|^(/lib/modules/)[^/]+/|\1${_F_kernel_uname}/|;'
+
+	# Fix doc for diff
+	re+='s|^(/usr/share/doc/[^/]+)-[^-/]+|\1-${pkgver}|;'
+fi
+
+pacman-g2 -Ql -p "$1" | sed -r "$re" > $old
+pacman-g2 -Ql -p "$2" | sed -r "$re" > $new
 
 diff -U 0 $old $new | sed '1,2d;/^@/d'
 rm -f $old $new
