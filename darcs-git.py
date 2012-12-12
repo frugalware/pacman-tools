@@ -962,19 +962,6 @@ Options:
 		usage(0)
 	os.system("git fsck")
 
-def trackdown(argv):
-	def usage(ret):
-		print("""Usage: darcs-git trackdown [OPTION]...
-Locate the most recent version lacking an error.
-This is an alias for "git bisect".
-
-Options:
-  -h         --help                shows brief description of command and its arguments""")
-		sys.exit(ret)
-	if len(argv) and argv[0] in ("-h", "--help"):
-		usage(0)
-	os.system("git bisect")
-
 def main(argv):
 	def usage(ret):
 		os.system("man darcs-git")
@@ -1032,8 +1019,6 @@ PURPOSE.""" % __version__)
 			return check(argv[1:])
 		elif sys.argv[1] == "query":
 			return query(argv[1:])
-		elif sys.argv[1][:5] == "track":
-			return trackdown(argv[1:])
 		else:
 			return os.system("git '%s'" % "' '".join(argv))
 

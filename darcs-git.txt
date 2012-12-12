@@ -74,7 +74,7 @@ W diff          Create a diff between two versions of the repository.
 Y changes       Gives a changelog-style summary of the repository history.
 W annotate      Display which patch last modified something.
 N dist          Create a distribution tarball.
-A trackdown     Locate the most recent version lacking an error.
+N trackdown     Locate the most recent version lacking an error.
 Y query         Query information which is stored by darcs.
 ----
 
