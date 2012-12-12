@@ -53,7 +53,7 @@ def ask(s, type=None):
 		try:
 			return sys.stdin.readline().strip()
 		except KeyboardInterrupt:
-			print "Interrupted!"
+			print("Interrupted!")
 			sys.exit(0)
 	else:
 		fd = sys.stdin.fileno()
@@ -63,16 +63,16 @@ def ask(s, type=None):
 			c = sys.stdin.read(1)
 		finally:
 			termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
-		print c
+		print(c)
 		return c
 
 def bug(s=None):
 	import inspect
 	if s:
-		print "%s" % s
+		print("%s" % s)
 	else:
-		print "bug in darcs-git!"
-	print "at %s:%d" % inspect.stack()[1][1:3]
+		print("bug in darcs-git!")
+	print("at %s:%d" % inspect.stack()[1][1:3])
 
 def emptydir(dir):
 	ret = True
@@ -117,11 +117,11 @@ def get_diff(files = ""):
 	lines = sock.readlines()
 	sock.close()
 	if len(lines) and lines[0].startswith("[1m"):
-		print """It seems that you force using colors in your diffs
+		print("""It seems that you force using colors in your diffs
 which is not compatible with darcs-git. Please set that value
 to false or auto. Example:
 
-git config diff.color auto"""
+git config diff.color auto""")
 		sys.exit(0)
 	return lines
 
@@ -226,7 +226,7 @@ def askhunks(hunks, preans=None, action="record"):
 					sys.exit(0)
 					break
 				if ret == "?" or ret == "h":
-					print """How to use %(action)s...
+					print("""How to use %(action)s...
 y: %(action)s this patch
 n: don't %(action)s it
 
@@ -234,8 +234,8 @@ d: %(action)s selected patches, skipping all the remaining patches
 a: %(action)s all the remaining patches
 q: cancel %(action)s
 
-h or ?: show this help""" % { 'action': action }
-				print "Invalid response, try again!"
+h or ?: show this help""" % { 'action': action })
+				print("Invalid response, try again!")
 		if preans != None:
 			if preans == True:
 				commit = True
@@ -251,7 +251,7 @@ def diff2filename(diff):
 
 def record(argv, amend=False):
 	def usage(ret):
-		print """Usage: darcs-git record [OPTION]... [FILE or DIRECTORY]...
+		print("""Usage: darcs-git record [OPTION]... [FILE or DIRECTORY]...
 Save changes in the unstaged index to the current branch as a commit.
 
 Options:
@@ -259,7 +259,7 @@ Options:
   -a            --all                    answer yes to all hunks
   -e            --edit-long-comment      backward compatibility
   -s            --skip-long-comment      Don't give a long comment
-  -h            --help                   shows brief description of command and its arguments"""
+  -h            --help                   shows brief description of command and its arguments""")
 		sys.exit(ret)
 
 	class Options:
@@ -309,13 +309,13 @@ Options:
 			if i.startswith("nothing"):
 				changes = False
 		if changes:
-			print "This is a new repo, can't cherry-pick for the first commit."
+			print("This is a new repo, can't cherry-pick for the first commit.")
 		else:
-			print "No changes!"
+			print("No changes!")
 			sys.exit(0)
 	merge = False
 	if merge_check():
-		print "This is a merge, can't cherry-pick for this commit."
+		print("This is a merge, can't cherry-pick for this commit.")
 		merge = True
 	if first or merge:
 		status = Files([])
@@ -329,7 +329,7 @@ Options:
 		if not options.name:
 			options.name = ask("What is the patch name?", str)
 	else:
-		print "Ok, if you don't want to record anything, that's fine!"
+		print("Ok, if you don't want to record anything, that's fine!")
 		sys.exit(0)
 	if options.edit is None:
 		while True:
@@ -342,7 +342,7 @@ Options:
 				break
 			if ret == "q":
 				sys.exit(0)
-			print "Invalid response, try again!"
+			print("Invalid response, try again!")
 	root = os.path.split(get_root())[0]
 	if len(root):
 		os.chdir(root)
@@ -423,12 +423,12 @@ def revert_stale():
 
 def revert(argv):
 	def usage(ret):
-		print """Usage: darcs-git revert [OPTION]... [FILE or DIRECTORY]...
+		print("""Usage: darcs-git revert [OPTION]... [FILE or DIRECTORY]...
 Revert to the committed version (you may loose your work).
 
 Options:
   -a            --all                    answer yes to all hunks
-  -h            --help                   shows brief description of command and its arguments"""
+  -h            --help                   shows brief description of command and its arguments""")
 		sys.exit(ret)
 
 	class Options:
@@ -456,22 +456,22 @@ Options:
 	# check if we have anything to revert
 	lines = get_diff(options.files)
 	if not len(lines):
-		print "There are no changes to revert!"
+		print("There are no changes to revert!")
 		sys.exit(0)
 	if options.all:
 		if(len(options.files)):
 			os.system("git checkout %s" % options.files)
 		else:
 			os.system("git checkout -f")
-		print "Finished reverting."
+		print("Finished reverting.")
 		sys.exit(0)
 	status = scan_dir(options.files)
 	status.hunks = askhunks(status.hunks, action="revert")
 	if not status.hunks:
 		if revert_stale():
-			print "Finished reverting."
+			print("Finished reverting.")
 		else:
-			print "Ok, if you don't want to revert anything, that's fine!"
+			print("Ok, if you don't want to revert anything, that's fine!")
 		sys.exit(0)
 	root = os.path.split(get_root())[0]
 	if len(root):
@@ -494,16 +494,16 @@ Options:
 		if new:
 			os.system("git reset -q HEAD %s" % diff2filename(lines[0]))
 	revert_stale()
-	print "Finished reverting."
+	print("Finished reverting.")
 
 def whatsnew(argv):
 	def usage(ret):
-		print """Usage: darcs-git whatsnew [OPTION]... [FILE or DIRECTORY]...
+		print("""Usage: darcs-git whatsnew [OPTION]... [FILE or DIRECTORY]...
 Display uncommitted changes in the working directory.
 
 Options:
   -s  --summary             summarize changes
-  -h  --help                shows brief description of command and its arguments"""
+  -h  --help                shows brief description of command and its arguments""")
 		sys.exit(ret)
 
 	class Options:
@@ -534,11 +534,11 @@ Options:
 	os.system("git update-index --refresh >/dev/null")
 	ret = os.system("git diff %s -M -C --exit-code %s %s" % (options.head, options.summary, options.files))
 	if not ret:
-		print "No changes!"
+		print("No changes!")
 
 def changes(argv):
 	def usage(ret):
-		print """Usage: darcs-git changes [OPTION]... [FILE or DIRECTORY]...
+		print("""Usage: darcs-git changes [OPTION]... [FILE or DIRECTORY]...
 Gives a changelog-style summary of the branch history.
 
 Options:
@@ -546,7 +546,7 @@ Options:
   -s         --summary             summarize changes
   -v         --verbose             give verbose output
   -t         --tags                include tags in the log (darcs-git only)
-  -h         --help                shows brief description of command and its arguments"""
+  -h         --help                shows brief description of command and its arguments""")
 		sys.exit(ret)
 
 	class Options:
@@ -587,14 +587,14 @@ Options:
 
 def push(argv):
 	def usage(ret):
-		print """Usage: darcs-git push [OPTION]... [GIT OPTIONS]...
+		print("""Usage: darcs-git push [OPTION]... [GIT OPTIONS]...
 Copy and apply patches from this repository to another one.
 
 Options:
   -a         --all                 answer yes to all questions
   -s         --summary             summarize changes
   -v         --verbose             give verbose output
-  -h         --help                shows brief description of command and its arguments"""
+  -h         --help                shows brief description of command and its arguments""")
 		sys.exit(ret)
 
 	class Options:
@@ -642,9 +642,9 @@ Options:
 	lines = sock.readlines()
 	ret = sock.close()
 	if not len(lines):
-		print "No recorded local changes to push!"
+		print("No recorded local changes to push!")
 		return 0
-	print "".join(lines)
+	print("".join(lines))
 	if not options.all:
 		while True:
 			ret = ask("Do you want to push these patches? [ynq]")
@@ -652,7 +652,7 @@ Options:
 				break
 			if ret in ("n", "q"):
 				return(0)
-			print "Invalid response, try again!"
+			print("Invalid response, try again!")
 	if svn_check():
 		os.system("git svn dcommit")
 	elif darcs_check():
@@ -669,12 +669,12 @@ Options:
 
 def pull(argv):
 	def usage(ret):
-		print """Usage: darcs-git pull [OPTION]... [GIT OPTIONS]...
+		print("""Usage: darcs-git pull [OPTION]... [GIT OPTIONS]...
 Copy and apply patches to this repository from another one.
 
 Options:
   -a         --all                 answer yes to all questions
-  -h         --help                shows brief description of command and its arguments"""
+  -h         --help                shows brief description of command and its arguments""")
 		sys.exit(ret)
 
 	class Options:
@@ -717,9 +717,9 @@ Options:
 	lines = sock.readlines()
 	ret = sock.close()
 	if not len(lines):
-		print "No remote changes to pull!"
+		print("No remote changes to pull!")
 		return 0
-	print "".join(lines)
+	print("".join(lines))
 	if not options.all:
 		while True:
 			ret = ask("Do you want to pull these patches? [ynq]")
@@ -727,7 +727,7 @@ Options:
 				break
 			if ret in ("n", "q"):
 				return(0)
-			print "Invalid response, try again!"
+			print("Invalid response, try again!")
 	if os.system("git diff-index --quiet --cached HEAD && git diff-files --quiet") != 0:
 		changes = True
 		if os.system("git stash") != 0:
@@ -748,7 +748,7 @@ Options:
 
 def send(argv):
 	def usage(ret):
-		print """Usage: darcs-git send [OPTION]... <PATCHES>
+		print("""Usage: darcs-git send [OPTION]... <PATCHES>
 Send by email a bundle of one or more patches.
 
 The recommended workflow is:
@@ -764,7 +764,7 @@ Options:
   -d  --dry-run                      don't actually take the action
   -h  --help                         shows brief description of command and its arguments
   -t  --to                           specify destination EMAIL
-  -c  --cc                           additional EMAIL(s)."""
+  -c  --cc                           additional EMAIL(s).""")
 		sys.exit(ret)
 	
 	class Options:
@@ -807,12 +807,12 @@ Options:
 
 def get(argv):
 	def usage(ret):
-		print """Usage: darcs-git get [OPTION]... <REPOSITORY> [<DIRECTORY>]
+		print("""Usage: darcs-git get [OPTION]... <REPOSITORY> [<DIRECTORY>]
 Create a local copy of another repository.
 Use "darcs-git help clone" for more information.
 
 Options:
-  -h  --help                         shows brief description of command and its arguments"""
+  -h  --help                         shows brief description of command and its arguments""")
 		sys.exit(ret)
 	if len(argv) and argv[0] in ("-h", "--help"):
 		usage(0)
@@ -822,12 +822,12 @@ Options:
 
 def setpref(argv):
 	def usage(ret):
-		print """Usage: darcs-git setpref [OPTION]...
+		print("""Usage: darcs-git setpref [OPTION]...
 Set a value for a preference.
 Use "darcs-git help config" for more information.
 
 Options:
-  -h  --help                         shows brief description of command and its arguments"""
+  -h  --help                         shows brief description of command and its arguments""")
 		sys.exit(ret)
 	if len(argv) and argv[0] in ("-h", "--help"):
 		usage(0)
@@ -835,12 +835,12 @@ Options:
 
 def tag(argv):
 	def usage(ret):
-		print """Usage: darcs-git tag [PROJECTNAME] <VERSION>
+		print("""Usage: darcs-git tag [PROJECTNAME] <VERSION>
 Tag the contents of the repository with a version name.
 Use "darcs-git help tag" for more information.
 
 Options:
-  -h  --help                         shows brief description of command and its arguments"""
+  -h  --help                         shows brief description of command and its arguments""")
 		sys.exit(ret)
 	if len(argv) and argv[0] in ("-h", "--help"):
 		usage(0)
@@ -855,12 +855,12 @@ Options:
 
 def rollback(argv):
 	def usage(ret):
-		print """Usage: darcs-git rollback [OPTION]... <COMMIT-HASH>
+		print("""Usage: darcs-git rollback [OPTION]... <COMMIT-HASH>
 Commit an inverse patch.
 Use "darcs-git help revert" for more information.
 
 Options:
-  -h         --help                shows brief description of command and its arguments"""
+  -h         --help                shows brief description of command and its arguments""")
 		sys.exit(ret)
 	if len(argv) and argv[0] in ("-h", "--help"):
 		usage(0)
@@ -868,12 +868,12 @@ Options:
 
 def unrecord(argv):
 	def usage(ret):
-		print """Usage: darcs-git unrecord [OPTION]...
+		print("""Usage: darcs-git unrecord [OPTION]...
 Remove last committed patch without changing the working directory.
 This is an alias for "git reset -q HEAD^".
 
 Options:
-  -h         --help                shows brief description of command and its arguments"""
+  -h         --help                shows brief description of command and its arguments""")
 		sys.exit(ret)
 	if len(argv) and argv[0] in ("-h", "--help"):
 		usage(0)
@@ -884,18 +884,18 @@ Options:
 			break
 		if ret in ("n", "q"):
 			sys.exit(0)
-		print "Invalid response, try again!"
+		print("Invalid response, try again!")
 	os.system("git reset -q HEAD^ %s >/dev/null" % " ".join(argv))
-	print "Finished unrecording."
+	print("Finished unrecording.")
 
 def unpull(argv):
 	def usage(ret):
-		print """Usage: darcs-git unpull [OPTION]...
+		print("""Usage: darcs-git unpull [OPTION]...
 Opposite of pull; unsafe if the latest patch is not in remote repository.
 This is an alias for "git reset --hard HEAD^".
 
 Options:
-  -h         --help                shows brief description of command and its arguments"""
+  -h         --help                shows brief description of command and its arguments""")
 		sys.exit(ret)
 	if len(argv) and argv[0] in ("-h", "--help"):
 		usage(0)
@@ -906,29 +906,29 @@ Options:
 			break
 		if ret in ("n", "q"):
 			sys.exit(0)
-		print "Invalid response, try again!"
+		print("Invalid response, try again!")
 	os.system("git reset --hard HEAD^ %s" % " ".join(argv))
-	print "Finished unpulling."
+	print("Finished unpulling.")
 
 def optimize(argv):
 	def usage(ret):
-		print """Usage: darcs-git optimize [OPTION]...
+		print("""Usage: darcs-git optimize [OPTION]...
 Optimize the repository.
 This is an alias for "git gc".
 
 Options:
-  -h         --help                shows brief description of command and its arguments"""
+  -h         --help                shows brief description of command and its arguments""")
 		sys.exit(ret)
 	if len(argv) and argv[0] in ("-h", "--help"):
 		usage(0)
-	print "Checking how much disk space is wasted..."
+	print("Checking how much disk space is wasted...")
 	os.system("git count-objects")
-	print "Cleaning up..."
+	print("Cleaning up...")
 	os.system("git gc")
 
 def query(argv):
 	def usage(ret):
-		print """Usage: darcs-git query SUBCOMMAND ...
+		print("""Usage: darcs-git query SUBCOMMAND ...
 Query information which is stored by darcs.
 
 Subcommands:
@@ -937,7 +937,7 @@ Subcommands:
   tags          List all tags in the repository.
 
 Options:
-  -h         --help                shows brief description of command and its arguments"""
+  -h         --help                shows brief description of command and its arguments""")
 		sys.exit(ret)
 	if len(argv) and argv[0] in ("-h", "--help"):
 		usage(0)
@@ -946,17 +946,17 @@ Options:
 	elif len(argv) and argv[0] == "tags":
 		return os.system("git tag -l")
 	else:
-		print "Invalid subcommand!"
+		print("Invalid subcommand!")
 		usage(1)
 
 def check(argv):
 	def usage(ret):
-		print """Usage: darcs-git check [OPTION]...
+		print("""Usage: darcs-git check [OPTION]...
 Check the repository for consistency.
 This is an alias for "git fsck".
 
 Options:
-  -h         --help                shows brief description of command and its arguments"""
+  -h         --help                shows brief description of command and its arguments""")
 		sys.exit(ret)
 	if len(argv) and argv[0] in ("-h", "--help"):
 		usage(0)
@@ -964,12 +964,12 @@ Options:
 
 def dist(argv):
 	def usage(ret):
-		print """Usage: darcs-git dist [OPTION]...
+		print("""Usage: darcs-git dist [OPTION]...
 Create a distribution tarball.
 This is an alias for "git archive".
 
 Options:
-  -h         --help                shows brief description of command and its arguments"""
+  -h         --help                shows brief description of command and its arguments""")
 		sys.exit(ret)
 	if len(argv) and argv[0] in ("-h", "--help"):
 		usage(0)
@@ -977,12 +977,12 @@ Options:
 
 def trackdown(argv):
 	def usage(ret):
-		print """Usage: darcs-git trackdown [OPTION]...
+		print("""Usage: darcs-git trackdown [OPTION]...
 Locate the most recent version lacking an error.
 This is an alias for "git bisect".
 
 Options:
-  -h         --help                shows brief description of command and its arguments"""
+  -h         --help                shows brief description of command and its arguments""")
 		sys.exit(ret)
 	if len(argv) and argv[0] in ("-h", "--help"):
 		usage(0)
@@ -993,12 +993,12 @@ def main(argv):
 		os.system("man darcs-git")
 		sys.exit(ret)
 	def version():
-		print """darcs-git (pacman-tools) %s
+		print("""darcs-git (pacman-tools) %s
 
 Copyright (c) 2007 by Miklos Vajna <vmiklos@frugalware.org>
 This is free software; see the source for copying conditions.  There is NO
 warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR \
-PURPOSE.""" % __version__
+PURPOSE.""" % __version__)
 	if len(sys.argv) == 1 or sys.argv[1] in ["-h", "--help"]:
 		usage(0)
 	if sys.argv[1] in ["-v", "--version"]:
