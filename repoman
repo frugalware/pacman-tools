@@ -879,19 +879,6 @@ genchangelog()
 			../tools/fpm2irc -f $pkgname-$pkgver-$pkgrel-$arch.fpm -g $groups
 		fi
 
-		if [ ! -z "$subpkgs" ]; then
-			i=0
-			for subpkg in "${subpkgs[@]}"
-			do
-				cd $CWD
-				cd ../../../frugalware-$arch
-				if in_array $arch ${subarchs[$i]}; then
-					../tools/fpm2irc -f $subpkg-$pkgver-$pkgrel-$arch.fpm -g $groups
-				fi
-				i=$(($i+1))
-			done
-		fi
-
 		echo "done."
 	fi
 }
