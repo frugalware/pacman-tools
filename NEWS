@@ -1,5 +1,8 @@
 VERSION         DESCRIPTION
 -----------------------------------------------------------------------------
+1.3.4         - fpmdiff cleanups
+              - repoman optimizations
+              - dg cleanups
 1.3.3         - repoman manpage now suggests git pull --no-ff
               - syncpkg: auto-restart and better exception handling
                 logic
