@@ -166,23 +166,23 @@ if [ ! -z "$subpkgs" ]; then
 	check "subdescs" "[ ! -z \"$subdescs\" ]"
 	check "subgroups" "[ ! -z \"$subgroups\" ]"
 	check "subarchs" "[ ! -z \"$subarchs\" ]"
-	check "right number of subdescs" "[ \"${#subdescs[@]}\" = 0 ] || [ \"${#subdescs[@]}\" == \"${#subpkgs[@]}\" ]"
-	check "right number of sublicense" "[ \"${#sublicense[@]}\" = 0 ] || [ \"${#sublicense[@]}\" = \"${#subpkgs[@]}\" ]"
+	check "right number of subdescs" "[ \"${#subdescs[@]}\" = 0 -o \"${#subdescs[@]}\" == \"${#subpkgs[@]}\" ]"
+	check "right number of sublicense" "[ \"${#sublicense[@]}\" = 0 -o \"${#sublicense[@]}\" = \"${#subpkgs[@]}\" ]"
 	check "right number of subreplaces" \
-		"[ \"${#subreplaces[@]}\" = 0 ] || [ \"${#subreplaces[@]}\" = \"${#subpkgs[@]}\" ]"
-	check "right number of subgroups" "[ \"${#subgroups[@]}\" = 0 ] || [ \"${#subgroups[@]}\" = \"${#subpkgs[@]}\" ]"
-	check "right number of subarchs" "[ \"${#subarchs[@]}\" = 0 ] || [ \"${#subarchs[@]}\" = \"${#subpkgs[@]}\" ]"
-	check "right number of subdepends" "[ \"${#subdepends[@]}\" = 0 ] || [ \"${#subdepends[@]}\" = \"${#subpkgs[@]}\" ]"
+		"[ \"${#subreplaces[@]}\" = 0 -o \"${#subreplaces[@]}\" = \"${#subpkgs[@]}\" ]"
+	check "right number of subgroups" "[ \"${#subgroups[@]}\" = 0 -o \"${#subgroups[@]}\" = \"${#subpkgs[@]}\" ]"
+	check "right number of subarchs" "[ \"${#subarchs[@]}\" = 0 -o \"${#subarchs[@]}\" = \"${#subpkgs[@]}\" ]"
+	check "right number of subdepends" "[ \"${#subdepends[@]}\" = 0 -o \"${#subdepends[@]}\" = \"${#subpkgs[@]}\" ]"
 	check "right number of subrodepends" \
-		"[ \"${#subrodepends[@]}\" = 0 ] || [ \"${#subrodepends[@]}\" = \"${#subpkgs[@]}\" ]"
-	check "right number of subremoves" "[ \"${#subremoves[@]}\" = 0 ] || [ \"${#subremoves[@]}\" = \"${#subpkgs[@]}\" ]"
+		"[ \"${#subrodepends[@]}\" = 0 -o \"${#subrodepends[@]}\" = \"${#subpkgs[@]}\" ]"
+	check "right number of subremoves" "[ \"${#subremoves[@]}\" = 0 -o \"${#subremoves[@]}\" = \"${#subpkgs[@]}\" ]"
 	check "right number of subconflicts" \
-		"[ \"${#subconflicts[@]}\" = 0 ] || [ \"${#subconflicts[@]}\" = \"${#subpkgs[@]}\" ]"
+		"[ \"${#subconflicts[@]}\" = 0 -o \"${#subconflicts[@]}\" = \"${#subpkgs[@]}\" ]"
 	check "right number of subprovides" \
-		"[ \"${#subprovides[@]}\" = 0 ] || [ \"${#subprovides[@]}\" = \"${#subpkgs[@]}\" ]"
-	check "right number of subbackup" "[ \"${#subbackup[@]}\" = 0 ] || [ \"${#subbackup[@]}\" = \"${#subpkgs[@]}\" ]"
-	check "right number of subinstall" "[ \"${#subinstall[@]}\" = 0 ] || [ \"${#subinstall[@]}\" = \"${#subpkgs[@]}\" ]"
-	check "right number of suboptions" "[ \"${#suboptions[@]}\" = 0 ] || [ \"${#suboptions[@]}\" = \"${#subpkgs[@]}\" ]"
+		"[ \"${#subprovides[@]}\" = 0 -o \"${#subprovides[@]}\" = \"${#subpkgs[@]}\" ]"
+	check "right number of subbackup" "[ \"${#subbackup[@]}\" = 0 -o \"${#subbackup[@]}\" = \"${#subpkgs[@]}\" ]"
+	check "right number of subinstall" "[ \"${#subinstall[@]}\" = 0 -o \"${#subinstall[@]}\" = \"${#subpkgs[@]}\" ]"
+	check "right number of suboptions" "[ \"${#suboptions[@]}\" = 0 -o \"${#suboptions[@]}\" = \"${#subpkgs[@]}\" ]"
 fi
 
 codename=$(grep ^VERSION $(git rev-parse --show-cdup)/docs/Makefile|sed 's/.*(\(.*\))/\1/'|tr '[A-Z]' '[a-z]')
