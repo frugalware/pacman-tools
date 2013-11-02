@@ -181,6 +181,8 @@ if [ ! -z "$subpkgs" ]; then
 	check "right number of subprovides" \
 		"[ \"${#subprovides[@]}\" = 0 -o \"${#subprovides[@]}\" = \"${#subpkgs[@]}\" ]"
 	check "right number of subbackup" "[ \"${#subbackup[@]}\" = 0 -o \"${#subbackup[@]}\" = \"${#subpkgs[@]}\" ]"
+	check "right number of subpretriggers" "[ \"${#subpretriggers[@]}\" = 0 -o \"${#subpretriggers[@]}\" = \"${#subpkgs[@]}\" ]"
+	check "right number of subposttriggers" "[ \"${#subposttriggers[@]}\" = 0 -o \"${#subposttriggers[@]}\" = \"${#subpkgs[@]}\" ]"
 	check "right number of subinstall" "[ \"${#subinstall[@]}\" = 0 -o \"${#subinstall[@]}\" = \"${#subpkgs[@]}\" ]"
 	check "right number of suboptions" "[ \"${#suboptions[@]}\" = 0 -o \"${#suboptions[@]}\" = \"${#subpkgs[@]}\" ]"
 fi
