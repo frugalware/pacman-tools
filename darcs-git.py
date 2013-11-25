@@ -850,7 +850,7 @@ Options:
 		msg = " ".join(argv[:2])
 	else:
 		msg = argv[0]
-	ret += os.system("git tag -a -m '%s' %s" % (msg, argv[-1]))
+	ret += os.system("git tag -a -m '%s' '%s'" % (msg, argv[-1]))
 	return ret
 
 def rollback(argv):
