@@ -851,6 +851,8 @@ Options:
 	else:
 		msg = argv[0]
 	ret += os.system("git tag -a -m '%s' '%s'" % (msg, argv[-1]))
+	if ret:
+		os.system("git reset --hard HEAD^")
 	return ret
 
 def rollback(argv):
