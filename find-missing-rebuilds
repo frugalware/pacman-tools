@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 File=err.txt
 cd ~
@@ -6,11 +6,28 @@ if [ -e $File ]; then
 	rm $File
 fi
 touch $File
-LD_LIST="/usr/lib/firefox:/usr/lib/octave-3.2.4:/usr/lib/perl5/site_perl/current/$(uname -m)-linux-thread-multi/auto/QtCore4/:/usr/lib/R/lib:/usr/lib/xulrunner"
-for i in $(find /usr/bin 2>/dev/null; find /usr/lib -executable 2>/dev/null)
+
+LD_LIST=()
+LD_LIST+=("/usr/lib/R/lib")
+LD_LIST+=("/usr/lib/firefox")
+LD_LIST+=("/usr/lib/kde4")
+LD_LIST+=("/usr/lib/octave-3.2.4")
+LD_LIST+=("/usr/lib/perl5/site_perl/current/$(uname -m)-linux-thread-multi/auto/QtCore4/")
+LD_LIST+=("/usr/lib/xulrunner")
+
+PATH_LIST=()
+PATH_LIST+=("/bin")
+PATH_LIST+=("/lib")
+PATH_LIST+=("/sbin")
+PATH_LIST+=("/usr/bin")
+PATH_LIST+=("/usr/lib")
+PATH_LIST+=("/usr/libexec")
+PATH_LIST+=("/usr/sbin")
+
+for i in $(for path in "${PATH_LIST[@]}"; do find "$path" -executable 2>/dev/null; done)
 do
 #	echo "Scanning: $i" >&2
-	result=`LD_LIBRARY_PATH="$LD_LIST" ldd $i 2>/dev/null | grep "not found"`
+	result=$(LD_LIBRARY_PATH="$(IFS=':'; echo "$LD_LIBRARY_PATH:${LD_LIST[*]}")" ldd $i 2>/dev/null | grep "not found")
 	if [ "$result" != "" ]
 	then
 		echo "Broken: $i" >&2
