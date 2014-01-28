@@ -52,6 +52,10 @@ def rmdupdeps(deps):
 	newdeps = []
 	for i in deps:
 		if i not in ignorepkgs:
+			if i in depdeps:
+				if trace:
+					print "Ignoring %s as it is already a dependency of some other dependency." % i
+				continue
 			gotdeps = filter(lambda x: x != i, getdeps(i))
 			getdeps_deps = []
 			if trace:
