@@ -281,7 +281,7 @@ class Syncpkgcd:
 					continue
 				if ".git" in root:
 					continue
-				if dir == pkgname:
+				if dir == pkgname and os.path.exists("%s/FrugalBuild" % os.path.join(root, dir)):
 					os.chdir(os.path.join(root, dir))
 					return True
 		return False
