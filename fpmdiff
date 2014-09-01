@@ -14,6 +14,7 @@ while [ $# -gt 0 ]; do
 		show_version=y
 		;;
 	--)
+		shift
 		break
 		;;
 	--*|-?)
@@ -33,15 +34,16 @@ while [ $# -gt 0 ]; do
 		;;
 	*)
 		# Not an option
-		if [ ! -r "$1" -o ! -r "$2" ]; then
-			echo "One of the fpms is not readable." >&2
-			exit 1
-		fi
 		break
 		;;
 	esac
 	shift
 done
+
+if [ ! -r "$1" -o ! -r "$2" ]; then
+	echo "One of the fpms is not readable." >&2
+	exit 1
+fi
 
 if [ "$show_usage" == y ]; then
 	man fpmdiff
