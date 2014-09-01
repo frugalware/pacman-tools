@@ -70,8 +70,8 @@ if [ "$clean_up" == y ]; then
 	re+='s|^(/usr/share/doc/[^/]+)-[^-/]+|\1-${pkgver}|;'
 fi
 
-pacman-g2 -Ql -p "$1" | sed -r "$re" > $old
-pacman-g2 -Ql -p "$2" | sed -r "$re" > $new
+pacman-g2 -Ql -p "$1" | sed -r "$re" | sort -n > $old
+pacman-g2 -Ql -p "$2" | sed -r "$re" | sort -n > $new
 
 diff -U 0 $old $new | sed '1,2d;/^@/d'
 rm -f $old $new
