@@ -20,9 +20,11 @@
 #   USA.
 #
 
-import os, getopt, sys
+import os
+import getopt
+import sys
 from multiprocessing import Process, Queue
-from re import search as regexSearch
+from re import search as regex_search
 from time import asctime, localtime
 
 
@@ -61,7 +63,7 @@ def std_postout():
 	print "Maybe broken up2date  : {0}".format(maybebroken)
 
 
-def find_file(filename, path, blacklist=[]):
+def find_file(filename, path, blacklist):
 	global total, passed, needupdate, timeouted, maybebroken
 	matches = []
 
@@ -104,14 +106,16 @@ class FrugalBuild:
 
 	def __init__(self, path):
 		self.path = os.path.dirname(path)
-		self.pkgname, self.pkgver, self.group = run_command(self.path,
+		self.pkgname, self.pkgver, self.group = run_command(
+			self.path,
 			"echo $pkgname;echo $pkgver;echo $groups").split()
 		self.up2date = run_command(self.path, "echo -n $up2date")
 		try:
 			with open(path, "r") as f:
-				self.m8r = regexSearch(r"# Maintainer:\s+(.*?)\s+<",
+				self.m8r = regex_search(
+					r"# Maintainer:\s+(.*?)\s+<",
 					f.read()).groups()[0]
-		except:
+		except IndexError:
 			self.m8r = "????????"  # probably Maintainer is empty
 
 		self.skip = False
@@ -168,7 +172,8 @@ class FrugalBuild:
 
 
 try:
-	opts, args = getopt.gnu_getopt(sys.argv[1:],
+	opts, args = getopt.gnu_getopt(
+		sys.argv[1:],
 		"r:t:d:mscb",
 		["dir=", "time=", "devel=", "html", "sort", "color", "blacklist"])
 except getopt.GetoptError:
@@ -182,7 +187,7 @@ devel = ""
 html = False
 sort = False
 color = False
-blacklist = []
+blacklist_paths = []
 
 total = 0
 passed = 0
@@ -204,15 +209,15 @@ for opt, arg in opts:
 	if opt in ("-c", "--color"):
 		color = True
 	if opt in ("-b", "--blacklist"):
-		blacklist = [os.path.normpath(d) for d in args]
+		blacklist_paths = [os.path.normpath(a) for a in args]
 
 if html:
 	html_preout()
-frugalbuilds = find_file("FrugalBuild", directory, blacklist)
+frugalbuilds = find_file("FrugalBuild", directory, blacklist_paths)
 if sort:
 	frugalbuilds.sort(key=lambda fb: fb.m8r.lower())  # otherwise [A-Z] comes before [a-z]
-	for fb in frugalbuilds:
-		fb.print_wrapper()
+	for frugalbuild in frugalbuilds:
+		frugalbuild.print_wrapper()
 if html:
 	html_postout()
 else:
