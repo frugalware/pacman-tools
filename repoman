@@ -958,9 +958,16 @@ search()
 info()
 {
 	chk_updated $fst_root
+	if [ -z "$1" ]; then
+		msg " Use repoman info <pkgname>
+		exit 1
+	fi
 	for i in ${repos[@]}
 	do
-		if [ -d $fst_root/$i/source/*/$1 ]; then
+		if [ ! -d $fst_root/$i/source/*/$1 ]; then
+			msg "  Could not find package $1.. Typo?"
+			exit 1
+		else
 			cd $fst_root/$i/source/*/$1
 			startdir=`pwd`
 			source ./FrugalBuild
