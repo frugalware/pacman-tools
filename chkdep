@@ -269,7 +269,7 @@ for i in depfiles:
 if pkg:
 	shutil.rmtree(fpmroot)
 
-if trace:
-	print "Dependencies before dependency cleanup: depends=('" + "' '".join(deps) + "')"
+
+print "Full DEPENDS:	depends=('" + "' '".join(deps) + "')"
 deps = rmdupdeps(deps)
-print "depends=('" + "' '".join(deps) + "')"
+print "Cleaned up DEPENDS:   depends=('" + "' '".join(deps) + "')"
