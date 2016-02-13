@@ -28,7 +28,7 @@ for i in `chkworld |grep ^Checking |sed 's|.*/\(.*\)-[^-]*\.\.\..*|\1|'`
 do
 	cd $i
 	bumppkg
-	repoman rec "version bump"
+	repoman rec "synclib32 - Auto sync from 32bit repo"
 	repoman -k push
 	cd ..
 done
