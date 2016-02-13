@@ -1,12 +1,12 @@
-= syncemul(1)
+= synclib32(1)
 
 == NAME
 
-syncemul - updates existing packages for emulation of i686 on x86_64
+synclib32 - updates existing packages for emulation of i686 on x86_64
 
 == SYNOPSIS
 
-syncemul [options]
+synclib32 [options]
 
 == OPTIONS
 
@@ -21,6 +21,6 @@ syncemul [options]
 You should use this script, like:
 
 ----
-$ cd /path/to/source/emul-extra
-$ syncemul
+$ cd /path/to/source/lib32-extra
+$ synclib32
 ----

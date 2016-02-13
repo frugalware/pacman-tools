@@ -3,7 +3,7 @@
 . /usr/lib/frugalware/fwmakepkg
 
 if [ "$1" == "-h" -o "$1" == "--help" ]; then
-	man syncemul
+	man synclib32
 	exit $?
 fi
 
@@ -12,8 +12,9 @@ if [ "$1" == "-v" -o "$1" == "--version" ]; then
 	exit $?
 fi
 
-if [ "`pwd|sed 's|.*/\(.*\)|\1|'`" != "emul-extra" ]; then
-	echo "where are you?"
+if [ "`pwd|sed 's|.*/\(.*\)|\1|'`" != "lib32-extra" ]; then
+	echo "Where are you?"
+	echo "Wrong folder , see man synclib32"
 	exit 1
 fi
 
