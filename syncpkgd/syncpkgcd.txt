@@ -42,10 +42,10 @@ provide the syncpkgd server, so contact us to get an account.
 * Generate an ssh key with no passphrase, using:
 
 ----
-$ ssh-keygen -t dsa
+$ ssh-keygen -t rsa
 ----
 
-NOTE: The `\~/.ssh/id_dsa.pub` file should be appended to `\~/.ssh/authorized_keys` on
+NOTE: The `\~/.ssh/id_rsa.pub` file should be appended to `\~/.ssh/authorized_keys` on
 the server with a `command="syncpkg-shell <nick>" ` prefix.
 
 * Now login to git.frugalware.org manually so that the fingerprint of the
