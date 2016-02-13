@@ -60,11 +60,11 @@ get_root()
 src_cleanup()
 {
 	Fmessage "cleaning up old source files"
-	root="`get_root`"
+	local root="`get_root`"
 	if [ "$F_makepkg_scm" = "git" ]; then
 		git clean -x -d -f .
 	else
-	local i workdir
+	local i workdir rootlist darcsdir
 
 	workdir=`pwd|sed "s|$root||"`
 	rootlist=`mktemp`
@@ -93,7 +93,7 @@ update_pkgrel()
 update_pkgver()
 {
 	Fmessage "updating \$pkgver and \$pkgrel"
-	newpkgver=`chkworld |grep != |sed 's/.*!= \([^ ]*\) .*/\1/'`
+	local newpkgver=`chkworld |grep != |sed 's/.*!= \([^ ]*\) .*/\1/'`
 	if [[ "$newpkgver" =~ " " ]] || [ -z "$newpkgver" ]; then
 		die "Dunno what is the new version or this package is already up to date!"
 	fi
