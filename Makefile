@@ -35,15 +35,14 @@ man8dir = /usr/share/man/man8
 sysconfdir = /etc
 docdir = /usr/share/doc/pacman-tools-$(VERSION)
 FINCDIR = $(shell [ -e /usr/lib/frugalware/fwmakepkg ] && source /usr/lib/frugalware/fwmakepkg; echo $$Fincdir)
-DOCS = $(wildcard *.txt) $(wildcard syncpkgd/*.txt) $(wildcard mkiso/*.txt)
+DOCS = $(wildcard *.txt) $(wildcard syncpkgd/*.txt)
 MANS = $(subst .txt,.1,$(DOCS))
 
 PROGRAMS = bumppkg chkdep chkworld fblint fpmdiff fwcpan fwmirror \
-	mkisorelease mkpkghtml pear-makefb pootle-update \
-	portpkg repoman revdep-rebuild rpm2fpm synclib32 wipcheck
+	mkpkghtml pear-makefb pootle-update portpkg repoman \
+	revdep-rebuild rpm2fpm synclib32 wipcheck
 
 compile: $(PROGRAMS) apidocs docs
-	$(MAKE) -C mkiso
 	$(MAKE) -C repoman.d
 
 docs: $(MANS)
@@ -69,8 +68,6 @@ install: compile
 	$(INSTALL) -m644 repoman.d/stable $(DESTDIR)$(sysconfdir)/repoman.d/stable
 	$(INSTALL) lib/fwmakepkg $(DESTDIR)$(libdir)
 	$(INSTALL) etcconfig.py $(DESTDIR)$(sbindir)/etcconfig
-	$(INSTALL) mkiso/mkiso $(DESTDIR)$(bindir)/mkiso
-	$(INSTALL) -m644 mkiso/volumes.xml $(DESTDIR)$(docdir)/volumes.xml
 	$(INSTALL) -m644 hooks/* $(DESTDIR)$(docdir)/hooks
 ifneq ($(FINCDIR),)
 	$(INSTALL) -m644 apidocs/*.3 $(DESTDIR)$(man3dir)
@@ -79,7 +76,6 @@ endif
 
 clean:
 	rm -rf genauthors apidocs $(MANS)
-	$(MAKE) -C mkiso clean
 
 dist:
 	git archive --format=tar --prefix=pacman-tools-$(VERSION)/ HEAD > pacman-tools-$(VERSION).tar
