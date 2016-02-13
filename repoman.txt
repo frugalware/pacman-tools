@@ -426,8 +426,9 @@ $ repoman fpmmerge flac113
 
 After merge, you may want to reuse your WIP repo. To do so, you need to:
 
-- update the repo on the server (`ssh git.frugalware.org; cd /pub/other/people/nick/flac113; git pull -r`)
 - remove existing fpms/fdbs (`rm -f frugalware-*/*`)
+- clean the repo by doing : (`git clean -x -d -f`)
+- update the repo on the server (`ssh git.frugalware.org; cd /pub/other/people/nick/flac113; git pull -r`)
 
 == GLOBAL OPTIONS
 
