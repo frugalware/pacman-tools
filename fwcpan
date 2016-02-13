@@ -91,7 +91,7 @@ tar xOzf $srcdump $modname-$pkgver/Makefile.PL >$makedump 2>/dev/null
 
 cat << EOF > FrugalBuild
 # Compiling Time: 0.1 SBU
-# Maintainer: Zsolt Szalai <xbit@frugalware.org>
+# Maintainer:
 
 _F_perl_name=$modname
 _F_perl_author=$modauthor
