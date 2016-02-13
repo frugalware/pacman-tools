@@ -28,9 +28,9 @@ parse_coma()
 in_array()
 {
 	local i=""
-
-	needle=$1
+	local needle=$1
 	shift 1
+
 	# array() undefined
 	[ -z "$1" ] && return 1
 	for i in $*
