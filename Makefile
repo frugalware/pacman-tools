@@ -40,7 +40,7 @@ MANS = $(subst .txt,.1,$(DOCS))
 
 PROGRAMS = bumppkg chkdep chkworld fblint fpmdiff fwcpan fwmirror \
 	mkisorelease mkpkghtml pear-makefb pootle-update \
-	portpkg repoman revdep-rebuild rpm2fpm syncemul wipcheck
+	portpkg repoman revdep-rebuild rpm2fpm synclib32 wipcheck
 
 compile: $(PROGRAMS) apidocs docs
 	$(MAKE) -C mkiso
