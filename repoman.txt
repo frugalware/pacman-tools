@@ -83,8 +83,16 @@ $ git config user.name "John Smith"
 $ git config user.email john@frugalware.org
 $ git config remote.origin.receivepack "sudo -u <owner> git-receive-pack"
 $ git config branch.master.rebase true
+$ git config push.default simple
 ----
 
+To set your default editor and pager you can do:
+
+----
+$git config core.editor <your_editor>
+$git config core.pager <your_pager>
+----
+ 
 Here you should substitute <owner> with the nick of the repo owner, currently
 'repo'.
 
