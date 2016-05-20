@@ -142,6 +142,16 @@ def svn_check():
 	sock.close()
 	return os.path.exists(os.path.join(cdup, ".git/svn"))
 
+def svn_get_remote():
+	sock = os.popen("git config svn-remote.svn.fetch")
+	# Returns something like ':refs/remotes/origin/master'.
+	fetch = sock.readline().strip()
+	sock.close()
+	if not len(fetch):
+		return "git-svn"
+	else:
+		return fetch[1:]
+
 def darcs_check():
 	sock = os.popen("git rev-parse --show-cdup")
 	cdup = sock.read().strip()
@@ -630,7 +640,7 @@ Options:
 		usage(0)
 	remote = "%s/%s" % (options.gitopts, get_merge(branch))
 	if svn_check():
-		remote = "git-svn"
+		remote = svn_get_remote()
 	elif darcs_check():
 		remote = "darcs/upstream"
 	logopts = ""
@@ -710,7 +720,7 @@ Options:
 		os.system("git fetch %s" % options.gitopts)
 	remote = "%s/%s" % (options.gitopts, get_merge(branch))
 	if svn_check():
-		remote = "git-svn"
+		remote = svn_get_remote()
 	elif darcs_check():
 		remote = "darcs/upstream"
 	sock = os.popen("git log %s..%s 2>&1" % (branch, remote))
