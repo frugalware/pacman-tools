@@ -23,10 +23,13 @@
 import os
 import getopt
 import sys
+import subprocess
+import signal
 from multiprocessing import Process, Queue
 from re import search as regex_search
 from time import asctime, localtime
 
+signal.signal(signal.SIGPIPE, signal.SIG_DFL)
 
 def usage():
 	os.system("man chkworld")
@@ -94,10 +97,15 @@ def find_file(filename, path, blacklist):
 def run_command(fb, command):
 	cwd = os.getcwd()
 	os.chdir(fb)  # this is necessary otherwise it won't use user repo but system one (stable on genesis)
-	with os.popen("source {0};source ./FrugalBuild; {1}".format(fwmakepkg, command)) as pipe:
-		tmp = pipe.read()
+	p = subprocess.Popen("source {0};source ./FrugalBuild; {1}".format(fwmakepkg, command),
+		stdout=subprocess.PIPE,
+		stderr=subprocess.PIPE,
+		shell=True)
+	out, err = p.communicate()
+	if err:
+		print "@".join([fb, out, err]), "@"
 	os.chdir(cwd)
-	return tmp
+	return out
 
 
 class FrugalBuild:
@@ -117,6 +125,8 @@ class FrugalBuild:
 					f.read()).groups()[0]
 		except IndexError:
 			self.m8r = "????????"  # probably Maintainer is empty
+		except AttributeError:
+			self.m8r = "????????"
 
 		self.skip = False
 		if devel and self.m8r != devel:
