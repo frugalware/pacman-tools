@@ -103,7 +103,7 @@ def run_command(fb, command):
 		shell=True)
 	out, err = p.communicate()
 	if err:
-		print "@".join([fb, out, err]), "@"
+		sys.stderr.write("@".join([fb, out, err]), "@")
 	os.chdir(cwd)
 	return out
 
