@@ -102,8 +102,6 @@ def run_command(fb, command):
 		stderr=subprocess.PIPE,
 		shell=True)
 	out, err = p.communicate()
-	if err:
-		sys.stderr.write("@".join([fb, out, err]), "@")
 	os.chdir(cwd)
 	return out
 
