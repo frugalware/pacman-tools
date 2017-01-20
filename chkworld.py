@@ -123,10 +123,8 @@ class FrugalBuild:
 				self.m8r = regex_search(
 					r"# Maintainer:\s+(.*?)\s+<",
 					f.read()).groups()[0]
-		except IndexError:
-			self.m8r = "????????"  # probably Maintainer is empty
-		except AttributeError:
-			self.m8r = "????????"
+		except (IndexError, AttributeError):
+			self.m8r = "????????"  # probably Maintainer is empty or without mail
 
 		self.skip = False
 		if devel and self.m8r != devel:
