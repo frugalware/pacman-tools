@@ -990,8 +990,7 @@ info()
 			cd $fst_root/$i/source/*/$1
 			startdir=`pwd`
 			source ./FrugalBuild
-			[ ${#depends[*]} -eq 0 ] && depends="" || depends="${depends[@]} "
-			[ ${#rodepends[*]} -gt 0 ] && depends="$depends${rodepends[@]}"
+			[[ -n ${rodepends[@]} ]] && depends+=" ${rodepends[@]}"
 			echo "Repository        : $i"
 			echo "Name              : $pkgname"
 			echo "Version           : $pkgver-$pkgrel"
