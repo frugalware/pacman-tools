@@ -95,7 +95,12 @@ fi
 _fblint_done="0"
 _fblint_failed="0"
 CHROOT=1
-. /usr/lib/frugalware/fwmakepkg
+if [ -e /usr/lib/frugalware/fwmakepkg ]; then
+	. /usr/lib/frugalware/fwmakepkg
+else
+	echo "Error! Missing /usr/lib/frugalware/fwmakepkg"
+	exit 1
+fi
 
 [ "$_fblint_verbose" ] && echo -n "Checking if FrugalBuild exists ... "
 if [ -e $_fblint_fb ]; then
