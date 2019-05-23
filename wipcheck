@@ -23,7 +23,6 @@
 # fake variable for fwmakepkg
 CHROOT=1
 
-. /etc/makepkg.conf
 . /usr/lib/frugalware/fwmakepkg
 
 die()

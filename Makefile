@@ -38,9 +38,9 @@ FINCDIR = $(shell [ -e /usr/lib/frugalware/fwmakepkg ] && source /usr/lib/frugal
 DOCS = $(wildcard *.txt) $(wildcard syncpkgd/*.txt)
 MANS = $(subst .txt,.1,$(DOCS))
 
-PROGRAMS = bumppkg chkdep chkworld fblint fpmdiff fwcpan fwmirror \
-	mkpkghtml pear-makefb pootle-update repoman \
-	revdep-rebuild rpm2fpm synclib32 wipcheck
+PROGRAMS = bumppkg chkdep chkworld chkworld.py fblint fpmdiff fwcpan fwmirror \
+	mkpkghtml pootle-update repoman \
+	revdep-rebuild wipcheck
 
 compile: $(PROGRAMS) apidocs docs
 	$(MAKE) -C repoman.d
