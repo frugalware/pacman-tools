@@ -39,8 +39,7 @@ DOCS = $(wildcard *.txt) $(wildcard syncpkgd/*.txt)
 MANS = $(subst .txt,.1,$(DOCS))
 
 PROGRAMS = bumppkg chkdep chkworld chkworld.py fblint fpmdiff fwcpan fwmirror \
-	mkpkghtml pootle-update repoman \
-	revdep-rebuild wipcheck
+	mkpkghtml repoman revdep-rebuild wipcheck
 
 compile: $(PROGRAMS) apidocs docs
 	$(MAKE) -C repoman.d
