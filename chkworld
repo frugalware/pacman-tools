@@ -2,7 +2,6 @@
 
 package Chkworld;
 
-use sort "_quicksort";
 use warnings;
 no warnings qw( uninitialized );
 use File::Find;
