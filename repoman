@@ -344,7 +344,9 @@ server()
 
 _ssh()
 {
-	$repoman_ssh $host "$sudo_cmd repoman server $*"
+	
+	[[ -z "$repoman_port" ]] && repoman_port="22"
+	$repoman_ssh -p$repoman_port $host "$sudo_cmd repoman server $*"
 }
 
 delete()
@@ -426,20 +428,9 @@ upload()
 		msg "Requesting a temporary file"
 		tmp=`_ssh "mktemp"`
 		[ -z "$tmp" ] && exit 1
-		if [  "$REPOMAN_USE_TUNNEL" == "yes" ]; then
-			## Fix me ? well since we use something like:
-			## local -> genesis ( genesis acts like tunnel for itself )
-			## or remote_box -> genesis , local -> remote_box we are always
-			## using 127.0.0.1 .. scp -S really sucks and I get a lot problems
-			## with rsync -e with all this tunneling =)
-			## the other solution may be to force host when tunnel is used to be user@127.0.0.1
-			## since -p <port> user@local gives out user@genesis .. 
-			msg "Uploading file: $src (to $tmp) over local tunnel."
-                        $repoman_scp $src 127.0.0.1:$tmp
-                else
-			msg "Uploading file: $src (to $tmp)"
-                        $repoman_scp $src $host:$tmp
-                fi
+		msg "Uploading file: $src (to $tmp)"
+		[[ -z "$repoman_port" ]] && repoman_port="22"
+        $repoman_scp -P$repoman_port $src $host:$tmp
 		sha=`sha1sum $src|sed 's/\(.*\)  .*/\1/'`
 		if ! _ssh "upload '$path' '$tmp' '$sha' '$dest/$src'"; then
 			return 1
