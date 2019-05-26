@@ -6,16 +6,8 @@ repos=(${repos[@]} 'current')
 
 current_servers=(
 "git://github.com/frugalware/frugalware-current.git"
-"git://gitorious.org/frugalware/frugalware-current.git"
-"git://git.utsl.gen.nz/mirror/repo.or.cz/frugalware-current.git"
-"git://repo.or.cz/frugalware-current.git"
 )
 
-# additional servers in case you are behind a firewall where only http
-# is allowed:
-# http://git.gitorious.org/frugalware/frugalware-current.git
-# http://git.utsl.gen.nz/mirror/repo.or.cz/frugalware-current.git
-# http://repo.or.cz/r/frugalware-current.git
 
 # the rest is only for developers who upload packages
 # if the server requires sudo usage, the name of the user to execute the commands as
