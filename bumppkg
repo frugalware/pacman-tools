@@ -56,7 +56,7 @@ get_root()
 	echo $i
 	fi
 }
-
+USE_COLOR=y
 src_cleanup()
 {
 	Fmessage "cleaning up old source files"
@@ -127,9 +127,9 @@ do_push()
 	fi
 }
 
-USE_COLOR="y"
+
 . /usr/lib/frugalware/fwmakepkg
-. /etc/makepkg.conf
+. /etc/repoman.conf
 
 if [ "$1" == "-h" -o "$1" == "--help" ]; then
 	man bumppkg
@@ -164,6 +164,16 @@ if [ "$1" == "--rebuild" ]; then
 	if [ "$1" == "--push" -o "$1" == "--silentpush" ]; then
 		do_push $1
 	fi
+	exit 0
+fi
+
+
+if [ "$1" = "--update" ]; then
+
+	source ./FrugalBuild || die "failed to source the FrugalBuild!"
+	newrel=$(echo $pkgrel|sed 's/[0-9]\+$//')$(($(echo $pkgrel|sed 's/.*[^0-9]\([0-9]\+\)$/\1/')+1))
+	Fmessage "Updating \$pkgrel from: $pkgrel to $newrel."
+	update_pkgrel $newrel
 	exit 0
 fi
 
