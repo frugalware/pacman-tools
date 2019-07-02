@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # 
 #   darcs-git, a darcs-like porcelain on top of git plumbing
 #  
@@ -49,6 +49,7 @@ class Files:
 
 def ask(s, type=None):
 	sys.stdout.write("%s " % s)
+	sys.stdout.flush()
 	if type == str:
 		try:
 			return sys.stdin.readline().strip()
@@ -217,6 +218,7 @@ def askhunks(hunks, preans=None, action="record"):
 		if preans == None:
 			while True:
 				sys.stdout.write(i.text)
+				sys.stdout.flush()
 				ret = ask("Shall I %s this change? (%d/%d)  [ynqad], or ? for help:" % (action, hunknum+1, total))
 				if ret == "y":
 					commit = True
