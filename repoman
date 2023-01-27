@@ -388,7 +388,7 @@ upload()
 			echo "package and try again."
 			exit 1
 		fi
-		if echo $src | grep -q fpm$ && pacman-g2 -Ql -p $src | egrep -q ' lib64/| usr/lib64/'; then
+		if echo $src | grep -q fpm$ && pacman-g2 -Ql -p $src | grep -E -q ' lib64/| usr/lib64/'; then
 			echo "$src has invalid lib64 path , refusing to upload!"
 			echo "Please fix your package."
 			exit 1

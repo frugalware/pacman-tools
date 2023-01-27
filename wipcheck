@@ -40,7 +40,7 @@ do
 	[ "$1" == "-q" ] || echo "checking $i... (dir: $(pwd) )"
 	cd source/*/$i
 	unset pkgname pkgver pkgextraver pkgrel nobuild options archs
-	for k in `set|egrep '^(_F_|USE_)'|sed 's/\(=.*\| ()\)//'`; do unset $k; done
+	for k in `set|grep -E '^(_F_|USE_)'|sed 's/\(=.*\| ()\)//'`; do unset $k; done
 	export startdir=`pwd`
 	. ./FrugalBuild || die "errors parsing the FrugalBuild"
 	for j in ${archs[@]}
