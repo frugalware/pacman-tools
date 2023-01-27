@@ -1,5 +1,6 @@
 VERSION         DESCRIPTION
 -----------------------------------------------------------------------------
+1.3.5         - Switch to python3
 1.3.4         - fpmdiff cleanups
               - repoman optimizations
               - dg cleanups
