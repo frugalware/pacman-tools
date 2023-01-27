@@ -20,12 +20,12 @@
 #   USA.
 #
 
-import xmlrpclib, time, os, getopt, sys, socket, glob, base64, pwd, signal
-import traceback, shutil, httplib
+import xmlrpc.client, time, os, getopt, sys, socket, glob, base64, pwd, signal
+import traceback, shutil, http.client
 sys.path.append("/etc/syncpkgcd")
 from cconfig import config
 
-server = xmlrpclib.Server(config.server_url)
+server = xmlrpc.client.Server(config.server_url)
 
 class Options:
 	def __init__(self):
@@ -59,16 +59,16 @@ class Syncpkgcd:
 					continue
 				try:
 					pkg = server.request_pkg(config.server_user, config.server_pass, self.getarch())
-				except socket.error, msg:
+				except socket.error as msg:
 					self.sleep("can't connect to server (%s)" % msg)
 					continue
-				except xmlrpclib.ProtocolError:
+				except xmlrpc.client.ProtocolError:
 					self.sleep("can't connect to proxy")
 					continue
-				except xmlrpclib.Fault:
+				except xmlrpc.client.Fault:
 					self.sleep("remote error, probably can't log in")
 					continue
-				except httplib.BadStatusLine:
+				except http.client.BadStatusLine:
 					self.sleep("http: bad status line")
 					continue
 				if not len(pkg):
@@ -85,9 +85,9 @@ class Syncpkgcd:
 					os.makedirs(os.path.join(self.home, ".pacman-g2/repos"))
 				except OSError:
 					pass
-				for k, v in confs.items():
+				for k, v in list(confs.items()):
 					sock = open(os.path.join(self.home, k), "w")
-					sock.write(base64.decodestring(v).replace('@CARCH@', self.getarch()))
+					sock.write(base64.standard_b64decode(v.encode('utf-8')).replace(b'@CARCH@', self.getarch().encode('utf-8')).decode('utf-8'))
 					sock.close()
 				self.build(pkg)
 		except KeyboardInterrupt:
@@ -145,7 +145,7 @@ class Syncpkgcd:
 			except IOError:
 				buf = "No makepkg log available."
 		try:
-			server.report_result(config.server_user, config.server_pass, pkg, 1, base64.encodestring(buf))
+			server.report_result(config.server_user, config.server_pass, pkg, 1, base64.standard_b64encode(buf.encode('utf-8')).decode('utf-8'))
 		except socket.error:
 			pass
 		self.system("git clean -x -d -f")
@@ -162,7 +162,7 @@ class Syncpkgcd:
 			self.log(pkg, "blacklisted package, aborting the build")
 			buf = "The package is on the blacklist of this client."
 			try:
-				server.report_result(config.server_user, config.server_pass, pkg, 1, base64.encodestring(buf))
+				server.report_result(config.server_user, config.server_pass, pkg, 1, base64.standard_b64encode(buf.encode('utf-8')))
 			except socket.error:
 				pass
 			return
@@ -204,14 +204,14 @@ class Syncpkgcd:
 			except OSError:
 				self.log(pkg, "failed to get the repo")
 				try:
-					server.report_result(config.server_user, config.server_pass, pkg, 1, base64.encodestring("Failed to get the repo."))
-				except xmlrpclib.Fault:
+					server.report_result(config.server_user, config.server_pass, pkg, 1, base64.standard_b64encode(b'Failed to get the repo.'))
+				except xmlrpc.client.Fault:
 					self.log(pkg, "failed to report 'failed to get the repo'")
 				return
 		if not self.go(pkgname):
 			try:
-				server.report_result(config.server_user, config.server_pass, pkg, 1, base64.encodestring("No such package."))
-			except xmlrpclib.Fault:
+				server.report_result(config.server_user, config.server_pass, pkg, 1, base64.standard_b64encode(b'No such package.'))
+			except xmlrpc.client.Fault:
 					self.log(pkg, "failed to report 'no such package'")
 			return
 		if scm == "git":
@@ -250,7 +250,7 @@ class Syncpkgcd:
 			except IOError:
 				buf = "No repoman log available."
 			try:
-				server.report_result(config.server_user, config.server_pass, pkg, 1, base64.encodestring(buf))
+				server.report_result(config.server_user, config.server_pass, pkg, 1, base64.standard_b64encode(buf.encode('utf-8')))
 			except socket.error:
 				pass
 			self.system("git clean -x -d -f")
@@ -258,7 +258,7 @@ class Syncpkgcd:
 		self.log(pkg, "build finished")
 		try:
 			server.report_result(config.server_user, config.server_pass, pkg, 0)
-		except (socket.error, xmlrpclib.ProtocolError):
+		except (socket.error, xmlrpc.client.ProtocolError):
 			pass
 		self.system("git clean -x -d -f")
 

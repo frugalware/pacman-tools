@@ -14,20 +14,20 @@ a_editors=[]
 def checkroot():
 	uid=os.geteuid()	
 	if uid == 0:
-		print
-		print"-- EtcUpdater --"
-		print
+		print()
+		print("-- EtcUpdater --")
+		print()
 	else:
-		print"Sorry, you must be root to run this script."
+		print("Sorry, you must be root to run this script.")
 		sys.exit()
 def checkedit():
 	p=0
 	for i in editorvars[:2]:
 		act=os.getenv(i,1)
 		if(act==1): 
-		 	print "- $%s is not accessible!" % i
+		 	print("- $%s is not accessible!" % i)
 		else:
-			print "- $%s is accessible!" % i
+			print("- $%s is accessible!" % i)
 			a_editors.append('$'+i)
 	
         for i in os.walk('/usr/bin'):
@@ -35,13 +35,13 @@ def checkedit():
          for s in files:
 		if s in editors:
 			a_editors.append(s)
-			print "- Found %s as an alternative editor" % s
+			print("- Found %s as an alternative editor" % s)
 	        else:
 			continue
 
 if len(sys.argv) > 1:
 	if sys.argv[1] in ('-v', '--version'):
-		print "etcconfig 0.1 (pacman-tools)"
+		print("etcconfig 0.1 (pacman-tools)")
 		sys.exit()
 	elif sys.argv[1] in ('-h', '--help'):
 		os.system("man etcconfig")
@@ -61,23 +61,23 @@ else:
         editor=a_editors.pop()
         
 	
-print "- Using <%s> as an editor -" % editor
-print '-'*17
-print '  Searching...'
-print '-'*17
+print("- Using <%s> as an editor -" % editor)
+print('-'*17)
+print('  Searching...')
+print('-'*17)
 for i in os.walk('/etc'):
  files=(i[2])
  for s in files:
       	if s.endswith(".pacnew"):
 		s=i[0]+'/'+s
 		paclist.append(s)
-		print "Found %s adding to list" % s
+		print("Found %s adding to list" % s)
 	else:
 		continue
-print '-'*17
-print 'Searching done...'
-print '-'*17
-print
+print('-'*17)
+print('Searching done...')
+print('-'*17)
+print()
 choices=['y','n','d','e','i']
 m=len(paclist)
 x=0
@@ -87,31 +87,31 @@ else:
 	print('-->[(y=update) (n=delete .pacnew) (d=diff old) (e=edit) (i=ignore)]<--')
 while x<m:
        k=paclist[x]
-       choice=raw_input('-- %s (y,n,d,e,i): ' % k)
+       choice=input('-- %s (y,n,d,e,i): ' % k)
        korig=k.split('.pacnew')[0]
        if choice in choices:
 	       if(choice == choices[0]):
-		       print(k,korig)
+		       print((k,korig))
 		       command='mv -f %s %s' % (k,korig)
 		       os.system("%s" % command)
-		       print "Updated!"
+		       print("Updated!")
 	       	       x=x+1
 	       elif(choice == choices[1]):
 		       command='rm -f %s' % k
 		       os.system("%s" % command)
-		       print "Deleted .pacnew!"
+		       print("Deleted .pacnew!")
 	       	       x=x+1
 	       elif(choice == choices[2]):
 		       command='diff -u %s %s|less' % (korig,k)
 		       os.system("%s" % command)
-		       print "'Diff'-ed!"
+		       print("'Diff'-ed!")
 	       elif(choice == choices[3]):
-		       print "Editing..."
+		       print("Editing...")
 		       command='%s %s' % (editor,k)
 		       os.system("%s" % command)
 	       	       x=x+1
 	       elif(choice == choices[4]):
-		       print "Ignored!"
+		       print("Ignored!")
 	       	       x=x+1
 	       else:
 		       continue

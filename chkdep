@@ -54,20 +54,20 @@ def rmdupdeps(deps):
 		if i not in ignorepkgs:
 			if i in depdeps:
 				if trace:
-					print "Ignoring %s as it is already a dependency of some other dependency." % i
+					print("Ignoring %s as it is already a dependency of some other dependency." % i)
 				continue
-			gotdeps = filter(lambda x: x != i, getdeps(i))
+			gotdeps = [x for x in getdeps(i) if x != i]
 			getdeps_deps = []
 			if trace:
-				print "Depends for %s: %s." % (i, gotdeps)
+				print("Depends for %s: %s." % (i, gotdeps))
 			depdeps.extend(gotdeps)
 	for i in deps:
 		if i not in depdeps and i not in ignorepkgs:
 			newdeps.append(i)
 		elif i in depdeps and trace:
-			print "Ignoring %s as it is already a dependency of some other dependency." % i
+			print("Ignoring %s as it is already a dependency of some other dependency." % i)
 		elif i in ignorepkgs and trace:
-			print "Ignoring %s as requested." % i
+			print("Ignoring %s as requested." % i)
 	return newdeps
 
 def detect_owner(lib):
@@ -79,10 +79,10 @@ def detect_owner(lib):
 	pkg = pacman.void_to_PM_PKG(pacman.list_getdata(pacman.pkg_getowners(lib)))
 	owner = pacman.void_to_char(pacman.pkg_getinfo(pkg, pacman.PKG_NAME))
 	if not owner and not quiet:
-		print >>sys.stderr, "WARNING: No package found containing %s!" % lib
+		print("WARNING: No package found containing %s!" % lib, file=sys.stderr)
 	elif owner not in deps:
 		if trace:
-			print "%s is an owner for %s" % (owner, lib)
+			print("%s is an owner for %s" % (owner, lib))
 		deps.append(owner)
 
 class Checks:
@@ -145,7 +145,7 @@ class Checks:
 				lib = lib.split(' ')[0]
 			if len(lib):
 				if trace:
-					print "'%s' links to '%s'." % (file, lib)
+					print("'%s' links to '%s'." % (file, lib))
 				libs.append(lib)
 		sock.close()
 		return libs
@@ -230,7 +230,7 @@ for opt, arg in opts:
 	if opt in ("-t", "--trace"):
 		trace = True
 	if opt in ("-v", "--version"):
-		print "chkdep %s" % __version__
+		print("chkdep %s" % __version__)
 		sys.exit(0)
 
 if not dir and not pkg:
@@ -239,7 +239,7 @@ if not dir and not pkg:
 
 checker = getattr(checks, method)
 
-if "FAKEROOTKEY" in os.environ.keys():
+if "FAKEROOTKEY" in list(os.environ.keys()):
 	ignorepkgs.append("fakeroot")
 
 if pkg:
@@ -261,7 +261,7 @@ for root, dirs, files in os.walk(fpmroot):
 			for i in ret:
 				if i not in depfiles:
 					if trace:
-						print "Found %s as a new dependency file." % i
+						print("Found %s as a new dependency file." % i)
 					depfiles.append(i)
 for i in depfiles:
 	detect_owner(i)
@@ -270,6 +270,6 @@ if pkg:
 	shutil.rmtree(fpmroot)
 
 
-print "Full DEPENDS:	depends=('" + "' '".join(deps) + "')"
+print("Full DEPENDS:	depends=('" + "' '".join(deps) + "')")
 deps = rmdupdeps(deps)
-print "Cleaned up DEPENDS:   depends=('" + "' '".join(deps) + "')"
+print("Cleaned up DEPENDS:   depends=('" + "' '".join(deps) + "')")

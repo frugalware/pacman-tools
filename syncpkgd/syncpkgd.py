@@ -2,7 +2,7 @@
 
 import sys, getopt, os, pwd, hashlib, time, base64, re, pickle, signal, glob
 sys.path.append("/etc/syncpkgd")
-from SimpleXMLRPCServer import SimpleXMLRPCServer
+from xmlrpc.server import SimpleXMLRPCServer
 from dconfig import config
 
 class Actions:
@@ -34,9 +34,9 @@ class Actions:
 		self.save()
 
 	def __login(self, login, password):
-		if login in config.passes.keys() and \
+		if login in list(config.passes.keys()) and \
 			hashlib.sha1(password).hexdigest() == config.passes[login]:
-				if login not in self.lags.keys():
+				if login not in list(self.lags.keys()):
 					self.lags[login] = time.time()
 				return True
 		return False
@@ -107,7 +107,7 @@ class Actions:
 			sock.close()
 		except IOError:
 			buf = ""
-		return base64.encodestring(buf)
+		return base64.standard_b64encode(buf.encode('utf-8'))
 
 	def request_confs(self):
 		"""request the up to date config files"""
@@ -124,7 +124,7 @@ class Actions:
 			sock.close()
 		except IOError:
 			buf = ""
-		return base64.encodestring(buf)
+		return base64.standard_b64encode(buf.encode('utf-8'))
 
 	def report_result(self, login, password, pkg, exitcode, log=None):
 		"""report the build result of a package"""
@@ -167,7 +167,7 @@ ssh genesis.frugalware.org "syncpkgdctl '%s'"
 			except OSError:
 				os.makedirs(path)
 			sock = open(os.path.join(path, "%s.log" % pkg.split('/')[3]), "a")
-			sock.write(base64.decodestring(log))
+			sock.write(base64.standard_b64decode(log.encode('utf-8')))
 			sock.close()
 		return True
 
@@ -207,7 +207,7 @@ ssh genesis.frugalware.org "syncpkgdctl '%s'"
 
 	def __who(self):
 		ret = []
-		for k, v in self.lags.items():
+		for k, v in list(self.lags.items()):
 			if (time.time() - v) < 300:
 				ret.append(k)
 		return ret
@@ -246,7 +246,7 @@ class Syncpkgd:
 		except KeyboardInterrupt:
 			actions.save()
 			return
-		except Exception, ex:
+		except Exception as ex:
 			actions.log_exception()
 			return
 	

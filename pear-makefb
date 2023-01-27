@@ -6,7 +6,7 @@ __date__ = "Thu, 19 Oct 2006 00:18:19 +0200"
 __copyright__ = "Copyright (c) 2006, 2008 Miklos Vajna"
 __license__ = "GPL"
 
-import os, urllib, sys, hashlib
+import os, urllib.request, urllib.parse, urllib.error, sys, hashlib
 from xml.dom import minidom
 from email.Utils import formatdate
 
@@ -20,11 +20,11 @@ if sys.argv[1] == "--help":
 	usage()
 	sys.exit(0)
 if sys.argv[1] == "--version":
-	print """pear-makefb (pacman-tools) %s
+	print("""pear-makefb (pacman-tools) %s
 
 %s
 This is free software; see the source for copying conditions.  There is NO
-warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.""" % (__version__, __copyright__)
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.""" % (__version__, __copyright__))
 	sys.exit(0)
 
 name = sys.argv[1]
@@ -39,9 +39,9 @@ deps = []
 sys.stdout.write("Writing the FrugalBuild...")
 sys.stdout.flush()
 if pear:
-	sock = urllib.urlopen("http://cvs.php.net/viewvc.cgi/pear/%s/package.xml?revision=HEAD" % name)
+	sock = urllib.request.urlopen("http://cvs.php.net/viewvc.cgi/pear/%s/package.xml?revision=HEAD" % name)
 else:
-	sock = urllib.urlopen("http://cvs.php.net/viewvc.cgi/pecl/%s/package.xml?revision=HEAD" % name)
+	sock = urllib.request.urlopen("http://cvs.php.net/viewvc.cgi/pecl/%s/package.xml?revision=HEAD" % name)
 
 pkg = minidom.parse(sock)
 sock.close()
@@ -58,7 +58,7 @@ else:
 try:
 	pkgver = pkg.getElementsByTagName('version')[0].firstChild.toxml()
 except IndexError:
-	print " No such package!"
+	print(" No such package!")
 	sys.exit(1)
 out.write("pkgver=%s\n" % pkgver)
 
@@ -92,7 +92,7 @@ try:
 			s += rel + i.attributes["version"].value
 		deps.append(s)
 except IndexError:
-	print " The version of the package xml is probably not 1.0!"
+	print(" The version of the package xml is probably not 1.0!")
 	os.unlink("FrugalBuild")
 	sys.exit(1)
 out.write("depends=('%s')\n" % "' '".join(deps))
@@ -102,9 +102,9 @@ else:
 	out.write("Finclude pecl\n")
 
 if pear:
-	remote = urllib.urlopen('http://pear.php.net/get/%s-%s.tgz' % (name, pkgver))
+	remote = urllib.request.urlopen('http://pear.php.net/get/%s-%s.tgz' % (name, pkgver))
 else:
-	remote = urllib.urlopen('http://pecl.php.net/get/%s-%s.tgz' % (name, pkgver))
+	remote = urllib.request.urlopen('http://pecl.php.net/get/%s-%s.tgz' % (name, pkgver))
 local = open('%s-%s.tgz' % (name, pkgver), 'w')
 local.write(remote.read())
 remote.close()

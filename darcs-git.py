@@ -70,10 +70,10 @@ def ask(s, type=None):
 def bug(s=None):
 	import inspect
 	if s:
-		print("%s" % s)
+		print(("%s" % s))
 	else:
 		print("bug in darcs-git!")
-	print("at %s:%d" % inspect.stack()[1][1:3])
+	print(("at %s:%d" % inspect.stack()[1][1:3]))
 
 def emptydir(dir):
 	ret = True
@@ -238,7 +238,7 @@ def askhunks(hunks, preans=None, action="record"):
 					sys.exit(0)
 					break
 				if ret == "?" or ret == "h":
-					print("""How to use %(action)s...
+					print(("""How to use %(action)s...
 y: %(action)s this patch
 n: don't %(action)s it
 
@@ -246,7 +246,7 @@ d: %(action)s selected patches, skipping all the remaining patches
 a: %(action)s all the remaining patches
 q: cancel %(action)s
 
-h or ?: show this help""" % { 'action': action })
+h or ?: show this help""" % { 'action': action }))
 				print("Invalid response, try again!")
 		if preans != None:
 			if preans == True:
@@ -656,7 +656,7 @@ Options:
 	if not len(lines):
 		print("No recorded local changes to push!")
 		return 0
-	print("".join(lines))
+	print(("".join(lines)))
 	if not options.all:
 		while True:
 			ret = ask("Do you want to push these patches? [ynq]")
@@ -731,7 +731,7 @@ Options:
 	if not len(lines):
 		print("No remote changes to pull!")
 		return 0
-	print("".join(lines))
+	print(("".join(lines)))
 	if not options.all:
 		while True:
 			ret = ask("Do you want to pull these patches? [ynq]")
@@ -981,12 +981,12 @@ def main(argv):
 		os.system("man darcs-git")
 		sys.exit(ret)
 	def version():
-		print("""darcs-git (pacman-tools) %s
+		print(("""darcs-git (pacman-tools) %s
 
 Copyright (c) 2007 by Miklos Vajna <vmiklos@frugalware.org>
 This is free software; see the source for copying conditions.  There is NO
 warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR \
-PURPOSE.""" % __version__)
+PURPOSE.""" % __version__))
 	if len(sys.argv) == 1 or sys.argv[1] in ["-h", "--help"]:
 		usage(0)
 	if sys.argv[1] in ["-v", "--version"]:

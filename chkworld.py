@@ -36,34 +36,34 @@ def usage():
 
 
 def html_preout():
-	print "<html>\n\t<head>\n\t\t<title>\n\t\t\tChkworld status\n\t\t</title>\n\t</head>\n\t<body>\n"
-	print "\t\t<i>Last updated: {0}</i>\n".format(asctime(localtime()))
-	print "\t\t<table>\n"
+	print("<html>\n\t<head>\n\t\t<title>\n\t\t\tChkworld status\n\t\t</title>\n\t</head>\n\t<body>\n")
+	print("\t\t<i>Last updated: {0}</i>\n".format(asctime(localtime())))
+	print("\t\t<table>\n")
 
 
 def html_postout():
-	print "\t\t</table>\n"
-	print "\t\t<table>\n"
-	print "\t\t\t<tr>\n\t\t\t\t<td>\n\t\t\t\t\tTotal packages checked:\n\t\t\t\t</td>"
-	print "\t\t\t\t<td>\n\t\t\t\t\t{0}\n\t\t\t\t</td>\n\t\t\t</tr>".format(total)
-	print "\t\t\t<tr>\n\t\t\t\t<td>\n\t\t\t\t\tPassed\n\t\t\t\t</td>"
-	print "\t\t\t\t<td>\n\t\t\t\t\t{0}\n\t\t\t\t</td>\n\t\t\t</tr>".format(passed)
-	print "\t\t\t<tr>\n\t\t\t\t<td>\n\t\t\t\t\tNeed to update:\n\t\t\t\t</td>"
-	print "\t\t\t\t<td>\n\t\t\t\t\t{0}\n\t\t\t\t</td>\n\t\t\t</tr>".format(needupdate)
-	print "\t\t\t<tr>\n\t\t\t\t<td>\n\t\t\t\t\tTimed out:\n\t\t\t\t</td>"
-	print "\t\t\t\t<td>\n\t\t\t\t\t{0}\n\t\t\t\t</td>\n\t\t\t</tr>".format(timeouted)
-	print "\t\t\t<tr>\n\t\t\t\t<td>\n\t\t\t\t\tMaybe broken up2date:\n\t\t\t\t</td>"
-	print "\t\t\t\t<td>\n\t\t\t\t\t{0}\n\t\t\t\t</td>\n\t\t\t</tr>".format(maybebroken)
-	print "\t\t</table>\n"
-	print "\t</body>\n</html>\n"
+	print("\t\t</table>\n")
+	print("\t\t<table>\n")
+	print("\t\t\t<tr>\n\t\t\t\t<td>\n\t\t\t\t\tTotal packages checked:\n\t\t\t\t</td>")
+	print("\t\t\t\t<td>\n\t\t\t\t\t{0}\n\t\t\t\t</td>\n\t\t\t</tr>".format(total))
+	print("\t\t\t<tr>\n\t\t\t\t<td>\n\t\t\t\t\tPassed\n\t\t\t\t</td>")
+	print("\t\t\t\t<td>\n\t\t\t\t\t{0}\n\t\t\t\t</td>\n\t\t\t</tr>".format(passed))
+	print("\t\t\t<tr>\n\t\t\t\t<td>\n\t\t\t\t\tNeed to update:\n\t\t\t\t</td>")
+	print("\t\t\t\t<td>\n\t\t\t\t\t{0}\n\t\t\t\t</td>\n\t\t\t</tr>".format(needupdate))
+	print("\t\t\t<tr>\n\t\t\t\t<td>\n\t\t\t\t\tTimed out:\n\t\t\t\t</td>")
+	print("\t\t\t\t<td>\n\t\t\t\t\t{0}\n\t\t\t\t</td>\n\t\t\t</tr>".format(timeouted))
+	print("\t\t\t<tr>\n\t\t\t\t<td>\n\t\t\t\t\tMaybe broken up2date:\n\t\t\t\t</td>")
+	print("\t\t\t\t<td>\n\t\t\t\t\t{0}\n\t\t\t\t</td>\n\t\t\t</tr>".format(maybebroken))
+	print("\t\t</table>\n")
+	print("\t</body>\n</html>\n")
 
 
 def std_postout():
-	print "\nTotal packages checked: {0}".format(total)
-	print "Passed                : {0}".format(passed)
-	print "Need to update        : {0}".format(needupdate)
-	print "Timed out             : {0}".format(timeouted)
-	print "Maybe broken up2date  : {0}".format(maybebroken)
+	print("\nTotal packages checked: {0}".format(total))
+	print("Passed                : {0}".format(passed))
+	print("Need to update        : {0}".format(needupdate))
+	print("Timed out             : {0}".format(timeouted))
+	print("Maybe broken up2date  : {0}".format(maybebroken))
 
 
 def find_file(filename, path, blacklist):
@@ -144,13 +144,13 @@ class FrugalBuild:
 			del self.queue
 
 	def print_html(self):
-		print "\t\t\t<tr>\n\t\t\t\t<td>\n\t\t\t\t\t{0}/{1}-{2}\n\t\t\t\t</td>".format(self.group, self.pkgname, self.pkgver)
+		print("\t\t\t<tr>\n\t\t\t\t<td>\n\t\t\t\t\t{0}/{1}-{2}\n\t\t\t\t</td>".format(self.group, self.pkgname, self.pkgver))
 		if self.up2date == "":
-			print "\t\t\t\t<td>\n\t\t\t\t\t<font color=\"red\">There was no output! {0}</font>\n\t\t\t\t</td>\n\t\t\t</tr>\n".format(self.m8r)
+			print("\t\t\t\t<td>\n\t\t\t\t\t<font color=\"red\">There was no output! {0}</font>\n\t\t\t\t</td>\n\t\t\t</tr>\n".format(self.m8r))
 		elif self.up2date == "TIMEOUT":
-			print "\t\t\t\t<td>\n\t\t\t\t\t<font color=\"red\">Timed out! {0}</font>\n\t\t\t\t</td>\n\t\t\t</tr>\n".format(self.m8r)
+			print("\t\t\t\t<td>\n\t\t\t\t\t<font color=\"red\">Timed out! {0}</font>\n\t\t\t\t</td>\n\t\t\t</tr>\n".format(self.m8r))
 		else:
-			print "\t\t\t\t<td>\n\t\t\t\t\t<font color=\"red\">!= {0} {1}</font>\n\t\t\t\t</td>\n\t\t\t</tr>\n".format(self.up2date, self.m8r)
+			print("\t\t\t\t<td>\n\t\t\t\t\t<font color=\"red\">!= {0} {1}</font>\n\t\t\t\t</td>\n\t\t\t</tr>\n".format(self.up2date, self.m8r))
 
 	def print_term(self):
 		if color:
@@ -162,13 +162,13 @@ class FrugalBuild:
 			s_broken = "There was no output!"
 			s_update = self.up2date
 
-		print "{0}/{1}-{2}".format(self.group, self.pkgname, self.pkgver),
+		print("{0}/{1}-{2}".format(self.group, self.pkgname, self.pkgver), end=' ')
 		if self.up2date == "":
-			print "   {0}   {1}".format(s_broken, self.m8r)
+			print("   {0}   {1}".format(s_broken, self.m8r))
 		elif self.up2date == "TIMEOUT":
-			print "   {0}   {1}".format(s_timeout, self.m8r)
+			print("   {0}   {1}".format(s_timeout, self.m8r))
 		else:
-			print "   != {0}   {1}".format(s_update, self.m8r)
+			print("   != {0}   {1}".format(s_update, self.m8r))
 
 	def print_wrapper(self):
 		if html:
