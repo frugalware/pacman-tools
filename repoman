@@ -411,12 +411,6 @@ upload()
                         echo "Please fix your package."
                         exit 1
 		fi
-		if echo $src | grep -q fpm$ && pacman-g2 -Ql -p $src | grep -q 'usr/share/pkgconfig'; then
-                        echo "$src has invalid pkgconfig path , files are installed"
-                        echo "in /usr/share/pkgconfig , should be /usr/lib/pkgconfig, refusing to upload!"
-                        echo "Please fix your package."
-                        exit 1
-		fi
 		if echo $src | grep -q fpm$ && pacman-g2 -Ql -p $src | grep -q 'usr/share/perl5'; then
                         echo "$src has invalid perl path , files are installed"
                         echo "in /usr/share/perl5 , refusing to upload!"
