@@ -103,7 +103,7 @@ def run_command(fb, command):
 		shell=True)
 	out, err = p.communicate()
 	os.chdir(cwd)
-	return out
+	return out.decode('utf8').strip()
 
 
 class FrugalBuild:
